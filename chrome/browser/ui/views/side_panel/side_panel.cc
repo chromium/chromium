@@ -84,10 +84,7 @@ SidePanel::HorizontalAlignment GetHorizontalAlignment(
     bool use_default_horizontal_alignment) {
   bool is_right_aligned =
       pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
-  is_right_aligned = type == SidePanelEntry::PanelType::kToolbar &&
-                             features::kSidePanelRelativeAlignment.Get() ==
-                                 features::SidePanelRelativeAlignment::
-                                     kShowPanelsOnOppositeSides
+  is_right_aligned = type == SidePanelEntry::PanelType::kToolbar
                          ? !is_right_aligned
                          : is_right_aligned;
   return is_right_aligned == use_default_horizontal_alignment

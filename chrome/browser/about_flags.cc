@@ -2529,20 +2529,6 @@ const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kShowSidePanelsOnSameSide[] = {
-    {"side_panel_relative_alignment", "same"}};
-const FeatureEntry::FeatureParam kShowSidePanelsOnOppositeSide[] = {
-    {"side_panel_relative_alignment", "opposite"}};
-
-const FeatureEntry::FeatureVariation kSidePanelRelativeAlignmentVariants[] = {
-    {" - show panels on the same side", kShowSidePanelsOnSameSide,
-     std::size(kShowSidePanelsOnSameSide)},
-    {" - show panels on opposite side", kShowSidePanelsOnOppositeSide,
-     std::size(kShowSidePanelsOnOppositeSide)},
-};
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kNtpCalendarModuleFakeData[] = {
     {ntp_features::kNtpCalendarModuleDataParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpCalendarModuleVariations[] = {
@@ -7553,15 +7539,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVerticalTabsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kVerticalTabs)},
 
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"side-panel-relative-alignment",
-     flag_descriptions::kSidePanelRelativeAlignmentName,
-     flag_descriptions::kSidePanelRelativeAlignmentDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kToolbarHeightSidePanel,
-                                    kSidePanelRelativeAlignmentVariants,
-                                    "SidePanelRelativeAlignment")},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

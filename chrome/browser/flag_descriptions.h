@@ -3813,12 +3813,6 @@ inline constexpr char kLaunchedTabSearchToolbarDescription[] =
     "Might require enabling the tab strip combo button configuration to also "
     "match to toolbar in specific regions.";
 
-inline constexpr char kSidePanelRelativeAlignmentName[] =
-    "Side Panel Relative Alignment";
-inline constexpr char kSidePanelRelativeAlignmentDescription[] =
-    "Set the relative alignment between the toolbar height side panel and the "
-    "content height side panel";
-
 inline constexpr char kVerticalTabsName[] = "Vertical Tabs";
 inline constexpr char kVerticalTabsDescription[] =
     "Enables an option for showing tabs to the side.";

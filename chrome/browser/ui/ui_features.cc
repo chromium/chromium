@@ -100,18 +100,6 @@ BASE_FEATURE(kSideBySide, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySideLinkMenuNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<SidePanelRelativeAlignment>::Option
-    kSidePanelRelativeAlignmentOptions[] = {
-        {SidePanelRelativeAlignment::kShowPanelsOnSameSide, "same"},
-        {SidePanelRelativeAlignment::kShowPanelsOnOppositeSides, "opposite"}};
-
-BASE_FEATURE_ENUM_PARAM(SidePanelRelativeAlignment,
-                        kSidePanelRelativeAlignment,
-                        &kToolbarHeightSidePanel,
-                        "side_panel_relative_alignment",
-                        SidePanelRelativeAlignment::kShowPanelsOnOppositeSides,
-                        &kSidePanelRelativeAlignmentOptions);
-
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables tabs to be frozen when collapsed.

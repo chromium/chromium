@@ -8610,11 +8610,6 @@
     "expiry_milestone" : 110
   },
   {
-    "name" : "side-panel-relative-alignment",
-    "owners": [ "top-chrome-desktop-ui@google.com", "corising@chromium.org" ],
-    "expiry_milestone" : 147
-  },
-  {
     "name" : "side-panel-resizing",
     "owners": [ "sunjingqi47@gmail.com", "dljames@chromium.org", "shibalik@chromium.org" ],
     "expiry_milestone" : 150

@@ -148,15 +148,6 @@ BASE_DECLARE_FEATURE(kSideBySide);
 
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 
-enum class SidePanelRelativeAlignment {
-  // Shows the toolbar and content height side panels on the same side.
-  kShowPanelsOnSameSide,
-  // Shows the toolbar and content height side panels on opposite sides.
-  kShowPanelsOnOppositeSides,
-};
-BASE_DECLARE_FEATURE_PARAM(SidePanelRelativeAlignment,
-                           kSidePanelRelativeAlignment);
-
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
