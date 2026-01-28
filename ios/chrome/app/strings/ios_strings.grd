@@ -1362,6 +1362,9 @@
       <message name="IDS_IOS_CLEAR_AUTOFILL" desc="Label for the option in settings to clear form data. [Length: 20em] [iOS only]">
         Autofill data
       </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_MANAGE_OTHER_DATA_SUBTITLE_UNKNOWN_DSE" desc="Subtitle for the 'Manage other data' cell in the Quick Delete Browsing Data page when the default search engine (DSE) is unknown.">
+          Passwords and other activity can be deleted in their management settings
+      </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data since the beginning of time.">
         All time
       </message>
