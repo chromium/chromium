@@ -35,6 +35,19 @@ class MockSmartCardEmulationManager : public SmartCardEmulationManager {
               (uint32_t, device::mojom::SmartCardContext::ListReadersCallback),
               (override));
 
+  MOCK_METHOD(void,
+              OnGetStatusChange,
+              (uint32_t,
+               base::TimeDelta,
+               std::vector<device::mojom::SmartCardReaderStateInPtr>,
+               device::mojom::SmartCardContext::GetStatusChangeCallback),
+              (override));
+
+  MOCK_METHOD(void,
+              OnCancel,
+              (uint32_t, device::mojom::SmartCardContext::CancelCallback),
+              (override));
+
   base::WeakPtr<MockSmartCardEmulationManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -154,6 +167,121 @@ TEST_F(EmulatedSmartCardContextTest, ListReaders_NoService) {
 
   base::test::TestFuture<device::mojom::SmartCardListReadersResultPtr> future;
   context_->ListReaders(future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kNoService);
+}
+
+TEST_F(EmulatedSmartCardContextTest, GetStatusChange_Success) {
+  const uint32_t kContextId = 123;
+  base::TimeDelta timeout = base::Seconds(5);
+
+  std::vector<device::mojom::SmartCardReaderStateInPtr> reader_states;
+  auto state = device::mojom::SmartCardReaderStateIn::New();
+  state->reader = "Reader A";
+  reader_states.push_back(std::move(state));
+
+  EXPECT_CALL(*manager(), OnGetStatusChange(kContextId, timeout, _, _))
+      .WillOnce([&](uint32_t, base::TimeDelta, auto states, auto callback) {
+        EXPECT_EQ(states.size(), 1u);
+        EXPECT_EQ(states[0]->reader, "Reader A");
+
+        std::vector<device::mojom::SmartCardReaderStateOutPtr> results;
+        std::move(callback).Run(
+            device::mojom::SmartCardStatusChangeResult::NewReaderStates(
+                std::move(results)));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardStatusChangeResultPtr> future;
+  context_->GetStatusChange(timeout, std::move(reader_states),
+                            future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_reader_states());
+}
+
+TEST_F(EmulatedSmartCardContextTest, GetStatusChange_Failure) {
+  const uint32_t kContextId = 123;
+
+  std::vector<device::mojom::SmartCardReaderStateInPtr> reader_states;
+  reader_states.push_back(device::mojom::SmartCardReaderStateIn::New());
+
+  EXPECT_CALL(*manager(), OnGetStatusChange(kContextId, _, _, _))
+      .WillOnce([](uint32_t, base::TimeDelta, auto, auto callback) {
+        std::move(callback).Run(
+            device::mojom::SmartCardStatusChangeResult::NewError(
+                device::mojom::SmartCardError::kTimeout));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardStatusChangeResultPtr> future;
+  context_->GetStatusChange(/*timeout=*/base::Seconds(1),
+                            std::move(reader_states), future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kTimeout);
+}
+
+TEST_F(EmulatedSmartCardContextTest, GetStatusChange_NoService) {
+  // Destroy the factory and manager to simulate DevTools closing.
+  factory_.reset();
+  mock_manager_.reset();
+
+  base::test::TestFuture<device::mojom::SmartCardStatusChangeResultPtr> future;
+  context_->GetStatusChange(base::Seconds(1), {}, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kNoService);
+}
+
+TEST_F(EmulatedSmartCardContextTest, Cancel_Success) {
+  const uint32_t kContextId = 123;
+
+  EXPECT_CALL(*manager(), OnCancel(kContextId, _))
+      .WillOnce([](uint32_t, auto callback) {
+        std::move(callback).Run(device::mojom::SmartCardResult::NewSuccess(
+            device::mojom::SmartCardSuccess::kOk));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> future;
+  context_->Cancel(future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_success());
+}
+
+TEST_F(EmulatedSmartCardContextTest, Cancel_Failure) {
+  const uint32_t kContextId = 123;
+
+  EXPECT_CALL(*manager(), OnCancel(kContextId, _))
+      .WillOnce([](uint32_t, auto callback) {
+        std::move(callback).Run(device::mojom::SmartCardResult::NewError(
+            device::mojom::SmartCardError::kInvalidHandle));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> future;
+  context_->Cancel(future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kInvalidHandle);
+}
+
+TEST_F(EmulatedSmartCardContextTest, Cancel_NoService) {
+  // Destroy the factory and manager to simulate DevTools closing.
+  factory_.reset();
+  mock_manager_.reset();
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> future;
+  context_->Cancel(future.GetCallback());
 
   auto result = future.Take();
   ASSERT_TRUE(result);

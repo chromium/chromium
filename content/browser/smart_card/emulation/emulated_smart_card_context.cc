@@ -57,6 +57,8 @@ void EmulatedSmartCardContext::GetStatusChange(
         SmartCardStatusChangeResult::NewError(SmartCardError::kNoService));
     return;
   }
+  manager_->OnGetStatusChange(id_, timeout, std::move(reader_states),
+                              std::move(callback));
 }
 
 void EmulatedSmartCardContext::Cancel(CancelCallback callback) {
@@ -65,6 +67,7 @@ void EmulatedSmartCardContext::Cancel(CancelCallback callback) {
         SmartCardResult::NewError(SmartCardError::kNoService));
     return;
   }
+  manager_->OnCancel(id_, std::move(callback));
 }
 
 }  // namespace content

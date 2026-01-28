@@ -22,6 +22,16 @@ class SmartCardEmulationManager {
   virtual void OnListReaders(
       uint32_t context_id,
       device::mojom::SmartCardContext::ListReadersCallback callback) = 0;
+
+  virtual void OnGetStatusChange(
+      uint32_t context_id,
+      base::TimeDelta timeout,
+      std::vector<device::mojom::SmartCardReaderStateInPtr> reader_states,
+      device::mojom::SmartCardContext::GetStatusChangeCallback callback) = 0;
+
+  virtual void OnCancel(
+      uint32_t context_id,
+      device::mojom::SmartCardContext::CancelCallback callback) = 0;
 };
 
 }  // namespace content
