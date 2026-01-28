@@ -448,8 +448,10 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
   }
 
   if (box_decoration_data.ShouldPaintShadow()) {
-    BoxPainterBase::PaintInsetBoxShadowWithBorderRect(paint_info, paint_rect,
-                                                      style);
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(paint_rect, style, layout_replaced_);
+    BoxPainterBase::PaintInsetBoxShadowWithBorderRect(
+        paint_info, paint_rect, style, border_shape_rects);
   }
 
   // The theme will tell us whether or not we should also paint the CSS

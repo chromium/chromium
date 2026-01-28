@@ -417,8 +417,13 @@ void InlineBoxFragmentPainterBase::PaintInsetBoxShadow(
     const PaintInfo& info,
     const ComputedStyle& s,
     const PhysicalRect& paint_rect) {
-  BoxPainterBase::PaintInsetBoxShadowWithBorderRect(info, paint_rect, s,
-                                                    SidesToInclude());
+  std::optional<BorderShapeReferenceRects> border_shape_rects;
+  if (inline_box_fragment_.GetLayoutObject()) {
+    border_shape_rects = ComputeBorderShapeReferenceRects(
+        paint_rect, s, *inline_box_fragment_.GetLayoutObject());
+  }
+  BoxPainterBase::PaintInsetBoxShadowWithBorderRect(
+      info, paint_rect, s, border_shape_rects, SidesToInclude());
 }
 
 void InlineBoxFragmentPainterBase::PaintBoxDecorationBackground(

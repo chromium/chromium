@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
@@ -45,6 +46,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_image_rendering_settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -249,6 +252,50 @@ bool ShadowIsFullyObscured(const ShadowData& shadow) {
          shadow.Spread() == 0;
 }
 
+// Creates a path expanded by a stroke thickness using path union.
+// This combines fill and stroke into a single path to avoid double-painting
+// artifacts with semi-transparent colors.
+Path ExpandPathWithStroke(const Path& path, float stroke_thickness) {
+  if (stroke_thickness <= 0) {
+    return path;
+  }
+  StrokeData stroke_data;
+  stroke_data.SetThickness(stroke_thickness);
+  Path stroke_path = path.StrokePath(stroke_data, AffineTransform());
+  SkOpBuilder builder;
+  builder.add(path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
+  builder.add(stroke_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
+  SkPath result;
+  if (builder.resolve(&result)) {
+    return Path(result);
+  }
+  return path;
+}
+
+template <ShadowStyle shadow_style>
+std::optional<Color> ResolveShadowColor(const ShadowData& shadow,
+                                        const ComputedStyle& style,
+                                        GraphicsContext& context) {
+  if (shadow.Style() != shadow_style) {
+    return std::nullopt;
+  }
+  if (ShadowIsFullyObscured(shadow)) {
+    return std::nullopt;
+  }
+
+  Color resolved_shadow_color = shadow.GetColor().Resolve(
+      style.VisitedDependentColor(GetCSSPropertyColor()),
+      style.UsedColorScheme());
+  // DarkModeFilter::ApplyToFlagsIfNeeded does not apply dark mode to the draw
+  // looper used for shadows so we need to apply dark mode to the color here.
+  return style.ForceDark()
+             ? Color::FromSkColor4f(
+                   context.GetDarkModeFilter()->InvertColorIfNeeded(
+                       resolved_shadow_color.toSkColor4f(),
+                       DarkModeFilter::ElementRole::kBackground))
+             : resolved_shadow_color;
+}
+
 }  // namespace
 
 void BoxPainterBase::PaintNormalBoxShadow(
@@ -275,24 +322,11 @@ void BoxPainterBase::PaintNormalBoxShadow(
   const ShadowList* shadow_list = style.BoxShadow();
   for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
     const ShadowData& shadow = shadow_list->Shadows()[i];
-    if (shadow.Style() != ShadowStyle::kNormal)
-      continue;
-    if (ShadowIsFullyObscured(shadow)) {
+    std::optional<Color> shadow_color =
+        ResolveShadowColor<ShadowStyle::kNormal>(shadow, style, context);
+    if (!shadow_color.has_value()) {
       continue;
     }
-
-    Color resolved_shadow_color = shadow.GetColor().Resolve(
-        style.VisitedDependentColor(GetCSSPropertyColor()),
-        style.UsedColorScheme());
-    // DarkModeFilter::ApplyToFlagsIfNeeded does not apply dark mode to the draw
-    // looper used for shadows so we need to apply dark mode to the color here.
-    const Color shadow_color =
-        style.ForceDark()
-            ? Color::FromSkColor4f(
-                  context.GetDarkModeFilter()->InvertColorIfNeeded(
-                      resolved_shadow_color.toSkColor4f(),
-                      DarkModeFilter::ElementRole::kBackground))
-            : resolved_shadow_color;
 
     gfx::RectF fill_rect = border.Rect();
     fill_rect.Outset(shadow.Spread());
@@ -331,7 +365,7 @@ void BoxPainterBase::PaintNormalBoxShadow(
     // set an empty draw looper.
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow.Offset(), shadow.BlurAsSigma(),
-                                  shadow_color,
+                                  *shadow_color,
                                   DrawLooperBuilder::kShadowRespectsTransforms,
                                   DrawLooperBuilder::kShadowIgnoresAlpha);
     context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
@@ -340,13 +374,39 @@ void BoxPainterBase::PaintNormalBoxShadow(
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground);
 
     if (style.HasBorderShape()) {
-      context.SetFillColor(Color::kBlack);
-      // TODO(nrosenthal): apply spread to border-shape once the spec is clear.
+      // Outer box-shadow follows the outside of the outer path.
+      // We use path union to combine fill and stroke into a single path,
+      // which prevents double-painting artifacts with semi-transparent colors.
       PhysicalRect outer_reference_rect =
           border_shape_rects ? border_shape_rects->outer : paint_rect;
-      const Path border_shape_outer_path =
-          BorderShapePainter::OuterPath(style, outer_reference_rect);
-      context.FillPath(border_shape_outer_path, auto_dark_mode);
+
+      const float spread = shadow.Spread();
+      const float blur_radius = shadow.BlurRadius();
+      if (spread < 0) {
+        // Negative spread: shrink the reference rect by the spread amount and
+        // compute a new outer path for that shrunk rect, then fill it.
+        gfx::RectF adjusted_ref_rect = gfx::RectF(outer_reference_rect);
+        // Outset with a negative value insets the rect.
+        adjusted_ref_rect.Outset(spread);
+        if (adjusted_ref_rect.IsEmpty()) {
+          continue;
+        }
+        PhysicalRect adjusted_physical_ref =
+            PhysicalRect::FastAndLossyFromRectF(adjusted_ref_rect);
+        const Path adjusted_outer_path =
+            BorderShapePainter::OuterPath(style, adjusted_physical_ref);
+        const Path shadow_path =
+            ExpandPathWithStroke(adjusted_outer_path, blur_radius * 2);
+        context.SetFillColor(Color::kBlack);
+        context.FillPath(shadow_path, auto_dark_mode);
+      } else {
+        const Path border_shape_outer_path =
+            BorderShapePainter::OuterPath(style, outer_reference_rect);
+        const Path shadow_path = ExpandPathWithStroke(
+            border_shape_outer_path, (spread + blur_radius) * 2);
+        context.SetFillColor(Color::kBlack);
+        context.FillPath(shadow_path, auto_dark_mode);
+      }
     } else if (has_border_radius) {
       ContouredRect rounded_fill_rect(
           FloatRoundedRect(fill_rect, border.GetRadii()),
@@ -368,9 +428,16 @@ void BoxPainterBase::PaintInsetBoxShadowWithBorderRect(
     const PaintInfo& info,
     const PhysicalRect& border_rect,
     const ComputedStyle& style,
+    std::optional<BorderShapeReferenceRects> border_shape_rects,
     PhysicalBoxSides sides_to_include) {
   if (!style.BoxShadow())
     return;
+
+  if (style.HasBorderShape()) {
+    PaintInsetBoxShadowForBorderShape(info, border_rect, style,
+                                      border_shape_rects);
+    return;
+  }
 
   auto bounds = ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
       style, border_rect, sides_to_include);
@@ -386,6 +453,88 @@ void BoxPainterBase::PaintInsetBoxShadowWithInnerRect(
   auto bounds = ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
       style, inner_rect, PhysicalBoxStrut());
   PaintInsetBoxShadow(info, bounds, style);
+}
+
+void BoxPainterBase::PaintInsetBoxShadowForBorderShape(
+    const PaintInfo& info,
+    const PhysicalRect& border_rect,
+    const ComputedStyle& style,
+    std::optional<BorderShapeReferenceRects> border_shape_rects) {
+  CHECK(style.HasBorderShape());
+  GraphicsContext& context = info.context;
+
+  const ShadowList* shadow_list = style.BoxShadow();
+  for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
+    const ShadowData& shadow = shadow_list->Shadows()[i];
+
+    std::optional<Color> shadow_color =
+        ResolveShadowColor<ShadowStyle::kInset>(shadow, style, context);
+    if (!shadow_color.has_value()) {
+      continue;
+    }
+
+    PhysicalRect inner_reference_rect =
+        border_shape_rects ? border_shape_rects->inner : border_rect;
+    const Path inner_path =
+        BorderShapePainter::InnerPath(style, inner_reference_rect);
+
+    // Clip to the inner path so that the shadow doesn't extend outside.
+    GraphicsContextStateSaver state_saver(context);
+    context.ClipPath(inner_path.GetSkPath(), kAntiAliased);
+
+    {
+      DrawLooperBuilder draw_looper_builder;
+      draw_looper_builder.AddShadow(
+          shadow.Offset(), shadow.BlurAsSigma(), *shadow_color,
+          DrawLooperBuilder::kShadowRespectsTransforms,
+          DrawLooperBuilder::kShadowIgnoresAlpha);
+      context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
+    }
+
+    const AutoDarkMode auto_dark_mode =
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground);
+
+    const float spread = shadow.Spread();
+    const float blur_radius = shadow.BlurRadius();
+    if (spread > 0) {
+      // Inner box-shadow follows the inside of the inner path,
+      // rendered as a stroke with stroke width of (spread + blur) * 2, clipped
+      // by the border shape. We include blur_radius to ensure the shadow area
+      // is large enough for the blur effect (similar to
+      // AreaCastingShadowInHole).
+      StrokeData stroke_data;
+      stroke_data.SetThickness((spread + blur_radius) * 2);
+      context.SetStrokeColor(Color::kBlack);
+      context.SetStroke(stroke_data);
+      context.StrokePath(inner_path, auto_dark_mode);
+    } else if (spread < 0) {
+      // Negative spread: shrink the reference rect by the spread amount and
+      // compute a new inner path for that shrunk rect, then fill it.
+      // Include blur_radius to extend shadow area for blur effect.
+      gfx::RectF adjusted_ref_rect = gfx::RectF(inner_reference_rect);
+      // Outset with a negative value insets the rect.
+      adjusted_ref_rect.Outset(spread);
+      PhysicalRect adjusted_physical_ref =
+          PhysicalRect::FastAndLossyFromRectF(adjusted_ref_rect);
+      const Path adjusted_inner_path =
+          BorderShapePainter::InnerPath(style, adjusted_physical_ref);
+      const Path shadow_path =
+          ExpandPathWithStroke(adjusted_inner_path, blur_radius * 2);
+      context.SetFillColor(Color::kBlack);
+      context.FillPath(shadow_path, auto_dark_mode);
+    } else {
+      // When spread is 0 but blur is non-zero, we need to draw a stroke
+      // with thickness based on blur radius to create an area for the
+      // blur effect to be applied to.
+      if (blur_radius > 0) {
+        StrokeData stroke_data;
+        stroke_data.SetThickness(blur_radius * 2);
+        context.SetStroke(stroke_data);
+        context.SetStrokeColor(Color::kBlack);
+        context.StrokePath(inner_path, auto_dark_mode);
+      }
+    }
+  }
 }
 
 namespace {
@@ -414,24 +563,12 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
   const ShadowList* shadow_list = style.BoxShadow();
   for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
     const ShadowData& shadow = shadow_list->Shadows()[i];
-    if (shadow.Style() != ShadowStyle::kInset)
-      continue;
-    if (ShadowIsFullyObscured(shadow)) {
+
+    std::optional<Color> shadow_color =
+        ResolveShadowColor<ShadowStyle::kInset>(shadow, style, context);
+    if (!shadow_color.has_value()) {
       continue;
     }
-
-    Color resolved_shadow_color = shadow.GetColor().Resolve(
-        style.VisitedDependentColor(GetCSSPropertyColor()),
-        style.UsedColorScheme());
-    // DarkModeFilter::ApplyToFlagsIfNeeded does not apply dark mode to the draw
-    // looper used for shadows so we need to apply dark mode to the color here.
-    const Color& shadow_color =
-        style.ForceDark()
-            ? Color::FromSkColor4f(
-                  context.GetDarkModeFilter()->InvertColorIfNeeded(
-                      resolved_shadow_color.toSkColor4f(),
-                      DarkModeFilter::ElementRole::kBackground))
-            : resolved_shadow_color;
 
     gfx::RectF inner_rect = bounds.Rect();
     AdjustRectForSideClipping(inner_rect, shadow, sides_to_include);
@@ -445,7 +582,8 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     if (inner_contoured_rect.IsEmpty()) {
       // |AutoDarkMode::Disabled()| is used because |shadow_color| has already
       // been adjusted for dark mode.
-      context.FillContouredRect(bounds, shadow_color, AutoDarkMode::Disabled());
+      context.FillContouredRect(bounds, *shadow_color,
+                                AutoDarkMode::Disabled());
       continue;
     }
     GraphicsContextStateSaver state_saver(context);
@@ -457,12 +595,12 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
 
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow.Offset(), shadow.BlurAsSigma(),
-                                  shadow_color,
+                                  *shadow_color,
                                   DrawLooperBuilder::kShadowRespectsTransforms,
                                   DrawLooperBuilder::kShadowIgnoresAlpha);
     context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
 
-    const Color fill_color = shadow_color.MakeOpaque();
+    const Color fill_color = shadow_color->MakeOpaque();
     gfx::RectF outer_rect = AreaCastingShadowInHole(bounds.Rect(), shadow);
     // |AutoDarkMode::Disabled()| is used because |fill_color(shadow_color)| has
     // already been adjusted for dark mode.

@@ -84,6 +84,7 @@ class BoxPainterBase {
       const PaintInfo&,
       const PhysicalRect&,
       const ComputedStyle&,
+      std::optional<BorderShapeReferenceRects> border_shape_rects,
       PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
   static void PaintInsetBoxShadowWithInnerRect(const PaintInfo&,
@@ -181,6 +182,11 @@ class BoxPainterBase {
       const ContouredRect&,
       const ComputedStyle&,
       PhysicalBoxSides sides_to_include = PhysicalBoxSides());
+  static void PaintInsetBoxShadowForBorderShape(
+      const PaintInfo&,
+      const PhysicalRect&,
+      const ComputedStyle&,
+      std::optional<BorderShapeReferenceRects> border_shape_rects);
 
  private:
   const Document& document_;

@@ -119,8 +119,12 @@ void FieldsetPainter::PaintBoxDecorationBackground(
         style.BackgroundLayers(), contracted_rect, bg_paint_context);
   }
   if (box_decoration_data.ShouldPaintShadow()) {
+    const LayoutObject* layout_object = fieldset_.GetLayoutObject();
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(contracted_rect, fieldset_.Style(),
+                                         *layout_object);
     fragment_painter.PaintInsetBoxShadowWithBorderRect(
-        paint_info, contracted_rect, fieldset_.Style());
+        paint_info, contracted_rect, fieldset_.Style(), border_shape_rects);
   }
   if (box_decoration_data.ShouldPaintBorder()) {
     // Create a clipping region around the legend and paint the border as

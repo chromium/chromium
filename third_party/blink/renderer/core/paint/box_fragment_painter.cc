@@ -1617,7 +1617,10 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
       BoxPainterBase::PaintInsetBoxShadowWithInnerRect(paint_info, inner_rect,
                                                        style);
     } else {
+      std::optional<BorderShapeReferenceRects> border_shape_rects =
+          ComputeBorderShapeReferenceRects(paint_rect, style, layout_object);
       PaintInsetBoxShadowWithBorderRect(paint_info, paint_rect, style,
+                                        border_shape_rects,
                                         box_fragment_.SidesToInclude());
     }
   }
