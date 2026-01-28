@@ -32,9 +32,42 @@
 
 namespace base {
 
-BASE_FEATURE(kIncreaseDisplayCriticalThreadPriority,
-             "RaiseDisplayCriticalThreadPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Allows fine-grained control of thread priorities on Android.
+// Enable with e.g.
+// --enable-features=AndroidThreadPriority:presentation/-8/default/-1
+BASE_FEATURE(kAndroidThreadPriority, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kBackgroundThreadPriority,
+                   &kAndroidThreadPriority,
+                   "background",
+                   10);
+BASE_FEATURE_PARAM(int,
+                   kUtilityThreadPriority,
+                   &kAndroidThreadPriority,
+                   "utility",
+                   1);
+BASE_FEATURE_PARAM(int,
+                   kDefaultThreadPriority,
+                   &kAndroidThreadPriority,
+                   "default",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kPresentationThreadPriority,
+                   &kAndroidThreadPriority,
+                   "presentation",
+                   -4);
+BASE_FEATURE_PARAM(int,
+                   kInteractiveThreadPriority,
+                   &kAndroidThreadPriority,
+                   "interactive",
+                   -4);
+BASE_FEATURE_PARAM(bool,
+                   kObeySocRestrictions,
+                   &kAndroidThreadPriority,
+                   "obey_soc_restrictions",
+                   true);
+// kRealtimeAudio cannot be configured on the command line and should be the
+// effective maximum.
 
 // When enabled, do not run threads with a less important ThreadType than
 // kDisplayCritical on the big core cluster, for configurations with at least 3
@@ -149,19 +182,20 @@ void SetCanRunOnBigCore(PlatformThreadId thread_id, bool can_run) {
 
 namespace internal {
 
-// Returns true if the kDisplayCriticalThreadPriority should be boosted.
-static bool ShouldBoostDisplayCriticalThreadPriority() {
-  // ADPF-equipped Google Pixels are excluded from the study because of
-  // potential input jank. Because Finch doesn't support per-device targeting,
-  // switch this off even if the flag's on. TODO (ritownsend): make it possible
-  // to switch this back on for Pixel.
+static int GetAdjustedPresentationThreadPriority() {
+  // ADPF-equipped Google Pixels seem to have issues with input jank if the
+  // kDisplayCriticalThreadPriority value is lowered below -4.
   static bool is_google_soc = SysInfo::SocManufacturer() == "Google";
-  return !is_google_soc &&
-         base::FeatureList::IsEnabled(kIncreaseDisplayCriticalThreadPriority);
+  const bool allowed_to_lower =
+      (!is_google_soc || !kObeySocRestrictions.Get()) &&
+      base::FeatureList::IsEnabled(kAndroidThreadPriority);
+  const int requested_priority = kPresentationThreadPriority.Get();
+  return allowed_to_lower ? requested_priority
+                          : std::max(-4, requested_priority);
 }
 
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
-// - kDisplay corresponds to Android's PRIORITY_DISPLAY = -4 value.
+// - kPresentation corresponds to Android's PRIORITY_DISPLAY = -4 value.
 // - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1 value.
 // - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10
 //   value. Contrary to the matching Java APi in Android <13, this does not
@@ -172,15 +206,41 @@ const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
     {ThreadType::kBackground, 10},
 };
 
-// - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10 value and can
-// result in heavy throttling and force the thread onto a little core on
-// big.LITTLE devices.
-// - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1 value.
-// - kDisplayCritical and kInteractive correspond to Android's PRIORITY_DISPLAY
-// = -4 value.
-// - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
-
+// If we're not in the AndroidThreadPriorityTrial:
+//    - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10 value.
+//    - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1
+//      value.
+//    - kPresentation and kInteractive correspond to Android's
+//      PRIORITY_DISPLAY = -4 value.
+//    - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
 int ThreadTypeToNiceValue(const ThreadType thread_type) {
+  if (base::FeatureList::IsEnabled(kAndroidThreadPriority)) {
+    [[unlikely]]
+    // Establish weak partial ordering from high to low.
+    DCHECK_LE(kUtilityThreadPriority.Get(), kBackgroundThreadPriority.Get());
+    DCHECK_LE(kDefaultThreadPriority.Get(), kUtilityThreadPriority.Get());
+    DCHECK_LE(GetAdjustedPresentationThreadPriority(),
+              kDefaultThreadPriority.Get());
+    DCHECK_LE(kInteractiveThreadPriority.Get(),
+              GetAdjustedPresentationThreadPriority());
+    // Check that -16 is the highest priority in the system.
+    DCHECK_LT(-16, kInteractiveThreadPriority.Get());
+    switch (thread_type) {
+      case ThreadType::kBackground:
+        return kBackgroundThreadPriority.Get();
+      case ThreadType::kUtility:
+        return kUtilityThreadPriority.Get();
+      case ThreadType::kDefault:
+        return kDefaultThreadPriority.Get();
+      case ThreadType::kPresentation:
+        return GetAdjustedPresentationThreadPriority();
+      case ThreadType::kInteractive:
+        return kInteractiveThreadPriority.Get();
+      case ThreadType::kRealtimeAudio:
+        // Not configurable, should be the effective highest.
+        return -16;
+    }
+  }
   switch (thread_type) {
     case ThreadType::kBackground:
       return 10;
@@ -190,9 +250,6 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
       return 0;
     case ThreadType::kPresentation:
     case ThreadType::kInteractive:
-      if (ShouldBoostDisplayCriticalThreadPriority()) {
-        return -12;
-      }
       return -4;
     case ThreadType::kRealtimeAudio:
       return -16;

@@ -1088,22 +1088,6 @@
             ]
         }
     ],
-    "AndroidRaiseDisplayCriticalThreadPriority": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20251001",
-                    "enable_features": [
-                        "RaiseDisplayCriticalThreadPriority"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidReaderModeImproveAppExperience": [
         {
             "platforms": [
@@ -1297,6 +1281,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidTabDeclutterPerformanceImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidThreadPriority": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "RaiseDisplayCriticalThreadPriorityV2",
+                    "params": {
+                        "interactive": "-12",
+                        "obey_soc_restrictions": "false",
+                        "presentation": "-12"
+                    },
+                    "enable_features": [
+                        "AndroidThreadPriority"
                     ]
                 }
             ]
