@@ -223,10 +223,13 @@ gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   auto size = TabStripRegionView::CalculatePreferredSize(available_size);
   if (resize_animation_.is_animating()) {
-    size.set_width(kCollapsedWidth +
-                   base::ClampRound((target_collapse_state_.uncollapsed_width -
-                                     kCollapsedWidth) *
-                                    resize_animation_.GetCurrentValue()));
+    size.set_width(
+        kCollapsedWidth +
+        (resize_animation_.IsShowing()
+             ? std::floor<double>
+             : std::ceil<double>)((target_collapse_state_.uncollapsed_width -
+                                   kCollapsedWidth) *
+                                  resize_animation_.GetCurrentValue()));
   } else {
     size.set_width(target_collapse_state_.collapsed
                        ? kCollapsedWidth
@@ -410,11 +413,7 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
 void VerticalTabStripRegionView::AnimationProgressed(
     const gfx::Animation* animation) {
   DCHECK_EQ(animation, &resize_animation_);
-  double width = kCollapsedWidth +
-                 (target_collapse_state_.uncollapsed_width - kCollapsedWidth) *
-                     resize_animation_.GetCurrentValue();
-  ResizeToWidth((resize_animation_.IsShowing() ? std::floor<double>
-                                               : std::ceil<double>)(width));
+  InvalidateLayout();
 }
 
 bool VerticalTabStripRegionView::IsPositionInWindowCaption(
@@ -548,27 +547,12 @@ void VerticalTabStripRegionView::UpdateCollapseState(
       resize_animation_.Show();
     }
     state_controller_->SetCollapsed(target_collapse_state_.collapsed);
-    // This may change the minimum size of the top container.
-    InvalidateLayout();
   } else if (!target_collapse_state_.collapsed &&
              !resize_animation_.is_animating()) {
-    // If we are still in the expanding animation, resizing to the updated
-    // uncollapsed width will happen in AnimationProgressed, instead of here.
-    ResizeToWidth(target_collapse_state_.uncollapsed_width);
+    // If we are still in the expanding animation, invalidating the layout will
+    // happen in AnimationProgressed, instead of here.
+    InvalidateLayout();
   }
-}
-
-void VerticalTabStripRegionView::ResizeToWidth(int width) {
-  // The collapsed state of the state controller is used to determine whether
-  // the tab strip includes the exclusion zone or is drawn underneath it. So
-  // instead of setting it immediately upon starting the resize animation, only
-  // do so once it crosses the exclusion width threshold.
-  if (!exclusion_width_.has_value() ||
-      target_collapse_state_.collapsed == width < exclusion_width_.value()) {
-    state_controller_->SetCollapsed(target_collapse_state_.collapsed);
-  }
-
-  InvalidateLayout();
 }
 
 void VerticalTabStripRegionView::UpdateColors() {

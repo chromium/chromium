@@ -158,7 +158,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
   void UpdateCollapseState(tabs::VerticalTabStripState new_state);
-  void ResizeToWidth(int width);
 
   void UpdateColors();
 
