@@ -282,18 +282,7 @@ void CacheCreator::DoCallback(int net_error) {
 // kNeverReset, we will discard the whole cache and create a new one.
 void CacheCreator::OnEncryptionInitComplete(net::Error result) {
   if (result == net::OK) {
-    disk_cache::BackendFileOperationsFactory*
-        encrypted_file_operations_factory =
-            cache_encryption_delegate_->GetEncryptionFileOperationsFactory(
-                file_operations_factory_);
-    if (encrypted_file_operations_factory) {
-      file_operations_factory_ = encrypted_file_operations_factory;
-      Run();
-    } else {
-      // TODO: crbug.com/478916662 - introduce a new error code or log to UMA
-      // here.
-      DoCallback(net::ERR_FAILED);
-    }
+    Run();
   } else {
     DoCallback(result);
   }

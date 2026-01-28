@@ -7,10 +7,8 @@
 
 #include <memory>
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "crypto/process_bound_string.h"
 #include "net/disk_cache/cache_file.h"
 #include "net/disk_cache/disk_cache.h"
 
@@ -20,8 +18,7 @@ class UnboundEncryptedBackendFileOperations final
     : public disk_cache::UnboundBackendFileOperations {
  public:
   explicit UnboundEncryptedBackendFileOperations(
-      std::unique_ptr<disk_cache::UnboundBackendFileOperations> decorated_ops,
-      const crypto::ProcessBoundString& primary_key);
+      std::unique_ptr<disk_cache::UnboundBackendFileOperations> decorated_ops);
   ~UnboundEncryptedBackendFileOperations() override;
 
   std::unique_ptr<disk_cache::BackendFileOperations> Bind(
@@ -29,7 +26,6 @@ class UnboundEncryptedBackendFileOperations final
 
  private:
   std::unique_ptr<disk_cache::UnboundBackendFileOperations> decorated_ops_;
-  const base::raw_ref<const crypto::ProcessBoundString> primary_key_;
 };
 
 // Decorator to add encryption layer to file operations.
@@ -40,8 +36,7 @@ class EncryptedBackendFileOperations final
     : public disk_cache::BackendFileOperations {
  public:
   explicit EncryptedBackendFileOperations(
-      std::unique_ptr<disk_cache::BackendFileOperations> decorated_backend,
-      const crypto::ProcessBoundString& primary_key);
+      std::unique_ptr<disk_cache::BackendFileOperations> decorated_backend);
   ~EncryptedBackendFileOperations() override;
 
   bool CreateDirectory(const base::FilePath& path) override;
@@ -64,7 +59,6 @@ class EncryptedBackendFileOperations final
 
  private:
   std::unique_ptr<disk_cache::BackendFileOperations> decorated_backend_;
-  const base::raw_ref<const crypto::ProcessBoundString> primary_key_;
 };
 
 }  // namespace network::enterprise_encryption

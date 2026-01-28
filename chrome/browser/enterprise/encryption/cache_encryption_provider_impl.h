@@ -30,7 +30,7 @@ class CacheEncryptionProviderImpl
 
   explicit CacheEncryptionProviderImpl(
       os_crypt_async::OSCryptAsync* os_crypt_async,
-      std::vector<uint8_t> encrypted_primary_key,
+      std::vector<uint8_t> encrypted_master_key,
       StoreKeyCallback store_key_callback);
   ~CacheEncryptionProviderImpl() override;
 
@@ -58,7 +58,7 @@ class CacheEncryptionProviderImpl
   mojo::ReceiverSet<network::mojom::CacheEncryptionProvider>
       receivers_;
   raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-  std::vector<uint8_t> encrypted_primary_key_;
+  std::vector<uint8_t> encrypted_master_key_;
   StoreKeyCallback store_key_callback_;
   base::WeakPtrFactory<CacheEncryptionProviderImpl> weak_ptr_factory_{this};
 };

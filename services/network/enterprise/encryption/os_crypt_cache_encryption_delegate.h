@@ -16,13 +16,10 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "crypto/process_bound_string.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/cache_encryption_delegate.h"
-#include "services/network/enterprise/encryption/chunked_encryptor.h"
-#include "services/network/enterprise/encryption/encrypted_backend_file_operations_factory.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cache_encryption_provider.mojom.h"
 
@@ -63,19 +60,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
   bool DecryptData(base::span<const uint8_t> ciphertext,
                    std::vector<uint8_t>* plaintext) override;
 
-  // Returns a factory for creating encrypted backend file operations.
-  // Returns nullptr on failure.
-  disk_cache::BackendFileOperationsFactory* GetEncryptionFileOperationsFactory(
-      scoped_refptr<disk_cache::BackendFileOperationsFactory>
-          file_operations_factory) override;
-
  private:
-  // Callbacks for initialization
-  void OnEncryptorReceived(base::OnceClosure done_closure,
-                           os_crypt_async::Encryptor encryptor);
-  void OnCacheKeyReceived(base::OnceClosure done_closure,
-                          const std::vector<uint8_t>& key);
-  void InitCallback();
+  void InitCallback(os_crypt_async::Encryptor encryptor);
 
   void OnDisconnect();
 
@@ -86,7 +72,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
   };
 
   std::optional<os_crypt_async::Encryptor> instance_;
-  std::vector<uint8_t> encrypted_primary_key_;
   mojo::PendingRemote<network::mojom::CacheEncryptionProvider> provider_
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<network::mojom::CacheEncryptionProvider> remote_
@@ -94,9 +79,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
   base::OnceCallbackList<void(net::Error)> callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kUninitialized;
-
-  scoped_refptr<EncryptedBackendFileOperationsFactory>
-      encrypted_file_operations_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

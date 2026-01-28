@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/disk_cache/disk_cache.h"
 
 namespace net {
 
@@ -27,22 +26,10 @@ class NET_EXPORT CacheEncryptionDelegate {
   // If already initialized, should run the callback immediately.
   virtual void Init(base::OnceCallback<void(Error)> callback) = 0;
 
-  // Encrypts data. Returns true on success.
   virtual bool EncryptData(base::span<const uint8_t> plaintext,
                            std::vector<uint8_t>* ciphertext) = 0;
-
-  // Decrypts data. Returns true on success.
   virtual bool DecryptData(base::span<const uint8_t> ciphertext,
                            std::vector<uint8_t>* plaintext) = 0;
-
-  // TODO: crbug.com/478201921 - Check if other methods are needed except this
-  // one and Init().
-  //  Returns a factory for creating encrypted backend file operations,
-  //  wrapped around the given `file_operations_factory`.
-  virtual disk_cache::BackendFileOperationsFactory*
-  GetEncryptionFileOperationsFactory(
-      scoped_refptr<disk_cache::BackendFileOperationsFactory>
-          file_operations_factory) = 0;
 };
 
 }  // namespace net

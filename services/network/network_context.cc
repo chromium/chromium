@@ -2803,25 +2803,17 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         cache_params.type =
             net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
 
-        // For enterprise users, we wrap `BackendFileOperations` to intercept
-        // file I/O with encryption ops, and create and pass in a
-        // `CacheEncryptionDelegate` to encrypt/decrypt cache entries on disk.
-        if (params_->encryption_provider) {
-          std::unique_ptr<net::CacheEncryptionDelegate>
-              cache_encryption_delegate = std::make_unique<
-                  enterprise_encryption::OSCryptCacheEncryptionDelegate>(
-                  std::move(params_->encryption_provider));
-          if (!cache_params.file_operations_factory) {
-            // Since it's the fallback later anyways, explicitly created here to
-            // wrap. EncryptedBackendFileOperationsFactory will wrap this later
-            // when os_crypt_cache_encryption_delegate is created and
-            // initialized.
-            cache_params.file_operations_factory = base::MakeRefCounted<
-                disk_cache::TrivialFileOperationsFactory>();
-          }
-          builder.set_cache_encryption_delegate(
-              std::move(cache_encryption_delegate));
+        // We wrap `BackendFileOperations` to intercept file I/O with encryption
+        // ops.
+        if (!cache_params.file_operations_factory) {
+          // Since it's the fallback later anyways, explicitly created here to
+          // wrap.
+          cache_params.file_operations_factory =
+              base::MakeRefCounted<disk_cache::TrivialFileOperationsFactory>();
         }
+        cache_params.file_operations_factory = base::MakeRefCounted<
+            enterprise_encryption::EncryptedBackendFileOperationsFactory>(
+            std::move(cache_params.file_operations_factory));
 #else
         NOTREACHED();
 #endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
@@ -2835,6 +2827,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             cache_params.app_status_listener_getter));
 #endif  // BUILDFLAG(IS_ANDROID)
     builder.EnableHttpCache(cache_params);
+
+    std::unique_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate;
+    if (params_->encryption_provider) {
+      cache_encryption_delegate = std::make_unique<
+          enterprise_encryption::OSCryptCacheEncryptionDelegate>(
+          std::move(params_->encryption_provider));
+    }
+
+    builder.set_cache_encryption_delegate(std::move(cache_encryption_delegate));
   }
 
   std::unique_ptr<SSLConfigServiceMojo> ssl_config_service =

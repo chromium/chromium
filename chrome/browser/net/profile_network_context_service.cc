@@ -1273,20 +1273,20 @@ ProfileNetworkContextService::CreateClientCertStore() {
 }
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
-void ProfileNetworkContextService::SaveEncryptedCachePrimaryKey(
-    const std::vector<uint8_t>& encrypted_primary_key) {
+void ProfileNetworkContextService::SaveEncryptedCacheMasterKey(
+    const std::vector<uint8_t>& encrypted_master_key) {
   if (profile_) {
     profile_->GetPrefs()->SetString(
-        enterprise_connectors::kEncryptedCachePrimaryKey,
-        base::Base64Encode(encrypted_primary_key));
+        enterprise_connectors::kEncryptedCacheMasterKey,
+        base::Base64Encode(encrypted_master_key));
   }
 }
 
 std::vector<uint8_t>
-ProfileNetworkContextService::GetEncryptedCachePrimaryKey() {
-  std::string encoded_encrypted_primary_key = profile_->GetPrefs()->GetString(
-      enterprise_connectors::kEncryptedCachePrimaryKey);
-  return base::Base64Decode(encoded_encrypted_primary_key).value_or({});
+ProfileNetworkContextService::GetEncryptedCacheMasterKey() {
+  std::string encoded_encrypted_master_key = profile_->GetPrefs()->GetString(
+      enterprise_connectors::kEncryptedCacheMasterKey);
+  return base::Base64Decode(encoded_encrypted_master_key).value_or({});
 }
 
 #endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
@@ -1379,10 +1379,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       if (!cache_encryption_provider_) {
         cache_encryption_provider_ = std::make_unique<
             enterprise_encryption::CacheEncryptionProviderImpl>(
-            g_browser_process->os_crypt_async(), GetEncryptedCachePrimaryKey(),
+            g_browser_process->os_crypt_async(), GetEncryptedCacheMasterKey(),
             base::BindRepeating(
-                &ProfileNetworkContextService::SaveEncryptedCachePrimaryKey,
-                weak_factory_.GetWeakPtr()));
+                &ProfileNetworkContextService::SaveEncryptedCacheMasterKey,
+                base::Unretained(this)));
       }
       mojo::PendingRemote<network::mojom::CacheEncryptionProvider>
           cache_encryption_provider_remote =

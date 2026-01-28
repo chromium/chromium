@@ -13,10 +13,8 @@
 namespace network::enterprise_encryption {
 
 EncryptedBackendFileOperationsFactory::EncryptedBackendFileOperationsFactory(
-    scoped_refptr<BackendFileOperationsFactory> decorated_factory,
-    crypto::ProcessBoundString primary_key)
-    : decorated_factory_(std::move(decorated_factory)),
-      primary_key_(std::move(primary_key)) {}
+    scoped_refptr<BackendFileOperationsFactory> decorated_factory)
+    : decorated_factory_(std::move(decorated_factory)) {}
 
 EncryptedBackendFileOperationsFactory::
     ~EncryptedBackendFileOperationsFactory() = default;
@@ -25,13 +23,13 @@ std::unique_ptr<disk_cache::BackendFileOperations>
 EncryptedBackendFileOperationsFactory::Create(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   return std::make_unique<EncryptedBackendFileOperations>(
-      decorated_factory_->Create(std::move(task_runner)), primary_key_);
+      decorated_factory_->Create(std::move(task_runner)));
 }
 
 std::unique_ptr<disk_cache::UnboundBackendFileOperations>
 EncryptedBackendFileOperationsFactory::CreateUnbound() {
   return std::make_unique<UnboundEncryptedBackendFileOperations>(
-      decorated_factory_->CreateUnbound(), primary_key_);
+      decorated_factory_->CreateUnbound());
 }
 
 }  // namespace network::enterprise_encryption

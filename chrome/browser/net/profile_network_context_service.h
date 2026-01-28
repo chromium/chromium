@@ -240,12 +240,12 @@ class ProfileNetworkContextService
   void OnMitigationsEnabledFor3pcdChanged(bool enable) override;
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
-  void SaveEncryptedCachePrimaryKey(
-      const std::vector<uint8_t>& encrypted_primary_key);
+  void SaveEncryptedCacheMasterKey(
+      const std::vector<uint8_t>& encrypted_master_key);
 
-  // Returns the encrypted cache primary key stored in the profile prefs.
+  // Returns the encrypted cache master key stored in the profile prefs.
   // Returns an empty vector if the key is not set or cannot be decoded.
-  std::vector<uint8_t> GetEncryptedCachePrimaryKey();
+  std::vector<uint8_t> GetEncryptedCacheMasterKey();
 #endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 
   // KeyedService:
