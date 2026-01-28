@@ -45,6 +45,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -558,6 +559,35 @@ bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {
   return apps.begin() != apps.end();
 }
 
+bool IsolatedWebAppUpdateManager::IsUpdatePermittedByRuntimeData(
+    const WebApp& web_app,
+    const IsolatedWebAppUrlInfo& url_info) const {
+  const auto& runtime_data = ChromeIwaRuntimeDataProvider::GetInstance();
+  const std::string& bundle_id = url_info.web_bundle_id().id();
+
+  switch (web_app.GetHighestPrioritySource()) {
+    case WebAppManagement::kIwaPolicy:
+      return runtime_data.IsManagedUpdatePermitted(bundle_id);
+
+    case WebAppManagement::kUserInstalled:
+      return runtime_data.GetUserInstallAllowlistData(bundle_id);
+
+    case WebAppManagement::kSystem:
+    case WebAppManagement::kKiosk:
+    case WebAppManagement::kPolicy:
+    case WebAppManagement::kOem:
+    case WebAppManagement::kSubApp:
+    case WebAppManagement::kWebAppStore:
+    case WebAppManagement::kOneDriveIntegration:
+    case WebAppManagement::kSync:
+    case WebAppManagement::kApsDefault:
+    case WebAppManagement::kDefault:
+    case WebAppManagement::kIwaShimlessRma:
+    case WebAppManagement::kIwaUserInstalled:
+      return true;
+  }
+}
+
 size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
   // Clear the log of previously finished update discovery tasks when queueing
   // new tasks so that it doesn't grow forever.
@@ -606,8 +636,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     return false;
   }
 
-  if (!ChromeIwaRuntimeDataProvider::GetInstance().IsManagedUpdatePermitted(
-          url_info.web_bundle_id().id())) {
+  if (!IsUpdatePermittedByRuntimeData(web_app, url_info)) {
     LOG(WARNING) << "The app " << url_info.app_id()
                  << " cannot be updated because it's not allowlisted.";
     return false;
