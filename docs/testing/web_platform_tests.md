@@ -50,14 +50,50 @@ When implementation experience is needed to inform the specification work,
 can be appropriate. It should be apparent in context why the test is tentative
 and what needs to be resolved to make it non-tentative.
 
+### Test coverage
+
+A good test suite allows for independent interoperable implementations of a
+feature, where web developers don’t run into significant differences between
+browsers.
+
+* **Test feature existence:** This is typically done with surface-level tests
+    like idlharness.js for APIs or parsing-testcommon.js for CSS. These tests
+    don’t verify actual behavior.
+  * API example: [idle-detection/idlharness.https.window.js](../../third_party/blink/web_tests/external/wpt/idle-detection/idlharness.https.window.js)
+  * CSS example: [css/css-logical/parsing/inset-valid.html](../../third_party/blink/web_tests/external/wpt/css/css-logical/parsing/inset-valid.html)
+* **Test common use cases:** Use the feature in a realistic and straightforward
+    way and verify the expected behavior.
+  * API example: [requestidlecallback/basic.html](../../third_party/blink/web_tests/external/wpt/requestidlecallback/basic.html)
+  * CSS example: [css/css-flexbox/gap-001-ltr.html](../../third_party/blink/web_tests/external/wpt/css/css-flexbox/gap-001-ltr.html)
+  * HTTP example: [cors/basic.html](../../third_party/blink/web_tests/external/wpt/cors/basic.htm)
+* **Test likely error scenarios:** Test realistic error scenarios like
+    out-of-bounds inputs, network errors, or the user rejecting a permission
+    prompt.
+  * API example: [fetch/api/basic/error-after-response.any.js](../../third_party/blink/web_tests/external/wpt/fetch/api/basic/error-after-response.any.js)
+  * CSS example: [css/css-color/hsl-clamp-negative-saturation.html](../../third_party/blink/web_tests/external/wpt/css/css-color/hsl-clamp-negative-saturation.html)
+  * HTTP example: [client-hints/accept-ch-malformed-header.https.html](../../third_party/blink/web_tests/external/wpt/client-hints/accept-ch-malformed-header.https.html)
+* **Test invalidation:** Rendering or other output often needs to be invalidated
+    when the inputs change. This kind of test is common for CSS features, but
+    can make sense for other features too. Often called “dynamic” when an
+    initial state is updated by script.
+  * API example: [dom/nodes/Element-childElementCount-dynamic-add.html](../../third_party/blink/web_tests/external/wpt/dom/nodes/Element-childElementCount-dynamic-add.html)
+  * CSS example: [css/css-content/quotes-lang-dynamic-001.html](../../third_party/blink/web_tests/external/wpt/css/css-content/quotes-lang-dynamic-001.html)
+* **Test integration with other features:** If the feature integrates with other
+    features in some meaningful way, test that the combination of the two
+    features behaves as expected.
+  * API example: [permissions-policy/reporting/fullscreen-reporting.html](../../third_party/blink/web_tests/external/wpt/permissions-policy/reporting/fullscreen-reporting.html)
+  * CSS example: [css/css-anchor-position/anchor-scroll-to-sticky-001.html](../../third_party/blink/web_tests/external/wpt/css/css-anchor-position/anchor-scroll-to-sticky-001.html)
+  * HTTP example: [clear-site-data/set-cookie-before-clear-cookies.https.html](../../third_party/blink/web_tests/external/wpt/clear-site-data/set-cookie-before-clear-cookies.https.html)
+
 ### Tests that require testing APIs
 
 #### `testdriver.js`
 
-[testdriver.js](https://web-platform-tests.org/writing-tests/testdriver.html)
-provides a means to automate tests that cannot be written purely using web
-platform APIs, similar to `internals.*` and `eventSender.*` in regular Blink
-web tests. It uses either [WebDriver Classic](https://www.w3.org/TR/webdriver/),
+For automation using [testdriver.js](https://web-platform-tests.org/writing-tests/testdriver.html),
+follow [Guide to Adding New Web Features to WPT](https://docs.google.com/document/d/1uQmNMUzznAH_JvJOTllpL2qNhOEzClTkmZliTnlsNIs/edit?usp=sharing).
+testdriver.js provides a means to automate tests that cannot be written purely
+using web platform APIs, similar to `internals.*` and `eventSender.*` in regular
+Blink web tests. It uses either [WebDriver Classic](https://www.w3.org/TR/webdriver/),
 or [WebDriver BiDi](https://www.w3.org/TR/webdriver-bidi/) protocols.
 
 [WPT Test Automation for Chromium](https://docs.google.com/document/d/18BpD41vyX1cFZ77CE0a_DJYlGpdvyLlx3pwXVRxUzvI/edit?usp=sharing) overview.
