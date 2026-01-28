@@ -23,7 +23,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "base/system/sys_info.h"
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
@@ -41,13 +41,13 @@ std::string GetChannelString() {
   }
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // "" could mean Stable, LTC, or LTS. Find out which.
-  std::string crosapi_channel_name;
-  if (base::SysInfo::GetLsbReleaseValue(crosapi::kChromeOSReleaseTrack,
-                                        &crosapi_channel_name)) {
-    if (crosapi_channel_name == crosapi::kReleaseChannelLtc) {
+  std::string ash_channel_name;
+  if (base::SysInfo::GetLsbReleaseValue(ash::kChromeOSReleaseTrack,
+                                        &ash_channel_name)) {
+    if (ash_channel_name == ash::kReleaseChannelLtc) {
       return "ltc";
     }
-    if (crosapi_channel_name == crosapi::kReleaseChannelLts) {
+    if (ash_channel_name == ash::kReleaseChannelLts) {
       return "lts";
     }
   }

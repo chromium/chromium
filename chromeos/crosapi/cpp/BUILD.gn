@@ -10,8 +10,6 @@ config("crosapi_implementation") {
 component("cpp") {
   output_name = "crosapi_public_cpp"
   sources = [
-    "channel_to_enum.cc",
-    "channel_to_enum.h",
     "keystore_service_util.cc",
     "keystore_service_util.h",
   ]
@@ -43,8 +41,5 @@ source_set("unit_tests") {
     "//components/version_info",
     "//testing/gtest",
   ]
-  sources = [
-    "channel_to_enum_unittest.cc",
-    "keystore_service_util_unittest.cc",
-  ]
+  sources = [ "keystore_service_util_unittest.cc" ]
 }

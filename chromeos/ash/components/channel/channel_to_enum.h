@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_CROSAPI_CPP_CHANNEL_TO_ENUM_H_
-#define CHROMEOS_CROSAPI_CPP_CHANNEL_TO_ENUM_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CHANNEL_CHANNEL_TO_ENUM_H_
+#define CHROMEOS_ASH_COMPONENTS_CHANNEL_CHANNEL_TO_ENUM_H_
 
 #include <string_view>
 
 #include "base/component_export.h"
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "components/version_info/channel.h"
 
-namespace crosapi {
+namespace ash {
 
-COMPONENT_EXPORT(CROSAPI)
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CHANNEL)
 version_info::Channel ChannelToEnum(std::string_view channel);
 
-}  // namespace crosapi
+}  // namespace ash
 
-#endif  // CHROMEOS_CROSAPI_CPP_CHANNEL_TO_ENUM_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CHANNEL_CHANNEL_TO_ENUM_H_

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/crosapi/cpp/channel_to_enum.h"
+#include "chromeos/ash/components/channel/channel_to_enum.h"
 
 #include <string_view>
 
-#include "crosapi_constants.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 
-namespace crosapi {
+namespace ash {
 
 version_info::Channel ChannelToEnum(std::string_view channel) {
   if (channel == kReleaseChannelStable) {
@@ -26,4 +26,4 @@ version_info::Channel ChannelToEnum(std::string_view channel) {
   }
 }
 
-}  // namespace crosapi
+}  // namespace ash

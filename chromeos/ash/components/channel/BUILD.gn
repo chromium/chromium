@@ -10,6 +10,8 @@ component("channel") {
   sources = [
     "channel_info.cc",
     "channel_info.h",
+    "channel_to_enum.cc",
+    "channel_to_enum.h",
   ]
 
   deps = [
@@ -24,7 +26,10 @@ component("channel") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "channel_info_unittest.cc" ]
+  sources = [
+    "channel_info_unittest.cc",
+    "channel_to_enum_unittest.cc",
+  ]
 
   deps = [
     ":channel",

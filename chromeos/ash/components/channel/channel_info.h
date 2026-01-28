@@ -15,6 +15,22 @@ enum class Channel;
 
 namespace ash {
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CHANNEL)
+inline constexpr char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CHANNEL)
+inline constexpr char kReleaseChannelCanary[] = "canary-channel";
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CHANNEL)
+inline constexpr char kReleaseChannelDev[] = "dev-channel";
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CHANNEL)
+inline constexpr char kReleaseChannelBeta[] = "beta-channel";
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CHANNEL)
+inline constexpr char kReleaseChannelStable[] = "stable-channel";
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CHANNEL)
+inline constexpr char kReleaseChannelLtc[] = "ltc-channel";
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CHANNEL)
+inline constexpr char kReleaseChannelLts[] = "lts-channel";
+
 // Returns the name of the Ash's channel. For a branded build, this modifier is
 // the channel ("cannary", "dev", or "beta", but "" for stable and "unknown"
 // when we cannot determine the channel). For a non-branded build, always return
