@@ -23,6 +23,7 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/chrome_downloads.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/chrome_histograms.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_test.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",
