@@ -673,7 +673,11 @@ TEST_F(MediaItemUIDetailedViewTest, Backward10ButtonClick) {
 TEST_F(MediaItemUIDetailedViewTest, TimestampView) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
-  auto view = CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView);
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* view = widget->SetContentsView(
+      CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
+
+  ASSERT_TRUE(view->IsDrawn());
   EXPECT_NE(view->GetProgressViewForTesting(), nullptr);
 
   // Check that the timestamp gets updated when the progress position is

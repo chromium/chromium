@@ -95,6 +95,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
 
   // Helper functions for testing:
   double current_value_for_testing() const;
+  int phase_offset_for_testing() const;
+  double progress_amp_fraction_for_testing() const;
+  int straight_progress_stroke_width_for_testing() const;
   bool is_paused_for_testing() const;
   bool is_live_for_testing() const;
   bool use_paused_colors_for_testing() const;
@@ -104,6 +107,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
       std::unique_ptr<base::OneShotTimer> test_timer);
   void set_progress_drag_started_delay_timer_for_testing(
       std::unique_ptr<base::OneShotTimer> test_timer);
+  gfx::SlideAnimation& slide_animation_for_testing();
+  gfx::SlideAnimation& thickness_animation_for_testing();
 
  private:
   // Fires an accessibility event if the progress has changed.

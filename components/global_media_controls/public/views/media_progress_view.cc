@@ -135,12 +135,17 @@ MediaProgressView::~MediaProgressView() = default;
 void MediaProgressView::AnimationProgressed(const gfx::Animation* animation) {
   if (animation == &slide_animation_) {
     progress_amp_fraction_ = animation->GetCurrentValue();
-    OnPropertyChanged(&progress_amp_fraction_, views::PropertyEffects::kPaint);
+    if (IsDrawn()) {
+      OnPropertyChanged(&progress_amp_fraction_,
+                        views::PropertyEffects::kPaint);
+    }
   } else if (animation == &thickness_animation_) {
     straight_progress_stroke_width_ =
         animation->CurrentValueBetween(kStrokeWidth, kLargeStrokeWidth);
-    OnPropertyChanged(&straight_progress_stroke_width_,
-                      views::PropertyEffects::kPaint);
+    if (IsDrawn()) {
+      OnPropertyChanged(&straight_progress_stroke_width_,
+                        views::PropertyEffects::kPaint);
+    }
   }
 }
 
@@ -173,6 +178,16 @@ bool MediaProgressView::HandleAccessibleAction(
 
 void MediaProgressView::VisibilityChanged(View* starting_from,
                                           bool is_visible) {
+  if (!is_visible || !IsDrawn()) {
+    return;
+  }
+
+  // When becoming visible, trigger an immediate repaint and callback
+  // execution. This ensures the UI instantly updates to the correct position
+  // without waiting for the next timer tick.
+  SchedulePaint();
+  on_update_progress_callback_.Run(current_position_);
+
   MaybeNotifyAccessibilityValueChanged();
 }
 
@@ -434,34 +449,56 @@ void MediaProgressView::UpdateProgress(
   media_duration_ = media_position.duration();
   is_live_ = media_duration_.is_max();
 
-  on_update_progress_callback_.Run(current_position_);
-
+  // Always update all internal state (progress and wave phase)
+  // so the state is accurate the moment we become visible.
   double new_value = CalculateNewValue(current_position_);
-  if (new_value != current_value_) {
+  const bool progress_changed = (new_value != current_value_);
+  if (progress_changed) {
     current_value_ = new_value;
-    MaybeNotifyAccessibilityValueChanged();
-    OnPropertyChanged(&current_value_, views::PropertyEffects::kPaint);
   }
 
-  if (!is_paused_) {
-    if (!slide_animation_.is_animating()) {
-      // Update the progress wavelength phase offset to create wave animation.
-      phase_offset_ +=
-          static_cast<int>(kProgressUpdateFrequency.InMillisecondsF() / 1000 *
-                           kProgressPhaseSpeed);
-      phase_offset_ %= kProgressWavelength;
-      OnPropertyChanged(&phase_offset_, views::PropertyEffects::kPaint);
-    }
+  const bool should_animate_waves =
+      !is_paused_ && use_squiggly_line_ && !slide_animation_.is_animating();
 
+  if (should_animate_waves) {
+    // Update the progress wavelength phase offset to create wave animation.
+    phase_offset_ +=
+        static_cast<int>(kProgressUpdateFrequency.InMillisecondsF() / 1000 *
+                         kProgressPhaseSpeed);
+    phase_offset_ %= kProgressWavelength;
+  }
+
+  // Always restart the timer, regardless of drawn state, to maintain background
+  // synchronization.
+  if (!is_paused_) {
     update_progress_timer_->Start(
         FROM_HERE, kProgressUpdateFrequency,
         base::BindOnce(&MediaProgressView::UpdateProgress,
                        base::Unretained(this), media_position));
   }
+
+  // Performance optimization: skip all expensive repaints, external callbacks,
+  // and accessibility updates when the view is not drawn to avoid unnecessary
+  // compositor work. We use IsDrawn() instead of local visibility to correctly
+  // handle cases where a parent (e.g., the PiP overlay) is hidden.
+  if (!IsDrawn()) {
+    return;
+  }
+
+  on_update_progress_callback_.Run(current_position_);
+
+  if (progress_changed) {
+    MaybeNotifyAccessibilityValueChanged();
+    OnPropertyChanged(&current_value_, views::PropertyEffects::kPaint);
+  }
+
+  if (should_animate_waves) {
+    OnPropertyChanged(&phase_offset_, views::PropertyEffects::kPaint);
+  }
 }
 
 void MediaProgressView::MaybeNotifyAccessibilityValueChanged() {
-  if (!GetWidget() || !GetWidget()->IsVisible() ||
+  if (!IsDrawn() || !GetWidget() || !GetWidget()->IsVisible() ||
       current_position_ == last_announced_position_) {
     return;
   }
@@ -569,6 +606,18 @@ double MediaProgressView::current_value_for_testing() const {
   return current_value_;
 }
 
+int MediaProgressView::phase_offset_for_testing() const {
+  return phase_offset_;
+}
+
+double MediaProgressView::progress_amp_fraction_for_testing() const {
+  return progress_amp_fraction_;
+}
+
+int MediaProgressView::straight_progress_stroke_width_for_testing() const {
+  return straight_progress_stroke_width_;
+}
+
 bool MediaProgressView::is_paused_for_testing() const {
   return is_paused_;
 }
@@ -594,6 +643,14 @@ void MediaProgressView::set_switch_progress_colors_delay_timer_for_testing(
 void MediaProgressView::set_progress_drag_started_delay_timer_for_testing(
     std::unique_ptr<base::OneShotTimer> test_timer) {
   progress_drag_started_delay_timer_ = std::move(test_timer);
+}
+
+gfx::SlideAnimation& MediaProgressView::slide_animation_for_testing() {
+  return slide_animation_;
+}
+
+gfx::SlideAnimation& MediaProgressView::thickness_animation_for_testing() {
+  return thickness_animation_;
 }
 
 BEGIN_METADATA(MediaProgressView)

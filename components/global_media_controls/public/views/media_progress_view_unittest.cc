@@ -16,6 +16,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_test_api.h"
 
 namespace global_media_controls {
 
@@ -543,6 +544,107 @@ TEST_F(MediaProgressViewTest, PausesForDraggingIfPlayedAfterDraggingStarted) {
               OnPlaybackStateChangeForProgressDrag(
                   PlaybackStateChangeForDragging::kResumeForDraggingEnded));
   view()->OnMouseReleased(released_event);
+}
+
+TEST_F(MediaProgressViewTest, UpdateProgressCallbackFollowsVisibility) {
+  base::TimeDelta position = base::Seconds(100);
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/position, /*end_of_media=*/false);
+
+  // When the view is drawn, the callback should run.
+  ASSERT_TRUE(view()->IsDrawn());
+  EXPECT_CALL(*this, OnProgressUpdated(testing::Ge(position)));
+  view()->UpdateProgress(media_position);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // When the view is not drawn, the callback should not run.
+  view()->SetVisible(false);
+  ASSERT_FALSE(view()->IsDrawn());
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(0);
+  view()->UpdateProgress(media_position);
+}
+
+TEST_F(MediaProgressViewTest, VisibilityChangedUpdatesToPosition) {
+  // Start hidden.
+  view()->SetVisible(false);
+  base::TimeDelta hidden_position = base::Seconds(300);
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/hidden_position, /*end_of_media=*/false);
+
+  // Update while hidden. No callback should run yet.
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(0);
+  view()->UpdateProgress(media_position);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // When becoming visible, the view should immediately reflect the position
+  // updated while it was hidden. This verifies background synchronization.
+  EXPECT_CALL(*this, OnProgressUpdated(testing::Ge(hidden_position)));
+  view()->SetVisible(true);
+}
+
+TEST_F(MediaProgressViewTest,
+       UpdateProgressTimerContinuesRunningWhileViewIsHidden) {
+  // Start hidden.
+  view()->SetVisible(false);
+  ASSERT_FALSE(view()->IsDrawn());
+
+  // Trigger progress while hidden.
+  media_session::MediaPosition playing_media_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
+  view()->UpdateProgress(playing_media_position);
+
+  // Ensure `should_animate_waves` is true by setting animation to end state.
+  view()->slide_animation_for_testing().Reset(1.0);
+  int initial_phase = view()->phase_offset_for_testing();
+
+  // Fire the timer and verify that the callback does not run.
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(0);
+  update_progress_timer()->Fire();
+
+  // Verify the internal animation state is updated despite the view being
+  // hidden.
+  EXPECT_NE(view()->phase_offset_for_testing(), initial_phase);
+}
+
+TEST_F(MediaProgressViewTest, AnimationProgressedWhileHidden) {
+  // Hide the view.
+  view()->SetVisible(false);
+  ASSERT_FALSE(view()->IsDrawn());
+
+  // Simulate squiggly path animation progress while hidden.
+  view()->slide_animation_for_testing().Reset(0.5);
+  view()->AnimationProgressed(&view()->slide_animation_for_testing());
+  EXPECT_EQ(view()->progress_amp_fraction_for_testing(), 0.5);
+
+  // Simulate thickness animation progress while hidden.
+  view()->thickness_animation_for_testing().Reset(0.5);
+  view()->AnimationProgressed(&view()->thickness_animation_for_testing());
+  EXPECT_EQ(view()->straight_progress_stroke_width_for_testing(), 3);
+}
+
+TEST_F(MediaProgressViewTest, UpdateProgressSchedulesPaintOnlyWhenDrawn) {
+  views::ViewTestApi test_api(view());
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
+
+  // When drawn, `UpdateProgress` should notify that properties changed (paint
+  // scheduled).
+  ASSERT_TRUE(view()->IsDrawn());
+  test_api.ClearNeedsPaint();
+  view()->UpdateProgress(media_position);
+  EXPECT_TRUE(test_api.needs_paint());
+
+  // When hidden, `UpdateProgress` should NOT notify property changes (no
+  // paint scheduled).
+  view()->SetVisible(false);
+  ASSERT_FALSE(view()->IsDrawn());
+  test_api.ClearNeedsPaint();
+  view()->UpdateProgress(media_position);
+  EXPECT_FALSE(test_api.needs_paint());
 }
 
 }  // namespace global_media_controls
