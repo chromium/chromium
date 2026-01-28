@@ -29,6 +29,7 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -314,7 +315,8 @@ bool GlicInstanceCoordinatorImpl::IsDetached() const {
 bool GlicInstanceCoordinatorImpl::IsPanelShowingForBrowser(
     const BrowserWindowInterface& bwi) const {
   if (const auto* instance = GetInstanceForTab(
-          GetActiveTabInterface(const_cast<BrowserWindowInterface*>(&bwi)))) {
+          TabListInterface::From(const_cast<BrowserWindowInterface*>(&bwi))
+              ->GetActiveTab())) {
     return instance->IsShowing();
   }
   return false;
@@ -534,7 +536,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     bool prevent_close,
     glic::mojom::InvocationSource source,
     std::optional<std::string> prompt_suggestion) {
-  auto* tab = GetActiveTabInterface(browser);
+  auto* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
     return;
   }

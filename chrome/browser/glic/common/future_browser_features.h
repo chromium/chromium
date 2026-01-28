@@ -78,14 +78,6 @@ inline bool IsDeleteScheduled(BrowserWindowInterface* browser_window) {
 #endif
 }
 
-inline tabs::TabInterface* GetActiveTabInterface(
-    BrowserWindowInterface* browser_window) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-  return browser_window ? browser_window->GetActiveTabInterface() : nullptr;
-#else
-  return nullptr;
-#endif
-}
 
 inline base::WeakPtr<BrowserWindowInterface> GetBrowserWindowInterfaceWeakPtr(
     BrowserWindowInterface* browser_window) {
