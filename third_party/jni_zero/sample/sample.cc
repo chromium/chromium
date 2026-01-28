@@ -5,13 +5,21 @@
 // Generated file for JNI bindings from C++ to Java @CalledByNative methods.
 // Only to be included in one .cc file.
 // Name is based on the java file name: *.java -> jni/*_jni.h
+namespace jni_zero::sample {
+enum class MyEnum { A, B, C };
+}
+
 #include "third_party/jni_zero/sample/sample_jni/Sample_jni.h"
 
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
 
 namespace jni_zero::sample {
-static void JNI_Sample_DoNothing(JNIEnv* env) {}
+
+static void JNI_Sample_DoSomething(JNIEnv* env) {
+  std::vector<MyEnum> values = Java_Sample_getArrayOfEnum(env);
+  Java_Sample_setArrayOfEnum(env, values);
+}
 
 static jboolean JNI_Sample_TestMultipleParams(JNIEnv* env,
                                               jint a,

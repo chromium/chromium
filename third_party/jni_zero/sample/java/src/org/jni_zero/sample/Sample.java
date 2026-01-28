@@ -4,7 +4,10 @@ import android.util.Log;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import java.util.Arrays;
 
 @JNINamespace("jni_zero::sample")
 public class Sample {
@@ -14,7 +17,7 @@ public class Sample {
 
     public static void doSingleBasicCall() {
         Log.i(TAG, "Basic call");
-        SampleJni.get().doNothing();
+        SampleJni.get().doSomething();
     }
 
     public static void doParameterCalls() {
@@ -53,9 +56,22 @@ public class Sample {
         sDidStaticCallWork = true;
     }
 
+    @CalledByNative
+    private static @JniType("std::vector<MyEnum>") int[] getArrayOfEnum() {
+        return new int[] {1, 2, 3};
+    }
+
+    @CalledByNative
+    private static void setArrayOfEnum(@JniType("std::vector<MyEnum>") int[] values) {
+        if (!Arrays.equals(values, new int[] {1, 2, 3})) {
+            throw new RuntimeException("got: " + Arrays.toString(values));
+        }
+        Log.i(TAG, "Array of enum worked.");
+    }
+
     @NativeMethods
     interface Natives {
-        void doNothing();
+        void doSomething();
 
         boolean testMultipleParams(int a, int b, String c, Sample d);
 

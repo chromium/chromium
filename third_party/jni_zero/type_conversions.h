@@ -56,7 +56,16 @@ concept IsContainer = requires(T t) {
 
 template <typename T>
 concept IsObjectContainer =
-    IsContainer<T> && !std::is_arithmetic_v<typename T::value_type>;
+    IsContainer<T> && !std::is_arithmetic_v<typename T::value_type> &&
+    !std::is_enum_v<typename T::value_type>;
+
+// TODO(agrieve): We should be able to at least define FromJniType() /
+// ToJniArray() for other container types by delegating to helpers that accept
+// start/end pointers.
+template <typename T>
+concept IsEnumVector =
+    IsContainer<T> && std::is_enum_v<typename T::value_type> && HasReserve<T> &&
+    HasPushBack<T>;
 
 template <typename T>
 concept IsOptional = !std::is_arithmetic_v<T> &&

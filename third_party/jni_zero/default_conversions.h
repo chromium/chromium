@@ -122,6 +122,32 @@ DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(double)
 
 #undef DECLARE_PRIMITIVE_ARRAY_CONVERSIONS
 
+// Enable vectors of enum types.
+template <internal::IsEnumVector ContainerType>
+inline ContainerType FromJniArray(JNIEnv* env,
+                                  const JavaRef<jobject>& j_object) {
+  std::vector<int32_t> int_vec =
+      FromJniArray<std::vector<int32_t>>(env, j_object);
+  ContainerType ret;
+  ret.reserve(int_vec.size());
+  for (int32_t val : int_vec) {
+    ret.push_back(static_cast<typename ContainerType::value_type>(val));
+  }
+  return ret;
+}
+
+template <internal::IsEnumVector ContainerType>
+inline ScopedJavaLocalRef<jarray> ToJniArray(JNIEnv* env,
+                                             const ContainerType& vec) {
+  static_assert(sizeof(typename ContainerType::value_type) <= 4);
+  std::vector<int32_t> int_vec;
+  int_vec.reserve(vec.size());
+  for (auto val : vec) {
+    int_vec.push_back(static_cast<int32_t>(val));
+  }
+  return ToJniArray(env, int_vec);
+}
+
 // Specialization for ByteArrayView.
 template <>
 inline ByteArrayView FromJniArray<ByteArrayView>(
