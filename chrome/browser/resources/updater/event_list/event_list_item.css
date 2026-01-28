@@ -88,7 +88,6 @@ cr-expand-button {
   width: 75%;
   text-align: center;
   background-color: var(--event-type-background-color);
-  color: var(--cr-primary-text-color);
   border-radius: 12px;
   padding: 2px 6px;
   font-size: 0.9em;

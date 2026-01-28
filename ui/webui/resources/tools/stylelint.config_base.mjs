@@ -7,6 +7,9 @@ export default {
 
   rules: {
     'block-no-empty': true,
+    'declaration-block-no-duplicate-custom-properties': true,
+    'declaration-block-no-duplicate-properties': true,
+
     '@stylistic/no-missing-end-of-source-newline': true,
 
     // https://google.github.io/styleguide/htmlcssguide.html#CSS_Quotation_Marks

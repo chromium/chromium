@@ -27,7 +27,9 @@
 
 #splitter {
   box-sizing: border-box;
+<if expr="not is_win">
   cursor: col-resize;
+</if>
 <if expr="is_win">
   /* Unlike other platforms, e-resize is a two-way arrow on Windows. */
   cursor: e-resize;

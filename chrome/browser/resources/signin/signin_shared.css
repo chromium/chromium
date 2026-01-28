@@ -35,7 +35,9 @@ a {
 .action-container {
   column-gap: 8px;
   display: flex;
+<if expr="not (is_macosx or is_linux or is_chromeos)">
   justify-content: flex-end;
+</if>
   padding: var(--action-container-padding);
 <if expr="is_macosx or is_linux or is_chromeos">
   flex-flow: row-reverse;
