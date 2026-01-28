@@ -299,8 +299,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
-  HighEntropyCanvasOpType GetRecorderHighEntropyCanvasOpTypes() const;
-
   void ReleaseLockedImages();
 
   void EnsureSkiaCanvas();

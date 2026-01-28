@@ -737,16 +737,6 @@ CanvasResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
       return nullptr;
     }
 
-    // Getting the high entropy canvas operations should be done before
-    // flushing the canvas as flushing discards the recording (including the
-    // associated HighEntropyCanvasOpTypes).
-    HighEntropyCanvasOpType high_entropy_canvas_op_types =
-        GetRecorderHighEntropyCanvasOpTypes();
-    if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
-                                                IsAccelerated())) {
-      output_resource->SetHighEntropyCanvasOpTypes(
-          high_entropy_canvas_op_types);
-    }
     FlushCanvas(reason);
 
     // Note that the resource *must* be a CanvasResourceSharedImage as this
@@ -761,11 +751,6 @@ CanvasResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
     return nullptr;
   }
 
-  // Getting the high entropy canvas operations should be done before
-  // flushing the canvas as flushing discards the recording (including the
-  // associated HighEntropyCanvasOpTypes).
-  HighEntropyCanvasOpType high_entropy_canvas_op_types =
-      GetRecorderHighEntropyCanvasOpTypes();
   FlushCanvas(reason);
   // Its important to end read access and ref the resource before the WillDraw
   // call below. Since it relies on resource ref-count to trigger
@@ -777,11 +762,6 @@ CanvasResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
     return nullptr;
   }
   scoped_refptr<CanvasResource> resource = resource_;
-
-  if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
-                                              IsAccelerated())) {
-    resource->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
-  }
   return resource;
 }
 
@@ -901,19 +881,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
   }
 
   if (!cached_snapshot_) {
-    // Getting the high entropy canvas operations should be done before
-    // flushing the canvas as flushing discards the recording (including the
-    // associated HighEntropyCanvasOpTypes).
-    HighEntropyCanvasOpType high_entropy_canvas_op_types =
-        GetRecorderHighEntropyCanvasOpTypes();
     FlushCanvas(FlushReason::kOther);
     EndWriteAccess();
     cached_snapshot_ = resource_->Bitmap();
-    if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
-                                                IsAccelerated())) {
-      cached_snapshot_->SetHighEntropyCanvasOpTypes(
-          high_entropy_canvas_op_types);
-    }
 
     // We'll record its content_id to be used by the FlushForImageListener.
     // This will be needed in WillDrawInternal, but we are doing it now, as we
@@ -1582,12 +1552,6 @@ CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   if (!IsValid())
     return nullptr;
 
-  // Getting the high entropy canvas operations should be done before
-  // flushing the canvas as flushing discards the recording (including the
-  // associated HighEntropyCanvasOpTypes).
-  HighEntropyCanvasOpType high_entropy_canvas_op_types =
-      GetRecorderHighEntropyCanvasOpTypes();
-
   FlushCanvas();
 
   cc::PaintImage paint_image;
@@ -1616,10 +1580,6 @@ CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   scoped_refptr<UnacceleratedStaticBitmapImage> snapshot =
       UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
                                              orientation);
-  if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
-                                              IsAccelerated())) {
-    snapshot->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
-  }
   return snapshot;
 }
 
@@ -1819,11 +1779,6 @@ void CanvasResourceProviderSharedImage::DisableLineDrawingAsPathsIfNecessary() {
           gpu::kGpuFeatureStatusEnabled) {
     recorder_->DisableLineDrawingAsPaths();
   }
-}
-
-HighEntropyCanvasOpType
-CanvasResourceProvider::GetRecorderHighEntropyCanvasOpTypes() const {
-  return recorder_->getRecordingCanvas().HighEntropyCanvasOpTypes();
 }
 
 std::unique_ptr<CanvasResourceProvider>
