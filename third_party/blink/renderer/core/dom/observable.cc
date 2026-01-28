@@ -2906,45 +2906,57 @@ Observable* Observable::finally(ScriptState*, V8VoidFunction* callback) {
   return return_observable;
 }
 
-ScriptPromise<IDLSequence<IDLAny>> Observable::toArray(
-    ScriptState* script_state,
-    SubscribeOptions* options) {
-  ScriptPromiseResolver<IDLSequence<IDLAny>>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLAny>>>(
-          script_state);
-  ScriptPromise<IDLSequence<IDLAny>> promise = resolver->Promise();
+namespace {
 
+// Creates and sets up a promise resolver used for the promise returned by
+// Observable methods, taking abort signals passed in options into account
+// and rejecting the promise as necessary.
+template <typename PromisedType>
+std::tuple<ScriptPromiseResolver<PromisedType>*,
+           AbortSignal::AlgorithmHandle*,
+           bool /*aborted=*/>
+CreatePromiseResolverForObservable(ScriptState* script_state,
+                                   SubscribeOptions* options) {
+  ScriptPromiseResolver<PromisedType>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<PromisedType>>(script_state);
   AbortSignal::AlgorithmHandle* algorithm_handle = nullptr;
-
   if (options->hasSignal()) {
-    if (options->signal()->aborted()) {
+    if (options->signal()->aborted()) [[unlikely]] {
       resolver->Reject(options->signal()->reason(script_state));
-
-      return promise;
+      return std::make_tuple(resolver, nullptr, true);
     }
-
     algorithm_handle = options->signal()->AddAlgorithm(
         MakeGarbageCollected<RejectPromiseAbortAlgorithm>(resolver,
                                                           options->signal()));
   }
-
   resolver->SuppressDetachCheck();
+  return std::make_tuple(resolver, algorithm_handle, false);
+}
+
+}  // namespace
+
+ScriptPromise<IDLSequence<IDLAny>> Observable::toArray(
+    ScriptState* script_state,
+    SubscribeOptions* options) {
+  auto [resolver, algorithm_handle, aborted] =
+      CreatePromiseResolverForObservable<IDLSequence<IDLAny>>(script_state,
+                                                              options);
+  if (aborted) {
+    return resolver->Promise();
+  }
+
   ToArrayInternalObserver* internal_observer =
       MakeGarbageCollected<ToArrayInternalObserver>(resolver, algorithm_handle);
 
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     options);
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLUndefined> Observable::forEach(ScriptState* script_state,
                                                 V8Visitor* callback,
                                                 SubscribeOptions* options) {
-  ScriptPromiseResolver<IDLUndefined>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-  ScriptPromise<IDLUndefined> promise = resolver->Promise();
-
   AbortController* visitor_callback_controller =
       AbortController::Create(script_state);
   HeapVector<Member<AbortSignal>> signals;
@@ -2968,17 +2980,12 @@ ScriptPromise<IDLUndefined> Observable::forEach(ScriptState* script_state,
   internal_options->setSignal(
       MakeGarbageCollected<AbortSignal>(script_state, signals));
 
-  if (internal_options->signal()->aborted()) {
-    resolver->Reject(internal_options->signal()->reason(script_state));
-    return promise;
+  auto [resolver, algorithm_handle, aborted] =
+      CreatePromiseResolverForObservable<IDLUndefined>(script_state,
+                                                       internal_options);
+  if (aborted) {
+    return resolver->Promise();
   }
-
-  resolver->SuppressDetachCheck();
-
-  AbortSignal::AlgorithmHandle* algorithm_handle =
-      internal_options->signal()->AddAlgorithm(
-          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
-              resolver, internal_options->signal()));
 
   OperatorForEachInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorForEachInternalObserver>(
@@ -2987,15 +2994,11 @@ ScriptPromise<IDLUndefined> Observable::forEach(ScriptState* script_state,
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLAny> Observable::first(ScriptState* script_state,
                                         SubscribeOptions* options) {
-  ScriptPromiseResolver<IDLAny>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
-  ScriptPromise<IDLAny> promise = resolver->Promise();
-
   AbortController* controller = AbortController::Create(script_state);
   HeapVector<Member<AbortSignal>> signals;
 
@@ -3018,17 +3021,12 @@ ScriptPromise<IDLAny> Observable::first(ScriptState* script_state,
   internal_options->setSignal(
       MakeGarbageCollected<AbortSignal>(script_state, signals));
 
-  if (internal_options->signal()->aborted()) {
-    resolver->Reject(options->signal()->reason(script_state));
-    return promise;
+  auto [resolver, algorithm_handle, aborted] =
+      CreatePromiseResolverForObservable<IDLAny>(script_state,
+                                                 internal_options);
+  if (aborted) {
+    return resolver->Promise();
   }
-
-  resolver->SuppressDetachCheck();
-
-  AbortSignal::AlgorithmHandle* algorithm_handle =
-      internal_options->signal()->AddAlgorithm(
-          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
-              resolver, internal_options->signal()));
 
   OperatorFirstInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorFirstInternalObserver>(resolver, controller,
@@ -3037,29 +3035,16 @@ ScriptPromise<IDLAny> Observable::first(ScriptState* script_state,
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLAny> Observable::last(ScriptState* script_state,
                                        SubscribeOptions* options) {
-  ScriptPromiseResolver<IDLAny>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
-  ScriptPromise<IDLAny> promise = resolver->Promise();
-
-  AbortSignal::AlgorithmHandle* algorithm_handle = nullptr;
-
-  if (options->hasSignal()) {
-    if (options->signal()->aborted()) {
-      resolver->Reject(options->signal()->reason(script_state));
-      return promise;
-    }
-
-    algorithm_handle = options->signal()->AddAlgorithm(
-        MakeGarbageCollected<RejectPromiseAbortAlgorithm>(resolver,
-                                                          options->signal()));
+  auto [resolver, algorithm_handle, aborted] =
+      CreatePromiseResolverForObservable<IDLAny>(script_state, options);
+  if (aborted) {
+    return resolver->Promise();
   }
-
-  resolver->SuppressDetachCheck();
 
   OperatorLastInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorLastInternalObserver>(resolver,
@@ -3068,16 +3053,12 @@ ScriptPromise<IDLAny> Observable::last(ScriptState* script_state,
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     options);
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLBoolean> Observable::some(ScriptState* script_state,
                                            V8Predicate* predicate,
                                            SubscribeOptions* options) {
-  ScriptPromiseResolver<IDLBoolean>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
-  ScriptPromise<IDLBoolean> promise = resolver->Promise();
-
   AbortController* controller = AbortController::Create(script_state);
   HeapVector<Member<AbortSignal>> signals;
   signals.push_back(controller->signal());
@@ -3089,17 +3070,12 @@ ScriptPromise<IDLBoolean> Observable::some(ScriptState* script_state,
   internal_options->setSignal(
       MakeGarbageCollected<AbortSignal>(script_state, signals));
 
-  if (internal_options->signal()->aborted()) {
-    resolver->Reject(options->signal()->reason(script_state));
-    return promise;
+  auto [resolver, algorithm_handle, aborted] =
+      CreatePromiseResolverForObservable<IDLBoolean>(script_state,
+                                                     internal_options);
+  if (aborted) {
+    return resolver->Promise();
   }
-
-  resolver->SuppressDetachCheck();
-
-  AbortSignal::AlgorithmHandle* algorithm_handle =
-      internal_options->signal()->AddAlgorithm(
-          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
-              resolver, internal_options->signal()));
 
   OperatorSomeInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorSomeInternalObserver>(
@@ -3107,16 +3083,12 @@ ScriptPromise<IDLBoolean> Observable::some(ScriptState* script_state,
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLBoolean> Observable::every(ScriptState* script_state,
                                             V8Predicate* predicate,
                                             SubscribeOptions* options) {
-  ScriptPromiseResolver<IDLBoolean>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
-  ScriptPromise<IDLBoolean> promise = resolver->Promise();
-
   AbortController* controller = AbortController::Create(script_state);
   HeapVector<Member<AbortSignal>> signals;
   signals.push_back(controller->signal());
@@ -3128,17 +3100,12 @@ ScriptPromise<IDLBoolean> Observable::every(ScriptState* script_state,
   internal_options->setSignal(
       MakeGarbageCollected<AbortSignal>(script_state, signals));
 
-  if (internal_options->signal()->aborted()) {
-    resolver->Reject(options->signal()->reason(script_state));
-    return promise;
+  auto [resolver, algorithm_handle, aborted] =
+      CreatePromiseResolverForObservable<IDLBoolean>(script_state,
+                                                     internal_options);
+  if (aborted) {
+    return resolver->Promise();
   }
-
-  resolver->SuppressDetachCheck();
-
-  AbortSignal::AlgorithmHandle* algorithm_handle =
-      internal_options->signal()->AddAlgorithm(
-          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
-              resolver, internal_options->signal()));
 
   OperatorEveryInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorEveryInternalObserver>(
@@ -3146,16 +3113,12 @@ ScriptPromise<IDLBoolean> Observable::every(ScriptState* script_state,
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLAny> Observable::find(ScriptState* script_state,
                                        V8Predicate* predicate,
                                        SubscribeOptions* options) {
-  ScriptPromiseResolver<IDLAny>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
-  ScriptPromise<IDLAny> promise = resolver->Promise();
-
   AbortController* controller = AbortController::Create(script_state);
   HeapVector<Member<AbortSignal>> signals;
   signals.push_back(controller->signal());
@@ -3167,17 +3130,12 @@ ScriptPromise<IDLAny> Observable::find(ScriptState* script_state,
   internal_options->setSignal(
       MakeGarbageCollected<AbortSignal>(script_state, signals));
 
-  if (internal_options->signal()->aborted()) {
-    resolver->Reject(options->signal()->reason(script_state));
-    return promise;
+  auto [resolver, algorithm_handle, aborted] =
+      CreatePromiseResolverForObservable<IDLAny>(script_state,
+                                                 internal_options);
+  if (aborted) {
+    return resolver->Promise();
   }
-
-  resolver->SuppressDetachCheck();
-
-  AbortSignal::AlgorithmHandle* algorithm_handle =
-      internal_options->signal()->AddAlgorithm(
-          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
-              resolver, internal_options->signal()));
 
   OperatorFindInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorFindInternalObserver>(
@@ -3185,7 +3143,7 @@ ScriptPromise<IDLAny> Observable::find(ScriptState* script_state,
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLAny> Observable::reduce(ScriptState* script_state,
@@ -3210,10 +3168,6 @@ ScriptPromise<IDLAny> Observable::ReduceInternal(
     V8Reducer* reducer,
     std::optional<ScriptValue> initial_value,
     SubscribeOptions* options) {
-  ScriptPromiseResolver<IDLAny>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
-  ScriptPromise<IDLAny> promise = resolver->Promise();
-
   AbortController* controller = AbortController::Create(script_state);
   HeapVector<Member<AbortSignal>> signals;
   signals.push_back(controller->signal());
@@ -3225,17 +3179,12 @@ ScriptPromise<IDLAny> Observable::ReduceInternal(
   internal_options->setSignal(
       MakeGarbageCollected<AbortSignal>(script_state, signals));
 
-  if (internal_options->signal()->aborted()) {
-    resolver->Reject(options->signal()->reason(script_state));
-    return promise;
+  auto [resolver, algorithm_handle, aborted] =
+      CreatePromiseResolverForObservable<IDLAny>(script_state,
+                                                 internal_options);
+  if (aborted) {
+    return resolver->Promise();
   }
-
-  resolver->SuppressDetachCheck();
-
-  AbortSignal::AlgorithmHandle* algorithm_handle =
-      internal_options->signal()->AddAlgorithm(
-          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
-              resolver, internal_options->signal()));
 
   OperatorReduceInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorReduceInternalObserver>(
@@ -3243,7 +3192,7 @@ ScriptPromise<IDLAny> Observable::ReduceInternal(
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
 
-  return promise;
+  return resolver->Promise();
 }
 
 void Observable::Trace(Visitor* visitor) const {
