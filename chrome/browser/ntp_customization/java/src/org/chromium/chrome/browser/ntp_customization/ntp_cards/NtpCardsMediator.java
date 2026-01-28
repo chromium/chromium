@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 public class NtpCardsMediator {
 
     // LINT.IfChange(HomeModuleTypes)
-    private static final Map<Integer, String> MODULE_TYPE_TO_USER_PREFS_KEY =
+    public static final Map<Integer, String> MODULE_TYPE_TO_USER_PREFS_KEY =
             Map.of(
                     ModuleType.SINGLE_TAB, Pref.TAB_RESUMPTION_HOME_MODULE_ENABLED,
                     ModuleType.PRICE_CHANGE, Pref.PRICE_TRACKING_HOME_MODULE_ENABLED,

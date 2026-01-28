@@ -66,6 +66,7 @@ include_rules = [
   "+components/segmentation_platform/content/android/java",
   "+components/segmentation_platform/public/android/java",
   "+components/stylus_handwriting/android/java",
+  "+components/sync_preferences/cross_device_pref_tracker",
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/query_tiles/android/java",
   "+components/thin_webview/java",

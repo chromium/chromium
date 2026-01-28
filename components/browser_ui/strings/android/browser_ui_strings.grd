@@ -250,8 +250,14 @@
       <message name="IDS_SUBMIT" desc="Generic label for a button to submit data. Used in multiple contexts. [CHAR_LIMIT=20]">
         Submit
       </message>
+      <message name="IDS_APPLY" desc="Generic label for a button to apply a suggestion.">
+        Apply
+      </message>
       <message name="IDS_UNDO" desc="Generic label for a button to undo the previous action.">
         Undo
+      </message>
+      <message name="IDS_REDO" desc="Generic label for a button to redo the previous action.">
+        Redo
       </message>
       <message name="IDS_HELP" desc="Generic label for a button that displays help for the current screen.">
         Help

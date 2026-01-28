@@ -3903,6 +3903,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_NTP_MANAGE_FEED" desc="Menu item to manage feed settings from the feed header overflow menu.">
         Manage
       </message>
+      <message name="IDS_SYNCED_SET_UP_SNACKBAR_ASK_TO_APPLY" desc="The message text for the snackbar that prompts the user to apply their settings from another device. (Applies settings from another device when the 'apply' button is clicked.)">
+      Apply your appearance preferences?
+      </message>
+      <message name="IDS_SYNCED_SET_UP_SNACKBAR_APPLIED_CONFIRMATION" desc="Message in a snackbar confirming that settings from another device were applied (an undo button is available).">
+        Applied your appearance preferences
+      </message>
+      <message name="IDS_SYNCED_SET_UP_SNACKBAR_REMOVED_CONFIRMATION" desc="The message text for the snackbar shown after preferences have been removed (a redo button is available).">
+        Removed your appearance preferences
+      </message>
       <message name="IDS_CORMORANT_CREATOR_CONTENT_UNAVAILABLE_ERROR_TITLE" desc="Creator page error title when the creator has no content available.">
         Nothing to show yet
       </message>

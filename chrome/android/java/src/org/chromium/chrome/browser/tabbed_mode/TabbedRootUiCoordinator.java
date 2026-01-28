@@ -642,6 +642,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new CrossDeviceSettingImporter(
                         activityLifecycleDispatcher,
                         mActivityTabProvider.asObservable(),
+                        mActivity,
                         modalDialogManagerSupplier,
                         snackbarManagerSupplier);
 

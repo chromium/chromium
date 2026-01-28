@@ -136,6 +136,9 @@ public class Snackbar {
     public static final int UMA_FUSEBOX_UPLOAD_FAILED = 79;
     public static final int UMA_BOOKMARK_LINK_COPIED = 80;
     public static final int UMA_BOOKMARK_LINK_COPIED_NON_SELECTION = 81;
+    public static final int UMA_CROSS_DEVICE_SETTING_IMPORT = 82;
+    public static final int UMA_CROSS_DEVICE_SETTING_UNDO = 83;
+    public static final int UMA_CROSS_DEVICE_SETTING_REDO = 84;
 
     private final @Nullable SnackbarController mController;
     private final CharSequence mText;
