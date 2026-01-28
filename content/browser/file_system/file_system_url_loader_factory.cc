@@ -126,17 +126,27 @@ class FileSystemEntryURLLoader : public network::mojom::URLLoader {
              mojo::PendingReceiver<network::mojom::URLLoader> loader,
              mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
              scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+
     net::Error net_error = net::OK;
     if (!request.url.is_valid()) {
       net_error = net::ERR_INVALID_URL;
     }
 
+    // If the process ID is invalid, the request is not from a renderer process.
+    //
+    // If the process ID is valid but no longer refers to a live process, block
+    // the request because there is no process to receive the response. This is
+    // necessary to avoid "no security state" failures when querying
+    // ChildProcessSecurityPolicy.
+    //
     // If the requested URL is not committable in the current process, block the
     // request.  This prevents one origin from fetching filesystem: resources
     // belonging to another origin, see https://crbug.com/964245.
     if (params_.render_process_host_id != ChildProcessHost::kInvalidUniqueID &&
-        !ChildProcessSecurityPolicyImpl::GetInstance()->CanCommitURL(
-            params_.render_process_host_id, request.url)) {
+        (!RenderProcessHost::FromID(params_.render_process_host_id) ||
+         !ChildProcessSecurityPolicyImpl::GetInstance()->CanCommitURL(
+             params_.render_process_host_id, request.url))) {
       DVLOG(1) << "Denied unauthorized request for "
                << request.url.possibly_invalid_spec();
       net_error = net::ERR_INVALID_URL;
@@ -701,6 +711,8 @@ CreateFileSystemURLLoaderFactory(
     scoped_refptr<FileSystemContext> file_system_context,
     const std::string& storage_domain,
     const blink::StorageKey& storage_key) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
   FactoryParams params = {render_process_host_id, frame_tree_node_id,
                           file_system_context, storage_domain, storage_key};

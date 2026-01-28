@@ -25,7 +25,9 @@ namespace content {
 //
 // The factory is self-owned - it will delete itself once there are no more
 // receivers (including the receiver associated with the returned
-// mojo::PendingRemote and the receivers bound by the Clone method).
+// mojo::PendingRemote and the receivers bound by the Clone method). It must be
+// created on the UI thread, where the `render_process_host_id` is used to check
+// the renderer process's permissions at the start of the request.
 //
 // `render_process_host_id` is the ID of the RenderProcessHost where the
 // requests are issued.
