@@ -104,13 +104,13 @@ const char kGestureGatedNotificationMessage[] =
     "The Notification permission request was suppressed and shown as a quiet "
     "prompt because it was requested without a user gesture. Users are more "
     "likely to grant permissions when requested in context. See "
-    "https://developer.chrome.com/blog/permissions-chip#without_user_gesture.";
+    "https://crbug.com/479151408 for more details.";
 
 const char kGestureGatedGeolocationMessage[] =
     "The Geolocation permission request was suppressed and shown as a quiet "
     "prompt because it was requested without a user gesture. Users are more "
     "likely to grant permissions when requested in context. See "
-    "https://developer.chrome.com/blog/permissions-chip#without_user_gesture.";
+    "https://crbug.com/479151408 for more details.";
 
 namespace {
 
