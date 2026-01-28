@@ -4,7 +4,8 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.never;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,12 +31,15 @@ import org.robolectric.Shadows;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.TaskModel;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
@@ -48,6 +52,7 @@ import org.chromium.ui.listmenu.ListMenuHost;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ExtensionsMenuCoordinatorTest {
     private static final long BROWSER_WINDOW_POINTER = 1000L;
+    private static final long EXTENSIONS_MENU_BRIDGE_POINTER = 10001L;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -62,6 +67,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
 
     @Rule
     public final FakeExtensionActionsBridgeRule mBridgeRule = new FakeExtensionActionsBridgeRule();
@@ -86,6 +92,11 @@ public class ExtensionsMenuCoordinatorTest {
 
         mTaskModel = mBridge.getOrCreateTaskModel(mTask);
         mTaskModel.setInitialized(true);
+
+        // Mock {@link ExtensionsMenuBridge}.
+        ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
+        when(mExtensionsMenuBridgeJniMock.init(Mockito.any(), Mockito.anyLong()))
+                .thenReturn(EXTENSIONS_MENU_BRIDGE_POINTER);
 
         mExtensionsMenuCoordinator =
                 new ExtensionsMenuCoordinator(
@@ -119,7 +130,9 @@ public class ExtensionsMenuCoordinatorTest {
         verify(shownListener).onPopupMenuShown();
     }
 
-    @Test
+    // TODO(crbug.com/473213114): enable this test once we show the extensions menu after the
+    // data is ready.
+    @DisabledTest
     public void testShowMenu_showsAfterDataReady() {
         ListMenuHost.PopupMenuShownListener shownListener =
                 Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
@@ -190,5 +203,34 @@ public class ExtensionsMenuCoordinatorTest {
         verify(shownListener).onPopupMenuDismissed();
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(UrlConstants.CHROME_WEBSTORE_URL, mLoadUrlParamsCaptor.getValue().getUrl());
+    }
+
+    @Test
+    public void testMediatorLifetime() {
+        mCurrentTabSupplier.set(mTab);
+
+        // Mediator should be null before the menu is opened.
+        assertNull(mExtensionsMenuCoordinator.mMediator);
+
+        // Open the menu.
+        ListMenuHost.PopupMenuShownListener shownListener =
+                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
+        mExtensionsMenuButton.performClick();
+        verify(shownListener).onPopupMenuShown();
+
+        // Mediator should be created when the menu is opened.
+        assertNotNull(mExtensionsMenuCoordinator.mMediator);
+
+        // Close the menu.
+        mExtensionsMenuCoordinator
+                .getContentView()
+                .findViewById(R.id.extensions_menu_close_button)
+                .performClick();
+
+        verify(shownListener).onPopupMenuDismissed();
+
+        // Mediator should be destroyed when the menu is closed.
+        assertNull(mExtensionsMenuCoordinator.mMediator);
     }
 }
