@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/public/guest_os_sk_forwarder.h"
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -15,7 +16,7 @@ GuestOsSkForwarder::~GuestOsSkForwarder() = default;
 void GuestOsSkForwarder::DeliverMessageToSKForwardingExtension(
     Profile* profile,
     const std::string& json_message,
-    crosapi::mojom::GuestOsSkForwarder::ForwardRequestCallback callback) {
+    base::OnceCallback<void(const std::string& response)> callback) {
   // Signal errors or non-response with an empty string.
   callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), "");

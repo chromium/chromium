@@ -103,9 +103,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
-  void BindGuestOsSkForwarderFactory(
-      mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
-      override;
 
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 

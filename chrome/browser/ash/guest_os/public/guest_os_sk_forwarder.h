@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom.h"
+#include "base/functional/callback_forward.h"
 
 class Profile;
 
@@ -24,7 +24,7 @@ class GuestOsSkForwarder {
   void DeliverMessageToSKForwardingExtension(
       Profile* profile,
       const std::string& json_message,
-      crosapi::mojom::GuestOsSkForwarder::ForwardRequestCallback);
+      base::OnceCallback<void(const std::string& response)> callback);
 };
 
 }  // namespace guest_os

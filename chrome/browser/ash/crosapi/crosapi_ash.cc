@@ -217,11 +217,6 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
       std::move(receiver));
 }
 
-void CrosapiAsh::BindGuestOsSkForwarderFactory(
-    mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver) {
-  NOTREACHED();
-}
-
 void CrosapiAsh::OnDisconnected() {
   auto it = disconnect_handler_map_.find(receiver_set_.current_receiver());
   if (it == disconnect_handler_map_.end()) {

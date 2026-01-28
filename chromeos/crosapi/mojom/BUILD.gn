@@ -12,7 +12,6 @@ mojom("mojom") {
     "crosapi.mojom",
     "diagnostics_service.mojom",
     "document_scan.mojom",
-    "guest_os_sk_forwarder.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",
     "launcher_search.mojom",

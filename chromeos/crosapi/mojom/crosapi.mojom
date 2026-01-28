@@ -8,7 +8,6 @@ import "chromeos/components/in_session_auth/mojom/in_session_auth.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
-import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
@@ -269,12 +268,7 @@ interface Crosapi {
   // BindWebPageInfoFactory@39 was removed.
   // BindWebAppPublisher@27 was removed.
   // BindWebAppService@72 was removed.
-
-  // Binds the GuestOS security key forwarding service.
-  // Added in M120.
-  [MinVersion=121] BindGuestOsSkForwarderFactory@123(
-      pending_receiver<GuestOsSkForwarderFactory> receiver);
-
+  // BindGuestOsSkForwarderFactory@123 was removed.
   // OnBrowserStartup@6 was removed.
   // BindInputMethods@139 was removed.
 };
