@@ -32,7 +32,6 @@ class AutocompleteSyncBridge
       public syncer::DataTypeSyncBridge,
       public AutofillWebDataServiceObserverOnDBSequence {
  public:
-  AutocompleteSyncBridge();
   AutocompleteSyncBridge(
       AutofillWebDataBackend* backend,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
