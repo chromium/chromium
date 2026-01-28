@@ -87,9 +87,6 @@ BASE_DECLARE_FEATURE(kLogCrWebJavaScriptErrors);
 // When enabled, JavaScript errors will crash the application.
 BASE_DECLARE_FEATURE(kAssertOnJavaScriptErrors);
 
-// Feature controlling when to create TabHelpers.
-BASE_DECLARE_FEATURE(kCreateTabHelperOnlyForRealizedWebStates);
-
 // A flag parameter to set the number of pixels to use as the threshold.
 inline constexpr char kFullscreenScrollThresholdAmount[] =
     "fullscreen_scroll_threshold_amount";

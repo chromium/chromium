@@ -72,9 +72,6 @@ BASE_FEATURE(kLogCrWebJavaScriptErrors, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAssertOnJavaScriptErrors, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCreateTabHelperOnlyForRealizedWebStates,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsFullscreenScrollThresholdEnabled() {
   return !base::FeatureList::IsEnabled(kSmoothScrollingDefault) &&
          base::FeatureList::IsEnabled(kFullscreenScrollThreshold);
@@ -88,7 +85,7 @@ bool IsWebInspectorSupportEnabled() {
 }
 
 bool CreateTabHelperOnlyForRealizedWebStates() {
-  return base::FeatureList::IsEnabled(kCreateTabHelperOnlyForRealizedWebStates);
+  return true;
 }
 
 BASE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation,
