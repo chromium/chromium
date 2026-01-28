@@ -452,8 +452,16 @@ TabSlotView& VerticalTabDragHandlerImpl::GetOrCreateSlotViewForNode(
     return *it->second;
   }
 
+  CHECK_EQ(node.type(), TabCollectionNode::Type::TAB);
+  const tabs::TabInterface* tab =
+      std::get<const tabs::TabInterface*>(node.GetNodeData());
+  CHECK(tab);
+
   auto tab_slot_view = std::make_unique<VerticalTabSlotView>(node);
   tab_slot_view->SetBoundsRect(node.view()->GetLocalBounds());
+  tab_slot_view->SetGroup(tab->GetGroup());
+  tab_slot_view->SetSplit(tab->GetSplit());
+
   auto& tab_slot_view_ref = *tab_slot_view.get();
   slot_views_.insert(
       {&node, node.view()->AddChildView(std::move(tab_slot_view))});
