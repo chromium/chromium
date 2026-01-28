@@ -9618,7 +9618,7 @@ const CSSValue* Size::ParseSingleValue(
   }
 
   CSSValue* page_size = ConsumePageSize(stream);
-  CSSValue* orientation =
+  CSSIdentifierValue* orientation =
       css_parsing_utils::ConsumeIdent<CSSValueID::kPortrait,
                                       CSSValueID::kLandscape>(stream);
   if (!page_size) {
@@ -9631,7 +9631,8 @@ const CSSValue* Size::ParseSingleValue(
   if (page_size) {
     result->Append(*page_size);
   }
-  if (orientation) {
+  if (orientation &&
+      (!page_size || orientation->GetValueID() != CSSValueID::kPortrait)) {
     result->Append(*orientation);
   }
   return result;
