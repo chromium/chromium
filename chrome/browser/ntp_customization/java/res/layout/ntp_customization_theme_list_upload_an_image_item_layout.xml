@@ -40,7 +40,6 @@ found in the LICENSE file.
       android:layout_height="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
       android:importantForAccessibility="no"
       app:tint="@color/default_icon_color_tint_list"
-      android:src="@drawable/ic_check_googblue_24dp"
-      android:visibility="invisible"/>
+      android:src="@drawable/forward_arrow_icon"/>
 
 </org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListItemView>

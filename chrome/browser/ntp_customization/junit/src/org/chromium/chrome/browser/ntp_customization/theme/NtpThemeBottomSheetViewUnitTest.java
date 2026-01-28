@@ -86,12 +86,12 @@ public class NtpThemeBottomSheetViewUnitTest {
     }
 
     @Test
-    public void testSetSectionTrailingIconVisibility() {
-        mNtpThemeBottomSheetView.setSectionTrailingIconVisibility(DEFAULT, true);
-        verify(mDefaultSection).setTrailingIconVisibility(eq(true));
+    public void testUpdateSectionTrailingIcon() {
+        mNtpThemeBottomSheetView.updateSectionTrailingIcon(DEFAULT, true);
+        verify(mDefaultSection).updateTrailingIcon(eq(true), eq(DEFAULT));
 
-        mNtpThemeBottomSheetView.setSectionTrailingIconVisibility(IMAGE_FROM_DISK, false);
-        verify(mUploadAnImageSection).setTrailingIconVisibility(eq(false));
+        mNtpThemeBottomSheetView.updateSectionTrailingIcon(IMAGE_FROM_DISK, false);
+        verify(mUploadAnImageSection).updateTrailingIcon(eq(false), eq(IMAGE_FROM_DISK));
     }
 
     @Test

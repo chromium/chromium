@@ -73,17 +73,17 @@ public class NtpThemeViewBinderUnitTest {
     }
 
     @Test
-    public void testSectionTrailingIconVisibility() {
+    public void testIsSectionSelected() {
         PropertyModelChangeProcessor.create(
                 mModel, mNtpThemeBottomSheetView, NtpThemeViewBinder::bindThemeBottomSheet);
 
         Pair<Integer, Boolean> pair = new Pair<>(DEFAULT, true);
-        mModel.set(NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE, pair);
-        verify(mNtpThemeBottomSheetView).setSectionTrailingIconVisibility(DEFAULT, true);
+        mModel.set(NtpThemeProperty.IS_SECTION_SELECTED, pair);
+        verify(mNtpThemeBottomSheetView).updateSectionTrailingIcon(DEFAULT, true);
 
         pair = new Pair<>(DEFAULT, false);
-        mModel.set(NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE, pair);
-        verify(mNtpThemeBottomSheetView).setSectionTrailingIconVisibility(DEFAULT, false);
+        mModel.set(NtpThemeProperty.IS_SECTION_SELECTED, pair);
+        verify(mNtpThemeBottomSheetView).updateSectionTrailingIcon(DEFAULT, false);
     }
 
     @Test

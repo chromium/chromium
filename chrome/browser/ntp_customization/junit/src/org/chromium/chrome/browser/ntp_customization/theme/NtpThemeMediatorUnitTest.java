@@ -26,7 +26,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_SELECTED;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
@@ -202,12 +202,13 @@ public class NtpThemeMediatorUnitTest {
 
         mMediator.handleChromeDefaultSectionClick(mView);
 
+        verify(mThemePropertyModel).set(eq(IS_SECTION_SELECTED), eq(new Pair<>(DEFAULT, true)));
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(DEFAULT, true)));
+                .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(IMAGE_FROM_DISK, false)));
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(IMAGE_FROM_DISK, false)));
+                .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(CHROME_COLOR, false)));
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLOR, false)));
+                .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(THEME_COLLECTION, false)));
     }
 
     @Test
@@ -220,7 +221,7 @@ public class NtpThemeMediatorUnitTest {
         mMediator.handleThemeCollectionsSectionClick(mView);
 
         // Verify no visibility changes happened directly.
-        verify(mThemePropertyModel, never()).set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), any());
+        verify(mThemePropertyModel, never()).set(eq(IS_SECTION_SELECTED), any());
     }
 
     @Test
@@ -228,7 +229,7 @@ public class NtpThemeMediatorUnitTest {
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(CHROME_COLOR);
         createMediator(true);
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLOR, true)));
+                .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(CHROME_COLOR, true)));
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 
@@ -303,11 +304,12 @@ public class NtpThemeMediatorUnitTest {
         mMediator.updateForChoosingDefaultOrChromeColorOption(CHROME_COLOR);
 
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLOR, true)));
+                .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(CHROME_COLOR, true)));
+        verify(mThemePropertyModel).set(eq(IS_SECTION_SELECTED), eq(new Pair<>(DEFAULT, false)));
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(DEFAULT, false)));
+                .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(IMAGE_FROM_DISK, false)));
         verify(mThemePropertyModel)
-                .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(IMAGE_FROM_DISK, false)));
+                .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(THEME_COLLECTION, false)));
 
         verify(mNtpThemeCollectionManager).resetCustomBackground();
     }
@@ -366,43 +368,45 @@ public class NtpThemeMediatorUnitTest {
 
         clearInvocations(mThemePropertyModel);
         mMediator.updateTrailingIconVisibilityForSectionType(DEFAULT);
-        assertIconVisibility(DEFAULT, /* visible= */ true);
-        assertIconVisibility(IMAGE_FROM_DISK, /* visible= */ false);
-        assertIconVisibility(CHROME_COLOR, /* visible= */ false);
-        assertIconVisibility(COLOR_FROM_HEX, /* visible= */ false);
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(DEFAULT, true));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(IMAGE_FROM_DISK, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(CHROME_COLOR, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(THEME_COLLECTION, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(COLOR_FROM_HEX, false));
 
         clearInvocations(mThemePropertyModel);
         mMediator.updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
-        assertIconVisibility(DEFAULT, /* visible= */ false);
-        assertIconVisibility(IMAGE_FROM_DISK, /* visible= */ true);
-        assertIconVisibility(CHROME_COLOR, /* visible= */ false);
-        assertIconVisibility(COLOR_FROM_HEX, /* visible= */ false);
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(DEFAULT, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(IMAGE_FROM_DISK, true));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(CHROME_COLOR, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(THEME_COLLECTION, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(COLOR_FROM_HEX, false));
 
         clearInvocations(mThemePropertyModel);
         mMediator.updateTrailingIconVisibilityForSectionType(CHROME_COLOR);
-        assertIconVisibility(DEFAULT, /* visible= */ false);
-        assertIconVisibility(IMAGE_FROM_DISK, /* visible= */ false);
-        assertIconVisibility(CHROME_COLOR, /* visible= */ true);
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(DEFAULT, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(IMAGE_FROM_DISK, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(CHROME_COLOR, true));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(THEME_COLLECTION, false));
         // Verifies that COLOR_FROM_HEX doesn't override the visibility of CHROME_COLOR since they
         // share the same image icon.
         verify(mThemePropertyModel, never())
-                .set(
-                        IS_SECTION_TRAILING_ICON_VISIBLE,
-                        new Pair<>(COLOR_FROM_HEX, /* visible= */ false));
+                .set(IS_SECTION_SELECTED, new Pair<>(COLOR_FROM_HEX, /* visible= */ false));
 
         clearInvocations(mThemePropertyModel);
         mMediator.updateTrailingIconVisibilityForSectionType(COLOR_FROM_HEX);
-        assertIconVisibility(DEFAULT, /* visible= */ false);
-        assertIconVisibility(IMAGE_FROM_DISK, /* visible= */ false);
-        assertIconVisibility(CHROME_COLOR, /* visible= */ false);
-        assertIconVisibility(COLOR_FROM_HEX, /* visible= */ true);
-    }
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(DEFAULT, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(IMAGE_FROM_DISK, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(CHROME_COLOR, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(THEME_COLLECTION, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(COLOR_FROM_HEX, true));
 
-    private void assertIconVisibility(int type, boolean visible) {
-        Pair<Integer, Boolean> pair = mThemePropertyModel.get(IS_SECTION_TRAILING_ICON_VISIBLE);
-        if (pair != null && pair.first == type) {
-            verify(mThemePropertyModel)
-                    .set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(type, visible));
-        }
+        clearInvocations(mThemePropertyModel);
+        mMediator.updateTrailingIconVisibilityForSectionType(THEME_COLLECTION);
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(DEFAULT, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(IMAGE_FROM_DISK, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(CHROME_COLOR, false));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(THEME_COLLECTION, true));
+        verify(mThemePropertyModel).set(IS_SECTION_SELECTED, new Pair<>(COLOR_FROM_HEX, false));
     }
 }

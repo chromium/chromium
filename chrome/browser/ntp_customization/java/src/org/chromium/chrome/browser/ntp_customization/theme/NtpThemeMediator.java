@@ -11,7 +11,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_SELECTED;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
@@ -155,10 +155,6 @@ public class NtpThemeMediator {
     @VisibleForTesting
     void updateTrailingIconVisibilityForSectionType(@NtpBackgroundImageType int sectionType) {
         for (int i = 0; i < NtpBackgroundImageType.NUM_ENTRIES; i++) {
-            if (i == THEME_COLLECTION) {
-                continue;
-            }
-
             if (i == COLOR_FROM_HEX && sectionType == CHROME_COLOR) {
                 // Prevents overriding the visibility from visible to invisible if the user chooses
                 // a customized color theme. This is because both types share the same bottom sheet
@@ -167,9 +163,9 @@ public class NtpThemeMediator {
             }
 
             if (i == sectionType) {
-                mThemePropertyModel.set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(i, true));
+                mThemePropertyModel.set(IS_SECTION_SELECTED, new Pair<>(i, true));
             } else {
-                mThemePropertyModel.set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(i, false));
+                mThemePropertyModel.set(IS_SECTION_SELECTED, new Pair<>(i, false));
             }
         }
     }

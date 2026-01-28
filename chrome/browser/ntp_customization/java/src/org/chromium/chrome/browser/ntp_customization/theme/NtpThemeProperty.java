@@ -22,10 +22,10 @@ public class NtpThemeProperty {
     public static final PropertyModel.WritableObjectPropertyKey<Pair<Drawable, Drawable>>
             LEADING_ICON_FOR_THEME_COLLECTIONS = new PropertyModel.WritableObjectPropertyKey<>();
 
-    // The key manages the visibility of trailing icon for each section, with the integer
-    // representing the section type and the boolean indicating its visibility.
+    // The key manages the selection state for each section: the integer defines the section type,
+    // while the boolean indicates whether it is selected.
     public static final PropertyModel.WritableObjectPropertyKey<Pair<Integer, Boolean>>
-            IS_SECTION_TRAILING_ICON_VISIBLE = new PropertyModel.WritableObjectPropertyKey<>();
+            IS_SECTION_SELECTED = new PropertyModel.WritableObjectPropertyKey<>();
 
     // The key manages the {@link View.OnClickListener} of each section, with the integer
     // representing the section type.
@@ -85,7 +85,7 @@ public class NtpThemeProperty {
     public static final PropertyKey[] THEME_KEYS =
             new PropertyKey[] {
                 LEARN_MORE_BUTTON_CLICK_LISTENER,
-                IS_SECTION_TRAILING_ICON_VISIBLE,
+                IS_SECTION_SELECTED,
                 SECTION_ON_CLICK_LISTENER,
                 LEADING_ICON_FOR_THEME_COLLECTIONS
             };

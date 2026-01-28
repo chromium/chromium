@@ -86,11 +86,10 @@ public class NtpThemeBottomSheetView extends ScrollView {
         }
     }
 
-    void setSectionTrailingIconVisibility(
-            @NtpBackgroundImageType int sectionType, boolean visible) {
+    void updateSectionTrailingIcon(@NtpBackgroundImageType int sectionType, boolean visible) {
         NtpThemeListItemView ntpThemeListItemView =
                 assumeNonNull(getItemBySectionType(sectionType));
-        ntpThemeListItemView.setTrailingIconVisibility(visible);
+        ntpThemeListItemView.updateTrailingIcon(visible, sectionType);
     }
 
     void setSectionOnClickListener(

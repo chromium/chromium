@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_SELECTED;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
@@ -29,11 +29,11 @@ public class NtpThemeViewBinder {
                     view.findViewById(
                             org.chromium.chrome.browser.ntp_customization.R.id.learn_more_button);
             learnMoreButton.setOnClickListener(model.get(LEARN_MORE_BUTTON_CLICK_LISTENER));
-        } else if (propertyKey == IS_SECTION_TRAILING_ICON_VISIBLE) {
+        } else if (propertyKey == IS_SECTION_SELECTED) {
             ((NtpThemeBottomSheetView) view)
-                    .setSectionTrailingIconVisibility(
-                            model.get(IS_SECTION_TRAILING_ICON_VISIBLE).first,
-                            model.get(IS_SECTION_TRAILING_ICON_VISIBLE).second);
+                    .updateSectionTrailingIcon(
+                            model.get(IS_SECTION_SELECTED).first,
+                            model.get(IS_SECTION_SELECTED).second);
         } else if (propertyKey == SECTION_ON_CLICK_LISTENER) {
             ((NtpThemeBottomSheetView) view)
                     .setSectionOnClickListener(
