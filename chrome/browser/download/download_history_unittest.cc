@@ -226,7 +226,11 @@ class DownloadHistoryTest : public testing::Test {
   DownloadHistoryTest& operator=(const DownloadHistoryTest&) = delete;
 
  protected:
-  void TearDown() override { download_history_.reset(); }
+  void TearDown() override {
+    history_ = nullptr;
+    manager_observer_ = nullptr;
+    download_history_.reset();
+  }
 
   NiceMock<content::MockDownloadManager>& manager() { return *manager_.get(); }
   download::MockDownloadItem& item(size_t index) { return *items_[index]; }
@@ -501,10 +505,9 @@ class DownloadHistoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
   std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
-  raw_ptr<FakeHistoryAdapter, DanglingUntriaged> history_ = nullptr;
+  raw_ptr<FakeHistoryAdapter> history_ = nullptr;
   std::unique_ptr<DownloadHistory> download_history_;
-  raw_ptr<content::DownloadManager::Observer, DanglingUntriaged>
-      manager_observer_ = nullptr;
+  raw_ptr<content::DownloadManager::Observer> manager_observer_ = nullptr;
   size_t download_created_index_ = 0;
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
