@@ -28,13 +28,7 @@ ExtensionsToolbarViewModel::ExtensionsToolbarViewModel(
     : browser_(browser), delegate_(delegate), actions_model_(actions_model) {
   WebContentsObserver::Observe(GetCurrentWebContents());
   actions_model_observation_.Observe(actions_model_);
-  auto* tab_list = TabListInterface::From(browser_);
-  if (tab_list) {
-    tab_list_observation_.Observe(tab_list);
-  }
-
-  permissions_manager_observation_.Observe(
-      extensions::PermissionsManager::Get(browser_->GetProfile()));
+  tab_list_observation_.Observe(TabListInterface::From(browser_));
 
   if (actions_model_->actions_initialized()) {
     OnToolbarModelInitialized();
@@ -114,13 +108,7 @@ bool ExtensionsToolbarViewModel::AreActionsInitialized() {
 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
 ExtensionsToolbarViewModel::GetButtonState(
     content::WebContents* web_contents) const {
-  // TODO(crbug.com/461983701): Refactor WebContents handling. Callers of
-  // GetButtonState and GetRequestAccessButtonParams should be responsible for
-  // handling potential nullptr WebContents and only call these methods with
-  // valid WebContents instances.
-  if (!web_contents) {
-    return ExtensionsToolbarButtonState::kDefault;
-  }
+  CHECK(web_contents);
   Profile* profile = browser_->GetProfile();
   const GURL& url = web_contents->GetLastCommittedURL();
 
@@ -159,10 +147,7 @@ ExtensionsToolbarViewModel::RequestAccessButtonParams
 ExtensionsToolbarViewModel::GetRequestAccessButtonParams(
     content::WebContents* web_contents) const {
   RequestAccessButtonParams params;
-  if (!web_contents) {
-    return params;
-  }
-
+  CHECK(web_contents);
   Profile* profile = browser_->GetProfile();
   extensions::PermissionsManager* permissions_manager =
       extensions::PermissionsManager::Get(profile);
@@ -311,7 +296,7 @@ void ExtensionsToolbarViewModel::DidFinishNavigation(
 }
 
 void ExtensionsToolbarViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
-  WebContentsObserver::Observe(tab ? tab->GetContents() : nullptr);
+  WebContentsObserver::Observe(tab->GetContents());
   for (Observer& obs : observers_) {
     obs.OnActiveWebContentsChanged();
   }
@@ -346,63 +331,4 @@ content::WebContents* ExtensionsToolbarViewModel::GetCurrentWebContents()
     return nullptr;
   }
   return tab->GetContents();
-}
-
-void ExtensionsToolbarViewModel::OnHostAccessRequestAdded(
-    const extensions::ExtensionId& extension_id,
-    int tab_id) {
-  content::WebContents* web_contents = GetCurrentWebContents();
-  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  if (tab_id != current_tab_id) {
-    return;
-  }
-  for (Observer& obs : observers_) {
-    obs.OnRequestAccessButtonParamsChanged(web_contents);
-  }
-}
-
-void ExtensionsToolbarViewModel::OnHostAccessRequestUpdated(
-    const extensions::ExtensionId& extension_id,
-    int tab_id) {
-  content::WebContents* web_contents = GetCurrentWebContents();
-  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  if (tab_id != current_tab_id) {
-    return;
-  }
-  for (Observer& obs : observers_) {
-    obs.OnRequestAccessButtonParamsChanged(web_contents);
-  }
-}
-
-void ExtensionsToolbarViewModel::OnHostAccessRequestRemoved(
-    const extensions::ExtensionId& extension_id,
-    int tab_id) {
-  content::WebContents* web_contents = GetCurrentWebContents();
-  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  if (tab_id != current_tab_id) {
-    return;
-  }
-  for (Observer& obs : observers_) {
-    obs.OnRequestAccessButtonParamsChanged(web_contents);
-  }
-}
-
-void ExtensionsToolbarViewModel::OnHostAccessRequestsCleared(int tab_id) {
-  content::WebContents* web_contents = GetCurrentWebContents();
-  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  if (tab_id != current_tab_id) {
-    return;
-  }
-  for (Observer& obs : observers_) {
-    obs.OnRequestAccessButtonParamsChanged(web_contents);
-  }
-}
-
-void ExtensionsToolbarViewModel::OnHostAccessRequestDismissedByUser(
-    const extensions::ExtensionId& extension_id,
-    const url::Origin& origin) {
-  content::WebContents* web_contents = GetCurrentWebContents();
-  for (Observer& obs : observers_) {
-    obs.OnRequestAccessButtonParamsChanged(web_contents);
-  }
 }

@@ -724,15 +724,6 @@ void ExtensionsToolbarDesktop::HideActivePopup() {
   UpdateContainerVisibilityAfterAnimation();
 }
 
-void ExtensionsToolbarDesktop::OnRequestAccessButtonParamsChanged(
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    return;
-  }
-
-  UpdateRequestAccessButton(web_contents);
-}
-
 bool ExtensionsToolbarDesktop::CloseOverflowMenuIfOpen() {
   if (IsExtensionsMenuShowing()) {
     HideExtensionsMenu();

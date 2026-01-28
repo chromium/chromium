@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_TOOLBAR_VIEW_MODEL_H_
 
 #include "base/containers/flat_map.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "extensions/browser/permissions_manager.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -24,12 +22,10 @@ class TabListInterface;
 // ViewModel for the ExtensionsToolbarDesktop. This class manages the business
 // logic for the order and state of extension actions in the toolbar. It serves
 // as the single source of truth for the ordering of the list of actions.
-class ExtensionsToolbarViewModel
-    : public ExtensionsContainer,
-      public ToolbarActionsModel::Observer,
-      public content::WebContentsObserver,
-      public TabListInterfaceObserver,
-      public extensions::PermissionsManager::Observer {
+class ExtensionsToolbarViewModel : public ExtensionsContainer,
+                                   public ToolbarActionsModel::Observer,
+                                   public content::WebContentsObserver,
+                                   public TabListInterfaceObserver {
  public:
   // Delegate used to retrieve platform-specific information.
   class Delegate {
@@ -85,11 +81,6 @@ class ExtensionsToolbarViewModel
     // Called when the active WebContents is changed (e.g. tab change or page
     // navigation).
     virtual void OnActiveWebContentsChanged() = 0;
-
-    // Called when the extensions that should be displayed in the request
-    // access button to be recomputed.
-    virtual void OnRequestAccessButtonParamsChanged(
-        content::WebContents* web_contents) {}
   };
 
   enum class ExtensionsToolbarButtonState {
@@ -181,19 +172,6 @@ class ExtensionsToolbarViewModel
   void OnActiveTabChanged(tabs::TabInterface* tab) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
-  // extensions::PermissionsManager::Observer:
-  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
-                                int tab_id) override;
-  void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
-                                  int tab_id) override;
-  void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
-                                  int tab_id) override;
-  void OnHostAccessRequestsCleared(int tab_id) override;
-  void OnHostAccessRequestDismissedByUser(const extensions::ExtensionId& id,
-                                          const url::Origin& origin) override;
-  // TODO(crbug.com/461983701): Add OnUserPermissionsSettingsChanged and
-  // OnShowAccessRequestsInToolbarChanged
-
  private:
   // Returns whether any of `actions` given have access to the `web_contents`.
   bool AnyActionHasCurrentSiteAccess(content::WebContents* web_contents) const;
@@ -216,10 +194,6 @@ class ExtensionsToolbarViewModel
 
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};
-
-  base::ScopedObservation<extensions::PermissionsManager,
-                          extensions::PermissionsManager::Observer>
-      permissions_manager_observation_{this};
 
   // The observers that handles platform-specific UI.
   base::ObserverList<Observer> observers_;

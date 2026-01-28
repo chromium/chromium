@@ -216,3 +216,50 @@ void ExtensionsToolbarDesktopViewController::
   // option is to close the hover card if its shown whenever request access
   // button is updated.
 }
+
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestDismissedByUser(
+    const extensions::ExtensionId& extension_id,
+    const url::Origin& origin) {
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestAdded(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestUpdated(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestRemoved(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestsCleared(
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  UpdateRequestAccessButton();
+}
