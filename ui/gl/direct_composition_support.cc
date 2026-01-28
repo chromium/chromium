@@ -716,7 +716,13 @@ void InitializeDirectComposition(
     return;
   }
 
-  // Load DLL at runtime since older Windows versions don't have dcomp.
+  // Load DLL at runtime since older Windows versions don't have dcomp and dxgi.
+  HMODULE dxgi_module = ::GetModuleHandle(L"dxgi.dll");
+  if (!dxgi_module) {
+    LOG(ERROR) << "Failed to load dxgi.dll";
+    return;
+  }
+
   HMODULE dcomp_module = ::GetModuleHandle(L"dcomp.dll");
   if (!dcomp_module) {
     LOG(ERROR) << "Failed to load dcomp.dll";
@@ -760,6 +766,18 @@ void InitializeDirectComposition(
   g_d3d11_device = d3d11_device.Detach();
 
   if (features::UseCompositorClockVSyncInterval()) {
+    using PFN_DXGI_DISABLE_VBLANK_VIRTUALIZATION = HRESULT(WINAPI*)();
+    PFN_DXGI_DISABLE_VBLANK_VIRTUALIZATION dxgi_disable_vblank_virtualization =
+        reinterpret_cast<PFN_DXGI_DISABLE_VBLANK_VIRTUALIZATION>(
+            ::GetProcAddress(dxgi_module, "DXGIDisableVBlankVirtualization"));
+    CHECK(dxgi_disable_vblank_virtualization);
+
+    hr = dxgi_disable_vblank_virtualization();
+    if (FAILED(hr)) {
+      LOG(WARNING) << "Failed to disable VBlank virtualization: "
+                   << logging::SystemErrorCodeToString(hr);
+    }
+
     g_get_frame_id_function = reinterpret_cast<PFN_DCOMPOSITION_GET_FRAME_ID>(
         ::GetProcAddress(dcomp_module, "DCompositionGetFrameId"));
     CHECK(g_get_frame_id_function);
