@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/browser_action_util.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -49,7 +49,6 @@
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -781,7 +780,8 @@ void FillInTabObservation(
   if (fetch_result.screenshot_result.has_value()) {
     auto& data = fetch_result.screenshot_result->screenshot_data;
     if (data.size() != 0) {
-      tab_observation.set_screenshot_mime_type(fetch_result.screenshot_result->mime_type);
+      tab_observation.set_screenshot_mime_type(
+          fetch_result.screenshot_result->mime_type);
       // TODO(bokan): Can we avoid a copy here?
       tab_observation.set_screenshot(data.data(), data.size());
     }
@@ -848,7 +848,8 @@ void FetchCallback(
   if (!GetTabObservationResultOverrideForTesting().is_null()) {
     // TODO(bokan): result might not have a value in which case this CHECKs (but
     // this is a test-only issue).
-    GetTabObservationResultOverrideForTesting().Run(tab_observation, **result);
+    GetTabObservationResultOverrideForTesting().Run(tab_observation,  // IN-TEST
+                                                    **result);
     return;
   }
 
@@ -1057,8 +1058,7 @@ void BuildActionsResultWithObservations(
       tab_observation->set_id(handle.raw_value());
       tab_observation->set_result(
           apc::TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY);
-      actor_service->GetJournal().Log(GURL(), task.id(),
-                                      "TabObservationFailed",
+      actor_service->GetJournal().Log(GURL(), task.id(), "TabObservationFailed",
                                       JournalDetailsBuilder()
                                           .Add("tabId", handle.raw_value())
                                           .AddError("TabWentAway")
@@ -1072,8 +1072,7 @@ void BuildActionsResultWithObservations(
       tab_observation->set_id(handle.raw_value());
       tab_observation->set_result(
           apc::TabObservation::TAB_OBSERVATION_PAGE_CRASHED);
-      actor_service->GetJournal().Log(GURL(), task.id(),
-                                      "TabObservationFailed",
+      actor_service->GetJournal().Log(GURL(), task.id(), "TabObservationFailed",
                                       JournalDetailsBuilder()
                                           .Add("tabId", handle.raw_value())
                                           .AddError("Page crashed")
@@ -1122,11 +1121,11 @@ void BuildActionsResultWithObservations(
   }
 }
 
-void SetTabObservationResultOverrideForTesting(
+void SetTabObservationResultOverrideForTesting(  // IN-TEST
     base::RepeatingCallback<void(
         optimization_guide::proto::TabObservation*,
         const page_content_annotations::FetchPageContextResult&)> callback) {
-  GetTabObservationResultOverrideForTesting() = callback;
+  GetTabObservationResultOverrideForTesting() = callback;  // IN-TEST
 }
 
 apc::ActionsResult BuildErrorActionsResult(

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_BROWSER_ACTION_UTIL_H_
-#define CHROME_BROWSER_ACTOR_BROWSER_ACTION_UTIL_H_
+#ifndef CHROME_BROWSER_ACTOR_ACTOR_PROTO_CONVERSION_H_
+#define CHROME_BROWSER_ACTOR_ACTOR_PROTO_CONVERSION_H_
 
 #include <memory>
 #include <vector>
@@ -21,14 +21,11 @@
 
 // Conversion function for turning optimization_guide::proto::* types into
 // ToolRequests usable by the actor framework.
-// TODO(bokan): Rename to actor_proto_conversion.h|cc
-
 namespace content {
 class BrowserContext;
 }
 
 namespace optimization_guide::proto {
-class Action;
 class Actions;
 }  // namespace optimization_guide::proto
 
@@ -129,4 +126,4 @@ std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_BROWSER_ACTION_UTIL_H_
+#endif  // CHROME_BROWSER_ACTOR_ACTOR_PROTO_CONVERSION_H_

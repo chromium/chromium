@@ -4,8 +4,8 @@
 
 #include "chrome/browser/actor/tools/script_tool_host.h"
 
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/journal_details_builder.h"
