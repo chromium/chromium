@@ -56,14 +56,12 @@ bool SetThreadNiceFromType(PlatformThreadId thread_id, ThreadType thread_type);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void SetThreadTypeLinux(ProcessId process_id,
                         PlatformThreadId thread_id,
-                        ThreadType thread_type,
-                        IsViaIPC via_ipc);
+                        ThreadType thread_type);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
 void SetThreadTypeChromeOS(ProcessId process_id,
                            PlatformThreadId thread_id,
-                           ThreadType thread_type,
-                           IsViaIPC via_ipc);
+                           ThreadType thread_type);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
 inline constexpr auto SetThreadType = SetThreadTypeChromeOS;

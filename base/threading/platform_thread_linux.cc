@@ -119,7 +119,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     return;
   }
 
-  internal::SetThreadType(getpid(), thread_id, thread_type, IsViaIPC(false));
+  internal::SetThreadType(getpid(), thread_id, thread_type);
 }
 
 std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest() {
@@ -244,16 +244,14 @@ void PlatformThreadLinux::SetThreadCgroupsForThreadType(
 // static
 void PlatformThreadLinux::SetThreadType(ProcessId process_id,
                                         PlatformThreadId thread_id,
-                                        ThreadType thread_type,
-                                        IsViaIPC via_ipc) {
-  internal::SetThreadType(process_id, thread_id, thread_type, via_ipc);
+                                        ThreadType thread_type) {
+  internal::SetThreadType(process_id, thread_id, thread_type);
 }
 
 namespace internal {
 void SetThreadTypeLinux(ProcessId process_id,
                         PlatformThreadId thread_id,
-                        ThreadType thread_type,
-                        IsViaIPC via_ipc) {
+                        ThreadType thread_type) {
   PlatformThreadLinux::SetThreadCgroupsForThreadType(thread_id, thread_type);
 
   // Some scheduler syscalls require thread ID of 0 for current thread.

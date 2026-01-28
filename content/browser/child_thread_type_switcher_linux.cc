@@ -39,9 +39,8 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
     return;
   }
 
-  base::PlatformThread::SetThreadType(peer_pid,
-                                      base::PlatformThreadId(peer_tid),
-                                      thread_type, base::IsViaIPC(true));
+  base::PlatformThread::SetThreadType(
+      peer_pid, base::PlatformThreadId(peer_tid), thread_type);
 }
 
 }  // namespace

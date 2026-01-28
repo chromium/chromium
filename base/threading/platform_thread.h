@@ -357,7 +357,6 @@ class BASE_EXPORT PlatformThreadApple : public PlatformThreadBase {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 class ThreadTypeDelegate;
-using IsViaIPC = base::StrongAlias<class IsViaIPCTag, bool>;
 
 class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
  public:
@@ -379,8 +378,7 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
   // whole thread group's (i.e. process) priority.
   static void SetThreadType(ProcessId process_id,
                             PlatformThreadId thread_id,
-                            ThreadType thread_type,
-                            IsViaIPC via_ipc);
+                            ThreadType thread_type);
 
   // For a given thread id and thread type, setup the cpuset and schedtune
   // CGroups for the thread.
@@ -394,8 +392,6 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_EXPORT BASE_DECLARE_FEATURE(kSetRtForDisplayThreads);
-
 class CrossProcessPlatformThreadDelegate;
 
 class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
@@ -414,36 +410,7 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
   // PlatformThreadLinux's SetThreadType() header comment for Linux details.
   static void SetThreadType(ProcessId process_id,
                             PlatformThreadId thread_id,
-                            ThreadType thread_type,
-                            IsViaIPC via_ipc);
-
-  // Returns true if the feature for backgrounding of threads is enabled.
-  static bool IsThreadsBgFeatureEnabled();
-
-  // Returns true if the feature for setting display threads to RT is enabled.
-  static bool IsDisplayThreadsRtFeatureEnabled();
-
-  // Set a specific thread as backgrounded. This is called when the process
-  // moves to and from the background and changes have to be made to each of its
-  // thread's scheduling attributes.
-  static void SetThreadBackgrounded(ProcessId process_id,
-                                    PlatformThreadId thread_id,
-                                    bool backgrounded);
-
-  // Returns the thread type of a thread given its thread id.
-  static std::optional<ThreadType> GetThreadTypeFromThreadId(
-      ProcessId process_id,
-      PlatformThreadId thread_id);
-
-  // DCHECKs that the caller is on the correct sequence to perform cross-process
-  // priority changes without races.
-  //
-  // This does not simply return a `SequenceChecker&` and let the caller do the
-  // check, because doing so requires an `#include` of sequence_checker.h (since
-  // `SequenceChecker` is an alias rather than a forward-declarable class),
-  // which complicates life for other base/ headers trying to avoid circular
-  // dependencies.
-  static void DcheckCrossProcessThreadPrioritySequence();
+                            ThreadType thread_type);
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
