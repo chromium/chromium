@@ -31,8 +31,6 @@ using actor::TaskId;
 using testing::_;
 using testing::SaveArg;
 
-// TODO(crbug.com/461157725): Fix and enable these tests on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 std::vector<content::IdentityRequestDialogDisclosureField>
@@ -259,9 +257,8 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/478952817): Test is flaky on fieldtrial-tester.
 IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
-                       DISABLED_ActorTaskStateChangesCanShowWidget) {
+                       ActorTaskStateChangesCanShowWidget) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents_);
   auto mock_view = std::make_unique<MockAccountSelectionView>();
@@ -281,9 +278,8 @@ IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
   EXPECT_FALSE(HasActingTaskId(controller.get()));
 }
 
-// TODO(crbug.com/478952817): Test is flaky on fieldtrial-tester.
 IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
-                       DISABLED_ActorTaskHidesUiOnShow) {
+                       ActorTaskHidesUiOnShow) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents_);
   auto mock_view = std::make_unique<MockAccountSelectionView>();
@@ -313,4 +309,3 @@ IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
 
   EXPECT_FALSE(controller->DidShowUi());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
