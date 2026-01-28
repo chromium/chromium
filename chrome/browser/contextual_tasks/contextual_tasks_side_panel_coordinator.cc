@@ -131,14 +131,23 @@ class ContextualTasksWebView : public views::WebView {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void SetWebContents(content::WebContents* web_contents) override {
-    views::WebView::SetWebContents(web_contents);
-    if (web_contents) {
+  void SetWebContents(content::WebContents* wc) override {
+    if (web_contents() == wc) {
+      return;
+    }
+
+    if (web_contents() && !web_contents()->IsBeingDestroyed()) {
+      web_contents()->WasHidden();
+    }
+
+    views::WebView::SetWebContents(wc);
+
+    if (wc) {
+      wc->WasShown();
       // Set `this` as the delegate to handle media access permissions.
-      web_contents->SetDelegate(this);
+      wc->SetDelegate(this);
       // Set ViewType::kComponent for voice recognition to work.
-      extensions::SetViewType(web_contents,
-                              extensions::mojom::ViewType::kComponent);
+      extensions::SetViewType(wc, extensions::mojom::ViewType::kComponent);
     }
   }
 
