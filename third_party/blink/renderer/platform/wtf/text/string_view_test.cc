@@ -746,6 +746,19 @@ TEST(StringViewTest, EndsWith) {
   EXPECT_FALSE(StringView("foobar").ends_with(u"foo"));
 }
 
+TEST(StringViewTest, EndsWithChar) {
+  EXPECT_FALSE(StringView().ends_with(0));
+  EXPECT_FALSE(StringView("").ends_with(0));
+  EXPECT_TRUE(StringView("foo").ends_with('o'));
+  EXPECT_FALSE(StringView("foo").ends_with(0x6f6f));  // 'o' == 0x6f
+  EXPECT_FALSE(StringView("foo").ends_with('f'));
+  EXPECT_TRUE(StringView(u"foo").ends_with('o'));
+  EXPECT_FALSE(StringView(u"foo").ends_with('f'));
+  EXPECT_TRUE(StringView(u"fo\u25A0").ends_with(uchar::kBlackSquare));
+  EXPECT_FALSE(StringView(u"fo\u25A0")
+                   .ends_with(static_cast<LChar>(uchar::kBlackSquare)));
+}
+
 TEST(StringViewTest, Substr) {
   StringView view8("abc");
   EXPECT_EQ(u"abc", view8.substr(0));

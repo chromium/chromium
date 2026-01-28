@@ -34,10 +34,7 @@ bool IsValidTerm(const StringView& term) {
 }
 
 bool IsPrefix(const StringView& term) {
-  if (term.empty())
-    return false;
-
-  return term[term.length() - 1] == '-';
+  return term.ends_with('-');
 }
 
 bool IsSuffix(const StringView& term) {
