@@ -83,8 +83,10 @@ class SessionsRestoreFunction : public ExtensionFunction {
   ResponseValue RestoreMostRecentlyClosed(BrowserWindowInterface* browser);
   ResponseValue RestoreLocalSession(const SessionId& session_id,
                                     BrowserWindowInterface* browser);
-  ResponseValue RestoreForeignSession(const SessionId& session_id,
-                                      BrowserWindowInterface* browser);
+  ResponseAction RestoreForeignSession(const SessionId& session_id,
+                                       BrowserWindowInterface* browser);
+  void OnRestoreForeignSessionWindows(
+      std::vector<BrowserWindowInterface*> browsers);
 };
 
 class SessionsEventRouter : public sessions::TabRestoreServiceObserver {

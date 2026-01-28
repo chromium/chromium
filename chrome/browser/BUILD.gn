@@ -3416,6 +3416,7 @@ static_library("browser") {
       "//chrome/browser/ui/android/hats:impl",
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/android/pdf:pdf_jni_headers",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/digital_credentials",
       "//chrome/browser/ui/plus_addresses",
       "//chrome/browser/ui/webui/notifications_internals",

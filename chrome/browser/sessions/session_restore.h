@@ -84,12 +84,13 @@ class SessionRestore {
   static void OpenStartupPagesAfterCrash(Browser* browser);
 
   // Specifically used in the restoration of a foreign session.  This function
-  // restores the given session windows to multiple browsers. Returns the
-  // created BrowserWindowInterfaces.
-  static std::vector<BrowserWindowInterface*> RestoreForeignSessionWindows(
+  // restores the given session windows to multiple browsers. Takes a callback
+  // that receives the created BrowserWindowInterfaces.
+  static void RestoreForeignSessionWindows(
       Profile* profile,
       std::vector<const sessions::SessionWindow*>::const_iterator begin,
-      std::vector<const sessions::SessionWindow*>::const_iterator end);
+      std::vector<const sessions::SessionWindow*>::const_iterator end,
+      base::OnceCallback<void(std::vector<BrowserWindowInterface*>)> callback);
 
   // Specifically used in the restoration of a foreign session.  This method
   // restores the given session tab to the browser of |source_web_contents| if

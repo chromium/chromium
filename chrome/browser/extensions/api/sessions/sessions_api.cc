@@ -52,13 +52,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#else
 #include "chrome/browser/ui/browser_live_tab_context.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -83,11 +78,6 @@ const char kRestoreInIncognitoError[] =
     "Can not restore sessions in incognito mode.";
 const char kNoLiveTabContextError[] = "Unable to determine live tab context.";
 const char kNoActiveTabError[] = "No active tab.";
-
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-const char kWindowRestoreNotSupportedError[] =
-    "Window restore is not supported on this platform.";
-#endif
 
 // Comparator function for use with std::sort that will sort sessions by
 // descending modified_time (i.e., most recent first).
@@ -617,7 +607,8 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
   return GetRestoredTabResult(&first_tab->GetWebContents());
 }
 
-ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
+ExtensionFunction::ResponseAction
+SessionsRestoreFunction::RestoreForeignSession(
     const SessionId& session_id,
     BrowserWindowInterface* browser) {
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -629,7 +620,7 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
       service->GetOpenTabsUIDelegate();
   // If the user has disabled tab sync, GetOpenTabsUIDelegate() returns null.
   if (!open_tabs) {
-    return Error(kSessionSyncError);
+    return RespondNow(Error(kSessionSyncError));
   }
 
   const sessions::SessionTab* tab = nullptr;
@@ -638,20 +629,20 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
                                &tab)) {
     content::WebContents* contents = GetActiveWebContents(browser);
     if (!contents) {
-      return Error(kNoActiveTabError);
+      return RespondNow(Error(kNoActiveTabError));
     }
 
     content::WebContents* tab_contents =
         SessionRestore::RestoreForeignSessionTab(
             contents, *tab, WindowOpenDisposition::NEW_FOREGROUND_TAB);
-    return GetRestoredTabResult(tab_contents);
+    return RespondNow(GetRestoredTabResult(tab_contents));
   }
 
   // Restoring a full window.
   std::vector<const sessions::SessionWindow*> windows =
       open_tabs->GetForeignSession(session_id.session_tag());
   if (windows.empty()) {
-    return Error(kInvalidSessionIdError, session_id.ToString());
+    return RespondNow(Error(kInvalidSessionIdError, session_id.ToString()));
   }
 
   std::vector<const sessions::SessionWindow*>::const_iterator window =
@@ -661,21 +652,29 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
     ++window;
   }
   if (window == windows.end()) {
-    return Error(kInvalidSessionIdError, session_id.ToString());
+    return RespondNow(Error(kInvalidSessionIdError, session_id.ToString()));
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Only restore one window at a time.
-  std::vector<BrowserWindowInterface*> browsers =
-      SessionRestore::RestoreForeignSessionWindows(profile, window, window + 1);
+  SessionRestore::RestoreForeignSessionWindows(
+      profile, window, window + 1,
+      base::BindOnce(&SessionsRestoreFunction::OnRestoreForeignSessionWindows,
+                     this));
+  // Window restore is asynchronous on Android but synchronous on Win/Mac/Linux.
+  // On Win/Mac/Linux we may have already called the callback and responded. On
+  // Android we need to respond later.
+  if (did_respond()) {
+    return AlreadyResponded();
+  } else {
+    return RespondLater();
+  }
+}
+
+void SessionsRestoreFunction::OnRestoreForeignSessionWindows(
+    std::vector<BrowserWindowInterface*> browsers) {
   // Will always create one browser because we only restore one window per call.
   DCHECK_EQ(1u, browsers.size());
-  return GetRestoredWindowResult(ExtensionTabUtil::GetWindowId(browsers[0]));
-#else
-  // TODO(crbug.com/405219627): Support window restore on desktop Android.
-  NOTIMPLEMENTED();
-  return Error(kWindowRestoreNotSupportedError);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  Respond(GetRestoredWindowResult(ExtensionTabUtil::GetWindowId(browsers[0])));
 }
 
 ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
@@ -706,9 +705,13 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
     return RespondNow(Error(kInvalidSessionIdError, *params->session_id));
   }
 
-  return RespondNow(session_id->IsForeign()
-                        ? RestoreForeignSession(*session_id, browser)
-                        : RestoreLocalSession(*session_id, browser));
+  if (!session_id->IsForeign()) {
+    return RespondNow(RestoreLocalSession(*session_id, browser));
+  }
+
+  // Foreign window restore is sometimes asynchronous, so it may return
+  // RespondLater().
+  return RestoreForeignSession(*session_id, browser);
 }
 
 SessionsEventRouter::SessionsEventRouter(Profile* profile)

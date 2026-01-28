@@ -934,9 +934,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignSession) {
   window.tabs.push_back(std::make_unique<sessions::SessionTab>());
 
   session.push_back(static_cast<const sessions::SessionWindow*>(&window));
-  std::vector<BrowserWindowInterface*> browsers =
-      SessionRestore::RestoreForeignSessionWindows(profile, session.begin(),
-                                                   session.end());
+  base::test::TestFuture<std::vector<BrowserWindowInterface*>> future;
+  SessionRestore::RestoreForeignSessionWindows(
+      profile, session.begin(), session.end(), future.GetCallback());
+  std::vector<BrowserWindowInterface*> browsers = future.Get();
   ASSERT_EQ(1u, browsers.size());
   BrowserWindowInterface* new_browser = browsers[0];
   ASSERT_TRUE(new_browser);
@@ -995,9 +996,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreInvalidPageState) {
 
   // Restore the session in a new window.
   session.push_back(static_cast<const sessions::SessionWindow*>(&window));
-  std::vector<BrowserWindowInterface*> browsers =
-      SessionRestore::RestoreForeignSessionWindows(profile, session.begin(),
-                                                   session.end());
+  base::test::TestFuture<std::vector<BrowserWindowInterface*>> future;
+  SessionRestore::RestoreForeignSessionWindows(
+      profile, session.begin(), session.end(), future.GetCallback());
+  std::vector<BrowserWindowInterface*> browsers = future.Get();
   ASSERT_EQ(1u, browsers.size());
   BrowserWindowInterface* new_browser = browsers[0];
   ASSERT_TRUE(new_browser);

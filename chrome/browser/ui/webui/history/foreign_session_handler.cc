@@ -170,7 +170,8 @@ void ForeignSessionHandler::OpenForeignSessionWindows(
   }
 
   SessionRestore::RestoreForeignSessionWindows(Profile::FromWebUI(web_ui),
-                                               windows.begin(), windows.end());
+                                               windows.begin(), windows.end(),
+                                               base::DoNothing());
 }
 
 // static
