@@ -56,32 +56,11 @@ const FakeSystemIdentity* kSecondaryIdentity =
 const FakeSystemIdentity* kSecondaryIdentity2 =
     [FakeSystemIdentity fakeIdentity3];
 
-enum FeaturesState {
-  // With all accounts being assigned to the same single profile.
-  kWithoutSeparateProfiles,
-  // With managed accounts being assigned into their own separate profiles.
-  kWithSeparateProfiles
-};
 }  // namespace
 
-// The test param determines whether `kSeparateProfilesForManagedAccounts` is
-// enabled.
-class AccountMenuMediatorTest
-    : public PlatformTest,
-      public testing::WithParamInterface<FeaturesState> {
+class AccountMenuMediatorTest : public PlatformTest {
  public:
-  AccountMenuMediatorTest() {
-    base::flat_map<base::test::FeatureRef, bool> feature_states;
-    switch (GetParam()) {
-      case kWithoutSeparateProfiles:
-        feature_states[kSeparateProfilesForManagedAccounts] = false;
-        break;
-      case kWithSeparateProfiles:
-        feature_states[kSeparateProfilesForManagedAccounts] = true;
-        break;
-    }
-    feature_list_.InitWithFeatureStates(feature_states);
-  }
+  AccountMenuMediatorTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -198,8 +177,6 @@ class AccountMenuMediatorTest
     run_loop.Run();
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
   id<AccountMenuMediatorDelegate> delegate_mock_;
   id<SyncErrorSettingsCommandHandler> sync_error_settings_mock_;
   id<AccountMenuConsumer> consumer_mock_;
@@ -235,21 +212,12 @@ class AccountMenuMediatorTest
 
 // Checks that adding a secondary identity lead to updating the
 // consumer.
-TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
+TEST_F(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   FakeSystemIdentity* thirdIdentity = [FakeSystemIdentity fakeIdentity3];
   // Initially, the user's name isn't known.
   thirdIdentity.userFullName = nil;
   thirdIdentity.userGivenName = nil;
-  switch (GetParam()) {
-    case kWithSeparateProfiles:
-      break;
-    case kWithoutSeparateProfiles:
-      OCMExpect([consumer_mock_
-          updateAccountListWithGaiaIDsToAdd:@[]
-                            gaiaIDsToRemove:@[]
-                              gaiaIDsToKeep:[OCMArg any]]);
-      break;
-  }
+
   OCMExpect([consumer_mock_
       updateAccountListWithGaiaIDsToAdd:@[ thirdIdentity.gaiaId.ToNSString() ]
                         gaiaIDsToRemove:@[]
@@ -274,7 +242,7 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 
 // Checks that removing a secondary identity lead to updating the
 // consumer.
-TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
+TEST_F(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
 
   OCMExpect([consumer_mock_
@@ -299,7 +267,7 @@ TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
 
 // Checks that removing the primary identity lead to updating the
 // consumer.
-TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
+TEST_F(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
            withCancelationReason:signin_ui::CancelationReason::kFailed
@@ -313,7 +281,7 @@ TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
 #pragma mark - AccountMenuDataSource
 
 // Tests the result of secondaryAccountsGaiaIDs.
-TEST_P(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
+TEST_F(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
   EXPECT_EQ([mediator_ secondaryAccountsGaiaIDs],
             std::vector<GaiaId> { kSecondaryIdentity.gaiaId });
 }
@@ -321,19 +289,19 @@ TEST_P(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
 #pragma mark - AccountMenuDataSource and SyncObserverModelBridge
 
 // Tests the result of nameForGaiaID.
-TEST_P(AccountMenuMediatorTest, nameForGaiaID) {
+TEST_F(AccountMenuMediatorTest, nameForGaiaID) {
   EXPECT_NSEQ([mediator_ nameForGaiaID:kSecondaryIdentity.gaiaId],
               kSecondaryIdentity.userFullName);
 }
 
 // Tests the result of emailForGaiaID.
-TEST_P(AccountMenuMediatorTest, emailForGaiaID) {
+TEST_F(AccountMenuMediatorTest, emailForGaiaID) {
   EXPECT_NSEQ([mediator_ emailForGaiaID:kSecondaryIdentity.gaiaId],
               kSecondaryIdentity.userEmail);
 }
 
 // Tests the result of imageForGaiaID.
-TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
+TEST_F(AccountMenuMediatorTest, imageForGaiaID) {
   EXPECT_NSEQ(
       [mediator_ imageForGaiaID:kSecondaryIdentity.gaiaId],
       GetApplicationContext() -> GetIdentityAvatarProvider()
@@ -343,18 +311,18 @@ TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
 }
 
 // Tests the result of primaryAccountEmail.
-TEST_P(AccountMenuMediatorTest, TestPrimaryAccountEmail) {
+TEST_F(AccountMenuMediatorTest, TestPrimaryAccountEmail) {
   EXPECT_NSEQ([mediator_ primaryAccountEmail], kPrimaryIdentity.userEmail);
 }
 
 // Tests the result of primaryAccountUserFullName.
-TEST_P(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
+TEST_F(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
   EXPECT_NSEQ([mediator_ primaryAccountUserFullName],
               kPrimaryIdentity.userFullName);
 }
 
 // Tests the result of primaryAccountAvatar.
-TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
+TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
   EXPECT_NSEQ([mediator_ primaryAccountAvatar],
               GetApplicationContext() -> GetIdentityAvatarProvider()
                                           -> GetIdentityAvatar(
@@ -363,12 +331,12 @@ TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
 }
 
 // Tests the result of TestError when there is no error.
-TEST_P(AccountMenuMediatorTest, TestNoError) {
+TEST_F(AccountMenuMediatorTest, TestNoError) {
   EXPECT_THAT([mediator_ accountErrorUIInfo], IsNull());
 }
 
 // Tests the result of TestError when passphrase is required.
-TEST_P(AccountMenuMediatorTest, TestError) {
+TEST_F(AccountMenuMediatorTest, TestError) {
   // In order to simulate requiring a passphrase, test sync service requires
   // us to explicitly set that the setup is not complete, and fire the state
   // change to its observer.
@@ -390,7 +358,7 @@ TEST_P(AccountMenuMediatorTest, TestError) {
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when sign-out fail.
-TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
+TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   // Given that the method  `triggerSignoutWithTargetRect:completion` creates a
   // callback in a callback, this tests has three parts.  One part by callback,
@@ -430,7 +398,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when sign-in fail.
-TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
+TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   // Given that the method  `signOutFromTargetRect:completion` create
   // a callback in a callback, this tests has three parts.  One part by
@@ -476,7 +444,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when switch is successful.
-TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
+TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   // Given that the method  `signOutFromTargetRect:callback` create a
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
@@ -516,7 +484,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
 }
 
 // Tests the result of didTapErrorButton when a passphrase is required.
-TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
+TEST_F(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   // While many errors can be displayed by the account menu, this test suite
   // only consider the error where the passphrase is needed. This is because,
   // when the suite was written, `TestSyncService::GetUserActionableError` could
@@ -535,7 +503,7 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
 }
 
 // Tests the result of didTapErrorButton when a bookmarks limit is exceeded.
-TEST_P(AccountMenuMediatorTest, TestTapErrorButtonBookmarksLimitExceeded) {
+TEST_F(AccountMenuMediatorTest, TestTapErrorButtonBookmarksLimitExceeded) {
   test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
   test_sync_service_->SetBookmarksLimitExceeded(true);
 
@@ -549,7 +517,7 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonBookmarksLimitExceeded) {
 }
 
 // Tests the effect of didTapManageYourGoogleAccount.
-TEST_P(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
+TEST_F(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
   OCMExpect([delegate_mock_ didTapManageYourGoogleAccount]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ didTapManageYourGoogleAccount];
@@ -558,7 +526,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
 }
 
 // Tests the effect of didTapManageAccounts.
-TEST_P(AccountMenuMediatorTest, TestDidTapEditAccountList) {
+TEST_F(AccountMenuMediatorTest, TestDidTapEditAccountList) {
   OCMExpect([delegate_mock_ didTapManageAccounts]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ didTapManageAccounts];
@@ -570,7 +538,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapEditAccountList) {
 // Tests the effect of didTapAddAccount on iOS26+.
 // The expected behavior depends on iOS version because of a UIKit but up to
 // iOS 18. See crbug.com/395959814.
-TEST_P(AccountMenuMediatorTest, TestDidTapAddAccountiOS26) {
+TEST_F(AccountMenuMediatorTest, TestDidTapAddAccountiOS26) {
   if (!@available(iOS 26, *)) {
     return;
   }
@@ -586,7 +554,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccountiOS26) {
 }
 
 // Tests the effect of didTapAddAccount on iOS 18 and less.
-TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
+TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
   if (@available(iOS 26, *)) {
     return;
   }
@@ -603,7 +571,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
 }
 
 // Tests the effect of signOutFromTargetRect.
-TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
+TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   CGRect rect = CGRectMake(0, 0, 40, 24);
 
   __block signin_ui::SignoutCompletionCallback completion = nil;
@@ -624,7 +592,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
 
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.
-TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
+TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
   CGRect rect = CGRectMake(0, 0, 40, 24);
   __block signin_ui::SignoutCompletionCallback completion = nil;
   OCMExpect([delegate_mock_
@@ -641,7 +609,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
 
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.
-TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
+TEST_F(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
            withCancelationReason:signin_ui::CancelationReason::kUserCanceled
@@ -654,7 +622,7 @@ TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
 
 // Tests that the consumer is not notified to update the error section multiple
 // times if the underlying error does not change.
-TEST_P(AccountMenuMediatorTest, TestErrorSectionUptadedOnceForSameError) {
+TEST_F(AccountMenuMediatorTest, TestErrorSectionUptadedOnceForSameError) {
   SignInAndSetPassphraseRequired();
 
   // The error has not changed. The consumer should not be notified again.
@@ -664,7 +632,7 @@ TEST_P(AccountMenuMediatorTest, TestErrorSectionUptadedOnceForSameError) {
 
 // Tests that the consumer is notified to update the error section if the
 // underlying error is resolved.
-TEST_P(AccountMenuMediatorTest, TestErrorSectionUpdatedWhenErrorCleared) {
+TEST_F(AccountMenuMediatorTest, TestErrorSectionUpdatedWhenErrorCleared) {
   test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
   constexpr char kSyncPassphrase[] = "passphrase";
   test_sync_service_->GetUserSettings()->SetPassphraseRequired(kSyncPassphrase);
@@ -681,16 +649,3 @@ TEST_P(AccountMenuMediatorTest, TestErrorSectionUpdatedWhenErrorCleared) {
   test_sync_service_->FireStateChanged();
   EXPECT_THAT([mediator_ accountErrorUIInfo], IsNull());
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AccountMenuMediatorTest,
-                         testing::ValuesIn({kWithoutSeparateProfiles,
-                                            kWithSeparateProfiles}),
-                         [](const testing::TestParamInfo<FeaturesState>& info) {
-                           switch (info.param) {
-                             case kWithoutSeparateProfiles:
-                               return "WithoutSeparateProfiles";
-                             case kWithSeparateProfiles:
-                               return "WithSeparateProfiles";
-                           }
-                         });

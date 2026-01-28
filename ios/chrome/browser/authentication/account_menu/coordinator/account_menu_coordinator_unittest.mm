@@ -71,15 +71,10 @@ const FakeSystemIdentity* kManagedIdentity =
 
 @end
 
-// The test param determines whether `kSeparateProfilesForManagedAccounts` is
-// enabled.
-class AccountMenuCoordinatorTest : public PlatformTest,
-                                   public testing::WithParamInterface<bool> {
+class AccountMenuCoordinatorTest : public PlatformTest {
  public:
-  AccountMenuCoordinatorTest() {
-    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
-                                       GetParam());
-  }
+  AccountMenuCoordinatorTest() = default;
+
   void SetUp() override {
     PlatformTest::SetUp();
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
@@ -197,8 +192,6 @@ class AccountMenuCoordinatorTest : public PlatformTest,
     Stop();
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
   AccountMenuCoordinator<UIAdaptivePresentationControllerDelegate>*
       coordinator_;
   id<SceneCommands> mock_scene_handler_;
@@ -257,7 +250,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
 
 // Tests that `didTapManageYourGoogleAccount` requests the view controller to
 // present a view.
-TEST_P(AccountMenuCoordinatorTest, testManageYourGoogleAccount) {
+TEST_F(AccountMenuCoordinatorTest, testManageYourGoogleAccount) {
   OCMExpect([view_controller_ presentViewController:[OCMArg any]
                                            animated:YES
                                          completion:nil]);
@@ -268,14 +261,14 @@ TEST_P(AccountMenuCoordinatorTest, testManageYourGoogleAccount) {
 
 // Tests that `didTapManageAccounts` has no impact on the view controller and
 // mediator.
-TEST_P(AccountMenuCoordinatorTest, testEditAccountList) {
+TEST_F(AccountMenuCoordinatorTest, testEditAccountList) {
   [coordinator_ didTapManageAccounts];
   AssertOpenAndStop();
 }
 
 // Tests that `signOutFromTargetRect` requests the delegate to be stopped and
 // shows a snackbar and calls its completion.
-TEST_P(AccountMenuCoordinatorTest, testSignOut) {
+TEST_F(AccountMenuCoordinatorTest, testSignOut) {
   base::RunLoop run_loop;
   base::RepeatingClosure closure = run_loop.QuitClosure();
   CGRect rect = CGRect();
@@ -295,13 +288,13 @@ TEST_P(AccountMenuCoordinatorTest, testSignOut) {
 
 // Tests that `mediatorWantsToBeDismissed` requests to the delegate to stop the
 // coordinator.
-TEST_P(AccountMenuCoordinatorTest, testMediatorWantsToBeDismissed) {
+TEST_F(AccountMenuCoordinatorTest, testMediatorWantsToBeDismissed) {
   AssertOpenAndStop();
 }
 
 // Tests that `triggerSignoutWithTargetRect` calls its
 // callback.
-TEST_P(AccountMenuCoordinatorTest, testTriggerSignout) {
+TEST_F(AccountMenuCoordinatorTest, testTriggerSignout) {
   OCMExpect([mock_snackbar_commands_handler_
       showSnackbarMessageOverBrowserToolbar:[OCMArg any]]);
 
@@ -323,7 +316,7 @@ TEST_P(AccountMenuCoordinatorTest, testTriggerSignout) {
 // view controller and mediator. Tests also that the
 // `SyncEncryptionPassphraseTableViewController` is allocated, and the view is
 // correctly closed when the coordinator is stopped.
-TEST_P(AccountMenuCoordinatorTest, testPassphrase) {
+TEST_F(AccountMenuCoordinatorTest, testPassphrase) {
   SyncEncryptionPassphraseTableViewController* passphraseViewController =
       [SyncEncryptionPassphraseTableViewController alloc];
   passphraseViewController.presentationDelegate = presentation_delegate_;
@@ -337,27 +330,27 @@ TEST_P(AccountMenuCoordinatorTest, testPassphrase) {
 
 // Tests that `openTrustedVaultReauthForFetchKeys` calls
 // `showTrustedVaultReauthForFetchKeysFromViewController`.
-TEST_P(AccountMenuCoordinatorTest, testFetchKeys) {
+TEST_F(AccountMenuCoordinatorTest, testFetchKeys) {
   [coordinator_ openTrustedVaultReauthForFetchKeys];
   AssertOpenAndStop();
 }
 
 // Tests that `openTrustedVaultReauthForDegradedRecoverability` calls
 // `showTrustedVaultReauthForDegradedRecoverabilityFromViewController`.
-TEST_P(AccountMenuCoordinatorTest, testDegradedRecoverability) {
+TEST_F(AccountMenuCoordinatorTest, testDegradedRecoverability) {
   [coordinator_ openTrustedVaultReauthForDegradedRecoverability];
   AssertOpenAndStop();
 }
 
 // Tests that `openMDMErrodDialogWithSystemIdentity` has no effects on the
 // mediator and view controller.
-TEST_P(AccountMenuCoordinatorTest, testMDMError) {
+TEST_F(AccountMenuCoordinatorTest, testMDMError) {
   [coordinator_ openMDMErrodDialogWithSystemIdentity:kPrimaryIdentity];
   AssertOpenAndStop();
 }
 
 // Tests that `openBookmarksLimitExceededHelp` opens the help center article.
-TEST_P(AccountMenuCoordinatorTest, testBookmarksLimitExceededHelp) {
+TEST_F(AccountMenuCoordinatorTest, testBookmarksLimitExceededHelp) {
   EXPECT_CALL(*GetMockSyncService(),
               AcknowledgeBookmarksLimitExceededError(
                   syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
@@ -367,11 +360,3 @@ TEST_P(AccountMenuCoordinatorTest, testBookmarksLimitExceededHelp) {
   [coordinator_ openBookmarksLimitExceededHelp];
   AssertOpenAndStop();
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AccountMenuCoordinatorTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "WithSeparateProfiles"
-                                             : "WithoutSeparateProfiles";
-                         });
