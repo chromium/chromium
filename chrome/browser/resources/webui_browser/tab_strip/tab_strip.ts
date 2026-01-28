@@ -19,6 +19,7 @@ import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import type {TabStripObserver} from '/tab_strip_api/tab_strip_observer.js';
 
+import type {TabActivated, TabAdded, TabClosed, TabUpdated} from './events.js';
 import type {TabElement} from './tab.js';
 import {getCss} from './tab_strip.css.js';
 import {getHtml} from './tab_strip.html.js';
@@ -178,7 +179,7 @@ export class TabStrip extends CrLitElement implements TabStripObserver {
       this.activeTab_ = tab.id;
     }
 
-    this.fire('tab-added', {
+    this.fire<TabAdded>('tab-added', {
       id: tab.id,
       isActive: tab.isActive,
     });
@@ -198,7 +199,7 @@ export class TabStrip extends CrLitElement implements TabStripObserver {
     targetActive.isActive = true;
     this.tabStripService_.activateTab(tabId);
     this.requestUpdate();
-    this.fire('tab-activated', targetActive);
+    this.fire<TabActivated>('tab-activated', targetActive);
   }
 
   // TODO(webium): implement this.
@@ -218,12 +219,12 @@ export class TabStrip extends CrLitElement implements TabStripObserver {
     this.tabs_[targetIdx] = tabData;
     // Needed to get the tab element to refresh with the updated data.
     this.requestUpdate();
-    this.fire('tab-updated', tabData);
+    this.fire<TabUpdated>('tab-updated', tabData);
   }
 
   private removeTab(tabId: NodeId) {
     this.tabs_ = this.tabs_.filter(tab => tab.id !== tabId);
-    this.fire('tab-closed', tabId);
+    this.fire<TabClosed>('tab-closed', tabId);
   }
 
   protected onNewTabButtonClick_() {
