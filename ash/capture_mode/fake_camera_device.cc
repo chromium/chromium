@@ -105,13 +105,13 @@ class BufferStrategy {
 };
 
 // -----------------------------------------------------------------------------
-// GpuMemoryBufferStrategy:
+// MappableSharedImageStrategy:
 
 // Defines a concrete implementation of `BufferStrategy` which creates a
-// `GpuMemoryBuffer` and implements all the operations on it.
-class GpuMemoryBufferStrategy : public BufferStrategy {
+// `MappableSharedImage` and implements all the operations on it.
+class MappableSharedImageStrategy : public BufferStrategy {
  public:
-  explicit GpuMemoryBufferStrategy(const gfx::Size& frame_size)
+  explicit MappableSharedImageStrategy(const gfx::Size& frame_size)
       : client_si_(CreateSharedImage(frame_size)) {
     CHECK(client_si_);
   }
@@ -207,9 +207,9 @@ class FakeCameraDevice::Buffer {
             buffer_id, buffer_type, frame_size,
             std::make_unique<SharedMemoryBufferStrategy>(frame_size)));
       case media::VideoCaptureBufferType::kGpuMemoryBuffer:
-        return base::WrapUnique(
-            new Buffer(buffer_id, buffer_type, frame_size,
-                       std::make_unique<GpuMemoryBufferStrategy>(frame_size)));
+        return base::WrapUnique(new Buffer(
+            buffer_id, buffer_type, frame_size,
+            std::make_unique<MappableSharedImageStrategy>(frame_size)));
       default:
         NOTREACHED();
     }
