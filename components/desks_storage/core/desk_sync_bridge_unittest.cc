@@ -1768,7 +1768,7 @@ TEST_F(DeskSyncBridgeTest, GetTemplateJsonShouldReturnList) {
         EXPECT_TRUE(parsed_result);
 
         // Content of the conversion is tested in:
-        // components/desks_storage/core/desk_template_conversion_unittests.cc
+        // components/desks_storage/core/desk_template_conversion_unittest.cc
         loop.Quit();
       }));
   loop.Run();
