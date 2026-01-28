@@ -249,8 +249,12 @@ void ExtensionsToolbarDesktop::UpdateExtensionsButton(
 
 void ExtensionsToolbarDesktop::UpdateRequestAccessButton(
     content::WebContents* web_contents) {
-  CHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
+  // Extensions request access button can only be updated when feature is
+  // enabled.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
 
   // Button is never visible when actions cannot be show in toolbar.
   if (!model_->CanShowActionsInToolbar(*browser_)) {
@@ -722,6 +726,15 @@ void ExtensionsToolbarDesktop::HideActivePopup() {
   }
   DCHECK(!popup_owner_);
   UpdateContainerVisibilityAfterAnimation();
+}
+
+void ExtensionsToolbarDesktop::OnRequestAccessButtonParamsChanged(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+
+  UpdateRequestAccessButton(web_contents);
 }
 
 bool ExtensionsToolbarDesktop::CloseOverflowMenuIfOpen() {
