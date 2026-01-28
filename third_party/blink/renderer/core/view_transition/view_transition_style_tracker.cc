@@ -1253,9 +1253,15 @@ void ViewTransitionStyleTracker::PauseRendering() {
   DCHECK_EQ(state_, State::kCapturing);
 
   if (scope_snapshot_layer_) {
+    auto bounds = scope_snapshot_layer_->bounds();
+    auto paint_offset = scope_snapshot_layer_->paint_offset();
+
     auto resource_id = scope_snapshot_layer_->ViewTransitionResourceId();
     scope_snapshot_layer_ = cc::ViewTransitionContentLayer::Create(
         resource_id, /*is_live_content_layer=*/false);
+
+    scope_snapshot_layer_->SetBounds(bounds);
+    scope_snapshot_layer_->SetPaintOffset(paint_offset);
   }
 }
 

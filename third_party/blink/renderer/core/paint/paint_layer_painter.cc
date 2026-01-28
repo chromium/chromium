@@ -531,11 +531,17 @@ void PaintLayerPainter::PaintTransitionScopeSnapshotIfNeeded(
     return;
   }
 
-  PhysicalRect box_border_rect =
-      paint_layer_.LocalBoundingBoxIncludingSelfPaintingDescendants();
-  PhysicalRect ink_overflow_rect = object.ApplyFiltersToRect(box_border_rect);
-  PhysicalOffset paint_offset = ink_overflow_rect.offset;
-  layer->SetBounds(ink_overflow_rect.PixelSnappedSize());
+  gfx::Point paint_offset;
+  if (layer->is_live_content_layer()) {
+    PhysicalRect box_border_rect =
+        paint_layer_.LocalBoundingBoxIncludingSelfPaintingDescendants();
+    PhysicalRect ink_overflow_rect = object.ApplyFiltersToRect(box_border_rect);
+    paint_offset = ToRoundedPoint(ink_overflow_rect.offset);
+    layer->SetBounds(ink_overflow_rect.PixelSnappedSize());
+    layer->SetPaintOffset(paint_offset);
+  } else {
+    paint_offset = layer->paint_offset();
+  }
   layer->SetIsDrawable(true);
 
   PropertyTreeStateOrAlias properties =
@@ -543,9 +549,9 @@ void PaintLayerPainter::PaintTransitionScopeSnapshotIfNeeded(
   DCHECK(effect);
   properties.SetEffect(*effect);
 
-  RecordForeignLayer(
-      context, paint_layer_, DisplayItem::kForeignLayerViewTransitionContent,
-      std::move(layer), ToRoundedPoint(paint_offset), &properties);
+  RecordForeignLayer(context, paint_layer_,
+                     DisplayItem::kForeignLayerViewTransitionContent,
+                     std::move(layer), paint_offset, &properties);
 }
 
 PaintResult PaintLayerPainter::PaintTransitionPseudos(
