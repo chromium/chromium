@@ -83,7 +83,11 @@ IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, AddClassesToYTIFramesTest) {
 }
 
 // Fails on Fuchsia ASAN.
-#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+// Falky timeout on Linux MSAN, ASAN and TSAN.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER) ||          \
+    BUILDFLAG(IS_LINUX) &&                                          \
+        (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+         defined(THREAD_SANITIZER))
 #define MAYBE_ImageClassifierTest DISABLED_ImageClassifierTest
 #else
 #define MAYBE_ImageClassifierTest ImageClassifierTest
