@@ -32,10 +32,10 @@ public class ToolbarUtils {
 
     public static final @ToolbarComponentId int[] RANKED_TOOLBAR_COMPONENTS =
             new int[] {
+                ToolbarComponentId.PADDING,
                 ToolbarComponentId.MENU,
                 ToolbarComponentId.TAB_SWITCHER,
                 ToolbarComponentId.LOCATION_BAR_MINIMUM,
-                ToolbarComponentId.PADDING,
                 ToolbarComponentId.BACK,
                 ToolbarComponentId.INCOGNITO_INDICATOR,
                 ToolbarComponentId.ADAPTIVE_BUTTON,
