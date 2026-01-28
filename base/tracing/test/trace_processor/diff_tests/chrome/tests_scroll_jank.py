@@ -962,3 +962,42 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395286872,1295608219756311,3484716,372803
         -2143831735395286868,1295608214189311,3303262,529785
         """))
+
+  def test_chrome_scroll_jank_tags(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_m144.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.scroll_jank_tagging;
+
+        SELECT
+          frame_id,
+          tag
+        FROM chrome_scroll_jank_tags
+        ORDER BY frame_id ASC, tag ASC;
+        """,
+        out=Csv("""
+        "frame_id","tag"
+        -4678090656722456587,"long_wait_for_begin_frame"
+        -4678090656722456583,"long_viz_swap_to_latch"
+        -4678090656722456583,"long_wait_for_begin_frame"
+        """))
+
+  def test_chrome_tagged_janky_scroll_frames(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_m144.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.scroll_jank_tagging;
+
+        SELECT
+          frame_id,
+          tagged,
+          tags
+        FROM chrome_tagged_janky_scroll_frames
+        ORDER BY frame_id ASC;
+        """,
+        out=Csv("""
+        "frame_id","tagged","tags"
+        -4678090656722513293,0,"[NULL]"
+        -4678090656722456587,1,"long_wait_for_begin_frame"
+        -4678090656722456583,1,"long_viz_swap_to_latch,long_wait_for_begin_frame"
+        """))
