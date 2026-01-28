@@ -18,7 +18,7 @@
     const requestWillBeSent = (await dp.Network.onceRequestWillBeSent()).params;
     testRunner.log(`Request for ${requestWillBeSent.request.url}`);
 
-    await dp.Network.onceResponseReceived();
+    await dp.Network.onceLoadingFinished();
     const data = await dp.Network.getResponseBody(
       {requestId: requestWillBeSent.requestId});
     await logDigest(data.result.body);
