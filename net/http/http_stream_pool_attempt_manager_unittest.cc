@@ -4659,16 +4659,44 @@ TEST_F(HttpStreamPoolAttemptManagerTest, HavingSpdySessionIsNotStalled) {
 // Tests that when an AttemptManager only allows QUIC, it's not treated as being
 // stalled on the TCP limit, even after the slow timer triggers.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicOnlyIsNotStalled) {
-  // Requests gets an IP address instantly, but stalls waiting for the HTTPS
-  // record.
-  resolver()->AddFakeRequest()->add_endpoint(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  const url::SchemeHostPort destination{GURL(kDefaultDestination)};
+
+  // Manually injecting this ensures the AttemptManager treats the request
+  // as QUIC-only without relying on specific trigger logic like HTTPS fetching.
+  http_server_properties()->SetAlternativeServices(
+      destination, NetworkAnonymizationKey(),
+      {AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+          AlternativeService(NextProto::kProtoQUIC, destination.host(), 443),
+          base::Time::Max(), {quic_version()})});
+
+  // Use MockConnectCompleter to stall the QUIC connection attempt.
+  // This ensures we reach the "active job" state without completing it.
+  MockConnectCompleter completer;
+  MockQuicData data(quic_version());
+  // The completer forces the Connect job to return ERR_IO_PENDING and wait.
+  data.AddConnect(&completer);
+  data.AddSocketDataToFactory(socket_factory());
+
+  // Have to provide IP addresses. If don't, IsStalledByPoolLimit() returns
+  // false immediately (due to !HasIpAddresses()), bypassing the logic want
+  // to test.
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+  endpoint_request->add_endpoint(
       ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
 
   StreamRequester requester;
-  requester.set_destination(kDefaultDestination)
+  requester.set_destination(destination)
       .set_allowed_alpns(HttpStreamPool::kQuicBasedProtocols)
       .set_quic_version(quic_version())
       .RequestStream(pool());
+
+  // Ensure DNS resolution completes and the connection attempt starts (and
+  // stalls).
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
 
   // Stream should not be considered stalled after starting.
   EXPECT_FALSE(requester.result());
@@ -4677,8 +4705,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOnlyIsNotStalled) {
                    ->GetPriorityIfStalledByPoolLimit()
                    .has_value());
 
-  // Group is should still not be considered stalled after the TCP/IP timer
-  // expires, though the timer shouldn't actually even be started, in this case.
+  // Group should still not be considered stalled after the TCP/IP timer
+  // expires.
   FastForwardBy(quic_session_pool()->GetTimeDelayForWaitingJob(
       requester.GetStreamKey().CalculateQuicSessionAliasKey().session_key()));
   EXPECT_FALSE(requester.result());
