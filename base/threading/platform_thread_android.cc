@@ -234,7 +234,7 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
         return kDefaultThreadPriority.Get();
       case ThreadType::kPresentation:
         return GetAdjustedPresentationThreadPriority();
-      case ThreadType::kInteractive:
+      case ThreadType::kAudioProcessing:
         return kInteractiveThreadPriority.Get();
       case ThreadType::kRealtimeAudio:
         // Not configurable, should be the effective highest.
@@ -249,7 +249,7 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
     case ThreadType::kDefault:
       return 0;
     case ThreadType::kPresentation:
-    case ThreadType::kInteractive:
+    case ThreadType::kAudioProcessing:
       return -4;
     case ThreadType::kRealtimeAudio:
       return -16;

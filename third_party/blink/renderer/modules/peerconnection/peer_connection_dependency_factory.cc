@@ -423,7 +423,7 @@ class PeerConnectionStaticDeps {
     if (!chrome_worker_thread_.IsRunning()) {
       chrome_worker_thread_.StartWithOptions(base::Thread::Options(
           base::FeatureList::IsEnabled(features::kWebRtcUseMediaThreadTypes)
-              ? base::ThreadType::kInteractive
+              ? base::ThreadType::kAudioProcessing
               : base::ThreadType::kDefault));
     }
     // To allow sending to the signaling/worker threads.

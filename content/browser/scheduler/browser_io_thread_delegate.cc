@@ -42,7 +42,7 @@ void BrowserIOThreadDelegate::Init() {
   default_task_runner_ = task_queues_->GetHandle()->GetDefaultTaskRunner();
   scenario_priority_boost_ =
       std::make_unique<base::TaskMonitoringScopedBoostPriority>(
-          base::ThreadType::kInteractive,
+          base::ThreadType::kAudioProcessing,
           base::BindRepeating(&internal::ShouldBoostThreadsPriority));
 }
 

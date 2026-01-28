@@ -182,9 +182,9 @@ enum class ThreadType : int {
   // Suitable for user visible  threads, ie. compositing and presenting
   // the foreground content.
   kPresentation,
-  // Suitable for threads that handle user interactions, or on the critical
-  // path of performance.
-  kInteractive,
+  // Suitable for threads that handle audio processing, not including direct
+  // audio rendering which should use kRealtimeAudio.
+  kAudioProcessing,
   // Suitable for low-latency, glitch-resistant audio.
   kRealtimeAudio,
   kMaxValue = kRealtimeAudio,

@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, ExpectedThreadPriorities) {
                 base::PlatformThread::GetCurrentEffectiveThreadTypeForTest() ==
                     expected_priority ||
                 base::PlatformThread::GetCurrentEffectiveThreadTypeForTest() ==
-                    base::ThreadType::kInteractive);
+                    base::ThreadType::kAudioProcessing);
           },
           expected_priority));
   BrowserThread::RunAllPendingTasksOnThreadForTesting(BrowserThread::IO);

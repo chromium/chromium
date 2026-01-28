@@ -43,7 +43,7 @@ CompositorThreadSchedulerImpl::CompositorThreadSchedulerImpl(
   if (base::FeatureList::IsEnabled(
           base::features::kBoostCompositorThreadsPriorityWhenIdle)) {
     scenario_priority_boost_.emplace(
-        base::ThreadType::kInteractive, base::BindRepeating([]() {
+        base::ThreadType::kAudioProcessing, base::BindRepeating([]() {
           return performance_scenarios::CurrentScenariosMatch(
               performance_scenarios::ScenarioScope::kCurrentProcess,
               performance_scenarios::kDefaultIdleScenarios);

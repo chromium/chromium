@@ -134,7 +134,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
 #endif
 
   if (base::FeatureList::IsEnabled(features::kIOThreadInteractiveThreadType)) {
-    thread_options.thread_type = base::ThreadType::kInteractive;
+    thread_options.thread_type = base::ThreadType::kAudioProcessing;
   }
 
   // If the NetworkServiceTaskScheduler feature is enabled and this is the main
@@ -152,7 +152,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
 
   scenario_priority_boost_ =
       std::make_unique<base::TaskMonitoringScopedBoostPriority>(
-          base::ThreadType::kInteractive,
+          base::ThreadType::kAudioProcessing,
           base::BindRepeating(&ChildProcess::ShouldBoostIOThreadPriority,
                               base::Unretained(this)));
   if (base::FeatureList::IsEnabled(

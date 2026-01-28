@@ -10,9 +10,9 @@ namespace mojo_base::thread_type_unittest {
 
 TEST(ThreadTypeTest, ThreadType) {
   static constexpr base::ThreadType kTestTypes[] = {
-      base::ThreadType::kBackground,  base::ThreadType::kUtility,
-      base::ThreadType::kDefault,     base::ThreadType::kPresentation,
-      base::ThreadType::kInteractive, base::ThreadType::kRealtimeAudio};
+      base::ThreadType::kBackground,      base::ThreadType::kUtility,
+      base::ThreadType::kDefault,         base::ThreadType::kPresentation,
+      base::ThreadType::kAudioProcessing, base::ThreadType::kRealtimeAudio};
 
   for (auto thread_type_in : kTestTypes) {
     base::ThreadType thread_type_out;

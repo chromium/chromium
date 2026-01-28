@@ -263,7 +263,7 @@ TEST(PlatformThreadTest, FunctionTimesTen) {
 namespace {
 
 constexpr ThreadType kAllThreadTypes[] = {
-    ThreadType::kRealtimeAudio, ThreadType::kInteractive,
+    ThreadType::kRealtimeAudio, ThreadType::kAudioProcessing,
     ThreadType::kPresentation,  ThreadType::kDefault,
     ThreadType::kUtility,       ThreadType::kBackground};
 
@@ -440,12 +440,12 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
 #if BUILDFLAG(IS_WIN)
   // Currently only on Windows, kInteractive maps to a higher priority than
   // kDisplayCritical.
-  TestPriorityResultingFromThreadType(ThreadType::kInteractive,
-                                      ThreadType::kInteractive);
+  TestPriorityResultingFromThreadType(ThreadType::kAudioProcessing,
+                                      ThreadType::kAudioProcessing);
 #else
   // On other platforms, kInteractive maps to the same priority as
   // kDisplayCritical.
-  TestPriorityResultingFromThreadType(ThreadType::kInteractive,
+  TestPriorityResultingFromThreadType(ThreadType::kAudioProcessing,
                                       ThreadType::kPresentation);
 #endif
 }

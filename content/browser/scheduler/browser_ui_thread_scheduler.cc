@@ -97,7 +97,7 @@ void BrowserUIThreadScheduler::CommonSequenceManagerSetup(
 
   scenario_priority_boost_ =
       std::make_unique<base::TaskMonitoringScopedBoostPriority>(
-          base::ThreadType::kInteractive,
+          base::ThreadType::kAudioProcessing,
           base::BindRepeating(&internal::ShouldBoostThreadsPriority));
 }
 

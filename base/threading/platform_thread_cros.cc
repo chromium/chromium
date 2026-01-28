@@ -173,7 +173,7 @@ void SetThreadLatencySensitivity(ProcessId process_id,
     case ThreadType::kDefault:
       break;
     case ThreadType::kPresentation:
-    case ThreadType::kInteractive:
+    case ThreadType::kAudioProcessing:
       // Compositing and display critical threads need a boost for consistent 60
       // fps.
       [[fallthrough]];

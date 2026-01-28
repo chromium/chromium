@@ -288,7 +288,7 @@ std::optional<qos_class_t> ThreadTypeToQoSClass(ThreadType thread_type) {
     case ThreadType::kDefault:
       return QOS_CLASS_USER_INITIATED;
     case ThreadType::kPresentation:
-    case ThreadType::kInteractive:
+    case ThreadType::kAudioProcessing:
       return QOS_CLASS_USER_INTERACTIVE;
     case ThreadType::kRealtimeAudio:
       return std::nullopt;

@@ -803,7 +803,7 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
         (base::PlatformThread::GetCurrentThreadType() ==
              base::ThreadType::kPresentation ||
          base::PlatformThread::GetCurrentThreadType() ==
-             base::ThreadType::kInteractive)) {
+             base::ThreadType::kAudioProcessing)) {
       base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
     }
 

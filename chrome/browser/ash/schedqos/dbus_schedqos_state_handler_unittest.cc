@@ -437,7 +437,7 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadType) {
                                       base::ThreadType::kPresentation);
   base::PlatformThread::SetThreadType(process_.Pid(),
                                       base::PlatformThreadId::ForTest(105),
-                                      base::ThreadType::kInteractive);
+                                      base::ThreadType::kAudioProcessing);
   base::PlatformThread::SetThreadType(process_.Pid(),
                                       base::PlatformThreadId::ForTest(106),
                                       base::ThreadType::kRealtimeAudio);

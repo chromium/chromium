@@ -263,14 +263,14 @@ TEST_F(ScopedThreadPriorityTest, TaskMonitoringBoost) {
     // A `TaskMonitoringScopedBoostPriority` object with a callback that always
     // returns true.
     TaskMonitoringScopedBoostPriority scoped_boost_priority(
-        ThreadType::kInteractive, BindRepeating([]() { return true; }));
+        ThreadType::kAudioProcessing, BindRepeating([]() { return true; }));
     // Not boosted before `WillProcessTask` is called.
     ASSERT_EQ(ThreadType::kDefault,
               PlatformThread::GetCurrentEffectiveThreadTypeForTest());
 
     // After `WillProcessTask` is called, the thread priority should be boosted.
     scoped_boost_priority.WillProcessTask(PendingTask(), false);
-    ASSERT_EQ(ThreadType::kInteractive,
+    ASSERT_EQ(ThreadType::kAudioProcessing,
               PlatformThread::GetCurrentEffectiveThreadTypeForTest());
   }
 

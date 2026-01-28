@@ -153,7 +153,7 @@ bool JobTaskSource::WillJoin() {
   }
   for (auto& [_, worker_priority] : workers_priority_) {
     worker_priority.BoostPriority(std::min(
-        PlatformThread::GetCurrentThreadType(), ThreadType::kInteractive));
+        PlatformThread::GetCurrentThreadType(), ThreadType::kAudioProcessing));
   }
   return WaitForParticipationOpportunity();
 }

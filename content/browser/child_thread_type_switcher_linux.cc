@@ -32,7 +32,7 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
 
   if (peer_tid == peer_pid && thread_type != base::ThreadType::kDefault &&
       thread_type != base::ThreadType::kPresentation &&
-      thread_type != base::ThreadType::kInteractive) {
+      thread_type != base::ThreadType::kAudioProcessing) {
     // TODO(crbug.com/40226692): Consider reporting with ReceivedBadMessage().
     DLOG(WARNING) << "Changing main thread type to another value than "
                   << "kDefault, kInteractive or kPresentation isn't allowed";
