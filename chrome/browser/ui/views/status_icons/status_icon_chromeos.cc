@@ -81,7 +81,7 @@ void StatusIconChromeOS::OnDisplayAdded(const display::Display& new_display) {
   AddStatusIconForDisplay(new_display.id());
 }
 
-void StatusIconChromeOS::OnDisplaysRemoved(
+void StatusIconChromeOS::OnWillRemoveDisplays(
     const display::Displays& removed_displays) {
   TrayIconConfiguration icon_config;
   icon_config.id = id_;
