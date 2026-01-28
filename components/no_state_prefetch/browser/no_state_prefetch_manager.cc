@@ -33,7 +33,6 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/browser/no_state_prefetch_field_trial.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_histograms.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_history.h"
@@ -559,20 +558,6 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     SetPreloadingEligibility(
         attempt.get(),
         PreloadingEligibility::kPreloadingInvokedWithinTimelimit);
-    return nullptr;
-  }
-
-  // If this is Navigation predictor and we are in the holdback, skip the
-  // prefetch. Record the status as holdback, so we can analyze via UKM.
-  if (origin == ORIGIN_NAVIGATION_PREDICTOR &&
-      base::FeatureList::IsEnabled(kNavigationPredictorPrefetchHoldback)) {
-    // Set the holdback status on the prefetch entry.
-    SetPreloadingEligibility(attempt.get(),
-                             PreloadingEligibility::kPreloadingDisabled);
-    SetPrefetchFinalStatusForUrl(url,
-                                 FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK);
-    SkipNoStatePrefetchContentsAndMaybePreconnect(
-        url, origin, FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK);
     return nullptr;
   }
 

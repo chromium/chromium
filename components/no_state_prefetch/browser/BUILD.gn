@@ -12,8 +12,6 @@ static_library("browser") {
     "no_state_prefetch_contents.h",
     "no_state_prefetch_contents_delegate.cc",
     "no_state_prefetch_contents_delegate.h",
-    "no_state_prefetch_field_trial.cc",
-    "no_state_prefetch_field_trial.h",
     "no_state_prefetch_handle.cc",
     "no_state_prefetch_handle.h",
     "no_state_prefetch_histograms.cc",

@@ -37,7 +37,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/browser/no_state_prefetch_field_trial.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -287,24 +286,6 @@ TEST_F(NoStatePrefetchTest, RespectsThirdPartyCookiesPref) {
       "Prerender.FinalStatus", FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES, 1);
 }
 
-class PrerendererNavigationPredictorPrefetchHoldbackTest
-    : public NoStatePrefetchTest {
- public:
-  PrerendererNavigationPredictorPrefetchHoldbackTest() {
-    feature_list_.InitAndEnableFeature(kNavigationPredictorPrefetchHoldback);
-  }
-};
-
-TEST_F(PrerendererNavigationPredictorPrefetchHoldbackTest,
-       PredictorPrefetchHoldbackNonPredictorReferrer) {
-  GURL url("http://www.notgoogle.com/");
-  no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      url, url::Origin::Create(GURL("www.notgoogle.com")),
-      ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_TRUE(AddSimpleLinkTrigger(url));
-}
-
 // Verify that link-rel:next URLs are not prefetched.
 TEST_F(NoStatePrefetchTest, LinkRelNextWithNSPDisabled) {
   GURL url("http://www.notgoogle.com/");
@@ -317,24 +298,6 @@ TEST_F(NoStatePrefetchTest, LinkRelNextWithNSPDisabled) {
                              url::Origin::Create(GURL("www.notgoogle.com"))));
   histogram_tester().ExpectUniqueSample(
       "Prerender.FinalStatus", FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED, 1);
-}
-
-class PrerendererNavigationPredictorPrefetchHoldbackDisabledTest
-    : public NoStatePrefetchTest {
- public:
-  PrerendererNavigationPredictorPrefetchHoldbackDisabledTest() {
-    feature_list_.InitAndDisableFeature(kNavigationPredictorPrefetchHoldback);
-  }
-};
-
-TEST_F(PrerendererNavigationPredictorPrefetchHoldbackDisabledTest,
-       PredictorPrefetchHoldbackOffNonPredictorReferrer) {
-  GURL url("http://www.notgoogle.com/");
-  no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      url, url::Origin::Create(GURL("www.notgoogle.com")),
-      ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
 // Flaky on Android and Mac, crbug.com/1087876.
