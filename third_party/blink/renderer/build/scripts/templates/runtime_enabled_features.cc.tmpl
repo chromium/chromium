@@ -8,6 +8,8 @@
 
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/platform/feature_context.h"
@@ -114,8 +116,12 @@ bool RuntimeEnabledFeaturesBase::IsFeatureEnabledFromString(
   if (feature != std::end(kFeatures) && feature->name == name) {
     return feature->GetFunction();
   } else {
-    // TODO(jarhar) This will get hit for features controlled by origin trials.
-    NOTREACHED() << " RuntimeEnabledFeature not recognized: " << name;
+    // TODO(crbug.com/477806715): This will get hit for features controlled by origin trials.
+    SCOPED_CRASH_KEY_STRING64("BlinkFeatureNotFound", "name",
+                              feature->name);
+    base::debug::DumpWithoutCrashing();
+    DCHECK(false) << " RuntimeEnabledFeature not recognized: " << name;
+    return false;
   }
 }
 
