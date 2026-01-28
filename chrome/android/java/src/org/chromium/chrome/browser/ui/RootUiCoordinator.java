@@ -1843,6 +1843,9 @@ public class RootUiCoordinator
                             mBackPressManager,
                             mReadAloudControllerSupplier,
                             getDesktopWindowStateManager(),
+                            mTopControlsLockCoordinator != null
+                                    ? mTopControlsLockCoordinator.getDeferredLockingTokenJar()
+                                    : null,
                             getMultiInstanceManager(),
                             mTabBookmarkerSupplier,
                             getMenuButtonVisibilityDelegate(),

@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tabstrip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
@@ -27,6 +29,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.ui.util.TokenHolder;
 
 /** Unit tests for {@link TabStripTopControlLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,15 +43,18 @@ public class TabStripTopControlLayerUnitTest {
 
     private TabStripTopControlLayer mTabStripTopControlLayer;
     private final CallbackHelper mOnTransitionStartedCallback = new CallbackHelper();
+    private final CallbackHelper mOnTokenUpdateCallback = new CallbackHelper();
+    private TokenHolder mTokenHolder;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         doReturn(true).when(mTopControlsStacker).isLayerAtTop(TopControlType.TABSTRIP);
         doReturn(mControlContainerView).when(mControlContainer).getView();
+        mTokenHolder = new TokenHolder(mOnTokenUpdateCallback::notifyCalled);
         mTabStripTopControlLayer =
                 new TabStripTopControlLayer(
-                        0, mTopControlsStacker, mBrowserControls, mControlContainer);
+                        0, mTopControlsStacker, mBrowserControls, mControlContainer, mTokenHolder);
         mTabStripTopControlLayer.initializeWithNative(mTabStripSceneLayerHolder);
     }
 
@@ -130,7 +136,7 @@ public class TabStripTopControlLayerUnitTest {
         // Recreate the stacker without setting the tab strip.
         mTabStripTopControlLayer =
                 new TabStripTopControlLayer(
-                        0, mTopControlsStacker, mBrowserControls, mControlContainer);
+                        0, mTopControlsStacker, mBrowserControls, mControlContainer, mTokenHolder);
         requestTransition(100, false);
 
         verifyHeightTransitionNotStarted();
@@ -145,9 +151,57 @@ public class TabStripTopControlLayerUnitTest {
     }
 
     @Test
+    public void testTokenHolder() {
+        requestTransition(100, true);
+        assertEquals("Token should be acquired.", 1, mOnTokenUpdateCallback.getCallCount());
+        assertTrue("Token should be held during transition.", mTokenHolder.hasTokens());
+
+        mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(0, true);
+        assertEquals(
+                "Token should be released after transition finished.",
+                2,
+                mOnTokenUpdateCallback.getCallCount());
+        assertFalse("Token should be released.", mTokenHolder.hasTokens());
+    }
+
+    @Test
+    public void testTokenHolder_InterruptedTransition() {
+        requestTransition(100, true);
+        assertEquals("Token should be acquired.", 1, mOnTokenUpdateCallback.getCallCount());
+        assertTrue("Token should be held during transition.", mTokenHolder.hasTokens());
+
+        // Request another transition while the first one is ongoing.
+        requestTransition(120, true);
+        assertEquals(
+                "Token update callback should not be triggered for nested transition.",
+                1,
+                mOnTokenUpdateCallback.getCallCount());
+        assertTrue("Token should still be held.", mTokenHolder.hasTokens());
+
+        mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(0, true);
+        assertEquals(
+                "Token should be released after transition finished.",
+                2,
+                mOnTokenUpdateCallback.getCallCount());
+        assertFalse("Token should be released.", mTokenHolder.hasTokens());
+    }
+
+    @Test
     public void testDestroy() {
         mTabStripTopControlLayer.destroy();
         verify(mTopControlsStacker).removeControl(mTabStripTopControlLayer);
+    }
+
+    @Test
+    public void testTokenReleasedOnDestroy() {
+        requestTransition(100, true);
+        assertEquals("Token should be acquired.", 1, mOnTokenUpdateCallback.getCallCount());
+
+        mTabStripTopControlLayer.destroy();
+        assertEquals(
+                "Token should be released after destroy.",
+                2,
+                mOnTokenUpdateCallback.getCallCount());
     }
 
     @Test
@@ -157,7 +211,11 @@ public class TabStripTopControlLayerUnitTest {
         // Recreate the layer without setting the tab strip (without calling initializeWithNative).
         mTabStripTopControlLayer =
                 new TabStripTopControlLayer(
-                        100, mTopControlsStacker, mBrowserControls, mControlContainer);
+                        100,
+                        mTopControlsStacker,
+                        mBrowserControls,
+                        mControlContainer,
+                        mTokenHolder);
         requestTransition(120, true);
 
         // Assume another offset dispatched, which should result in transition started.

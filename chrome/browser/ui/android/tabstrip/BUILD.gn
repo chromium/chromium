@@ -17,6 +17,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//components/cached_flags:java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   public_deps = [ ":enums_java" ]
 }
@@ -40,5 +41,6 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

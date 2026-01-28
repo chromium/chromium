@@ -760,6 +760,8 @@ public class ToolbarManager
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
+     * @param lockTopControlsTokenJar {@link TokenHolder} from TopControlsLockCoordinator, used to
+     *     ensure control lock state does not change.
      * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to new
      *     windows.
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
@@ -814,6 +816,7 @@ public class ToolbarManager
             @Nullable BackPressManager backPressManager,
             MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @Nullable TokenHolder lockTopControlsTokenJar,
             @Nullable MultiInstanceManager multiInstanceManager,
             MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @Nullable VisibilityDelegate menuButtonVisibilityDelegate,
@@ -1179,7 +1182,8 @@ public class ToolbarManager
                         mToolbarLayout.getTabStripHeightFromResource(),
                         mTopControlsStacker,
                         mBrowserControlsSizer,
-                        mControlContainer);
+                        mControlContainer,
+                        lockTopControlsTokenJar);
         mToolbar =
                 createTopToolbarCoordinator(
                         controlContainer,
