@@ -395,6 +395,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       last_view_screen_rect_(kInvalidScreenRect),
       last_window_screen_rect_(kInvalidScreenRect),
       new_content_rendering_delay_(blink::kNewContentRenderingDelay),
+      hung_renderer_delay_(input::features::kRendererHangWatcherDelay.Get()),
       render_frame_metadata_provider_(
 #if BUILDFLAG(IS_MAC)
           ui::WindowResizeHelperMac::Get()->task_runner()
@@ -2103,6 +2104,15 @@ void RenderWidgetHostImpl::InsertVisualStateCallback(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false)));
 }
 
+void RenderWidgetHostImpl::SetHungRendererDelay(const base::TimeDelta& delay) {
+  hung_renderer_delay_ = delay;
+  GetRenderInputRouter()->SetHungRendererDelay(delay);
+}
+
+base::TimeDelta RenderWidgetHostImpl::GetHungRendererDelayForTesting() {
+  return hung_renderer_delay_;
+}
+
 RenderProcessHostPriorityClient::Priority RenderWidgetHostImpl::GetPriority() {
   RenderProcessHostPriorityClient::Priority priority = {
       is_hidden_,  frame_depth_, intersects_viewport_, is_discarding_,
@@ -2495,9 +2505,8 @@ void RenderWidgetHostImpl::OnInputEventAckTimeout(
 
   // If a widget's visibility changed mid-input sequence handling and an ack
   // later times out, defer marking the renderer unresponsive until the widget
-  // has been shown for at least `kRendererHangWatcherDelay`.
-  if ((ack_timeout_ts - latest_shown_time_) <
-      input::features::kRendererHangWatcherDelay.Get()) {
+  // has been shown for at least `hung_renderer_delay_`.
+  if ((ack_timeout_ts - latest_shown_time_) < hung_renderer_delay_) {
     return;
   }
 
@@ -3792,6 +3801,7 @@ void RenderWidgetHostImpl::SetupRenderInputRouter() {
   render_input_router_ = std::make_unique<input::RenderInputRouter>(
       this, MakeFlingScheduler(), this,
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
+  render_input_router_->SetHungRendererDelay(hung_renderer_delay_);
   SetupInputRouter();
 }
 

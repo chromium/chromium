@@ -2586,4 +2586,14 @@ TEST_F(RenderWidgetHostTest, SetCursorWithBitmap) {
   EXPECT_EQ(cursor, view_->last_cursor());
 }
 
+TEST_F(RenderWidgetHostTest, SetHungRendererDelayUpdatesTimeout) {
+  // Default is input::kHungRendererDelay.
+  EXPECT_EQ(host_->GetHungRendererDelayForTesting(), input::kHungRendererDelay);
+
+  // Set custom delay. Make sure it's lower than the default which is 5 seconds
+  // for Android and 15 seconds for others.
+  host_->SetHungRendererDelay(base::Seconds(3));
+  EXPECT_EQ(host_->GetHungRendererDelayForTesting(), base::Seconds(3));
+}
+
 }  // namespace content

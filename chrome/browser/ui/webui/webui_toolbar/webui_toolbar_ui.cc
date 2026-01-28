@@ -21,10 +21,12 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_page_handler.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/webui_toolbar_resources.h"
 #include "chrome/grit/webui_toolbar_resources_map.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -113,6 +115,18 @@ CommandUpdater* WebUIToolbarUI::GetCommandUpdater() const {
     return nullptr;
   }
   return browser_interface->GetFeatures().browser_command_controller();
+}
+
+void WebUIToolbarUI::WebUIRenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  TopChromeWebUIController::WebUIRenderFrameCreated(render_frame_host);
+
+  // Set the custom timeout for WebUI toolbar renderer to restart on
+  // unresponsiveness.
+  if (features::kWebUIReloadButtonRestartUnresponsive.Get()) {
+    render_frame_host->GetRenderWidgetHost()->SetHungRendererDelay(
+        features::kWebUIReloadButtonRestartUnresponsiveRenderersTimeout.Get());
+  }
 }
 
 void WebUIToolbarUI::SetCommandUpdaterForTesting(

@@ -45,6 +45,9 @@ class WebUIToolbarUI : public TopChromeWebUIController,
       blink::mojom::LocalResourceLoaderConfig* config,
       const url::Origin& requesting_origin) override;
 
+  void WebUIRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
+
   // For testing:
   // Sets a custom CommandUpdater for testing purposes.
   void SetCommandUpdaterForTesting(CommandUpdater* command_updater);

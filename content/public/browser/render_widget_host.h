@@ -353,6 +353,9 @@ class CONTENT_EXPORT RenderWidgetHost {
   // This can run synchronously on failure.
   using VisualStateCallback = base::OnceCallback<void(bool)>;
   virtual void InsertVisualStateCallback(VisualStateCallback callback) {}
+
+  // Sets the timeout for the hung renderer detection.
+  virtual void SetHungRendererDelay(const base::TimeDelta& delay) = 0;
 };
 
 }  // namespace content
