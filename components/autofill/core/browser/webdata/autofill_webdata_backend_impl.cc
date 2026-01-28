@@ -166,15 +166,44 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
 
 AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  // Explicitly destroy user-data ownees (i.e., the sync bridges) first as their
-  // destructors may call into this AutofillWebDataBackendImpl.
-  user_data_.ClearAllUserData();
 }
 
 void AutofillWebDataBackendImpl::ShutdownOnUISequence() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   weak_ptr_factory_for_ui_lifecycle_.InvalidateWeakPtrsAndDoom();
   DCHECK(!this_during_ui_lifecycle_);
+
+  // We want to destroy the user-data ownees (i.e., the sync bridges) before
+  // GetDatabase() becomes null to avoid nullptr dereferences.
+  //
+  // The below hack achieves that for the following reason.
+  //
+  // WebDataServiceWrapper::Shutdown() calls
+  // - AutofillWebDataBackendImpl::ShutdownOnUISequence() and
+  // - WebDatabaseService::ShutdownDatabase().
+  //
+  // Both functions post a task to the DB sequence:
+  // - AutofillWebDataBackendImpl::ShutdownOnUISequence() destroys
+  //   the sync bridges.
+  // - WebDatabaseService::ShutdownDatabase() resets the database.
+  //
+  // Since those tasks are posted to a sequenced task runner, they're executed
+  // in that order.
+  //
+  // Since this is the only callpath that resets the database, our hack ensures
+  // that the sync bridges are destroyed before GetDatabase() becomes nullptr.
+  //
+  // See crbug.com/474706752#comment21 for details.
+  //
+  // If this hack is removed, the ~AutofillWebDataService() must explicitly call
+  // `user_data_.ClearAllUserData()` because the sync bridges may call into
+  // `this` during their destruction.
+  owning_task_runner()->PostTask(
+      FROM_HERE, BindOnce(
+                     [](scoped_refptr<AutofillWebDataBackendImpl> self) {
+                       self->user_data_.ClearAllUserData();
+                     },
+                     scoped_refptr(this)));
 }
 
 void AutofillWebDataBackendImpl::AddObserver(
