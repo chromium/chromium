@@ -20,6 +20,13 @@ enum ContextMenuType {
   kReload = 1,
 };
 
+// The state of a paritcular context menu.
+enum ContextMenuState {
+  kUnspecified = 0,
+  kVisible = 1,
+  kHidden = 2,
+};
+
 enum DevToolsState {
   kUnspecified = 0,
   kConnected = 1,

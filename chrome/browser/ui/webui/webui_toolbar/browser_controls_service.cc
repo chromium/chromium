@@ -180,6 +180,14 @@ void BrowserControlsService::OnNavigationStatusChanged(
   }
 }
 
+void BrowserControlsService::OnContextMenuStateChanged(
+    browser_controls_api::mojom::ContextMenuType menu_type,
+    browser_controls_api::mojom::ContextMenuState state) {
+  if (observer_) {
+    observer_->OnContextMenuStateChanged(menu_type, state);
+  }
+}
+
 void BrowserControlsService::OnMeasureResultAndClearMark(
     const std::string& histogram_name,
     const std::string& start_mark,

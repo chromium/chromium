@@ -29,6 +29,9 @@ interface BrowserControlsObserver {
   // Sets the navigation loading state in the renderer, the renderer is
   // expected to make UI changes accordingly.
   OnNavigationStatusChanged(NavigationState state);
+
+  // Indicates the context menu of type |menu_type| changed to |state| state.
+  OnContextMenuStateChanged(ContextMenuType menu_type, ContextMenuState state);
 };
 
 // BrowserControlsService defines methods to be called from the WebUI to the

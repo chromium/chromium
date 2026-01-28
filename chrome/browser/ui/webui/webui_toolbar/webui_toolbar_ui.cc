@@ -113,6 +113,14 @@ void WebUIToolbarUI::OnNavigationStatusChanged(
   }
 }
 
+void WebUIToolbarUI::OnContextMenuStateChanged(
+    browser_controls_api::mojom::ContextMenuType menu_type,
+    browser_controls_api::mojom::ContextMenuState state) {
+  if (browser_controls_service_) {
+    browser_controls_service_->OnContextMenuStateChanged(menu_type, state);
+  }
+}
+
 void WebUIToolbarUI::CreateBrowserControls(
     mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
         observer,

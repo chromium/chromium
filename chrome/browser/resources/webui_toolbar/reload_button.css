@@ -18,3 +18,6 @@ cr-icon-button {
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
 }
 
+cr-icon-button[displayingContextMenu=true] {
+  background-color: var(--cr-active-background-color);
+}

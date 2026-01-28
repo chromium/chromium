@@ -45,6 +45,10 @@ class WebUIToolbarUI
   void OnNavigationStatusChanged(
       browser_controls_api::mojom::NavigationState state);
 
+  void OnContextMenuStateChanged(
+      browser_controls_api::mojom::ContextMenuType menu_type,
+      browser_controls_api::mojom::ContextMenuState state);
+
   void SetDelegate(
       BrowserControlsService::BrowserControlsServiceDelegate* delegate);
 

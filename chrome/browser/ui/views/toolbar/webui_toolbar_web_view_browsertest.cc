@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -30,7 +32,12 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/gfx/image/image.h"
+#include "ui/snapshot/snapshot.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
@@ -54,11 +61,70 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
         {});
   }
 
+  void SetUp() override {
+    EnablePixelOutput();
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Force the color mode to light to avoid flakiness.
     ThemeServiceFactory::GetForProfile(browser()->profile())
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
+  }
+
+  void SetUpWebUI(const ui::ElementIdentifier& element_id,
+                  ui::TrackedElement** element_out,
+                  WebUIToolbarWebView** webui_toolbar_view_out,
+                  views::WebView** web_view_out) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      *element_out = BrowserElements::From(browser())->GetElement(element_id);
+      return *element_out != nullptr;
+    }));
+    ASSERT_TRUE(*element_out);
+
+    ui::TrackedElement* toolbar_element = nullptr;
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      toolbar_element = BrowserElements::From(browser())->GetElement(
+          kWebUIToolbarElementIdentifier);
+      return toolbar_element != nullptr;
+    }));
+    ASSERT_TRUE(toolbar_element);
+    views::TrackedElementViews* webui_toolbar_view_element =
+        toolbar_element->AsA<views::TrackedElementViews>();
+
+    ASSERT_TRUE(webui_toolbar_view_element);
+    *webui_toolbar_view_out = views::AsViewClass<WebUIToolbarWebView>(
+        webui_toolbar_view_element->view());
+    ASSERT_TRUE(*webui_toolbar_view_out);
+    ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
+    *web_view_out = views::AsViewClass<views::WebView>(
+        (*webui_toolbar_view_out)->children()[0].get());
+    ASSERT_TRUE(*web_view_out);
+
+    // Wait for the WebView to finish composition.
+    content::WaitForCopyableViewInWebContents(
+        (*web_view_out)->GetWebContents());
+  }
+
+  SkColor GetCenterPixelColor(views::WebView* web_view, const gfx::Rect& rect) {
+    // Wait for the WebView to finish composition.
+    content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
+
+    SkBitmap image;
+    base::RunLoop run_loop;
+    web_view->GetWebContents()->GetRenderWidgetHostView()->CopyFromSurface(
+        rect, gfx::Size(), base::TimeDelta(),
+        base::BindLambdaForTesting(
+            [&](const content::CopyFromSurfaceResult& result) {
+              ASSERT_TRUE(result.has_value());
+              image = result->bitmap;
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, run_loop.QuitClosure());
+            }));
+    run_loop.Run();
+
+    return image.getColor(image.width() / 2, image.height() / 2);
   }
 
  private:
@@ -67,27 +133,11 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
   ui::TrackedElement* element = nullptr;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    element = BrowserElements::From(browser())->GetElement(
-        kWebUIToolbarElementIdentifier);
-    return element != nullptr;
-  }));
-  ASSERT_TRUE(element);
-  views::TrackedElementViews* webui_toolbar_view_element =
-      element->AsA<views::TrackedElementViews>();
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view));
 
-  ASSERT_TRUE(webui_toolbar_view_element);
-  WebUIToolbarWebView* webui_toolbar_view =
-      views::AsViewClass<WebUIToolbarWebView>(
-          webui_toolbar_view_element->view());
-  ASSERT_TRUE(webui_toolbar_view);
-  ASSERT_EQ(webui_toolbar_view->children().size(), 1u);
-  views::WebView* web_view = views::AsViewClass<views::WebView>(
-      webui_toolbar_view->children()[0].get());
-  ASSERT_TRUE(web_view);
-
-  // Wait for the WebView to finish composition.
-  content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
   // Assert that WebContents is not loading, as it affects the state of the
   // reload button.
   ASSERT_FALSE(web_view->GetWebContents()->IsLoading());
@@ -107,25 +157,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   ui::TrackedElement* element = nullptr;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    element = BrowserElements::From(browser())->GetElement(
-        kWebUIToolbarElementIdentifier);
-    return element != nullptr;
-  }));
-  ASSERT_TRUE(element);
-  views::TrackedElementViews* webui_toolbar_view_element =
-      element->AsA<views::TrackedElementViews>();
-  ASSERT_TRUE(webui_toolbar_view_element);
-  WebUIToolbarWebView* webui_toolbar_view =
-      views::AsViewClass<WebUIToolbarWebView>(
-          webui_toolbar_view_element->view());
-  ASSERT_TRUE(webui_toolbar_view);
-  ASSERT_EQ(webui_toolbar_view->children().size(), 1u);
-  views::WebView* web_view = views::AsViewClass<views::WebView>(
-      webui_toolbar_view->children()[0].get());
-  ASSERT_TRUE(web_view);
-
-  content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view));
 
   // Find accessibility node for reload button.
   content::WaitForAccessibilityTreeToContainNodeWithName(
@@ -156,6 +191,44 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   ASSERT_TRUE(reload_node);
   EXPECT_EQ(2, reload_node->GetData().GetIntAttribute(
                    ax::mojom::IntAttribute::kHasPopup));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       CheckReloadButtonColor) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kReloadButtonElementId, &element,
+                                     &webui_toolbar_view, &web_view));
+
+  WebUIReloadControl* reload_control =
+      static_cast<WebUIReloadControl*>(webui_toolbar_view->GetReloadControl());
+  // Make sure reload icon is showing, which has a hole in the middle whose
+  // pixel we'll check to see what the background color is.
+  ASSERT_EQ(reload_control->mode_, ReloadControl::Mode::kReload);
+
+  gfx::Rect control_rect = element->GetScreenBounds();
+  gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
+  control_rect.Offset(-view_rect.OffsetFromOrigin());
+
+  // Verify reload button background is transparent when not highlighted.
+  EXPECT_EQ(GetCenterPixelColor(web_view, control_rect), SK_ColorTRANSPARENT);
+
+  // Show reload button context menu.
+  webui_toolbar_view->GetReloadControl()->SetMenuEnabled(true);
+  webui_toolbar_view->HandleContextMenu(
+      browser_controls_api::mojom::ContextMenuType::kReload,
+      element->GetScreenBounds().bottom_right(),
+      ui::mojom::MenuSourceType::kMouse);
+
+  // Verify reload button is now highlighted.
+  EXPECT_NE(GetCenterPixelColor(web_view, control_rect), SK_ColorTRANSPARENT);
+
+  // Close reload button context menu.
+  reload_control->menu_runner_->Cancel();
+
+  // Verify reload button background returns to transparent.
+  EXPECT_EQ(GetCenterPixelColor(web_view, control_rect), SK_ColorTRANSPARENT);
 }
 
 class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {

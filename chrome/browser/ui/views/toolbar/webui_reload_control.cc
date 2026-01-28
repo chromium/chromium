@@ -24,7 +24,9 @@ WebUIReloadControl::WebUIReloadControl(
                                    IDS_RELOAD_MENU_EMPTY_AND_HARD_RELOAD_ITEM);
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
+      menu_model_.get(), views::MenuRunner::CONTEXT_MENU,
+      base::BindRepeating(&WebUIReloadControl::OnContextMenuClosed,
+                          base::Unretained(this)));
 
   // The accessibility and tooltip attributes are handled by the WebUI.
 }
@@ -59,12 +61,26 @@ bool WebUIReloadControl::HandleContextMenu(views::Widget* widget,
                                            gfx::Point screen_location,
                                            ui::mojom::MenuSourceType source) {
   if (is_menu_enabled_) {
+    auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
+    CHECK(webui_toolbar_ui);
+    webui_toolbar_ui->OnContextMenuStateChanged(
+        browser_controls_api::mojom::ContextMenuType::kReload,
+        browser_controls_api::mojom::ContextMenuState::kVisible);
+
     menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
                             gfx::Rect(screen_location, gfx::Size()),
                             views::MenuAnchorPosition::kBubbleBottomRight,
                             source);
   }
   return true;
+}
+
+void WebUIReloadControl::OnContextMenuClosed() {
+  auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
+  CHECK(webui_toolbar_ui);
+  webui_toolbar_ui->OnContextMenuStateChanged(
+      browser_controls_api::mojom::ContextMenuType::kReload,
+      browser_controls_api::mojom::ContextMenuState::kHidden);
 }
 
 bool WebUIReloadControl::IsCommandIdChecked(int command_id) const {

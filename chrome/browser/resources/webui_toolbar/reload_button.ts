@@ -7,12 +7,13 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
+import {assertNotReached, assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {BrowserProxyImpl, ClickDispositionFlag, ContextMenuType, DevToolsState, NavigationState} from './browser_proxy.js';
+import {BrowserProxyImpl, ClickDispositionFlag, ContextMenuState, ContextMenuType, DevToolsState, NavigationState} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
@@ -55,6 +56,23 @@ export class ReloadButtonAppElement extends CrLitElement {
           this.isMenuEnabled_ = state === DevToolsState.kConnected;
           this.updateTooltip_();
         });
+    callbackRouter.onContextMenuStateChanged.addListener(
+        (menuType: ContextMenuType, state: ContextMenuState) => {
+          if (menuType === ContextMenuType.kReload) {
+            switch (state) {
+              case ContextMenuState.kVisible:
+                this.isDisplayingContextMenu_ = true;
+                break;
+              case ContextMenuState.kHidden:
+                this.isDisplayingContextMenu_ = false;
+                break;
+              case ContextMenuState.kUnspecified:
+                assertNotReached();
+              default:
+                assertNotReachedCase(state);
+            }
+          }
+        });
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -72,11 +90,13 @@ export class ReloadButtonAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      isDisplayingContextMenu_: {state: true, type: Boolean},
       isLoading_: {state: true, type: Boolean},
       tooltip_: {state: true, type: String},
     };
   }
 
+  protected accessor isDisplayingContextMenu_: boolean = false;
   protected accessor isLoading_: boolean = false;
   protected accessor tooltip_: string =
       loadTimeData.getString(RELOAD_BUTTON_TOOLTIP_RELOAD);

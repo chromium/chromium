@@ -10,9 +10,15 @@ import {
   BrowserControlsServiceRemote,
 } from './browser_controls_api.mojom-webui.js';
 import type {BrowserControlsServiceInterface} from './browser_controls_api.mojom-webui.js';
-import {ClickDispositionFlag, ContextMenuType, DevToolsState, NavigationState} from './browser_controls_api_data_model.mojom-webui.js';
+import {ClickDispositionFlag, ContextMenuState, ContextMenuType, DevToolsState, NavigationState} from './browser_controls_api_data_model.mojom-webui.js';
 
-export {ClickDispositionFlag, ContextMenuType, DevToolsState, NavigationState};
+export {
+  ClickDispositionFlag,
+  ContextMenuState,
+  ContextMenuType,
+  DevToolsState,
+  NavigationState,
+};
 
 export interface BrowserProxy {
   callbackRouter: BrowserControlsObserverCallbackRouter;
