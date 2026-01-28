@@ -7,7 +7,6 @@ source_set("model") {
     "bwg_link_opening_delegate.h",
     "bwg_link_opening_handler.h",
     "bwg_link_opening_handler.mm",
-    "bwg_page_state_change_delegate.h",
     "bwg_page_state_change_handler.h",
     "bwg_page_state_change_handler.mm",
     "bwg_session_handler.h",

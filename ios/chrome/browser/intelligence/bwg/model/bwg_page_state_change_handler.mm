@@ -31,7 +31,7 @@
   _baseViewController = baseViewController;
 }
 
-#pragma mark - BWGPageStateChangeDelegate
+#pragma mark - GeminiPageStateChangeDelegate
 
 - (void)requestPageContextSharingStatusWithCompletion:
     (void (^)(BOOL sharingEnabled))completionCallBack {

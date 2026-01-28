@@ -5,10 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_PAGE_STATE_CHANGE_DELEGATE_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_PAGE_STATE_CHANGE_DELEGATE_H_
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_page_state_change_delegate.h"
+#import <Foundation/Foundation.h>
 
 // Delegate for the Gemini pageState changes.
-@protocol GeminiPageStateChangeDelegate <BWGPageStateChangeDelegate>
+@protocol GeminiPageStateChangeDelegate
+
+- (void)requestPageContextSharingStatusWithCompletion:
+    (void (^)(BOOL sharingEnabled))completionCallBack;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_PAGE_STATE_CHANGE_DELEGATE_H_
