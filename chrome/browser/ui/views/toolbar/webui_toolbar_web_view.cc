@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -24,7 +26,12 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/result_codes.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -43,6 +50,38 @@ constexpr char kHistogramToolbarRenderProcessGone[] =
 constexpr char kHistogramToolbarRenderProcessGoneExceedingRecoveryLimit[] =
     "InitialWebUI.Toolbar.RenderProcessGoneExceedingRecoveryLimit";
 
+class WebUIToolbarInternalWebView : public views::WebView {
+  METADATA_HEADER(WebUIToolbarInternalWebView, views::WebView)
+
+ public:
+  explicit WebUIToolbarInternalWebView(content::BrowserContext* browser_context)
+      : views::WebView(browser_context) {}
+  ~WebUIToolbarInternalWebView() override = default;
+
+  // views::WebView:
+  void RendererUnresponsive(
+      content::WebContents* source,
+      content::RenderWidgetHost* render_widget_host,
+      base::RepeatingClosure hang_monitor_restarter) override {
+    // TODO(crbug.com/475397687): Consider using a more aggressive timeout to
+    // trigger this.
+    if (features::kWebUIReloadButtonRestartUnresponsive.Get()) {
+      // Force shutting down the renderer process when the WebUI toolbar
+      // is unresponsive. It will be restarted by the WebUIToolbarWebView.
+      if (auto* process = render_widget_host->GetProcess()) {
+        process->Shutdown(content::RESULT_CODE_KILLED);
+      }
+      return;
+    }
+
+    views::WebView::RendererUnresponsive(source, render_widget_host,
+                                         std::move(hang_monitor_restarter));
+  }
+};
+
+BEGIN_METADATA(WebUIToolbarInternalWebView)
+END_METADATA
+
 }  // namespace
 
 WebUIToolbarWebView::WebUIToolbarWebView(
@@ -51,7 +90,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
     : browser_(browser), controller_(controller), reload_control_(this) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto web_view = std::make_unique<views::WebView>(browser->GetProfile());
+  auto web_view =
+      std::make_unique<WebUIToolbarInternalWebView>(browser->GetProfile());
   auto* web_contents =
       web_view->GetWebContents(GURL(chrome::kChromeUIWebUIToolbarURL));
   // PLM has to be initialized before loading the URL.
@@ -99,6 +139,14 @@ bool WebUIToolbarWebView::HandleContextMenu(
                                            params);
 }
 
+void WebUIToolbarWebView::RendererUnresponsive(
+    content::WebContents* source,
+    content::RenderWidgetHost* render_widget_host,
+    base::RepeatingClosure hang_monitor_restarter) {
+  web_view_->RendererUnresponsive(source, render_widget_host,
+                                  std::move(hang_monitor_restarter));
+}
+
 void WebUIToolbarWebView::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
@@ -144,15 +192,8 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
 
     // PostTask to avoid re-entrancy into RenderProcessHost during its death.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<WebUIToolbarWebView> self) {
-              if (self && self->web_view_ && self->web_view_->web_contents()) {
-                self->web_view_->web_contents()->GetController().Reload(
-                    content::ReloadType::NORMAL, /*check_for_repost=*/false);
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
+        FROM_HERE, base::BindOnce(&WebUIToolbarWebView::ReloadWebContents,
+                                  weak_ptr_factory_.GetWeakPtr()));
   } else {
     // TODO(crbug.com/474228715): if the crash_count exceeds the threshold, we
     // should consider fall back to the C++ view or start a periodic attempt to
@@ -160,6 +201,12 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
     base::UmaHistogramBoolean(
         kHistogramToolbarRenderProcessGoneExceedingRecoveryLimit, true);
   }
+}
+
+void WebUIToolbarWebView::ReloadWebContents() {
+  CHECK(web_view_);
+  web_view_->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
+                                                    /*check_for_repost=*/false);
 }
 
 void WebUIToolbarWebView::SetDidFirstNonEmptyPaintCallbackForTesting(

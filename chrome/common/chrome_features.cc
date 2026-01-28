@@ -1867,6 +1867,11 @@ const base::FeatureParam<base::TimeDelta>
     kWebUIReloadButtonCrashRecoverResetInterval{
         &kWebUIReloadButton, "WebUIReloadButtonCrashRecoverResetInterval",
         base::Seconds(10)};
+// When enabled, initial WebUI renderers that become unresponsive will be
+// restarted without showing the hung renderer dialog.
+// See crbug.com/475397687.
+const base::FeatureParam<bool> kWebUIReloadButtonRestartUnresponsive{
+    &kWebUIReloadButton, "WebUIReloadButtonRestartUnresponsive", false};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the User-Agent override fix for SearchPrefetch. This will work only

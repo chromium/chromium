@@ -44,6 +44,10 @@ class WebUIToolbarWebView : public views::View,
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  void RendererUnresponsive(
+      content::WebContents* source,
+      content::RenderWidgetHost* render_widget_host,
+      base::RepeatingClosure hang_monitor_restarter) override;
 
   // content::WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -59,6 +63,11 @@ class WebUIToolbarWebView : public views::View,
   friend WebUIReloadControl;
 
   void InitializeWebView();
+
+  // Reloads the WebUI toolbar. Used for recovering from crashes or
+  // unresponsiveness.
+  void ReloadWebContents();
+
   chrome::BrowserCommandController* controller() { return controller_; }
   WebUIToolbarUI* GetWebUIToolbarUI();
 

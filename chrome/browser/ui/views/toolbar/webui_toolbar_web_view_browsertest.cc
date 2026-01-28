@@ -16,6 +16,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -146,15 +148,16 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   EXPECT_EQ(2, reload_node->GetData().GetIntAttribute(
                    ax::mojom::IntAttribute::kHasPopup));
 }
-
-class WebUIToolbarWebViewCrashTest : public InProcessBrowserTest {
+class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
  public:
-  WebUIToolbarWebViewCrashTest() {
+  WebUIToolbarWebViewStabilityTest() {
+    // All features for Webium Production should be included here.
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kInitialWebUI, {}},
          {features::kWebUIReloadButton,
           {{"WebUIReloadButtonMaxCrashRecoveryTimes", "1"},
-           {"WebUIReloadButtonCrashRecoverResetInterval", "10s"}}},
+           {"WebUIReloadButtonCrashRecoverResetInterval", "10s"},
+           {"WebUIReloadButtonRestartUnresponsive", "true"}}},
          {features::kSkipIPCChannelPausingForNonGuests, {}},
          {features::kWebUIInProcessResourceLoadingV2, {}},
          {features::kInitialWebUISyncNavStartToCommit, {}}},
@@ -195,7 +198,7 @@ class WebUIToolbarWebViewCrashTest : public InProcessBrowserTest {
 // Verify that the crash is recovered by reloading the page for the first time,
 // but it will remain crashed for the second time, as
 // `WebUIReloadButtonMaxCrashRecoveryTimes` was set to 1.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewCrashTest, CrashRecovery) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest, CrashRecovery) {
   WebUIToolbarWebView* toolbar_view = GetWebUIToolbarWebView();
   ASSERT_TRUE(toolbar_view);
 
@@ -249,4 +252,38 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewCrashTest, CrashRecovery) {
 
   ASSERT_EQ(GetWebContents(toolbar_view), web_contents);
   ASSERT_TRUE(web_contents->IsCrashed());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
+                       RestartOnUnresponsive) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView();
+  ASSERT_TRUE(webui_toolbar_view);
+  content::WebContents* web_contents = GetWebContents(webui_toolbar_view);
+  ASSERT_TRUE(web_contents);
+
+  // Wait for the WebView to finish composition and load.
+  content::WaitForCopyableViewInWebContents(web_contents);
+  content::RenderWidgetHostView* view = web_contents->GetRenderWidgetHostView();
+  content::RenderWidgetHost* rwh = view->GetRenderWidgetHost();
+  content::RenderProcessHost* rph = rwh->GetProcess();
+
+  // Watch for process exit.
+  content::RenderProcessHostWatcher crash_observer(
+      rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  // Watch for reload.
+  content::TestNavigationObserver nav_observer(web_contents);
+
+  // Trigger unresponsiveness.
+  web_contents->GetDelegate()->RendererUnresponsive(web_contents, rwh,
+                                                    base::DoNothing());
+
+  // Wait for crash.
+  crash_observer.Wait();
+
+  // Wait for reload.
+  nav_observer.Wait();
+
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_FALSE(web_contents->IsCrashed());
 }
