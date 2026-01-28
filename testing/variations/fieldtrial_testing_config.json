@@ -25708,25 +25708,6 @@
             ]
         }
     ],
-    "TaiyakiFreOnly": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_WithCurrentDefault",
-                    "params": {
-                        "choice_screen_surface": "fre_only"
-                    },
-                    "enable_features": [
-                        "CurrentDseHighlightOnChoiceScreenSupport",
-                        "Taiyaki"
-                    ]
-                }
-            ]
-        }
-    ],
     "TaskManagerDesktopRefresh": [
         {
             "platforms": [

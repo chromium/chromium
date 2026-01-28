@@ -19,13 +19,7 @@ BASE_FEATURE(kResolveRegionalCapabilitiesFromDevice,
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kTaiyaki,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kTaiyaki, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 constexpr base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>::Option
@@ -37,7 +31,7 @@ constexpr base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>::Option
 const base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>
     kTaiyakiChoiceScreenSurface{
         &kTaiyaki, "choice_screen_surface",
-        RegionalCapabilitiesChoiceScreenSurface::kAll,
+        RegionalCapabilitiesChoiceScreenSurface::kInFreOnly,
         &kChoiceScreenSurfaceOptions};
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -50,7 +44,7 @@ BASE_FEATURE(kDynamicProfileCountry,
 );
 
 BASE_FEATURE(kCurrentDseHighlightOnChoiceScreenSupport,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWaffleRestrictToAssociatedCountries,
              base::FEATURE_DISABLED_BY_DEFAULT);
