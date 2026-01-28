@@ -169,7 +169,7 @@ class CookieManager {
   // Gets the Network Service CookieManager if it's been passed via
   // |SetMojoCookieManager|. Otherwise (if Network Service is disabled or
   // content layer has not yet initialized the NetworkContext), this returns
-  // nullptr (and |GetCookieStore| should be used installed). This must only be
+  // nullptr (and |GetCookieStore| should be used instead). This must only be
   // called on the CookieStore TaskRunner.
   network::mojom::CookieManager* GetMojoCookieManager();
 

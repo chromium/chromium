@@ -398,6 +398,9 @@ void CookieManager::SetMojoCookieManagerAsync(
     return;
   }
 
+  LOG(WARNING) << "Transferring cookies from provisional CookieManager to "
+                  "network service. For issues with the provisional "
+                  "CookieManager, see crbug.com/478873476.";
   GetCookieStore()->FlushStore(base::BindOnce(
       &CookieManager::SwapMojoCookieManagerAsync, base::Unretained(this),
       std::move(cookie_manager_remote), std::move(complete)));
