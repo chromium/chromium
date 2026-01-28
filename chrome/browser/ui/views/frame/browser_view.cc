@@ -383,6 +383,10 @@
 #undef LoadAccelerators
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -1260,6 +1264,20 @@ TabStripRegionView* BrowserView::tab_strip_view() const {
 
   return horizontal_tab_strip_region_view_.get();
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+glic::GlicButton* BrowserView::GetGlicButton() {
+  auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+  if (vertical_tab_strip_region_view_ && controller &&
+      controller->ShouldDisplayVerticalTabs()) {
+    // Vertical Tabs does not have an equivalent button at this point in time.
+    // Return nothing for now.
+    return nullptr;
+  }
+
+  return horizontal_tab_strip_region_view_->GetGlicButton();
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
   return tab_search_bubble_host_.get();

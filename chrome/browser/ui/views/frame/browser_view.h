@@ -104,6 +104,12 @@ namespace gfx {
 class AnimationRunner;
 }  // namespace gfx
 
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class GlicButton;
+}  // namespace glic
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
@@ -326,6 +332,10 @@ class BrowserView : public BrowserWindow,
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicButton* GetGlicButton();
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   // Accessor for the BrowserView's TabSearchBubbleHost instance.
   TabSearchBubbleHost* GetTabSearchBubbleHost();

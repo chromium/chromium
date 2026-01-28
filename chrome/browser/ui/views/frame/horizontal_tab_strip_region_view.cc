@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -69,6 +71,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace {
 
@@ -558,6 +564,12 @@ views::View* HorizontalTabStripRegionView::GetDefaultFocusableChild() {
   return focusable_child ? focusable_child
                          : AccessiblePaneView::GetDefaultFocusableChild();
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+glic::GlicButton* HorizontalTabStripRegionView::GetGlicButton() {
+  return tab_strip_action_container_->GetGlicButton();
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 void HorizontalTabStripRegionView::InitializeTabStrip() {
   if (tab_strip_set_) {

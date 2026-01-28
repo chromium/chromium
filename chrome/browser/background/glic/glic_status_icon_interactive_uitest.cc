@@ -95,9 +95,7 @@ class GlicStatusIconUiTest : public test::InteractiveGlicTest,
 
   auto ForceEmptyButtonBounds(Browser* browser) {
     return Do([browser] {
-      auto* glic_button =
-          BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
-              kGlicButtonElementId);
+      auto* glic_button = glic::GlicButton::FromBrowser(browser);
       glic_button->SetSize(gfx::Size(0, 0));
     });
   }

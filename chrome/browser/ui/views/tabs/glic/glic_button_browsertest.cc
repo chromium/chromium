@@ -42,8 +42,7 @@ class GlicButtonTest : public InProcessBrowserTest {
 
  protected:
   glic::GlicButton* glic_button() {
-    return BrowserElementsViews::From(browser())->GetViewAs<glic::GlicButton>(
-        kGlicButtonElementId);
+    return glic::GlicButton::FromBrowser(browser());
   }
 
   GlicKeyedService* glic_service() {

@@ -122,8 +122,7 @@ class ContextualCueingHelperBrowserTest
   }
 
   glic::GlicButton* GetGlicButtonForBrowser(Browser* browser) {
-    return BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
-        kGlicButtonElementId);
+    return glic::GlicButton::FromBrowser(browser);
   }
 
  protected:

@@ -247,8 +247,7 @@ class GlicPolicyTest : public PolicyTest {
   }
 
   GlicButton* GetGlicButtonForBrowser(Browser* browser) {
-    return BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
-        kGlicButtonElementId);
+    return glic::GlicButton::FromBrowser(browser);
   }
 
   void SetGlicPolicy(
