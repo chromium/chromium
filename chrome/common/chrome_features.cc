@@ -1585,7 +1585,14 @@ BASE_FEATURE(kProcessPerSiteSkipEnterpriseUsers,
 // engine. Has no effect if "ProcessPerSiteUpToMainFrameThreshold" is disabled.
 // Note: The "ProcessPerSiteUpToMainFrameThreshold" feature is defined in
 // //content.
-BASE_FEATURE(kProcessPerSiteForDSE, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kProcessPerSiteForDSE,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Consider the default search engine (DSE) warmup page as a search results page
 // (SRP), for the purpose of applying the "process per site for DSE SRP" policy
