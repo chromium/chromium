@@ -48,9 +48,9 @@ IpczResult CreateNode(const IpczDriver* driver,
   if (!driver->Close || !driver->Serialize || !driver->Deserialize ||
       !driver->CreateTransports || !driver->ActivateTransport ||
       !driver->DeactivateTransport || !driver->Transmit ||
-      !driver->AllocateSharedMemory || !driver->GetSharedMemoryInfo ||
-      !driver->DuplicateSharedMemory || !driver->MapSharedMemory ||
-      !driver->GenerateRandomBytes) {
+      !driver->ReportBadTransportActivity || !driver->AllocateSharedMemory ||
+      !driver->GetSharedMemoryInfo || !driver->DuplicateSharedMemory ||
+      !driver->MapSharedMemory || !driver->GenerateRandomBytes) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
