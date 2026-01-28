@@ -13,9 +13,12 @@
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -88,6 +91,11 @@ void ActorInternalsUIHandler::WillAddJournalEntry(
 void ActorInternalsUIHandler::StartLogging() {
   if (select_file_dialog_) {
     return;  // Currently running, wait for existing save to complete.
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs)) {
+    return;
   }
 
   base::FilePath default_file;
