@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_SERVICE_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_SERVICE_H_
 
+#include <set>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -58,6 +60,10 @@ class PageContentCacheService : public KeyedService {
 
   // Retrieves all tab IDs for tabs that have page contents cached.
   void GetAllTabIds(base::OnceCallback<void(std::vector<int64_t>)> callback);
+
+  // Checks the cache for stale entries for removal and records metrics.
+  void RunCleanUpTasksWithActiveTabs(
+      const std::set<int64_t>& all_active_tab_ids);
 
   // Returns true if the internal cache has been fully initialized.
   bool IsCacheInitialized() const;

@@ -42,6 +42,9 @@ constexpr std::string kPageContextPrefix = "page_context_";
 constexpr std::string kProtoSuffix = ".proto";
 constexpr std::string kPersistedTabContextsDir = "persisted_tab_contexts";
 constexpr base::TimeDelta kPurgeTaskDelay = base::Seconds(3);
+// The delay applied before cleanup tasks are executed
+// after the PageContentCache is initialized.
+constexpr base::TimeDelta kCleanupTaskDelay = base::Seconds(25);
 }  // namespace
 
 class PersistTabContextBrowserAgentTest
@@ -217,6 +220,19 @@ TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_Found) {
 
   // Verify time metric.
   histogram_tester_.ExpectTotalCount(kPersistTabContextReadTimeHistogram, 1);
+}
+
+TEST_P(PersistTabContextBrowserAgentTest, TestStartupMetricEmitted) {
+  if (GetParam() != PersistTabStorageType::kSQLite) {
+    return;
+  }
+  CreateDummyContextFile(test_web_state_id_);
+  // Fast forward to trigger the cleanup task.
+  task_environment_.FastForwardBy(kPurgeTaskDelay + kCleanupTaskDelay +
+                                  base::Seconds(1));
+  // Verify that the histogram contains at least one sample.
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.PageContentCache.TotalCacheSize", 1);
 }
 
 TEST_P(PersistTabContextBrowserAgentTest, TestGetMultipleContextsAsync) {

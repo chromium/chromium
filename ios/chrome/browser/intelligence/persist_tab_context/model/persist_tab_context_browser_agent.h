@@ -148,6 +148,9 @@ class PersistTabContextBrowserAgent
   // storage.
   void RemoveSqliteStorage();
 
+  // Runs cleanup tasks on the PageContentCache.
+  void RunCacheCleanup();
+
   // Profile-specific file path to store page contexts at in the app's cache.
   base::FilePath storage_directory_path_;
 

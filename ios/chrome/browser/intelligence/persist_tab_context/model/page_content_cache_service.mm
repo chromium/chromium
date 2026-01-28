@@ -87,6 +87,13 @@ void PageContentCacheService::GetAllTabIds(
   }
 }
 
+void PageContentCacheService::RunCleanUpTasksWithActiveTabs(
+    const std::set<int64_t>& all_active_tab_ids) {
+  if (IsCacheInitialized()) {
+    page_content_cache_->RunCleanUpTasksWithActiveTabs(all_active_tab_ids);
+  }
+}
+
 bool PageContentCacheService::IsCacheInitialized() const {
   return page_content_cache_ != nullptr;
 }
