@@ -83,10 +83,6 @@ class GeolocationPermissionContext : public PermissionContextBase {
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       BrowserPermissionCallback callback) override;
 
-  void UpdateSetting(const PermissionRequestData& request_data,
-                     PermissionSetting setting,
-                     bool is_one_time) override;
-
   base::WeakPtr<GeolocationPermissionContext> GetWeakPtr();
 
   // Make this public for use by the delegate implementation.
