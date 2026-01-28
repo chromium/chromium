@@ -1205,12 +1205,11 @@ void CloudPolicyClient::UploadSecurityEvent(
       include_device_info, std::move(callback));
 }
 
+// TODO(crbug.com/478929452): Delete this method after the proto-based reporting
+// launch.
 void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
                                                   base::DictValue report,
                                                   ResultCallback callback) {
-  DCHECK(!base::FeatureList::IsEnabled(
-      policy::kUploadRealtimeReportingEventsUsingProto));
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_registered()) {

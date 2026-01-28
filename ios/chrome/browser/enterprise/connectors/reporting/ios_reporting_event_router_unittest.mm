@@ -120,8 +120,10 @@ class IOSReportingEventRouterTest : public PlatformTest,
                                 safe_browsing::kEnhancedFieldsForSecOps},
           /*disabled_features=*/{});
     } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          safe_browsing::kEnhancedFieldsForSecOps);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps},
+          /*disabled_features=*/{
+              policy::kUploadRealtimeReportingEventsUsingProto});
     }
   }
 

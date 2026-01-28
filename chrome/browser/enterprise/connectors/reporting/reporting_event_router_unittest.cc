@@ -141,8 +141,10 @@ class ReportingEventRouterTest : public testing::TestWithParam<bool> {
                                 safe_browsing::kEnhancedFieldsForSecOps},
           /*disabled_features=*/{});
     } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          safe_browsing::kEnhancedFieldsForSecOps);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps},
+          /*disabled_features=*/{
+              policy::kUploadRealtimeReportingEventsUsingProto});
     }
   }
 
@@ -160,7 +162,8 @@ class ReportingEventRouterTest : public testing::TestWithParam<bool> {
           /*enabled_features=*/
           {safe_browsing::kEnhancedFieldsForSecOps,
            enterprise_connectors::kEnterpriseActiveUserDetection},
-          /*disabled_features=*/{});
+          /*disabled_features=*/{
+              policy::kUploadRealtimeReportingEventsUsingProto});
     }
   }
 

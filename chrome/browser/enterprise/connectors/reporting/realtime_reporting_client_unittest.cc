@@ -226,6 +226,11 @@ TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadSucceeds) {
   }
 #endif
 
+  // Disable proto-based reporting, since this test case uses deprecated
+  // reporting methods.
+  scoped_feature_list_.InitAndDisableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+
   is_profile_reporting()
       ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
       : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
@@ -263,7 +268,6 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   }
 #endif
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       policy::kUploadRealtimeReportingEventsUsingProto);
 
@@ -315,6 +319,11 @@ TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadFails) {
   }
 #endif
 
+  // Disable proto-based reporting, since this test case uses deprecated
+  // reporting methods.
+  scoped_feature_list_.InitAndDisableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+
   is_profile_reporting()
       ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
       : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
@@ -352,7 +361,6 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
   }
 #endif
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       policy::kUploadRealtimeReportingEventsUsingProto);
 
