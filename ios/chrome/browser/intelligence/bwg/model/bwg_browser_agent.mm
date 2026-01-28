@@ -72,6 +72,11 @@ BWGPageContextComputationStateFromPageContextWrapperError(
 // value will do the reverse.
 CGFloat kOverlayFullscreenOffset = -100;
 
+// Used to modify the toolbar height that is factored into the floaty offset
+// above the toolbar. Lowering the toolbar height brings the floaty closer to
+// the toolbar.
+CGFloat kToolbarHeightMultiplier = 0.89;
+
 // Used for forcing fullscreen progress value.
 CGFloat kFullscreenEnabled = 0.0;
 
@@ -80,7 +85,7 @@ CGFloat kFullscreenDisabled = 1.0;
 
 // Used to check if floaty visibility updates are part of a UIView dismissal or
 // presentation.
-double kViewTransitionTime = 1.5;
+double kViewTransitionTime = 0.8;
 
 }  // namespace
 
@@ -235,7 +240,7 @@ CGFloat BwgBrowserAgent::GetFloatyOffsetFromFullscreenController(
     FullscreenController* controller) {
   CGFloat fullyExpandedBottomToolbarHeight =
       controller->GetMaxViewportInsets().bottom;
-  CGFloat offset = fullyExpandedBottomToolbarHeight +
+  CGFloat offset = fullyExpandedBottomToolbarHeight * kToolbarHeightMultiplier +
                    kOverlayFullscreenOffset * (1.0 - controller->GetProgress());
   return offset;
 }
