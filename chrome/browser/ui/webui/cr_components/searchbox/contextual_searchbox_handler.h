@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -30,6 +31,8 @@
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/omnibox_proto/aim_models.pb.h"
+#include "third_party/omnibox_proto/aim_tools.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
@@ -156,6 +159,8 @@ class ContextualSearchboxHandler
 
   // Resets `input_state_model_`.
   void ResetInputStateModel();
+  void SetActiveToolMode(omnibox::ToolMode tool) override;
+  void SetActiveModelMode(omnibox::ModelMode model) override;
 
  protected:
   void ComputeAndOpenQueryUrl(
@@ -240,6 +245,10 @@ class ContextualSearchboxHandler
       context_controller_;
 
   std::optional<lens::ContextualInputData> context_input_data_;
+  // Callback for `InputStateModel` changes.
+  void OnInputStateChanged(const contextual_search::InputState& state);
+
+  base::CallbackListSubscription input_state_subscription_;
 
   // Callback to get the contextual session handle from WebUI controller.
   GetSessionHandleCallback get_session_callback_;

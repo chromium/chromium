@@ -9,4 +9,26 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
 
   webui_module_path = "chrome://resources/mojo/components/omnibox/composebox"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "composebox_query.mojom.ToolMode"
+          cpp = "::omnibox::ToolMode"
+        },
+        {
+          mojom = "composebox_query.mojom.ModelMode"
+          cpp = "::omnibox::ModelMode"
+        },
+        {
+          mojom = "composebox_query.mojom.InputType"
+          cpp = "::omnibox::InputType"
+        },
+      ]
+      traits_headers = [ "contextual_search_mojom_traits.h" ]
+      traits_sources = [ "contextual_search_mojom_traits.cc" ]
+      traits_deps = [ "//third_party/omnibox_proto" ]
+    },
+  ]
 }
