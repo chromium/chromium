@@ -208,12 +208,6 @@ class TabStripController {
 
   // Returns the interface for the browser hosting the tab strip.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Returns whether the current app instance is locked for OnTask. Only
-  // relevant for non-web browser scenarios.
-  virtual bool IsLockedForOnTask() = 0;
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_

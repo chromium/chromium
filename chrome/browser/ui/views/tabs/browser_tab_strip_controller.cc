@@ -100,7 +100,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
-#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -639,13 +638,6 @@ std::u16string BrowserTabStripController::GetAccessibleTabName(
 BrowserWindowInterface* BrowserTabStripController::GetBrowserWindowInterface() {
   return browser_view_->browser();
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-bool BrowserTabStripController::IsLockedForOnTask() {
-  return ash::boca::OnTaskLockedController::From(GetBrowserWindowInterface())
-      ->is_locked_for_on_task();
-}
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripController, TabStripModelObserver implementation:

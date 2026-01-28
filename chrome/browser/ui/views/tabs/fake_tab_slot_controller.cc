@@ -130,9 +130,3 @@ TabGroup* FakeTabSlotController::GetTabGroup(
     const tab_groups::TabGroupId& group_id) const {
   return nullptr;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-bool FakeTabSlotController::IsLockedForOnTask() {
-  return on_task_locked_;
-}
-#endif

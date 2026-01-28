@@ -29,6 +29,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -113,6 +114,10 @@
 #include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#endif
+
 using base::UserMetricsAction;
 namespace {
 
@@ -147,6 +152,16 @@ int Center(int size, int item_size) {
   }
   return extra_space / 2;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns true if the tab should be locked for the task and false otherwise.
+bool IsLockedForOnTask(BrowserWindowInterface* browser_window_interface) {
+  return browser_window_interface
+             ? ash::boca::OnTaskLockedController::From(browser_window_interface)
+                   ->is_locked_for_on_task()
+             : false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
@@ -283,7 +298,8 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
   UpdateInsets();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  showing_close_button_ = !controller_->IsLockedForOnTask();
+  showing_close_button_ = !IsLockedForOnTask(browser_window_interface);
+
   close_button_->SetVisible(showing_close_button_);
 #endif
 
@@ -1175,11 +1191,16 @@ void Tab::UpdateIconVisibility() {
       available_width >= (touch_ui ? kTouchMinimumContentsWidthForCloseButtons
                                    : kMinimumContentsWidthForCloseButtons);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  const bool should_show_close_button =
+      !IsLockedForOnTask(controller_->GetBrowserWindowInterface());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   if (IsActive()) {
 #if BUILDFLAG(IS_CHROMEOS)
     // Hide tab close button for OnTask if locked. Only applicable for non-web
     // browser scenarios.
-    showing_close_button_ = !controller_->IsLockedForOnTask();
+    showing_close_button_ = should_show_close_button;
 #else
     // Close button is shown on active tabs regardless of the size.
     showing_close_button_ = true;
@@ -1210,7 +1231,7 @@ void Tab::UpdateIconVisibility() {
 
     showing_close_button_ =
 #if BUILDFLAG(IS_CHROMEOS)
-        !controller_->IsLockedForOnTask() &&
+        should_show_close_button &&
 #endif
         large_enough_for_close_button;
     if (showing_close_button_) {

@@ -235,12 +235,6 @@ class TabSlotController {
 
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Returns whether the current app instance is locked for OnTask. Only
-  // relevant for non-web browser scenarios.
-  virtual bool IsLockedForOnTask() = 0;
-#endif
-
  protected:
   virtual ~TabSlotController() = default;
 };

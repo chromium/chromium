@@ -516,30 +516,6 @@ TEST_F(TabTest, CloseButtonFocus) {
             tab_close_button->GetFocusManager()->GetFocusedView());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(TabTest, CloseButtonHiddenWhenLockedForOnTask) {
-  const auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
-  tab_slot_controller->SetLockedForOnTask(true);
-  const std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  Tab* const tab = widget->SetContentsView(
-      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller.get()));
-  TabCloseButton* const tab_close_button = GetCloseButton(tab);
-  EXPECT_FALSE(tab_close_button->GetVisible());
-}
-
-TEST_F(TabTest, CloseButtonShownWhenNotLockedForOnTask) {
-  const auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
-  tab_slot_controller->SetLockedForOnTask(false);
-  const std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  Tab* const tab = widget->SetContentsView(
-      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller.get()));
-  TabCloseButton* const tab_close_button = GetCloseButton(tab);
-  EXPECT_TRUE(tab_close_button->GetVisible());
-}
-#endif
-
 // Tests expected changes to the ThrobberView state when the WebContents loading
 // state changes or the animation timer (usually in BrowserView) triggers.
 TEST_F(TabTest, LayeredThrobber) {

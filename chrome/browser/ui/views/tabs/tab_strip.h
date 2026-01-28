@@ -320,9 +320,6 @@ class TabStrip : public views::View,
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
   Browser* GetBrowser() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-#if BUILDFLAG(IS_CHROMEOS)
-  bool IsLockedForOnTask() override;
-#endif
 
   // views::View:
   views::SizeBounds GetAvailableSize(const View* child) const override;

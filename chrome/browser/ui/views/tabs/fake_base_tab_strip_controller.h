@@ -96,14 +96,6 @@ class FakeBaseTabStripController : public TabStripController {
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
   void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group) override;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bool IsLockedForOnTask() override;
-
-  // Sets OnTask locked for testing purposes. Only relevant for non-web browser
-  // scenarios.
-  void SetLockedForOnTask(bool locked) { on_task_locked_ = locked; }
-#endif
-
  private:
   void SetActiveIndex(int new_index);
 
@@ -113,9 +105,6 @@ class FakeBaseTabStripController : public TabStripController {
   int num_tabs_ = 0;
   int num_pinned_tabs_ = 0;
   std::optional<int> active_index_ = std::nullopt;
-#if BUILDFLAG(IS_CHROMEOS)
-  bool on_task_locked_ = false;
-#endif
 
   tab_groups::TabGroupVisualData fake_group_data_;
   std::vector<std::optional<tab_groups::TabGroupId>> tab_groups_;

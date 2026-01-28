@@ -94,23 +94,12 @@ class FakeTabSlotController : public TabSlotController {
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bool IsLockedForOnTask() override;
-
-  // Sets OnTask locked for testing purposes. Only relevant for non-web browser
-  // scenarios.
-  void SetLockedForOnTask(bool locked) { on_task_locked_ = locked; }
-#endif
-
  private:
   raw_ptr<TabStripController> tab_strip_controller_;
   raw_ptr<TabContainer, DanglingUntriaged> tab_container_;
   ui::ListSelectionModel selection_model_;
   raw_ptr<Tab, DanglingUntriaged> active_tab_ = nullptr;
   bool paint_throbber_to_layer_ = true;
-#if BUILDFLAG(IS_CHROMEOS)
-  bool on_task_locked_ = false;
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_SLOT_CONTROLLER_H_

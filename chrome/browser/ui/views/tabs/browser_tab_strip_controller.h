@@ -114,9 +114,6 @@ class BrowserTabStripController : public TabStripController,
       const tab_groups::TabGroupId& group_id) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-#if BUILDFLAG(IS_CHROMEOS)
-  bool IsLockedForOnTask() override;
-#endif
 
   // Test-specific methods.
   void CloseContextMenuForTesting();
