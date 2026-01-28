@@ -55,6 +55,8 @@
 #include "net/http/http_util.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
+#include "net/log/test_net_log.h"
+#include "net/log/test_net_log_util.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
@@ -14726,6 +14728,8 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsNotConfigured) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
+  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
+                                           NetLogCaptureMode::kDefault);
   RequestBuilder builder(this);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
@@ -14734,6 +14738,12 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsNotConfigured) {
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
   EXPECT_EQ(config.trust_anchor_ids, std::nullopt);
+  auto entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("1.2.3, 2.2, 4.5",
+            GetStringValueFromParams(entries[0], "trust_anchor_ids_from_dns"));
+  EXPECT_FALSE(entries[0].params.contains("selected_trust_anchor_ids"));
 }
 
 // Test that Trust Anchor IDs are provided via GetSSLConfig() when enabled.
@@ -14764,6 +14774,8 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDs) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
+  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
+                                           NetLogCaptureMode::kDefault);
   RequestBuilder builder(this);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
@@ -14772,6 +14784,13 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDs) {
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
   EXPECT_EQ(config.trust_anchor_ids, "\x03\x01\x02\x03");
+  auto entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("1.2.3, 2.2, 4.5",
+            GetStringValueFromParams(entries[0], "trust_anchor_ids_from_dns"));
+  EXPECT_EQ("1.2.3",
+            GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"));
 }
 
 // Test that MTC Trust Anchor IDs are provided via GetSSLConfig() when enabled.
@@ -14802,6 +14821,8 @@ TEST_P(QuicSessionPoolTest, MtcTrustAnchorIDs) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
+  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
+                                           NetLogCaptureMode::kDefault);
   RequestBuilder builder(this);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
@@ -14810,6 +14831,13 @@ TEST_P(QuicSessionPoolTest, MtcTrustAnchorIDs) {
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
   EXPECT_EQ(config.trust_anchor_ids, "\x03\x01\x02\x03\x02\x01\x01");
+  auto entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("1.2.3, 2.2, 4.5",
+            GetStringValueFromParams(entries[0], "trust_anchor_ids_from_dns"));
+  EXPECT_EQ("1.2.3, 1.1",
+            GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"));
 }
 
 // Test that when Trust Anchor IDs are not advertised by the server, but are
@@ -14841,6 +14869,8 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsNotAdvertisedInDns) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
+  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
+                                           NetLogCaptureMode::kDefault);
   RequestBuilder builder(this);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
@@ -14849,6 +14879,12 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsNotAdvertisedInDns) {
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
   EXPECT_EQ(config.trust_anchor_ids, "");
+  auto entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_FALSE(entries[0].params.contains("trust_anchor_ids_from_dns"));
+  EXPECT_EQ("",
+            GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"));
 }
 
 // Test that Trust Anchor IDs are not configured via GetSSLConfig() when the
@@ -14880,6 +14916,8 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsDisabled) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
+  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
+                                           NetLogCaptureMode::kDefault);
   RequestBuilder builder(this);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
@@ -14888,6 +14926,12 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsDisabled) {
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
   EXPECT_FALSE(config.trust_anchor_ids);
+  auto entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("1.2.3, 2.2, 4.5",
+            GetStringValueFromParams(entries[0], "trust_anchor_ids_from_dns"));
+  EXPECT_FALSE(entries[0].params.contains("selected_trust_anchor_ids"));
 }
 
 TEST_P(QuicSessionPoolTest, CreateSessionAttempt) {

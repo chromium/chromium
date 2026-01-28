@@ -16,6 +16,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/cert/x509_util.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/tcp_stream_attempt.h"
@@ -226,7 +227,29 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
       *ssl_config_);
 
   TRACE_EVENT_BEGIN("net.stream", "TlsConnect", track());
-  net_log().BeginEvent(NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT);
+  net_log().BeginEvent(NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT, [&] {
+    base::Value::Dict results;
+    if (retried_for_trust_anchor_ids_) {
+      results.Set(
+          "selected_trust_anchor_ids_for_retry",
+          x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
+              *ssl_config_->trust_anchor_ids)));
+    } else {
+      if (trust_anchor_ids_from_dns_) {
+        results.Set("trust_anchor_ids_from_dns",
+                    x509_util::TrustAnchorIDsToString(
+                        delegate_->GetServiceEndpointForTlsHandshake()
+                            ->metadata.trust_anchor_ids));
+      }
+      if (ssl_config_->trust_anchor_ids) {
+        results.Set(
+            "selected_trust_anchor_ids",
+            x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
+                *ssl_config_->trust_anchor_ids)));
+      }
+    }
+    return results;
+  });
 
   return ssl_socket_->Connect(
       base::BindOnce(&TlsStreamAttempt::OnIOComplete, base::Unretained(this)));
@@ -234,8 +257,22 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
 
 int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   MaybeRecordTlsHandshakeEnd(rv);
-  net_log().EndEventWithNetErrorCode(
-      NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT, rv);
+  net_log().EndEvent(NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT, [&] {
+    base::Value::Dict results;
+    if (rv < 0) {
+      results.Set("net_error", rv);
+    }
+    if (!ssl_socket_) {
+      return results;
+    }
+    std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
+        ssl_socket_->GetServerTrustAnchorIDs();
+    if (!server_trust_anchor_ids.empty()) {
+      results.Set("server_available_trust_anchor_ids",
+                  x509_util::TrustAnchorIDsToString(server_trust_anchor_ids));
+    }
+    return results;
+  });
 
   mutable_connect_timing().ssl_end = base::TimeTicks::Now();
   tls_handshake_timeout_timer_.Stop();

@@ -111,7 +111,9 @@ class NET_EXPORT_PRIVATE QuicEventLogger
       const quic::CryptoHandshakeMessage& message);
   void OnCryptoHandshakeMessageSent(
       const quic::CryptoHandshakeMessage& message);
-  void OnCertificateVerified(const CertVerifyResult& result);
+  void OnCertificateVerified(
+      const CertVerifyResult& result,
+      const std::vector<std::vector<uint8_t>>& server_tais);
 
  private:
   raw_ptr<quic::QuicSession> session_;  // Unowned.

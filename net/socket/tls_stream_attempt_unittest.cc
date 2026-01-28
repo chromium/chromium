@@ -25,6 +25,8 @@
 #include "net/http/http_network_session.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
+#include "net/log/test_net_log.h"
+#include "net/log/test_net_log_util.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
@@ -239,6 +241,7 @@ class TlsStreamAttemptTest : public TestWithTaskEnvironment {
     session_context.client_socket_factory = &socket_factory_;
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.http_server_properties = &http_server_properties_;
+    session_context.net_log = NetLog::Get();
     session_context.quic_context = &quic_context_;
     return std::make_unique<HttpNetworkSession>(HttpNetworkSessionParams(),
                                                 session_context);
@@ -848,6 +851,9 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetry) {
 
   TlsStreamAttemptHelper helper(params(), SSLConfig(),
                                 std::move(service_endpoint));
+  RecordingNetLogObserver net_log_observer(params()->net_log,
+                                           NetLogCaptureMode::kDefault);
+
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -861,6 +867,17 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetry) {
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
       SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessRetry, 1);
+
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT);
+  EXPECT_EQ("1.2.3, 3.3, 4.4",
+            GetStringValueFromParams(events[0], "trust_anchor_ids_from_dns"));
+  EXPECT_EQ("1.2.3, 3.3",
+            GetStringValueFromParams(events[0], "selected_trust_anchor_ids"));
+  EXPECT_EQ("2.2, 4.4", GetStringValueFromParams(
+                            events[1], "server_available_trust_anchor_ids"));
+  EXPECT_EQ("2.2", GetStringValueFromParams(
+                       events[2], "selected_trust_anchor_ids_for_retry"));
 }
 
 // Tests that TlsStreamAttempt does not restart when it sends TLS Trust Anchor

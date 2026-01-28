@@ -398,7 +398,9 @@ base::DictValue NetLogQuicClientSessionParams(
     const quic::ParsedQuicVersionVector& supported_versions,
     int cert_verify_flags,
     bool require_confirmation,
-    base::span<const uint8_t> ech_config_list) {
+    base::span<const uint8_t> ech_config_list,
+    const std::vector<std::vector<uint8_t>>& server_trust_anchor_ids,
+    const quic::QuicSSLConfig& ssl_config) {
   auto dict =
       base::DictValue()
           .Set("host", session_key->server_id().host())
@@ -424,6 +426,16 @@ base::DictValue NetLogQuicClientSessionParams(
   }
   if (!ech_config_list.empty()) {
     dict.Set("ech_config_list", NetLogBinaryValue(ech_config_list));
+  }
+  if (!server_trust_anchor_ids.empty()) {
+    dict.Set("trust_anchor_ids_from_dns",
+             x509_util::TrustAnchorIDsToString(server_trust_anchor_ids));
+  }
+  if (ssl_config.trust_anchor_ids.has_value()) {
+    dict.Set(
+        "selected_trust_anchor_ids",
+        x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
+            base::as_byte_span(*ssl_config.trust_anchor_ids))));
   }
   net_log.source().AddToEventParameters(dict);
   return dict;
@@ -1086,7 +1098,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     return NetLogQuicClientSessionParams(
         net_log, &session_key_, connection_id(),
         connection->client_connection_id(), supported_versions(),
-        cert_verify_flags, require_confirmation_, ech_config_list_);
+        cert_verify_flags, require_confirmation_, ech_config_list_,
+        trust_anchor_ids_, GetSSLConfig());
   });
   // Associate the owned NetLog with the parent NetLog.
   net_log.AddEventReferencingSource(NetLogEventType::QUIC_SESSION_CREATED,
@@ -3160,12 +3173,12 @@ void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
       reinterpret_cast<const ProofVerifyDetailsChromium*>(&verify_details);
   cert_verify_result_ = std::make_unique<CertVerifyResult>(
       verify_details_chromium->cert_verify_result);
-  logger_->OnCertificateVerified(*cert_verify_result_);
+  std::vector<std::vector<uint8_t>> server_tais =
+      ServerTrustAnchorIDs(crypto_stream_->GetSsl());
+  logger_->OnCertificateVerified(*cert_verify_result_, server_tais);
   pkp_bypassed_ = verify_details_chromium->pkp_bypassed;
   is_fatal_cert_error_ = verify_details_chromium->is_fatal_cert_error;
 
-  std::vector<std::vector<uint8_t>> server_tais =
-      ServerTrustAnchorIDs(crypto_stream_->GetSsl());
   for (const auto& id : server_tais) {
     // 44363.48.7 encoded as a relative OID
     if (x509_util::LastOidComponentFromBase(id, kMtcExperimentBaseId) !=

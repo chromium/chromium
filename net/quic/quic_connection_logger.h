@@ -131,7 +131,9 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
   void UpdateReceivedFrameCounts(quic::QuicStreamId stream_id,
                                  int num_frames_received,
                                  int num_duplicate_frames_received);
-  void OnCertificateVerified(const CertVerifyResult& result);
+  void OnCertificateVerified(
+      const CertVerifyResult& result,
+      const std::vector<std::vector<uint8_t>>& server_tais);
 
   // Returns connection's overall packet loss rate in fraction.
   float ReceivedPacketLossRate() const;
