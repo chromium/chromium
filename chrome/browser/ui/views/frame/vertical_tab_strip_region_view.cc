@@ -239,35 +239,27 @@ gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
 }
 
 bool VerticalTabStripRegionView::IsTabStripEditable() const {
-  // TODO(crbug.com/467710547): This needs to consider the drag context. Wait
-  // until that is implemented before updating this function.
-  NOTIMPLEMENTED();
-  return tab_strip_editable_for_testing_;
+  return tab_strip_editable_for_testing_ &&
+         (!drag_handler_ ||
+          !drag_handler_->GetDragContext()->GetDragController());
 }
 
 void VerticalTabStripRegionView::DisableTabStripEditingForTesting() const {
-  // TODO(crbug.com/467710617): Implement this in VerticalTabStripView.
-  NOTIMPLEMENTED();
+  const_cast<VerticalTabStripRegionView*>(this)
+      ->tab_strip_editable_for_testing_ = false;
 }
 
 bool VerticalTabStripRegionView::IsTabStripCloseable() const {
-  // TODO(crbug.com/467710547): Return TabDragContext::IsTabStripCloseable once
-  // it exists.
-  NOTIMPLEMENTED();
-  return true;
+  return !drag_handler_ ||
+         !drag_handler_->GetDragContext()->GetDragController();
 }
 
 bool VerticalTabStripRegionView::IsAnimating() const {
-  // TODO(crbug.com/467710547): Return if the view or drag context is animating
-  // something.
-  NOTIMPLEMENTED();
-  return true;
+  return false;
 }
 
 void VerticalTabStripRegionView::StopAnimating() {
-  // TODO(crbug.com/467710547): Stop any ongoing animation in the
-  // VerticalTabStripView.
-  NOTIMPLEMENTED();
+  // Do nothing.
 }
 
 void VerticalTabStripRegionView::UpdateLoadingAnimations(

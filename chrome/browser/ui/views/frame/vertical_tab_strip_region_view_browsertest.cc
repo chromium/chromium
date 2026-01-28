@@ -721,3 +721,17 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, SwitchModes) {
   // 2 grouped split = 10.
   EXPECT_EQ(horizontal_tab_strip()->GetTabCount(), 9);
 }
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, TabStripEditableState) {
+  // Default state should be editable.
+  EXPECT_TRUE(region_view()->IsTabStripEditable());
+
+  // Disable editing.
+  region_view()->DisableTabStripEditingForTesting();
+  EXPECT_FALSE(region_view()->IsTabStripEditable());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, TabStripCloseableState) {
+  // Default state should be closeable (no drag session).
+  EXPECT_TRUE(region_view()->IsTabStripCloseable());
+}
