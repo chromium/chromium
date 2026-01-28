@@ -268,11 +268,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // HistogramBase implementation:
   void SerializeInfoImpl(base::Pickle* pickle) const override;
 
-  // Return a string description of what goes in a given bucket.
-  // Most commonly this is the numeric value, but in derived classes it may
-  // be a name (or string description) given to the bucket.
-  virtual std::string GetAsciiBucketRange(size_t it) const;
-
  private:
   // Allow tests to corrupt our innards for testing purposes.
   friend class HistogramTest;
@@ -400,13 +395,11 @@ class BASE_EXPORT LinearHistogram : public Histogram {
   // |descriptions| can be NULL, which means no special descriptions to set. If
   // it's not NULL, the last element in the array must has a NULL in its
   // "description" field.
-  static HistogramBase* FactoryGetWithRangeDescription(
-      std::string_view name,
-      Sample32 minimum,
-      Sample32 maximum,
-      size_t bucket_count,
-      int32_t flags,
-      const DescriptionPair descriptions[]);
+  static HistogramBase* FactoryGetWithRangeDescription(std::string_view name,
+                                                       Sample32 minimum,
+                                                       Sample32 maximum,
+                                                       size_t bucket_count,
+                                                       int32_t flags);
 
   static void InitializeBucketRanges(Sample32 minimum,
                                      Sample32 maximum,
@@ -427,10 +420,6 @@ class BASE_EXPORT LinearHistogram : public Histogram {
                   HistogramSamples::Metadata* meta,
                   HistogramSamples::Metadata* logged_meta);
 
-  // If we have a description for a bucket, then return that.  Otherwise
-  // let parent class provide a (numeric) description.
-  std::string GetAsciiBucketRange(size_t i) const override;
-
  private:
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
       base::PickleIterator* iter);
@@ -446,12 +435,6 @@ class BASE_EXPORT LinearHistogram : public Histogram {
                                                TimeDelta maximum,
                                                size_t bucket_count,
                                                int32_t flags);
-
-  // For some ranges, we store a printable description of a bucket range.
-  // If there is no description, then GetAsciiBucketRange() uses parent class
-  // to provide a description.
-  typedef std::map<Sample32, std::string> BucketDescriptionMap;
-  BucketDescriptionMap bucket_description_;
 };
 
 //------------------------------------------------------------------------------

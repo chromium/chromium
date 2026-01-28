@@ -676,10 +676,6 @@ Histogram::Histogram(DurableStringView durable_name,
 
 Histogram::~Histogram() = default;
 
-std::string Histogram::GetAsciiBucketRange(size_t i) const {
-  return GetSimpleAsciiBucketRange(ranges(i));
-}
-
 //------------------------------------------------------------------------------
 // Private methods
 
@@ -793,16 +789,13 @@ class LinearHistogram::Factory : public Histogram::Factory {
           Sample32 minimum,
           Sample32 maximum,
           size_t bucket_count,
-          int32_t flags,
-          const DescriptionPair* descriptions)
+          int32_t flags)
       : Histogram::Factory(name,
                            LINEAR_HISTOGRAM,
                            minimum,
                            maximum,
                            bucket_count,
-                           flags) {
-    descriptions_ = descriptions;
-  }
+                           flags) {}
 
   Factory(const Factory&) = delete;
   Factory& operator=(const Factory&) = delete;
@@ -818,27 +811,6 @@ class LinearHistogram::Factory : public Histogram::Factory {
       const BucketRanges* ranges) override {
     return WrapUnique(new LinearHistogram(GetPermanentName(name_), ranges));
   }
-
-  void FillHistogram(HistogramBase* base_histogram) override {
-    Histogram::Factory::FillHistogram(base_histogram);
-    // Normally, |base_histogram| should have type LINEAR_HISTOGRAM or be
-    // inherited from it. However, if it's expired, it will actually be a
-    // DUMMY_HISTOGRAM. Skip filling in that case.
-    if (base_histogram->GetHistogramType() == DUMMY_HISTOGRAM) {
-      return;
-    }
-    LinearHistogram* histogram = static_cast<LinearHistogram*>(base_histogram);
-    // Set range descriptions.
-    if (descriptions_) {
-      for (int i = 0; UNSAFE_TODO(descriptions_[i].description); ++i) {
-        UNSAFE_TODO(histogram->bucket_description_[descriptions_[i].sample] =
-                        descriptions_[i].description);
-      }
-    }
-  }
-
- private:
-  raw_ptr<const DescriptionPair, AllowPtrArithmetic> descriptions_;
 };
 
 LinearHistogram::~LinearHistogram() = default;
@@ -907,8 +879,7 @@ HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
     Sample32 minimum,
     Sample32 maximum,
     size_t bucket_count,
-    int32_t flags,
-    const DescriptionPair descriptions[]) {
+    int32_t flags) {
   // Originally, histograms were required to have at least one sample value
   // plus underflow and overflow buckets. For single-entry enumerations,
   // that one value is usually zero (which IS the underflow bucket)
@@ -933,8 +904,7 @@ HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
     return DummyHistogram::GetInstance();
   }
 
-  return Factory(name, minimum, maximum, bucket_count, flags, descriptions)
-      .Build();
+  return Factory(name, minimum, maximum, bucket_count, flags).Build();
 }
 
 HistogramType LinearHistogram::GetHistogramType() const {
@@ -958,15 +928,6 @@ LinearHistogram::LinearHistogram(
                 logged_counts,
                 meta,
                 logged_meta) {}
-
-std::string LinearHistogram::GetAsciiBucketRange(size_t i) const {
-  int range = ranges(i);
-  BucketDescriptionMap::const_iterator it = bucket_description_.find(range);
-  if (it == bucket_description_.end()) {
-    return Histogram::GetAsciiBucketRange(i);
-  }
-  return it->second;
-}
 
 // static
 void LinearHistogram::InitializeBucketRanges(Sample32 minimum,
@@ -993,7 +954,7 @@ HistogramBase* LinearHistogram::FactoryGetInternal(std::string_view name,
                                                    size_t bucket_count,
                                                    int32_t flags) {
   return FactoryGetWithRangeDescription(name, minimum, maximum, bucket_count,
-                                        flags, nullptr);
+                                        flags);
 }
 
 // static
