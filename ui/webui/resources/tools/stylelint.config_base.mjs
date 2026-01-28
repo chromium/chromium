@@ -14,5 +14,12 @@ export default {
 
     // https://google.github.io/styleguide/htmlcssguide.html#CSS_Quotation_Marks
     '@stylistic/string-quotes': 'single',
+
+    // https://google.github.io/styleguide/htmlcssguide.html#Selector_and_Declaration_Separation
+    '@stylistic/declaration-block-semicolon-newline-after': 'always',
+    '@stylistic/declaration-block-semicolon-newline-before': 'never-multi-line',
+    '@stylistic/declaration-block-semicolon-space-before': 'never',
+    '@stylistic/declaration-block-trailing-semicolon': 'always',
+    '@stylistic/no-extra-semicolons': true,
   }
 };
