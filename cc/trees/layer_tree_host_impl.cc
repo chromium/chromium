@@ -5874,7 +5874,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     const bool overlay_candidate =
         settings_.use_gpu_memory_buffer_resources &&
         shared_image_caps.supports_scanout_shared_images &&
-        viz::CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
+        viz::CanCreateNativeBufferForFormat(format);
     if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }

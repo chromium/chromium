@@ -376,11 +376,11 @@ class VideoResourceUpdater::FrameResource {
     DCHECK(shared_image_interface);
     // TODO(crbug.com/40239769): Set `overlay_candidate` for multiplanar
     // formats.
-    const bool overlay_candidate =
-        format.is_single_plane() && use_gpu_memory_buffer_resources &&
-        shared_image_interface->GetCapabilities()
-            .supports_scanout_shared_images &&
-        CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
+    const bool overlay_candidate = format.is_single_plane() &&
+                                   use_gpu_memory_buffer_resources &&
+                                   shared_image_interface->GetCapabilities()
+                                       .supports_scanout_shared_images &&
+                                   CanCreateNativeBufferForFormat(format);
 
     // These SharedImages will be sent over to the display compositor as
     // TransferableResources. RasterInterface which in turn uses RasterDecoder

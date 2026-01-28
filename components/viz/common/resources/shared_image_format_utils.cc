@@ -242,9 +242,7 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
   NOTREACHED();
 }
 
-bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
-    SharedImageFormat format) {
-  CHECK(format.is_single_plane());
+bool CanCreateNativeBufferForFormat(SharedImageFormat format) {
   return (format == SinglePlaneFormat::kBGRA_8888 ||
           format == SinglePlaneFormat::kR_8 ||
           format == SinglePlaneFormat::kRG_88 ||
