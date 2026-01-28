@@ -7,7 +7,7 @@ directory corresponds to one extension.
 Configuration are provided in [gemini-cli extensions] format.
 
 [model context protocol]: https://modelcontextprotocol.io/
-[gemini-cli extensions]: https://github.com/google-gemini/gemini-cli/blob/main/docs/extension.md
+[gemini-cli extensions]: https://github.com/google-gemini/gemini-cli/blob/main/docs/extensions/index.md
 
 ## Managing Configurations
 
@@ -93,5 +93,5 @@ See the [example][3] server for a minimal example for creating an MCP tool
 with python and FastMCP
 
 [1]: https://modelcontextprotocol.io/
-[2]: https://github.com/google-gemini/gemini-cli/blob/main/docs/extension.md
+[2]: https://github.com/google-gemini/gemini-cli/blob/main/docs/extensions/index.md
 [3]: example_server/README.md
