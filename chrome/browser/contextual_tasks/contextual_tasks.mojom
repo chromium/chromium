@@ -6,6 +6,7 @@ module contextual_tasks.mojom;
 
 import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/url.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
 
 // Represents the visual information needed to display a single tab in the
 // sources menu.
@@ -88,6 +89,10 @@ interface PageHandler {
 
   // Opens the onboarding help page in a new tab.
   OpenOnboardingHelpUi();
+
+  // Open the URL with window open disposition.
+  // Used for handling newwindow event inside <webview>.
+  OpenUrl(url.mojom.Url url, ui.mojom.WindowOpenDisposition disposition);
 
   // Moves the contents of the side panel to a new tab.
   MoveTaskUiToNewTab();
