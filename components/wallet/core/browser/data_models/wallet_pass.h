@@ -137,10 +137,6 @@ struct WalletPass {
       const optimization_guide::proto::WalletablePass& proto,
       std::optional<WalletBarcode> barcode = std::nullopt);
 
-  // TODO(crbug.com/478783796): Move to the BoardingPass class.
-  static std::optional<WalletPass> CreateBoardingPass(
-      const WalletBarcode& barcode);
-
   // Returns the pass category of the Google Wallet pass.
   PassCategory GetPassCategory() const;
 

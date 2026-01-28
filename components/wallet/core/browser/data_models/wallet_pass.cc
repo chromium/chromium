@@ -122,19 +122,6 @@ std::optional<WalletPass> WalletPass::FromProto(
   return std::nullopt;
 }
 
-// static
-std::optional<WalletPass> WalletPass::CreateBoardingPass(
-    const WalletBarcode& barcode) {
-  std::optional<BoardingPass> boarding_pass =
-      BoardingPass::FromBarcode(barcode);
-  if (boarding_pass) {
-    WalletPass pass;
-    pass.pass_data = std::move(*boarding_pass);
-    return pass;
-  }
-  return std::nullopt;
-}
-
 PassCategory WalletPass::GetPassCategory() const {
   return std::visit(
       absl::Overload(

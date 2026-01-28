@@ -48,6 +48,16 @@ optimization_guide::proto::PassCategory ToProtoPassCategory(
   }
 }
 
+std::optional<WalletPass> CreateBoardingPass(const WalletBarcode& barcode) {
+  if (std::optional<BoardingPass> boarding_pass =
+          BoardingPass::FromBarcode(barcode)) {
+    WalletPass pass;
+    pass.pass_data = std::move(*boarding_pass);
+    return pass;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 WalletablePassIngestionController::ProcessingState::ProcessingState() = default;
@@ -118,7 +128,7 @@ void WalletablePassIngestionController::OnBoardingPassBarcodesDetected(
     std::vector<WalletBarcode> barcodes) {
   for (const auto& barcode : barcodes) {
     // TODO(crbug.com/465616560): Handle multiple barcodes properly.
-    std::optional<WalletPass> pass = WalletPass::CreateBoardingPass(barcode);
+    std::optional<WalletPass> pass = CreateBoardingPass(barcode);
     if (pass) {
       ShowSaveBubble(url, std::move(*pass));
       return;
