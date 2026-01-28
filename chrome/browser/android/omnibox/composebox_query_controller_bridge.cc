@@ -95,9 +95,9 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
       OmniboxFieldTrial::kOmniboxMultimodalPrioritizeSuggestionsForFirstDocument
           .Get();
 
-  contextual_search::ContextualSearchService* service =
+  contextual_search::ContextualSearchService* search_service =
       ContextualSearchServiceFactory::GetForProfile(profile);
-  session_handle_ = service->CreateSession(
+  session_handle_ = search_service->CreateSession(
       std::move(query_controller_config_params),
       contextual_search::ContextualSearchSource::kOmnibox,
       lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
@@ -108,6 +108,16 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     // where the service is null and calls are no-oped. Otherwise we allow
     // future calls to fail when things already should be disabled.
     return;
+  }
+
+  if (OmniboxFieldTrial::kOmniboxShowModelPicker.Get()) {
+    AimEligibilityService* aim_service =
+        AimEligibilityServiceFactory::GetForProfile(profile);
+    const omnibox::SearchboxConfig* config_ptr =
+        aim_service->GetSearchboxConfig();
+    input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
+        *session_handle_,
+        config_ptr ? *config_ptr : omnibox::SearchboxConfig());
   }
 
   query_controller()->AddObserver(this);

@@ -715,6 +715,9 @@ inline constexpr base::FeatureParam<bool>
 inline constexpr base::FeatureParam<bool> kOmniboxMultimodalInputMultiContext{
     &omnibox::kOmniboxMultimodalInput, "multi_context", false};
 
+inline constexpr base::FeatureParam<bool> kOmniboxShowModelPicker{
+    &omnibox::kOmniboxMultimodalInput, "show_model_picker", false};
+
 inline constexpr base::FeatureParam<bool>
     kOmniboxMultimodalPrioritizeSuggestionsForFirstDocument{
         &omnibox::kOmniboxMultimodalInput,
