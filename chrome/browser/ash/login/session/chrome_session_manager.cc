@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -373,7 +374,8 @@ void InitFeaturesSessionType(const user_manager::User* user) {
 
 ChromeSessionManager::ChromeSessionManager(
     session_manager::SessionManager* session_manager)
-    : oobe_configuration_(std::make_unique<OobeConfiguration>()),
+    : session_manager_(CHECK_DEREF(session_manager)),
+      oobe_configuration_(std::make_unique<OobeConfiguration>()),
       user_session_initializer_(
           std::make_unique<UserSessionInitializer>(session_manager)) {
   CHECK(session_manager);
@@ -493,7 +495,8 @@ void ChromeSessionManager::OnSessionCreated(const AccountId& account_id) {
   // Initialize the session length limiter and start it only if
   // session limit is defined by the policy.
   session_length_limiter_ = std::make_unique<SessionLengthLimiter>(
-      /*delegate=*/nullptr, browser_restart);
+      base::DefaultClock::GetInstance(), &session_manager_.get(),
+      browser_restart);
 }
 
 }  // namespace ash

@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
@@ -63,6 +65,7 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
   }
 
  private:
+  const raw_ref<session_manager::SessionManager> session_manager_;
   std::unique_ptr<OobeConfiguration> oobe_configuration_;
   std::unique_ptr<UserSessionInitializer> user_session_initializer_;
   base::ScopedObservation<session_manager::SessionManager,

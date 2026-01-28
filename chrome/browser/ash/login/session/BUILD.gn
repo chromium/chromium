@@ -228,6 +228,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//components/language/core/browser",
+    "//components/session_manager/core:test_support",
     "//components/signin/public/base:signin_switches",
     "//components/sync_preferences:test_support",
     "//components/user_manager",

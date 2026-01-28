@@ -859,28 +859,24 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
   bool observed_;
 };
 
-// Fake implementation to advance the clock for SessionLengthLimiter.
-class FakeDelegateImpl : public ash::SessionLengthLimiter::Delegate {
+class TestSessionManagerObserver
+    : public session_manager::SessionManagerObserver {
  public:
-  FakeDelegateImpl() { clock_.SetNow(base::Time::Now()); }
-
-  FakeDelegateImpl(const FakeDelegateImpl&) = delete;
-  FakeDelegateImpl& operator=(const FakeDelegateImpl&) = delete;
-
-  ~FakeDelegateImpl() override = default;
-
-  const base::Clock* GetClock() const override { return &clock_; }
-  void StopSession() override {
-    chrome::AttemptUserExit();
-    session_stopped_ = true;
+  explicit TestSessionManagerObserver(
+      session_manager::SessionManager* session_manager) {
+    observation_.Observe(session_manager);
   }
+  ~TestSessionManagerObserver() override = default;
 
-  void AdvanceClock(base::TimeDelta delta) { clock_.Advance(delta); }
-  bool session_stopped() const { return session_stopped_; }
+  void OnSignOutRequested() override { ++sign_out_requested_count_; }
+
+  size_t sign_out_requested_count() const { return sign_out_requested_count_; }
 
  private:
-  base::SimpleTestClock clock_;
-  bool session_stopped_ = false;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      observation_{this};
+  size_t sign_out_requested_count_ = 0;
 };
 
 // Tests that the data associated with a device local account is removed when
@@ -2158,6 +2154,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
 
   PolicyTestAppTerminationObserver observer;
 
+  TestSessionManagerObserver session_manager_observer(
+      session_manager::SessionManager::Get());
+
   // Install and refresh the device policy now. This will also fetch the initial
   // user policy for the device-local account now.
   SetSessionLengthLimitPolicy(kThreeHoursInMs);
@@ -2166,12 +2165,12 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
   WaitForSessionStart();
 
   // Setup a fake delegate to advance clock.
-  auto delegate_ptr = std::make_unique<FakeDelegateImpl>();
-  auto* delegate = delegate_ptr.get();
-  g_browser_process->platform_part()
-      ->chrome_session_manager()
-      ->GetSessionLengthLimiterForTesting()
-      ->SetDelegateForTesting(std::move(delegate_ptr));
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  auto clock_resetter = g_browser_process->platform_part()
+                            ->chrome_session_manager()
+                            ->GetSessionLengthLimiterForTesting()
+                            ->SetClockForTesting(&clock);
 
   // Ensure the SessionLengthLimit is updated.
   LocalStateValueWaiter(prefs::kSessionLengthLimit,
@@ -2180,10 +2179,10 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
 
   // The session is not terminated.
   EXPECT_FALSE(observer.WasAppTerminated());
-  EXPECT_FALSE(delegate->session_stopped());
+  EXPECT_EQ(0u, session_manager_observer.sign_out_requested_count());
 
   // Advance the clock by 3 hours.
-  delegate->AdvanceClock(base::Hours(3));
+  clock.Advance(base::Hours(3));
 
   // Update the SessionLengthLimit policy to limit the session by two hours.
   // The session is expected to be terminated asap, because the current time is
@@ -2203,7 +2202,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
 
   // The session is terminated.
   EXPECT_TRUE(observer.WasAppTerminated());
-  EXPECT_TRUE(delegate->session_stopped());
+  EXPECT_EQ(1u, session_manager_observer.sign_out_requested_count());
 }
 
 struct FeaturesTestParam {

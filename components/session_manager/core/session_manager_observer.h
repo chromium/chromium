@@ -61,6 +61,9 @@ class SessionManagerObserver : public base::CheckedObserver {
   // - Shelf Icon loading.
   // - Browser window restoration.
   virtual void OnUserSessionStartUpTaskCompleted() {}
+
+  // Invoked when sign-out is requested.
+  virtual void OnSignOutRequested() {}
 };
 
 }  // namespace session_manager

@@ -7,15 +7,15 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 
@@ -27,39 +27,7 @@ const int kSessionLengthLimitMinMs = 30 * 1000; // 30 seconds.
 // The maximum session time limit that can be set.
 const int kSessionLengthLimitMaxMs = 24 * 60 * 60 * 1000; // 24 hours.
 
-// A default delegate implementation that returns the current time and does end
-// the current user's session when requested. This can be replaced with a mock
-// in tests.
-class SessionLengthLimiterDelegateImpl : public SessionLengthLimiter::Delegate {
- public:
-  SessionLengthLimiterDelegateImpl();
-
-  SessionLengthLimiterDelegateImpl(const SessionLengthLimiterDelegateImpl&) =
-      delete;
-  SessionLengthLimiterDelegateImpl& operator=(
-      const SessionLengthLimiterDelegateImpl&) = delete;
-
-  ~SessionLengthLimiterDelegateImpl() override;
-
-  const base::Clock* GetClock() const override;
-  void StopSession() override;
-};
-
-SessionLengthLimiterDelegateImpl::SessionLengthLimiterDelegateImpl() = default;
-
-SessionLengthLimiterDelegateImpl::~SessionLengthLimiterDelegateImpl() = default;
-
-const base::Clock* SessionLengthLimiterDelegateImpl::GetClock() const {
-  return base::DefaultClock::GetInstance();
-}
-
-void SessionLengthLimiterDelegateImpl::StopSession() {
-  chrome::AttemptUserExit();
-}
-
 }  // namespace
-
-SessionLengthLimiter::Delegate::~Delegate() = default;
 
 // static
 void SessionLengthLimiter::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -68,13 +36,16 @@ void SessionLengthLimiter::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kSessionLengthLimit, 0);
 }
 
-SessionLengthLimiter::SessionLengthLimiter(Delegate* delegate,
-                                           bool browser_restarted)
-    : delegate_(delegate ? delegate : new SessionLengthLimiterDelegateImpl),
+SessionLengthLimiter::SessionLengthLimiter(
+    base::Clock* clock,
+    session_manager::SessionManager* session_manager,
+    bool browser_restarted)
+    : clock_(CHECK_DEREF(clock)),
+      session_manager_(CHECK_DEREF(session_manager)),
       session_start_time_tracker_(
           std::make_unique<session_manager::SessionStartTimeTracker>(
               g_browser_process->local_state(),
-              delegate_->GetClock(),
+              clock,
               browser_restarted)) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -98,11 +69,17 @@ base::TimeDelta SessionLengthLimiter::GetSessionDuration() const {
     return base::TimeDelta();
   }
 
-  return delegate_->GetClock()->Now() - session_start_time;
+  return clock_->Now() - session_start_time;
 }
 
 void SessionLengthLimiter::OnSessionStartTimeUpdated() {
   UpdateLimit();
+}
+
+base::AutoReset<raw_ref<base::Clock>> SessionLengthLimiter::SetClockForTesting(
+    base::Clock* clock) {
+  base::AutoReset resetter(&clock_, CHECK_DEREF(clock));
+  return resetter;
 }
 
 void SessionLengthLimiter::UpdateLimit() {
@@ -140,16 +117,16 @@ void SessionLengthLimiter::UpdateLimit() {
 
   // Log out the user immediately if the session length limit has been reached
   // or exceeded.
-  if (session_stop_time <= delegate_->GetClock()->Now()) {
-    delegate_->StopSession();
+  if (session_stop_time <= clock_->Now()) {
+    session_manager_->RequestSignOut();
     return;
   }
 
   // Set a timer to log out the user when the session length limit is reached.
-  timer_ = std::make_unique<base::WallClockTimer>(
-      delegate_->GetClock() /*clock*/, nullptr /*tick_clock*/);
-  timer_->Start(FROM_HERE, session_stop_time, delegate_.get(),
-                &SessionLengthLimiter::Delegate::StopSession);
+  timer_ = std::make_unique<base::WallClockTimer>(&clock_.get(),
+                                                  /*tick_clock=*/nullptr);
+  timer_->Start(FROM_HERE, session_stop_time, &session_manager_.get(),
+                &session_manager::SessionManager::RequestSignOut);
 }
 
 }  // namespace ash

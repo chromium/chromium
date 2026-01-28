@@ -82,6 +82,7 @@ void SessionManager::SwitchActiveSession(const AccountId& account_id) {
 
 void SessionManager::RequestSignOut() {
   delegate_->RequestSignOut();
+  observers_.Notify(&SessionManagerObserver::OnSignOutRequested);
 }
 
 void SessionManager::OnUserManagerCreated(

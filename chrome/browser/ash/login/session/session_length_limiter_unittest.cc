@@ -25,23 +25,15 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/prefs/testing_pref_service.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
 
 namespace {
-
-using ::testing::Invoke;
-using ::testing::Mock;
-using ::testing::NiceMock;
-
-class MockSessionLengthLimiterDelegate : public SessionLengthLimiter::Delegate {
- public:
-  MOCK_CONST_METHOD0(GetClock, const base::Clock*(void));
-  MOCK_METHOD0(StopSession, void(void));
-};
 
 // Helper class to simulate wall clock advance during suspend/resume.
 class WallClockForwarder {
@@ -77,13 +69,18 @@ void WallClockForwarder::ForwardWhileSuspended(const base::TimeDelta& delta) {
   runner_->RunUntilIdle();
 }
 
-class SessionLengthLimiterTest : public testing::Test {
+class SessionLengthLimiterTest
+    : public testing::Test,
+      public session_manager::SessionManagerObserver {
  protected:
   SessionLengthLimiterTest();
 
   // testing::Test:
   void SetUp() override;
   void TearDown() override;
+
+  // session_manager::SessionManagerObserver:
+  void OnSignOutRequested() override { SaveSessionStopTime(); }
 
   void SetSessionUserActivitySeenPref(bool user_activity_seen);
   void ClearSessionUserActivitySeenPref();
@@ -104,7 +101,6 @@ class SessionLengthLimiterTest : public testing::Test {
 
   void UpdateSessionStartTimeIfWaitingForUserActivity();
 
-  void ExpectStopSession();
   void SaveSessionStopTime();
 
   // Clears the session state by resetting |user_activity_| and
@@ -112,6 +108,10 @@ class SessionLengthLimiterTest : public testing::Test {
   void CreateSessionLengthLimiter(bool browser_restarted);
 
   void DestroySessionLengthLimiter();
+
+  session_manager::FakeSessionManagerDelegate* delegate() {
+    return delegate_.get();
+  }
 
   scoped_refptr<base::TestMockTimeTaskRunner> runner_;
   std::unique_ptr<WallClockForwarder> wall_clock_forwarder_;
@@ -123,27 +123,38 @@ class SessionLengthLimiterTest : public testing::Test {
     return *TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   }
 
-  bool user_activity_seen_;
+  bool user_activity_seen_ = false;
 
-  raw_ptr<MockSessionLengthLimiterDelegate, DanglingUntriaged>
-      delegate_;  // Owned by
-                  // session_length_limiter_.
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  raw_ptr<session_manager::FakeSessionManagerDelegate> delegate_ = nullptr;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observer_{this};
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;
 };
 
-SessionLengthLimiterTest::SessionLengthLimiterTest()
-    : user_activity_seen_(false), delegate_(nullptr) {}
+SessionLengthLimiterTest::SessionLengthLimiterTest() = default;
 
 void SessionLengthLimiterTest::SetUp() {
-  runner_ = new base::TestMockTimeTaskRunner;
+  runner_ = new base::TestMockTimeTaskRunner();
   wall_clock_forwarder_ = std::make_unique<WallClockForwarder>(runner_.get());
   runner_->FastForwardBy(base::TimeDelta::FromInternalValue(1000));
+
+  auto delegate =
+      std::make_unique<session_manager::FakeSessionManagerDelegate>();
+  delegate_ = delegate.get();
+  session_manager_ =
+      std::make_unique<session_manager::SessionManager>(std::move(delegate));
+  session_manager_observer_.Observe(session_manager_.get());
   ui::UserActivityDetector::Get()->ResetStateForTesting();
 }
 
 void SessionLengthLimiterTest::TearDown() {
-  wall_clock_forwarder_.reset();
   session_length_limiter_.reset();
+  session_manager_observer_.Reset();
+  delegate_ = nullptr;
+  session_manager_.reset();
+  wall_clock_forwarder_.reset();
   ui::UserActivityDetector::Get()->ResetStateForTesting();
 }
 
@@ -222,13 +233,6 @@ void SessionLengthLimiterTest::
   }
 }
 
-void SessionLengthLimiterTest::ExpectStopSession() {
-  Mock::VerifyAndClearExpectations(delegate_);
-  EXPECT_CALL(*delegate_, StopSession())
-      .Times(1)
-      .WillOnce(Invoke(this, &SessionLengthLimiterTest::SaveSessionStopTime));
-}
-
 void SessionLengthLimiterTest::SaveSessionStopTime() {
   session_stop_time_ = runner_->Now();
 }
@@ -237,15 +241,8 @@ void SessionLengthLimiterTest::CreateSessionLengthLimiter(
     bool browser_restarted) {
   user_activity_seen_ = false;
   session_start_time_ = runner_->Now();
-
-  EXPECT_FALSE(delegate_);
-  delegate_ = new NiceMock<MockSessionLengthLimiterDelegate>;
-  ON_CALL(*delegate_, GetClock())
-      .WillByDefault(
-          Invoke(runner_.get(), &base::TestMockTimeTaskRunner::GetMockClock));
-  EXPECT_CALL(*delegate_, StopSession()).Times(0);
-  session_length_limiter_ =
-      std::make_unique<SessionLengthLimiter>(delegate_, browser_restarted);
+  session_length_limiter_ = std::make_unique<SessionLengthLimiter>(
+      runner_->GetMockClock(), session_manager_.get(), browser_restarted);
 }
 
 void SessionLengthLimiterTest::DestroySessionLengthLimiter() {
@@ -624,8 +621,9 @@ TEST_F(SessionLengthLimiterTest, RunWithoutUserActivityWhileNotWaiting) {
 
   // Verify that the timer fires and the session is terminated when the session
   // length limit is reached.
-  ExpectStopSession();
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
   runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(1, delegate()->request_sign_out_count());
   EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
@@ -644,6 +642,7 @@ TEST_F(SessionLengthLimiterTest, RunWithoutUserActivityWhileWaiting) {
 
   // Verify that no timer fires to terminate the session.
   runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
 }
 
 // Creates a SessionLengthLimiter after setting a limit and instructs it not to
@@ -666,8 +665,9 @@ TEST_F(SessionLengthLimiterTest, RunWithUserActivityWhileNotWaiting) {
 
   // Verify that the timer fires and the session is terminated when the session
   // length limit is reached.
-  ExpectStopSession();
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
   runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(1, delegate()->request_sign_out_count());
   EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
@@ -698,8 +698,9 @@ TEST_F(SessionLengthLimiterTest, RunWithUserActivityWhileWaiting) {
 
   // Verify that the timer fires and the session is terminated when the session
   // length limit is reached.
-  ExpectStopSession();
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
   runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(1, delegate()->request_sign_out_count());
   EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
@@ -724,8 +725,9 @@ TEST_F(SessionLengthLimiterTest, RunAndIncreaseSessionLengthLimit) {
 
   // Verify that the the timer fires and the session is terminated when the
   // session length limit is reached.
-  ExpectStopSession();
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
   runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(1, delegate()->request_sign_out_count());
   EXPECT_EQ(session_start_time_ + base::Seconds(90), session_stop_time_);
 }
 
@@ -748,8 +750,9 @@ TEST_F(SessionLengthLimiterTest, RunAndDecreaseSessionLengthLimit) {
 
   // Verify that reducing the session length limit below the 50 seconds that
   // have already elapsed causes the session to be terminated immediately.
-  ExpectStopSession();
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
   SetSessionLengthLimitPref(base::Seconds(40));
+  EXPECT_EQ(1, delegate()->request_sign_out_count());
   EXPECT_EQ(session_start_time_ + base::Seconds(50), session_stop_time_);
 }
 
@@ -788,14 +791,16 @@ TEST_F(SessionLengthLimiterTest, SuspendAndStop) {
 
   // Verify that the timer fires and the session is terminated when the session
   // length limit is reached.
-  ExpectStopSession();
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
 
   // Simulate 30 seconds of the active session, then 60 seconds of sleep
   // (suspended device). Given that session length limit is 60 seconds, it will
   // hit exactly if the middle of sleen (and processed when device is resumed,
   // so real session length will be 90 seconds).
   runner_->FastForwardBy(base::Seconds(30));
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
   wall_clock_forwarder_->ForwardWhileSuspended(base::Seconds(60));
+  EXPECT_EQ(1, delegate()->request_sign_out_count());
   EXPECT_EQ(session_start_time_ + base::Seconds(90), session_stop_time_);
 }
 
@@ -818,9 +823,10 @@ TEST_F(SessionLengthLimiterTest, SuspendAndRun) {
 
   // Verify that the timer fires and the session is terminated when the session
   // length limit is reached.
-  ExpectStopSession();
 
+  EXPECT_EQ(0, delegate()->request_sign_out_count());
   runner_->FastForwardBy(base::Seconds(20));
+  EXPECT_EQ(1, delegate()->request_sign_out_count());
   EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
