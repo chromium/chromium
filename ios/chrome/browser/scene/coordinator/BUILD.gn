@@ -23,7 +23,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
+    "//ios/chrome/browser/incognito_interstitial/ui_bundled:coordinator",
     "//ios/chrome/browser/policy/model:browser_agent",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/safari_data_import/coordinator",
     "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/safari_data_import/public",
@@ -32,6 +34,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/root_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile:utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
@@ -39,5 +42,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/youtube_incognito/coordinator",
   ]
 }

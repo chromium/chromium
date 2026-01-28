@@ -15,7 +15,6 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/first_run/model",
   "+ios/chrome/browser/geolocation/model",
-  "+ios/chrome/browser/incognito_interstitial/ui_bundled",
   "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intelligence/bwg/coordinator",
@@ -57,6 +56,5 @@ include_rules = [
   "+ios/chrome/browser/widget_kit/model/features.h",
   "+ios/chrome/browser/widget_kit/model/model_swift.h",
   "+ios/chrome/browser/window_activities/model",
-  "+ios/chrome/browser/youtube_incognito/coordinator",
   # keep-sorted end
 ]
