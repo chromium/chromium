@@ -11,7 +11,6 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -47,6 +46,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ActionData;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.TaskModel;
@@ -69,6 +70,7 @@ public class ExtensionsMenuMediatorTest {
     private static final int TAB1_ID = 111;
     private static final int TAB2_ID = 222;
     private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
+    private static final long EXTENSIONS_MENU_BRIDGE_POINTER = 10001L;
     private static final long BROWSER_WINDOW_POINTER = 1000L;
 
     private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
@@ -83,9 +85,9 @@ public class ExtensionsMenuMediatorTest {
 
     @Mock private ChromeAndroidTask mTask;
     @Mock private Profile mProfile;
-    @Mock private Runnable mDataReadyCallback;
     @Mock private WebContents mWebContents;
     @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
+    @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
     @Mock private MenuModelBridge mMenuModelBridge;
 
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
@@ -126,6 +128,11 @@ public class ExtensionsMenuMediatorTest {
                 .thenReturn(mMenuModelBridge);
         when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 
+        // Mock {@link ExtensionsMenuBridge}.
+        ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
+        when(mExtensionsMenuBridgeJniMock.init(any(), anyLong()))
+                .thenReturn(EXTENSIONS_MENU_BRIDGE_POINTER);
+
         // Initialize common objects.
         mTab1 = new MockTab(TAB1_ID, mProfile);
         mTab2 = new MockTab(TAB2_ID, mProfile);
@@ -139,7 +146,6 @@ public class ExtensionsMenuMediatorTest {
                         mTask,
                         mCurrentTabSupplier,
                         mModels,
-                        mDataReadyCallback,
                         null);
 
         // Wait for the main thread to settle.
@@ -160,18 +166,6 @@ public class ExtensionsMenuMediatorTest {
         assertEquals(2, mModels.size());
         assertItemAt(0, "title of a", ICON_RED);
         assertItemAt(1, "title of b", ICON_GREEN);
-    }
-
-    @Test
-    public void testUpdateModels_dataReadyCallback() {
-        // The callback should not have been called.
-        verify(mDataReadyCallback, never()).run();
-
-        // Set the current tab.
-        mCurrentTabSupplier.set(mTab1);
-
-        // The callback should have been called.
-        verify(mDataReadyCallback).run();
     }
 
     @Test
