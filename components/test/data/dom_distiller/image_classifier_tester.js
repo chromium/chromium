@@ -60,6 +60,12 @@ suite('ImageClassifier', function() {
             ` xmlns="${SVG_NS}"></svg>`;
         img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
       }
+
+      // For synchronously loaded images (e.g., data URIs), resolve immediately
+      // if complete to prevent missed load events and test timeouts.
+      if (img.complete) {
+        resolve(img);
+      }
     });
   }
 
