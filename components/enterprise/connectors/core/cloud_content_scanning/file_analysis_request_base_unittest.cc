@@ -62,13 +62,14 @@ class FileAnalysisRequestBaseTest : public testing::Test {
       base::FilePath file_name,
       bool delay_opening_file,
       std::string mime_type = "",
-      bool is_obfuscated = false) {
+      bool is_obfuscated = false,
+      bool force_sync_hash_computation = true) {
     AnalysisSettings settings;
     return std::make_unique<MockFileAnalysisRequestBase>(
         settings, path, file_name, mime_type, delay_opening_file,
         DoNothingConnector(), base::NullCallback(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), base::DoNothing(),
-        is_obfuscated);
+        is_obfuscated, force_sync_hash_computation);
   }
 
   void GetResultsForFileContents(const std::string& file_contents,
@@ -228,9 +229,30 @@ TEST_F(FileAnalysisRequestBaseTest, NormalFilesDataControls) {
       << data.mime_type << " is not an expected mimetype";
 }
 
-TEST_F(FileAnalysisRequestBaseTest, LargeFiles) {
-  ScanRequestUploadResult result;
+class FileAnalysisRequestBaseHashInFinalInvariantTest
+    : public FileAnalysisRequestBaseTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool is_content_hash_in_final_call_enabled() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FileAnalysisRequestBaseHashInFinalInvariantTest,
+                         testing::Bool());
+
+TEST_P(FileAnalysisRequestBaseHashInFinalInvariantTest,
+       LargeFileAlwaysHasHashWhenNotDelayOpen) {
+  enterprise_connectors::ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  if (is_content_hash_in_final_call_enabled()) {
+    scoped_feature_list.InitAndEnableFeature(
+        enterprise_connectors::kContentHashInFileUploadFinalCall);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        enterprise_connectors::kContentHashInFileUploadFinalCall);
+  }
 
   std::string large_file_contents(BinaryUploadService::kMaxUploadSizeBytes + 1,
                                   'a');
@@ -462,6 +484,57 @@ TEST_F(FileAnalysisRequestBaseTest, ObfuscatedFile) {
   // Check if size has been updated to use the calculated unobfuscated content
   // size.
   EXPECT_EQ(data.size, original_contents.size());
+}
+
+TEST_F(FileAnalysisRequestBaseTest, FileHashComputesAsyncWhenEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      enterprise_connectors::kContentHashInFileUploadFinalCall);
+
+  std::string large_file_contents(BinaryUploadService::kMaxUploadSizeBytes + 1,
+                                  'a');
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("foo.doc");
+
+  // Create the file.
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  file.WriteAtCurrentPos(base::as_byte_span(large_file_contents));
+
+  auto request =
+      MakeRequest(file_path, file_path.BaseName(), /*delay_opening_file*/ true,
+                  "", false, /*force_sync_hash_computation=*/false);
+
+  base::RunLoop run_loop;
+
+  request->GetRequestData(base::BindLambdaForTesting(
+      [&request, &run_loop, &large_file_contents](
+          enterprise_connectors::ScanRequestUploadResult result,
+          BinaryUploadRequest::Data data) {
+        EXPECT_TRUE(request->register_on_got_hash_callback_);
+        request->register_on_got_hash_callback_.Run(
+            false, base::BindLambdaForTesting([&run_loop](std::string hash) {
+              // python3 -c "print('a' * (50 * 1024 * 1024 + 1), end='')" |
+              // sha256sum | tr '[:lower:]' '[:upper:]'
+              EXPECT_EQ(hash,
+                        "9EB56DB30C49E131459FE735BA6B9D38327376224EC8D5A1233F43"
+                        "A5B4A25942");
+              run_loop.Quit();
+            }));
+
+        EXPECT_EQ(
+            result,
+            enterprise_connectors::ScanRequestUploadResult::kFileTooLarge);
+        EXPECT_EQ(data.size, large_file_contents.size());
+        EXPECT_TRUE(data.contents.empty());
+        EXPECT_EQ(data.hash, "");
+        EXPECT_TRUE(IsDocMimeType(data.mime_type))
+            << data.mime_type << " is not an expected mimetype";
+      }));
+
+  request->OpenFile();
+
+  run_loop.Run();
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
 }
 
 }  // namespace enterprise_connectors

@@ -196,6 +196,14 @@ class BinaryUploadRequest {
   void set_image_paste(bool image_paste);
   bool image_paste() const;
 
+  // Non-null for a file request when the hash is computed after
+  // GetRequestData. When Run() with a callback parameter, stores the cb to run
+  // it with the hash once it is computed. If the hash already computed, run the
+  // cb immediately. When the boolean param is true, the cb will be placed at
+  // the end of the list that of cbs to run.
+  base::RepeatingCallback<void(bool, OnGotHashCallback)>
+      register_on_got_hash_callback_;
+
  private:
   std::optional<GURL> GetUrlOverride() const;
 

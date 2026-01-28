@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
@@ -86,7 +87,13 @@ std::string GetFileMimeType(const base::FilePath& path,
   return ext_mime_type;
 }
 
-std::string ComputeHashBlocking(base::File file) {
+// Perform hash computation, which can be CPU cycle intensive. Since hash
+// computation can occur after RunCallback to unblock the user faster, make it
+// the last operation which uses the file and release the associated scoped file
+// access at the end of this function.
+std::string ComputeHashBlocking(
+    base::File file,
+    std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access) {
   if (file.Seek(base::File::FROM_BEGIN, 0) != 0) {
     return "";  // return empty string to indicate error.
   }
@@ -116,9 +123,13 @@ std::string ComputeHashBlocking(base::File file) {
 }
 
 std::pair<ScanRequestUploadResult, BinaryUploadRequest::Data>
-GetFileDataBlocking(const base::FilePath& path,
-                    bool detect_mime_type,
-                    bool is_obfuscated) {
+GetFileDataBlocking(
+    const base::FilePath& path,
+    std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access,
+    bool detect_mime_type,
+    bool is_obfuscated,
+    bool force_sync_hash_computation,
+    base::OnceCallback<std::string()>& output_compute_hash_callback) {
   DCHECK(!path.empty());
 
   // The returned `Data` must always have a valid `path` member, regardless
@@ -168,19 +179,36 @@ GetFileDataBlocking(const base::FilePath& path,
       file_data.is_obfuscated = true;
     }
   }
-  // TODO(crbug.com/367257039): Pass along hash of unobfuscated file for
-  // enterprise scans
-  file_data.hash = ComputeHashBlocking(std::move(file));
-  if (file_data.hash.empty()) {
-    // If the hash failed to compute, the result is UNKNOWN.
-    file_data.size = 0;
-    return {ScanRequestUploadResult::kUnknown, file_data};
-  }
 
   // Create a histogram to track the size of files being scanned up to 500MB.
   base::UmaHistogramCustomCounts("Enterprise.FileAnalysisRequestBase.FileSize",
                                  file_data.size / 1024, 1,
                                  kMaxUploadSizeMetricsKB, 50);
+
+  // When forced, or if the feature is not enabled, or the file is not large
+  // enough, compute the hash now and add to file data.
+  if (force_sync_hash_computation ||
+      !base::FeatureList::IsEnabled(
+          enterprise_connectors::kContentHashInFileUploadFinalCall) ||
+      file_data.size <=
+          enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
+    // TODO(crbug.com/367257039): Pass along hash of unobfuscated file for
+    // enterprise scans
+    file_data.hash =
+        ComputeHashBlocking(std::move(file), std::move(scoped_file_access));
+    if (file_data.hash.empty()) {
+      // Reset the size to zero since some code assumes an UNKNOWN result is
+      // matched with a zero size.
+      file_data.size = 0;
+      return {enterprise_connectors::ScanRequestUploadResult::kUnknown,
+              file_data};
+    }
+  } else {
+    // When all three conditions are false, set the function parameter reference
+    // to a callback that computes the hash.
+    output_compute_hash_callback = base::BindOnce(
+        &ComputeHashBlocking, std::move(file), std::move(scoped_file_access));
+  }
 
   size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
   if (base::FeatureList::IsEnabled(kEnableNewUploadSizeLimit)) {
@@ -204,7 +232,8 @@ FileAnalysisRequestBase::FileAnalysisRequestBase(
     BrowserPolicyConnectorGetter policy_connector_getter,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     BinaryUploadRequest::RequestStartCallback start_callback,
-    bool is_obfuscated)
+    bool is_obfuscated,
+    bool force_sync_hash_computation)
     : BinaryUploadRequest(std::move(callback),
                           analysis_settings.cloud_or_local_settings,
                           std::move(start_callback),
@@ -214,6 +243,7 @@ FileAnalysisRequestBase::FileAnalysisRequestBase(
       file_name_(std::move(file_name)),
       delay_opening_file_(delay_opening_file),
       is_obfuscated_(is_obfuscated),
+      force_sync_hash_computation_(force_sync_hash_computation),
       ui_task_runner_(ui_task_runner) {
   CHECK(ui_task_runner_);
   DCHECK(!path_.empty());
@@ -221,9 +251,16 @@ FileAnalysisRequestBase::FileAnalysisRequestBase(
   cached_data_.mime_type = std::move(mime_type);
 }
 
-FileAnalysisRequestBase::~FileAnalysisRequestBase() = default;
+FileAnalysisRequestBase::~FileAnalysisRequestBase() {
+  // If the object is going to be gone but there are still callbacks waiting for
+  // hash, let them know some error occurred.
+  if (!hash_notify_callbacks_.empty()) {
+    OnGotHash(std::string());
+  }
+}
 
 void FileAnalysisRequestBase::GetRequestData(DataCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_callback_ = std::move(callback);
 
   if (has_cached_result_) {
@@ -243,8 +280,18 @@ void FileAnalysisRequestBase::OpenFile() {
 
   // Opening the file synchronously here is OK since OpenFile should be called
   // on a base::MayBlock() thread.
-  std::pair<ScanRequestUploadResult, Data> file_data = GetFileDataBlocking(
-      path_, cached_data_.mime_type.empty(), is_obfuscated_);
+  base::OnceCallback<std::string()> compute_hash_callback;
+  std::pair<enterprise_connectors::ScanRequestUploadResult, Data> file_data =
+      GetFileDataBlocking(path_, std::move(scoped_file_access_),
+                          cached_data_.mime_type.empty(), is_obfuscated_,
+                          force_sync_hash_computation_, compute_hash_callback);
+
+  if (compute_hash_callback) {
+    register_on_got_hash_callback_ = base::BindPostTask(
+        ui_task_runner_,
+        base::BindRepeating(&FileAnalysisRequestBase::RegisterOnGotHashCallback,
+                            weakptr_factory_.GetWeakPtr()));
+  }
 
   // The result of opening the file is passed back to the UI thread since
   // |data_callback_| calls functions that must run there.
@@ -252,6 +299,51 @@ void FileAnalysisRequestBase::OpenFile() {
       FROM_HERE,
       base::BindOnce(&FileAnalysisRequestBase::OnGotFileData,
                      weakptr_factory_.GetWeakPtr(), std::move(file_data)));
+
+  if (compute_hash_callback) {
+    std::move(compute_hash_callback)
+        .Then(base::BindPostTask(
+            ui_task_runner_, base::BindOnce(&FileAnalysisRequestBase::OnGotHash,
+                                            weakptr_factory_.GetWeakPtr())))
+        .Run();
+  }
+}
+
+void FileAnalysisRequestBase::RegisterOnGotHashCallback(
+    bool call_last,
+    enterprise_connectors::OnGotHashCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!cached_data_.hash.empty() ||
+      (cached_result_ ==
+       enterprise_connectors::ScanRequestUploadResult::kUnknown)) {
+    std::move(callback).Run(cached_data_.hash);
+  } else {
+    // TODO(alxchn): Test that call_last will only be ever called once through
+    // an upload.
+    if (call_last) {
+      hash_notify_callbacks_.push_back(std::move(callback));
+    } else {
+      hash_notify_callbacks_.push_front(std::move(callback));
+    }
+  }
+}
+
+void FileAnalysisRequestBase::OnGotHash(std::string hash) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (hash.empty()) {
+    // If the returned hash was empty, an error must have occurred while
+    // computing. Reset the size to zero since some code assumes an kUnknown
+    // result is matched with a zero size. Registered callbacks should also
+    // handle this.
+    cached_data_.size = 0;
+    cached_result_ = enterprise_connectors::ScanRequestUploadResult::kUnknown;
+  }
+  cached_data_.hash = hash;
+  set_digest(hash);
+  while (!hash_notify_callbacks_.empty()) {
+    std::move(hash_notify_callbacks_.front()).Run(hash);
+    hash_notify_callbacks_.pop_front();
+  }
 }
 
 bool FileAnalysisRequestBase::HasMalwareRequest() const {
@@ -267,6 +359,7 @@ void FileAnalysisRequestBase::OnGotFileData(
     std::pair<ScanRequestUploadResult, Data> result_and_data) {
   DCHECK(!result_and_data.second.path.empty());
   DCHECK_EQ(result_and_data.second.path, path_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   scoped_file_access_.reset();
   if (result_and_data.first != ScanRequestUploadResult::kSuccess) {
@@ -326,10 +419,13 @@ void FileAnalysisRequestBase::GetData(
     file_access::ScopedFileAccess file_access) {
   scoped_file_access_ =
       std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
+  base::OnceCallback<std::string()> unused_hash_callback;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&GetFileDataBlocking, path_,
-                     cached_data_.mime_type.empty(), is_obfuscated_),
+                     std::move(scoped_file_access_),
+                     cached_data_.mime_type.empty(), is_obfuscated_, true,
+                     base::OwnedRef(std::move(unused_hash_callback))),
       base::BindOnce(&FileAnalysisRequestBase::OnGotFileData,
                      weakptr_factory_.GetWeakPtr()));
 }

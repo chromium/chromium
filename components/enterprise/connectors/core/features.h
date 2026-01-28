@@ -21,6 +21,10 @@ BASE_DECLARE_FEATURE(kEnterpriseIframeDlpRulesSupport);
 // Controls whether resumable upload is enabled on consumer scans.
 BASE_DECLARE_FEATURE(kEnableResumableUploadOnConsumerScan);
 
+// Controls whether hash of resumable uploads is uploaded in the final call for
+// large files.
+BASE_DECLARE_FEATURE(kContentHashInFileUploadFinalCall);
+
 // Controls the new upload, download, and print size limit for content analysis.
 BASE_DECLARE_FEATURE(kEnableNewUploadSizeLimit);
 

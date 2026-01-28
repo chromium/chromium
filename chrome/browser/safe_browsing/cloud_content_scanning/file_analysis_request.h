@@ -34,7 +34,8 @@ class FileAnalysisRequest
           callback,
       enterprise_connectors::BinaryUploadRequest::RequestStartCallback
           start_callback = base::DoNothing(),
-      bool is_obfuscated = false);
+      bool is_obfuscated = false,
+      bool force_sync_hash_computation = true);
   FileAnalysisRequest(const FileAnalysisRequest&) = delete;
   FileAnalysisRequest& operator=(const FileAnalysisRequest&) = delete;
   ~FileAnalysisRequest() override;

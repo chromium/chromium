@@ -29,7 +29,8 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       BinaryUploadRequest::RequestStartCallback start_callback =
           base::DoNothing(),
-      bool is_obfuscated = false);
+      bool is_obfuscated = false,
+      bool force_sync_hash_computation = true);
   FileAnalysisRequestBase(const FileAnalysisRequestBase&) = delete;
   FileAnalysisRequestBase& operator=(const FileAnalysisRequestBase&) = delete;
   ~FileAnalysisRequestBase() override;
@@ -49,6 +50,14 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
   virtual void ProcessZipFile(Data data) = 0;
   virtual void ProcessRarFile(Data data) = 0;
 #endif
+
+  // Wrapped by BinaryUploadRequest::register_on_got_hash_callback_. Use
+  // call_last = true if a callback may delete this object after it
+  // is run.
+  void RegisterOnGotHashCallback(
+      bool call_last,
+      enterprise_connectors::OnGotHashCallback callback);
+  void OnGotHash(std::string hash);
 
   void OnGotFileData(std::pair<ScanRequestUploadResult, Data> result_and_data);
 
@@ -91,9 +100,17 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
   // process.
   bool is_obfuscated_ = false;
 
+  // Controls whether OpenFile tasks can compute hash after notifying
+  // OnGotFileInfo.
+  bool force_sync_hash_computation_ = true;
+
+  std::deque<enterprise_connectors::OnGotHashCallback> hash_notify_callbacks_;
+
   std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access_;
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   base::WeakPtrFactory<FileAnalysisRequestBase> weakptr_factory_{this};

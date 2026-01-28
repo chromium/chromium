@@ -7,7 +7,13 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
+
 namespace enterprise_connectors {
+
+// Callback to be called when the hash of a file has been computed.
+using OnGotHashCallback = base::OnceCallback<void(std::string)>;
+
 // The result of uploading a scanning request to the WebProtect server.
 //
 // These values are persisted to logs. Entries should not be renumbered and

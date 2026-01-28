@@ -37,7 +37,8 @@ FileAnalysisRequest::FileAnalysisRequest(
     bool delay_opening_file,
     BinaryUploadRequest::ContentAnalysisCallback callback,
     BinaryUploadRequest::RequestStartCallback start_callback,
-    bool is_obfuscated)
+    bool is_obfuscated,
+    bool force_sync_hash_computation)
     : FileAnalysisRequestBase(analysis_settings,
                               std::move(path),
                               std::move(file_name),
@@ -47,7 +48,8 @@ FileAnalysisRequest::FileAnalysisRequest(
                               base::BindRepeating(&GetBrowserPolicyConnector),
                               content::GetUIThreadTaskRunner({}),
                               std::move(start_callback),
-                              is_obfuscated) {}
+                              is_obfuscated,
+                              force_sync_hash_computation) {}
 
 FileAnalysisRequest::~FileAnalysisRequest() = default;
 
