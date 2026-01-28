@@ -253,16 +253,23 @@ TEST_P(BrowserWebStateListDelegateTest, ActivationPolicy) {
 
   // Check that only the ActivationPolicy controls whether the WebState is
   // forced to the realized state when marked as the active one.
+  delegate.WillAddWebState(web_state.get());
   delegate.WillActivateWebState(web_state.get());
   switch (std::get<BrowserWebStateListDelegate::ActivationPolicy>(param)) {
     case BrowserWebStateListDelegate::ActivationPolicy::kDoNothing:
       EXPECT_FALSE(web_state->IsRealized());
-      EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
+      EXPECT_EQ(
+          std::get<BrowserWebStateListDelegate::InsertionPolicy>(param) ==
+                  BrowserWebStateListDelegate::InsertionPolicy::kDoNothing ||
+              web::features::CreateTabHelperOnlyForRealizedWebStates(),
+          ExpectedTabHelper::FromWebState(web_state.get()) == nullptr);
       break;
 
     case BrowserWebStateListDelegate::ActivationPolicy::kForceRealization:
       EXPECT_TRUE(web_state->IsRealized());
-      EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
+      EXPECT_EQ(std::get<BrowserWebStateListDelegate::InsertionPolicy>(param) ==
+                    BrowserWebStateListDelegate::InsertionPolicy::kDoNothing,
+                ExpectedTabHelper::FromWebState(web_state.get()) == nullptr);
       break;
   }
 }
