@@ -317,11 +317,13 @@ public class NtpCustomizationMediator {
             content.add(FEED);
         }
 
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()
-                && NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
-                        mWindowAndroid,
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(context))) {
-            content.add(THEME);
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+            boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+            if (isTablet
+                    || NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
+                            mWindowAndroid, isTablet)) {
+                content.add(THEME);
+            }
         }
         return content;
     }

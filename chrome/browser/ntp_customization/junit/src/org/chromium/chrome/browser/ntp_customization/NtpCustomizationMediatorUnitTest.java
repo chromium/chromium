@@ -435,6 +435,22 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    @Features.EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT
+    })
+    public void testBuildListContent_IncludesThemeWhenE2EDisabled_tablet() {
+        // Release the token so E2E returns false
+        mE2EProvider.releaseSetDecorFitsSystemWindowToken(0);
+
+        List<Integer> listContent = mMediator.buildListContent(mContext);
+
+        assertTrue("List should contain THEME", listContent.contains(THEME));
+        assertEquals(List.of(MVT, NTP_CARDS, THEME), listContent);
+    }
+
+    @Test
     public void testBuildListContentWhenProfileIsNotReady() {
         List<Integer> listContent = mMediator.buildListContent(mContext);
         assertEquals(List.of(MVT, NTP_CARDS, THEME), listContent);
