@@ -413,13 +413,8 @@ void ExtensionsToolbarViewModel::OnUserPermissionsSettingsChanged(
 void ExtensionsToolbarViewModel::OnShowAccessRequestsInToolbarChanged(
     const extensions::ExtensionId& extension_id,
     bool can_show_requests) {
-  // TODO(evasu): This method technically should not affect the extensions
-  // button so we should update this to only update the request access button.
+  content::WebContents* web_contents = GetCurrentWebContents();
   for (Observer& obs : observers_) {
-    obs.OnToolbarControlStateUpdated();
+    obs.OnRequestAccessButtonParamsChanged(web_contents);
   }
-  // TODO(crbug.com/40857356): Update requests access button hover card. This is
-  // tricky because it would need to change the items in the dialog. Another
-  // option is to close the hover card if its shown whenever request access
-  // button is updated.
 }
