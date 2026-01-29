@@ -6,6 +6,7 @@ import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
   source_set("cxx_pointer") {
+    testonly = true
     sources = [
       "pointer_returner.cc",
       "pointer_returner.h",
@@ -18,6 +19,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_modulemap("swift_pointer") {
+    testonly = true
     modules = [
       {
         name = "Pointer"
@@ -32,6 +34,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_source_set("tests") {
+    testonly = true
     sources = [
       "object_passing_xctest.swift",
       "pointer_xctest.swift",

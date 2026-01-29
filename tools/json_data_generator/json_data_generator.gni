@@ -46,10 +46,10 @@ template("json_data_generator") {
   action(target_name) {
     script = script_file
     forward_variables_from(invoker,
-                           [
-                             "deps",
-                             "sources",
-                           ])
+                           TESTONLY_AND_VISIBILITY + [
+                                 "deps",
+                                 "sources",
+                               ])
 
     assert(defined(sources), "Source json files must be defined.")
     assert(defined(invoker.templates), "Template files must be defined.")

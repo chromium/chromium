@@ -6,6 +6,7 @@ import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
   swift_modulemap("enum") {
+    testonly = true
     modules = [
       {
         name = "Enum"
@@ -15,6 +16,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_source_set("tests") {
+    testonly = true
     sources = [ "enum_xctest.swift" ]
     deps = [
       ":enum",

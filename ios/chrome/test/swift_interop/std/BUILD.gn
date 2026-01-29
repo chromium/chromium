@@ -5,7 +5,8 @@
 import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
-  source_set("cxx_std_test_helpers") {
+  source_set("_cxx_std_test_helpers") {
+    testonly = true
     sources = [
       "string_helper.cc",
       "string_helper.h",
@@ -17,6 +18,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_modulemap("_swift_string_helpers") {
+    testonly = true
     modules = [
       {
         name = "StringTestHelpers"
@@ -29,6 +31,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_modulemap("_swift_vector_helpers") {
+    testonly = true
     modules = [
       {
         name = "VectorTestHelpers"
@@ -38,22 +41,27 @@ if (enable_swift_cxx_interop) {
     visibility = [ ":*" ]
   }
 
-  swift_modulemap_group("swift_std_test_helpers") {
+  swift_modulemap_group("_swift_std_test_helpers") {
+    testonly = true
     module_name = "StdTestHelpers"
     deps = [
       ":_swift_string_helpers",
       ":_swift_vector_helpers",
     ]
+
+    # Test that visibility is handled correctly by swift_modulemap_group
+    visibility = [ ":tests" ]
   }
 
   swift_source_set("tests") {
+    testonly = true
     sources = [
       "string_xctest.swift",
       "vector_xctest.swift",
     ]
     deps = [
-      ":cxx_std_test_helpers",
-      ":swift_std_test_helpers",
+      ":_cxx_std_test_helpers",
+      ":_swift_std_test_helpers",
       "//base",
       "//build/config/ios:xctest",
     ]

@@ -6,6 +6,7 @@ import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
   source_set("cxx_closure") {
+    testonly = true
     sources = [
       "closure.cc",
       "closure.h",
@@ -16,6 +17,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_modulemap("swift_closure") {
+    testonly = true
     modules = [
       {
         name = "Closure"
@@ -28,6 +30,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_source_set("tests") {
+    testonly = true
     sources = [
       "closure_xctest.swift",
       "observer_xctest.swift",

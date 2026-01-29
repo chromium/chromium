@@ -6,6 +6,7 @@ import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
   source_set("outlined") {
+    testonly = true
     sources = [
       "outlined.cc",
       "outlined.h",
@@ -13,6 +14,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_modulemap("classes") {
+    testonly = true
     modules = [
       {
         name = "Classes"
@@ -33,6 +35,7 @@ if (enable_swift_cxx_interop) {
   }
 
   swift_source_set("tests") {
+    testonly = true
     sources = [
       "inlined_xctest.swift",
       "outlined_xctest.swift",
