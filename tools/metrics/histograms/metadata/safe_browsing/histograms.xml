@@ -36,6 +36,27 @@ chromium-metrics-reviews@google.com.
   <variant name="Upload"/>
 </variants>
 
+<!-- LINT.IfChange(GeminiAntiscamProtectionContentCategory) -->
+
+<variants name="GeminiAntiscamProtectionContentCategory">
+  <variant name="Charity" summary="charity"/>
+  <variant name="Cryptocurrency" summary="cryptocurrency"/>
+  <variant name="Empty" summary="empty"/>
+  <variant name="GovernmentImpersonation" summary="government impersonation"/>
+  <variant name="Investment" summary="investment"/>
+  <variant name="Job" summary="job"/>
+  <variant name="Miscellaneous" summary="miscellaneous"/>
+  <variant name="NoMatchFound" summary="not a match for any of the categories"/>
+  <variant name="OnlineShopping" summary="online shopping"/>
+  <variant name="Phishing" summary="phishing"/>
+  <variant name="Prize" summary="prize"/>
+  <variant name="Romance" summary="romance"/>
+  <variant name="TechSupport" summary="tech support"/>
+  <variant name="TrojanizedSoftware" summary="trojanized software"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/gemini_antiscam_protection/gemini_antiscam_protection_service.cc:GetContentCategory) -->
+
 <variants name="GmsSafeBrowsingApiProtocol">
   <variant name="" summary=""/>
   <variant name=".LocalBlocklist" summary="local blocklist"/>
@@ -1492,6 +1513,44 @@ useful for Chirp alerts (go/crca-alerts). -->
 
     This is for the file types loaded from the resource bundle packaged with
     Chrome, which is always loaded at startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid"
+    enum="BooleanSuccess" expires_after="2027-01-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the history service was able to determine the number of
+    visits to the URL. If the history service was not able to determine the
+    number of visits, we don't need to run Gemini. Logged when the history
+    service checks if the URL has been visited, before possibly running Gemini.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit"
+    enum="BooleanRepeatVisit" expires_after="2027-01-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the URL has been visited before. If the URL has been visited
+    before, we don't need to run Gemini. Logged when the history service checks
+    if the URL has been visited, before possibly running Gemini.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.GeminiAntiscamProtection.{GeminiAntiscamProtectionContentCategory}.ScamScore"
+    units="score" expires_after="2027-01-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the scam score (or probability of the page being a scam). Logged
+    when the Gemini model response is parsed, the scam score is extracted from
+    the response, and the content category is
+    {GeminiAntiscamProtectionContentCategory}.
   </summary>
 </histogram>
 

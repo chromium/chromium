@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/gemini_antiscam_protection/gemini_antiscam_protection_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -13,6 +14,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,6 +133,7 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       /*did_match_high_confidence_allowlist=*/false,
       /*should_show_scam_warning=*/false,
       /*is_phishing=*/false, "page text");
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(GeminiAntiscamProtectionServiceTest,
@@ -146,6 +149,7 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       /*did_match_high_confidence_allowlist=*/true,
       /*should_show_scam_warning=*/false,
       /*is_phishing=*/false, "page text");
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(GeminiAntiscamProtectionServiceTest,
@@ -161,6 +165,7 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       /*did_match_high_confidence_allowlist=*/false,
       /*should_show_scam_warning=*/true,
       /*is_phishing=*/false, "page text");
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(GeminiAntiscamProtectionServiceTest,
@@ -176,10 +181,12 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       /*did_match_high_confidence_allowlist=*/false,
       /*should_show_scam_warning=*/false,
       /*is_phishing=*/true, "page text");
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(GeminiAntiscamProtectionServiceTest,
        TestMaybeStartAntiscamProtection_HistoryCheckFails) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com");
   ExpectGetVisibleVisitCountToHost(/*count=*/0, /*success=*/false, url);
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
@@ -191,10 +198,18 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       /*should_show_scam_warning=*/false,
       /*is_phishing=*/false, "page text");
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*expected_count=*/0);
 }
 
 TEST_F(GeminiAntiscamProtectionServiceTest,
        TestMaybeStartAntiscamProtection_VisitedBefore) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com");
   ExpectGetVisibleVisitCountToHost(/*count=*/2, /*success=*/true, url);
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
@@ -206,16 +221,28 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       /*should_show_scam_warning=*/false,
       /*is_phishing=*/false, "page text");
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
-TEST_F(GeminiAntiscamProtectionServiceTest,
-       TestMaybeStartAntiscamProtection_StartAntiscamProtection) {
+TEST_F(
+    GeminiAntiscamProtectionServiceTest,
+    TestMaybeStartAntiscamProtection_EmptyContentCategory) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com");
   ExpectGetVisibleVisitCountToHost(/*count=*/0, /*success=*/true, url);
 
+  auto response = optimization_guide::proto::GeminiAntiscamProtectionResponse();
+  // response.set_content_category("phishing");
+  response.set_scam_score(0.5);
   auto result = optimization_guide::OptimizationGuideModelExecutionResult(
-      optimization_guide::AnyWrapProto(
-          optimization_guide::proto::GeminiAntiscamProtectionResponse()),
+      optimization_guide::AnyWrapProto(response),
       /*execution_info=*/nullptr);
   ExpectExecuteModel(std::move(result));
   service_->MaybeStartAntiscamProtection(
@@ -224,6 +251,82 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       /*should_show_scam_warning=*/false,
       /*is_phishing=*/false, "page text");
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.Empty.ScamScore",
+      /*sample=*/50, /*expected_bucket_count=*/1);
+}
+
+TEST_F(
+    GeminiAntiscamProtectionServiceTest,
+    TestMaybeStartAntiscamProtection_ContentCategoryNoMatchFound) {
+  base::HistogramTester histogram_tester;
+  GURL url("https://example.com");
+  ExpectGetVisibleVisitCountToHost(/*count=*/0, /*success=*/true, url);
+
+  auto response = optimization_guide::proto::GeminiAntiscamProtectionResponse();
+  response.set_content_category("no_match_found");
+  response.set_scam_score(0.5);
+  auto result = optimization_guide::OptimizationGuideModelExecutionResult(
+      optimization_guide::AnyWrapProto(response),
+      /*execution_info=*/nullptr);
+  ExpectExecuteModel(std::move(result));
+  service_->MaybeStartAntiscamProtection(
+      url, ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/false,
+      /*should_show_scam_warning=*/false,
+      /*is_phishing=*/false, "page text");
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.NoMatchFound.ScamScore",
+      /*sample=*/50, /*expected_bucket_count=*/1);
+}
+
+TEST_F(GeminiAntiscamProtectionServiceTest,
+       TestMaybeStartAntiscamProtection_PhishingContentCategory) {
+  base::HistogramTester histogram_tester;
+  GURL url("https://example.com");
+  ExpectGetVisibleVisitCountToHost(/*count=*/0, /*success=*/true, url);
+
+  auto response = optimization_guide::proto::GeminiAntiscamProtectionResponse();
+  response.set_content_category("phishing");
+  response.set_scam_score(0.5);
+  auto result = optimization_guide::OptimizationGuideModelExecutionResult(
+      optimization_guide::AnyWrapProto(response),
+      /*execution_info=*/nullptr);
+  ExpectExecuteModel(std::move(result));
+  service_->MaybeStartAntiscamProtection(
+      url, ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/false,
+      /*should_show_scam_warning=*/false,
+      /*is_phishing=*/false, "page text");
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.Phishing.ScamScore",
+      /*sample=*/50, /*expected_bucket_count=*/1);
 }
 
 }  // namespace safe_browsing

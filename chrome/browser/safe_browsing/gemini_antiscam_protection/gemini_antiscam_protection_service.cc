@@ -20,6 +20,57 @@ BuildGeminiAntiscamProtectionRequest(GURL url, std::string page_inner_text) {
   return request;
 }
 
+// LINT.IfChange(GetContentCategory)
+
+std::string GetContentCategory(
+    std::optional<optimization_guide::proto::GeminiAntiscamProtectionResponse>
+        response) {
+  CHECK(response.has_value());
+  if (!response->has_content_category()) {
+    return "Empty";
+  }
+  const std::string& content_category = response->content_category();
+  if (content_category == "phishing") {
+    return "Phishing";
+  }
+  if (content_category == "tech_support") {
+    return "TechSupport";
+  }
+  if (content_category == "investment(non-crypto)") {
+    return "Investment";
+  }
+  if (content_category == "investment(crypto)") {
+    return "Cryptocurrency";
+  }
+  if (content_category == "romance") {
+    return "Romance";
+  }
+  if (content_category == "online_shopping") {
+    return "OnlineShopping";
+  }
+  if (content_category == "prize") {
+    return "Prize";
+  }
+  if (content_category == "job") {
+    return "Job";
+  }
+  if (content_category == "charity") {
+    return "Charity";
+  }
+  if (content_category == "government_impersonation") {
+    return "GovernmentImpersonation";
+  }
+  if (content_category == "trojanized_software") {
+    return "TrojanizedSoftware";
+  }
+  if (content_category == "miscellaneous") {
+    return "Miscellaneous";
+  }
+  return "NoMatchFound";
+}
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/histograms.xml:GeminiAntiscamProtectionContentCategory)
+
 }  // namespace
 
 namespace safe_browsing {
@@ -63,12 +114,20 @@ void GeminiAntiscamProtectionService::DidGetVisibleVisitCount(
     GURL url,
     std::string page_inner_text,
     history::VisibleVisitCountToHostResult result) {
-  if (!result.success) {
-    // If the history service was not able to determine the number of visits,
-    // we should not run Gemini.
+  bool is_history_service_result_valid = result.success;
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      is_history_service_result_valid);
+  if (!is_history_service_result_valid) {
+    // If the history service was not able to determine the number of visits, we
+    // should not run Gemini.
     return;
   }
-  if (result.count > 1) {
+  bool has_user_visited_url = result.count > 1;
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      has_user_visited_url);
+  if (has_user_visited_url) {
     // If the URL has been visited before, we don't need to run Gemini.
     return;
   }
@@ -106,7 +165,15 @@ void GeminiAntiscamProtectionService::OnModelResponse(
   }
   base::UmaHistogramTimes(
       "SafeBrowsing.GeminiAntiscamProtection.Success.Latency", latency);
-  // TODO(crbug.com/467358093): Process the model response.
+
+  if (response->has_scam_score()) {
+    std::string content_category = GetContentCategory(response.value());
+    base::UmaHistogramPercentage("SafeBrowsing.GeminiAntiscamProtection." +
+                                     content_category + ".ScamScore",
+                                 100 * response->scam_score());
+  }
+
+  // TODO(crbug.com/467358093): Log MQLS.
 }
 
 }  // namespace safe_browsing

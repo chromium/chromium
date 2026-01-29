@@ -36,7 +36,7 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
   void SetUpSuccessfulModelExecution() {
     optimization_guide::proto::GeminiAntiscamProtectionResponse response;
     response.set_scam_score(0.6);
-    response.set_content_category("phishing");
+    response.set_content_category("investment(non-crypto)");
     response.set_justification("gemini is smart");
     std::string serialized_metadata;
     response.SerializeToString(&serialized_metadata);
@@ -115,9 +115,17 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
       /*is_phishing=*/false, "page text");
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(
-      1u, histogram_tester
+      3u, histogram_tester
               .GetTotalCountsForPrefix("SafeBrowsing.GeminiAntiscamProtection")
               .size());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.GeminiAntiscamProtection.FailedEmptyResponse.Latency", 1);
 }
@@ -138,9 +146,17 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
       /*is_phishing=*/false, "page text");
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(
-      1u, histogram_tester
+      3u, histogram_tester
               .GetTotalCountsForPrefix("SafeBrowsing.GeminiAntiscamProtection")
               .size());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.GeminiAntiscamProtection.FailedParsingError.Latency", 1);
 }
@@ -161,11 +177,22 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
       /*is_phishing=*/false, "page text");
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(
-      1u, histogram_tester
+      4u, histogram_tester
               .GetTotalCountsForPrefix("SafeBrowsing.GeminiAntiscamProtection")
               .size());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.GeminiAntiscamProtection.Success.Latency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.Investment.ScamScore",
+      /*sample=*/60, /*expected_bucket_count=*/1);
 }
 
 }  // namespace safe_browsing
