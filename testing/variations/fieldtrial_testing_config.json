@@ -18269,17 +18269,7 @@
                 {
                     "name": "EnabledSyntheticOnly",
                     "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "70",
-                        "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
-                    },
-                    "enable_features": [
-                        "ShowWarningsForSuspiciousNotifications"
-                    ]
-                },
-                {
-                    "name": "EnabledRawAndSynthetic",
-                    "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "80",
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "90",
                         "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
                     },
                     "enable_features": [
