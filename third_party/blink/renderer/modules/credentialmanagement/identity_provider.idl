@@ -11,6 +11,7 @@ dictionary IdentityUserInfo {
 
 dictionary IdentityResolveOptions {
   USVString accountId;
+  [RuntimeEnabled=FedCmNavigationInterception] boolean redirect = false;
 };
 
 dictionary IdentityProviderToken {

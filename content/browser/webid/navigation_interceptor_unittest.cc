@@ -65,6 +65,7 @@ class MockFederatedAuthRequest : public RequestService {
   MOCK_METHOD(void,
               ResolveTokenRequest,
               (const std::optional<std::string>& account_id,
+               const std::optional<GURL>& redirect_to,
                base::Value token,
                ResolveTokenRequestCallback callback),
               (override));

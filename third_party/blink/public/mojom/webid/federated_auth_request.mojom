@@ -227,9 +227,13 @@ interface FederatedAuthRequest {
   // Resolve the token request from a JS call from a WebView dialog,
   // when the id_assertion_endpoint returns a continue_on rather than the
   // actual token.
+  // If `redirect_to` is specified, that URL is loaded in the context that
+  // triggered the FedCM call and `token` is ignored.
   // If no account ID is provided, the account ID of the account that was
   // selected in the account chooser will be used.
-  ResolveTokenRequest(string? account_id, mojo_base.mojom.Value token) => (bool success);
+  ResolveTokenRequest(string? account_id,
+                      url.mojom.Url? redirect_to,
+                      mojo_base.mojom.Value token) => (bool success);
 
   // Marks the user as logged in/out to the IDP on this origin. 'origin' must
   // not be opaque. Options such as a list of pushed accounts may be provided.

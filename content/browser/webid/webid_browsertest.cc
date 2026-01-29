@@ -30,6 +30,7 @@
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
+#include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/mock_digital_identity_provider.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
@@ -2547,6 +2548,143 @@ IN_PROC_BROWSER_TEST_F(WebIdLightweightFedcmBrowserTest,
 
   SetTestIdentityRequestDialogController("12345");
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), GetBasicRequestString()));
+}
+
+class WebIdNavigationInterceptionTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFedCmNavigationInterception);
+  }
+};
+
+// Verify that redirect in IdentityProvider.resolve works correctly.
+IN_PROC_BROWSER_TEST_F(WebIdNavigationInterceptionTest, resolveWithRedirect) {
+  // For this test, we just want to test redirects without having to also
+  // trigger interception, so override the check.
+  auto* request_service = webid::RequestService::GetOrCreateForCurrentDocument(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  request_service->SetForceAllowRedirectToForTesting(true);
+
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/authz/id_assertion_endpoint.php";
+
+  // Points to the relative url of the authorization servlet.
+  std::string continue_on = "/authz.html";
+
+  // Add a servlet to serve a response for the id assertion endpoint.
+  config_details.servlets["/authz/id_assertion_endpoint.php"] =
+      base::BindRepeating(
+          [](std::string url,
+             const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            std::string content;
+            content += "client_id=client_id_1&";
+            content += "account_id=not_real_account&";
+            content += "disclosure_text_shown=false&";
+            content += "is_auto_selected=false&";
+            content += "mode=passive&";
+            content += "fields=name,email,picture";
+
+            EXPECT_EQ(request.content, content);
+
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/json");
+            auto body = R"({"continue_on": ")" + url + R"("})";
+            response->set_content(body);
+            DCHECK(request.headers.contains("Origin"));
+            response->AddCustomHeader(
+                network::cors::header_names::kAccessControlAllowOrigin,
+                request.headers.at("Origin"));
+            response->AddCustomHeader(
+                network::cors::header_names::kAccessControlAllowCredentials,
+                "true");
+            return response;
+          },
+          continue_on);
+
+  idp_server()->SetConfigResponseDetails(config_details);
+
+  // Create a WebContents that represents the modal dialog, specifically
+  // the structure that the Identity Registry hangs to.
+  Shell* modal = CreateBrowser();
+  auto config_url = GURL(BaseIdpUrl());
+
+  modal->LoadURL(config_url);
+  EXPECT_TRUE(WaitForLoadStop(modal->web_contents()));
+
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  MockIdentityRequestDialogController* controller =
+      static_cast<MockIdentityRequestDialogController*>(
+          test_browser_client_->GetIdentityRequestDialogControllerForTests());
+
+  // Expects the account chooser to be opened. Selects the first account.
+  EXPECT_CALL(*controller, ShowAccountsDialog)
+      .WillOnce(::testing::WithArg<4>([&config_url](auto on_selected) {
+        std::move(on_selected)
+            .Run(config_url,
+                 /* account_id=*/"not_real_account",
+                 /* is_sign_in= */ true);
+        return true;
+      }));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<0>(
+          [&config_url, continue_on, &modal, &run_loop](const GURL& url) {
+            // Expect that the relative continue_on url will be resolved
+            // before opening the dialog.
+            EXPECT_EQ(url.spec(), config_url.Resolve(continue_on));
+            // When the pop-up window is opened, resolve it immediately by
+            // returning a test web contents, which can then later be used
+            // to refer to the identity registry.
+            run_loop.Quit();
+            return modal->web_contents();
+          }));
+
+  std::string script = R"(
+          var result = navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+              }]
+            }
+         }).then(({token}) => token);
+    )";
+
+  // Kick off the identity credential request and deliberately
+  // leave the promise hanging, since it requires UX permission
+  // prompts to be accepted later.
+  EXPECT_TRUE(content::ExecJs(shell(), script,
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the modal dialog to be resolved.
+  run_loop.Run();
+
+  base::RunLoop run_loop2;
+  EXPECT_CALL(*controller, CloseModalDialog).WillOnce([&run_loop2]() {
+    run_loop2.Quit();
+  });
+
+  LoadStopObserver stop_observer(shell()->web_contents());
+
+  // Resolve the hanging token request by notifying the registry.
+  EXPECT_TRUE(content::ExecJs(
+      modal, R"(IdentityProvider.resolve('/title3.html', {redirect: true}))"));
+  run_loop2.Run();
+
+  // Wait for the redirect to load.
+  stop_observer.Wait();
+
+  EXPECT_EQ("/title3.html",
+            shell()->web_contents()->GetLastCommittedURL().GetPath());
 }
 
 }  // namespace content

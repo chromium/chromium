@@ -110,6 +110,10 @@ class CONTENT_EXPORT RequestService
   // this method.
   void ResetAndDeleteThisForTesting();
 
+  void SetForceAllowRedirectToForTesting(bool allow) {
+    force_allow_redirect_to_for_testing_ = allow;
+  }
+
   // An overload of the mojo version of RequestToken. If |navigation_handle|
   // is provided, that handle is checked to see if user activation is present.
   // This is virtual so that it can be mocked.MockNavigationThrottleRegistry
@@ -129,6 +133,7 @@ class CONTENT_EXPORT RequestService
                        RequestUserInfoCallback) override;
   void CancelTokenRequest() override;
   void ResolveTokenRequest(const std::optional<std::string>& account_id,
+                           const std::optional<GURL>& redirect_to,
                            base::Value token,
                            ResolveTokenRequestCallback callback) override;
   void SetIdpSigninStatus(
@@ -157,6 +162,7 @@ class CONTENT_EXPORT RequestService
   void OnClose() override;
   bool OnResolve(GURL idp_config_url,
                  const std::optional<std::string>& account_id,
+                 const std::optional<GURL>& redirect_to,
                  const base::Value& token) override;
   void OnOriginMismatch(Method method,
                         const url::Origin& expected,
@@ -388,6 +394,7 @@ class CONTENT_EXPORT RequestService
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       FetchStatus status,
       const GURL& redirect_to);
+  void RedirectTo(const GURL& idp_config_url, const GURL& redirect_to);
 
   // Called after we get at token (either from the ID assertion endpoint or
   // from IdentityProvider.resolve) to update our various permissions.
@@ -656,6 +663,9 @@ class CONTENT_EXPORT RequestService
 
   // Whether the callback for the current request has been delayed.
   bool complete_request_delayed_{false};
+
+  // Can be set to true in tests.
+  bool force_allow_redirect_to_for_testing_{false};
 
   mojo::Receiver<blink::mojom::FederatedAuthRequest> receiver_{this};
 

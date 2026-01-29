@@ -35,6 +35,7 @@ class IdentityRegistryDelegate {
   // account chooser.
   virtual bool OnResolve(GURL idp_config_url,
                          const std::optional<std::string>& account_id,
+                         const std::optional<GURL>& redirect_to,
                          const base::Value& token) = 0;
 
   enum class Method { kClose, kResolve };

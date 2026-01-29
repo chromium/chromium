@@ -29,6 +29,7 @@ class MockIdentityRegistry : public IdentityRegistry {
               NotifyResolve,
               (const url::Origin&,
                const std::optional<std::string>&,
+               const std::optional<GURL>&,
                const base::Value&),
               (override));
 };
