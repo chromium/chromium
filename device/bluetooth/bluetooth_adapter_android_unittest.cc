@@ -25,6 +25,7 @@
 #include "device/bluetooth/test/bluetooth_test_android.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth_test_jni_headers/ChromeBluetoothLeScannerTestUtil_jni.h"
@@ -351,13 +352,13 @@ TEST_F(BluetoothAdapterAndroidTest, GetPairedDevices) {
   SimulatePairedClassicDevice(2);
 
   BluetoothAdapter::DeviceList list = adapter_->GetDevices();
-  std::unordered_set<std::string> addresses;
+  absl::flat_hash_set<std::string> addresses;
   for (auto* device : list) {
     addresses.insert(device->GetAddress());
   }
   EXPECT_EQ(addresses.size(), 2u);
-  EXPECT_NE(addresses.find(kTestDeviceAddress1), addresses.end());
-  EXPECT_NE(addresses.find(kTestDeviceAddress2), addresses.end());
+  EXPECT_TRUE(addresses.contains(kTestDeviceAddress1));
+  EXPECT_TRUE(addresses.contains(kTestDeviceAddress2));
 
   // We explicitly omit observer notifications for new paired devices found
   // during GetDevices.
