@@ -3506,6 +3506,17 @@
       runtime_flag: "CSSGridLanesLayout",
     },
     {
+      name: "frame-sizing",
+      field_group: "surround",
+      field_template: "keyword",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      keywords: ["auto", "content-width", "content-height", "content-block-size", "content-inline-size"],
+      default_value: "auto",
+      typedom_types: ["Keyword"],
+      invalidate: ["layout", "scroll-anchor"],
+      runtime_flag: "ResponsiveIframes",
+    },
+    {
       name: "grid-auto-columns",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*",

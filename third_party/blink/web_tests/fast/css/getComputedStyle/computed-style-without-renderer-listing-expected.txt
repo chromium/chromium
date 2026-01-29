@@ -209,6 +209,7 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-position: normal
 font-weight: 400
+frame-sizing: auto
 gap-rule-overlap: row-over-column
 grid-auto-columns: auto
 grid-auto-flow: row

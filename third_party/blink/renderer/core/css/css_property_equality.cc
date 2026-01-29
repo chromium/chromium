@@ -499,6 +499,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.FieldSizing() == b.FieldSizing();
     case CSSPropertyID::kFlowTolerance:
       return a.GetFlowTolerance() == b.GetFlowTolerance();
+    case CSSPropertyID::kFrameSizing:
+      return a.FrameSizing() == b.FrameSizing();
     case CSSPropertyID::kGridAutoColumns:
       return a.GridAutoColumns() == b.GridAutoColumns();
     case CSSPropertyID::kGridAutoFlow:

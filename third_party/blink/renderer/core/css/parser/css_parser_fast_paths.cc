@@ -1556,6 +1556,12 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kColumnReverse;
     case CSSPropertyID::kFieldSizing:
       return value_id == CSSValueID::kFixed || value_id == CSSValueID::kContent;
+    case CSSPropertyID::kFrameSizing:
+      return value_id == CSSValueID::kAuto ||
+             value_id == CSSValueID::kContentWidth ||
+             value_id == CSSValueID::kContentHeight ||
+             value_id == CSSValueID::kContentInlineSize ||
+             value_id == CSSValueID::kContentBlockSize;
     case CSSPropertyID::kHyphens:
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
@@ -1758,6 +1764,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kFillRule,
     CSSPropertyID::kFloat,
     CSSPropertyID::kFieldSizing,
+    CSSPropertyID::kFrameSizing,
     CSSPropertyID::kForcedColorAdjust,
     CSSPropertyID::kGapRuleOverlap,
     CSSPropertyID::kGridLanesPack,

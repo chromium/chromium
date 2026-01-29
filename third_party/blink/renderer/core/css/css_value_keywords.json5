@@ -790,6 +790,13 @@
     // contain-intrinsic-size
     "from-element",
 
+    // frame-sizing
+    // "auto",
+    "content-width",
+    "content-height",
+    "content-block-size",
+    "content-inline-size",
+
     //
     // text-autospace
     //

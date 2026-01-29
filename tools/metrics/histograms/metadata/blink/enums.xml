@@ -8251,6 +8251,7 @@ Called by update_use_counter_css.py.-->
   <int value="924" label="text-fit"/>
   <int value="925" label="view-transition-scope"/>
   <int value="926" label="rule-visibility-items"/>
+  <int value="927" label="frame-sizing"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

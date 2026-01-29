@@ -5113,6 +5113,14 @@ const CSSValue* FieldSizing::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.FieldSizing());
 }
 
+const CSSValue* FrameSizing::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.FrameSizing());
+}
+
 void InternalVisitedColor::ApplyInitial(StyleResolverState& state) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   builder.SetInternalVisitedColor(builder.InitialColorForColorScheme());

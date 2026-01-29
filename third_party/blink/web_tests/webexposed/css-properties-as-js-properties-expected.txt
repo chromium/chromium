@@ -242,6 +242,7 @@ fontVariantPosition
 fontVariationSettings
 fontWeight
 forcedColorAdjust
+frameSizing
 gap
 gapRuleOverlap
 getPropertyPriority
