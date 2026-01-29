@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prerender/prerender_no_vary_search_hint_commit_deferring_condition.h"
 #include "content/browser/renderer_host/back_forward_cache_commit_deferring_condition.h"
 #include "content/browser/renderer_host/concurrent_navigations_commit_deferring_condition.h"
+#include "content/browser/renderer_host/navigation_api_commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/view_transition_commit_deferring_condition.h"
@@ -156,6 +157,9 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
   AddCondition(PrerenderNoVarySearchCommitDeferringCondition::MaybeCreate(
       navigation_request, navigation_type_,
       candidate_prerender_frame_tree_node_id_));
+
+  AddCondition(
+      NavigationAPICommitDeferringCondition::MaybeCreate(navigation_request));
 
   AddCondition(
       ViewTransitionCommitDeferringCondition::MaybeCreate(navigation_request));

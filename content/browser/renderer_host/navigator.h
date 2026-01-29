@@ -200,7 +200,10 @@ class CONTENT_EXPORT Navigator {
           prefetched_signed_exchange_cache,
       int initiator_process_id,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-          renderer_cancellation_listener);
+          renderer_cancellation_listener,
+      mojo::PendingReceiver<
+          blink::mojom::NavigationResumeDeferredCommitListener>
+          deferred_commit_resume_listener);
 
   // Used to restart a navigation that was thought to be same-document in
   // cross-document mode.

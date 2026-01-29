@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -30,10 +31,12 @@ class AbortController;
 class AbortSignal;
 class NavigationDestination;
 class NavigateEventInit;
+class NavigationDeferPageSwapOptions;
 class NavigationInterceptOptions;
 class NavigationNavigateOptions;
 class ExceptionState;
 class FormData;
+class V8NavigationDeferPageSwapHandler;
 class V8NavigationInterceptHandler;
 class V8NavigationInterceptPrecommitHandler;
 
@@ -73,6 +76,7 @@ class NavigateEvent final : public Event,
   bool hasUAVisualTransition() const { return has_ua_visual_transition_; }
   Element* sourceElement() const { return source_element_.Get(); }
   void intercept(NavigationInterceptOptions*, ExceptionState&);
+  void deferPageSwap(NavigationDeferPageSwapOptions*, ExceptionState&);
 
   // If intercept() was called, this is called after dispatch to either commit
   // the navigation or set the appropritate state for a deferred commit.
@@ -83,6 +87,8 @@ class NavigateEvent final : public Event,
                                  ExceptionState&);
 
   void React(ScriptState* script_state);
+
+  void ResumeDeferredCommit();
 
   void scroll(ExceptionState&);
 
@@ -95,6 +101,9 @@ class NavigateEvent final : public Event,
 
   // FocusedElementChangeObserver implementation:
   void DidChangeFocus() final;
+
+  void MaybeDeferCrossDocumentCommit(ScriptState*,
+                                     NavigateEventDispatchParams*);
 
   const AtomicString& InterfaceName() const final;
   void Trace(Visitor*) const final;
@@ -147,6 +156,8 @@ class NavigateEvent final : public Event,
       navigation_action_promises_list_;
   HeapVector<Member<V8NavigationInterceptHandler>>
       navigation_action_handlers_list_;
+  HeapVector<Member<V8NavigationDeferPageSwapHandler>>
+      deferred_commit_handler_list_;
 
   bool did_change_focus_during_intercept_ = false;
 
@@ -154,6 +165,8 @@ class NavigateEvent final : public Event,
   // intercepted, in order to minimize jittering if any handlers are short.
   static constexpr base::TimeDelta kDelayLoadStart = base::Milliseconds(50);
   TaskHandle delayed_load_start_task_handle_;
+  HeapMojoRemote<mojom::blink::NavigationResumeDeferredCommitListener>
+      resume_after_deferred_commit_;
 };
 
 }  // namespace blink

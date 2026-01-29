@@ -370,7 +370,9 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       SourceLocation*,
       mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>,
       bool is_container_initiated,
-      bool has_rel_opener) override;
+      bool has_rel_opener,
+      mojo::PendingReceiver<
+          mojom::blink::NavigationResumeDeferredCommitListener>) override;
 
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
 

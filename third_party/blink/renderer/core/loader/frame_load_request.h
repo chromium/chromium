@@ -213,6 +213,17 @@ struct CORE_EXPORT FrameLoadRequest {
     return force_history_push_;
   }
 
+  mojo::PendingReceiver<mojom::blink::NavigationResumeDeferredCommitListener>
+  TakeResumeDeferredCommitListener() {
+    return std::move(resume_deferred_commit_listener_);
+  }
+
+  void SetResumeDeferredCommitListener(
+      mojo::PendingReceiver<
+          mojom::blink::NavigationResumeDeferredCommitListener> listener) {
+    resume_deferred_commit_listener_ = std::move(listener);
+  }
+
   // This function is meant to be used in HTML/SVG attributes where dangling
   // markup injection occurs. See https://github.com/whatwg/html/pull/9309.
   const AtomicString& CleanNavigationTarget(const AtomicString& target) const;
@@ -257,6 +268,12 @@ struct CORE_EXPORT FrameLoadRequest {
   // Only container-initiated navigations (e.g. iframe change src) report a
   // resource timing entry to the parent.
   bool is_container_initiated_ = false;
+
+  // This listener is non-null when deferPageSwap() was called.
+  // It is triggered when the conditions passed to deferPageSwap() are met.
+  // See NavigationAPICommitDeferringCondition.
+  mojo::PendingReceiver<mojom::blink::NavigationResumeDeferredCommitListener>
+      resume_deferred_commit_listener_;
 
   // Resolves a Blob URL into a BlobURLToken if the URL is a blob URL, and
   // otherwise has no effect. It is called after the FrameType has been set.

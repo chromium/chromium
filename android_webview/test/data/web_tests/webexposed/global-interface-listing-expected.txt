@@ -6451,6 +6451,7 @@ interface NavigateEvent : Event
     getter sourceElement
     getter userInitiated
     method constructor
+    method deferPageSwap
     method intercept
     method scroll
 interface Navigation : EventTarget

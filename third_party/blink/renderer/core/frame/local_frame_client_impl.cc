@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom-blink.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -641,7 +642,9 @@ void LocalFrameClientImpl::BeginNavigation(
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
         initiator_navigation_state_keep_alive_handle,
     bool is_container_initiated,
-    bool has_rel_opener) {
+    bool has_rel_opener,
+    mojo::PendingReceiver<mojom::blink::NavigationResumeDeferredCommitListener>
+        resume_defer_commit_listener) {
   if (!web_frame_->Client()) {
     return;
   }
@@ -805,6 +808,9 @@ void LocalFrameClientImpl::BeginNavigation(
 
   navigation_info->href_translate = href_translate;
   navigation_info->is_container_initiated = is_container_initiated;
+  navigation_info->resume_defer_commit_listener = CrossVariantMojoReceiver<
+      mojom::NavigationResumeDeferredCommitListenerInterfaceBase>(
+      std::move(resume_defer_commit_listener));
 
   web_frame_->Client()->BeginNavigation(std::move(navigation_info));
 }

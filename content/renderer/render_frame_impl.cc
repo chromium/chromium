@@ -6260,6 +6260,10 @@ void RenderFrameImpl::BeginNavigationInternal(
   network::mojom::RequestDestination request_destination =
       blink::GetRequestDestinationForWebURLRequest(info->url_request);
 
+  mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
+      resume_defer_commit_listener(
+          std::move(info->resume_defer_commit_listener));
+
   blink::mojom::CommonNavigationParamsPtr common_params =
       MakeCommonNavigationParams(frame_->GetSecurityOrigin(), std::move(info),
                                  load_flags, has_download_sandbox_flag, from_ad,
@@ -6338,7 +6342,8 @@ void RenderFrameImpl::BeginNavigationInternal(
       std::move(common_params), std::move(begin_params),
       std::move(blob_url_token), std::move(navigation_client_remote),
       std::move(initiator_navigation_state_keep_alive_handle),
-      std::move(renderer_cancellation_listener_receiver));
+      std::move(renderer_cancellation_listener_receiver),
+      std::move(resume_defer_commit_listener));
 }
 
 void RenderFrameImpl::DecodeDataURL(

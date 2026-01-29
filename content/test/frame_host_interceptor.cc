@@ -53,7 +53,10 @@ class FrameHostInterceptor::FrameAgent
       mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle>
           initiator_navigation_state_keep_alive_handle,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-          renderer_cancellation_listener) override {
+          renderer_cancellation_listener,
+      mojo::PendingReceiver<
+          blink::mojom::NavigationResumeDeferredCommitListener>
+          resume_after_deferred_commit_listener) override {
     if (interceptor_->WillDispatchBeginNavigation(
             rfhi_, &common_params, &begin_params, &blob_url_token,
             &navigation_client)) {
@@ -61,7 +64,8 @@ class FrameHostInterceptor::FrameAgent
           std::move(common_params), std::move(begin_params),
           std::move(blob_url_token), std::move(navigation_client),
           std::move(initiator_navigation_state_keep_alive_handle),
-          std::move(renderer_cancellation_listener));
+          std::move(renderer_cancellation_listener),
+          std::move(resume_after_deferred_commit_listener));
     }
   }
 

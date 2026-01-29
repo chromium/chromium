@@ -17,6 +17,7 @@ blink_core_sources_navigation_api = [
   "navigation_destination.h",
   "navigation_history_entry.cc",
   "navigation_history_entry.h",
+  "navigation_precommit_controller.h",
   "navigation_transition.cc",
   "navigation_transition.h",
 ]

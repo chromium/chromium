@@ -835,7 +835,9 @@ interface FrameHost {
       pending_remote<blink.mojom.NavigationStateKeepAliveHandle>?
           initiator_navigation_state_keep_alive_handle,
       pending_receiver<NavigationRendererCancellationListener>
-          renderer_cancellation_listener);
+          renderer_cancellation_listener,
+      pending_receiver<blink.mojom.NavigationResumeDeferredCommitListener>?
+          resume_deferred_commit_listener);
 
   // Sent when a subresource response has started.
   //

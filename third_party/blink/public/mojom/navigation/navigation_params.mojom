@@ -102,6 +102,14 @@ enum ForceHistoryPush {
   kNo,
 };
 
+// A per-navigation interface passed along with the BeginNavigation call, used
+// to listen to commit deferral initiated by the navigation API.
+interface NavigationResumeDeferredCommitListener {
+  // This is called by the navigation API after author-provided conditions are
+  // met.
+  ResumeDeferredCommit();
+};
+
 // Provided by the renderer ----------------------------------------------------
 //
 // This struct holds parameters sent by the renderer to the browser, that are

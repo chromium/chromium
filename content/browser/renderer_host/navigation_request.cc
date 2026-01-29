@@ -145,6 +145,7 @@
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
@@ -1345,6 +1346,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       initiator_process_id, was_opener_suppressed, is_pdf,
       is_embedder_initiated_fenced_frame_navigation,
       mojo::NullReceiver() /* renderer_cancellation_listener */,
+      mojo::NullReceiver() /* deferred_commit_resume_listener */,
       embedder_shared_storage_context));
 
   return navigation_request;
@@ -1364,7 +1366,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-        renderer_cancellation_listener) {
+        renderer_cancellation_listener,
+    mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
+        deferred_commit_resume_listener) {
   TRACE_EVENT("navigation", "NavigationRequest::CreateRendererInitiated");
   // Only normal navigations to a different document or reloads are expected.
   // - Renderer-initiated same document navigations never start in the browser.
@@ -1480,7 +1484,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       initiator_process_id,
       /*was_opener_suppressed=*/false, /*is_pdf=*/false,
       /*is_embedder_initiated_fenced_frame_navigation=*/false,
-      std::move(renderer_cancellation_listener)));
+      std::move(renderer_cancellation_listener),
+      std::move(deferred_commit_resume_listener)));
 
   return navigation_request;
 }
@@ -1687,6 +1692,8 @@ NavigationRequest::NavigationRequest(
     bool is_embedder_initiated_fenced_frame_navigation,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener,
+    mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
+        deferred_commit_resume_listener,
     std::optional<std::u16string> embedder_shared_storage_context)
     : frame_tree_node_(frame_tree_node),
       is_synchronous_renderer_commit_(is_synchronous_renderer_commit),
@@ -1841,6 +1848,9 @@ NavigationRequest::NavigationRequest(
             : blink::mojom::ParentResourceTimingAccess::
                   kReportWithoutResponseDetails;
   }
+
+  resume_after_deferred_commit_listener_ =
+      std::move(deferred_commit_resume_listener);
 
   navigation_or_document_handle_ =
       NavigationOrDocumentHandle::CreateForNavigation(*this);

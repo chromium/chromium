@@ -22,5 +22,6 @@
   [RuntimeEnabled=NavigateEventSourceElement] readonly attribute Element? sourceElement;
 
   [RaisesException] void intercept(optional NavigationInterceptOptions options = {});
+  [RaisesException,RuntimeEnabled=NavigateEventDeferCrossDocumentCommit] void deferPageSwap(NavigationDeferPageSwapOptions options);
   [RaisesException] void scroll();
 };

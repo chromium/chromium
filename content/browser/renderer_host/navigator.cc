@@ -1265,7 +1265,9 @@ void Navigator::OnBeginNavigation(
         prefetched_signed_exchange_cache,
     int initiator_process_id,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-        renderer_cancellation_listener) {
+        renderer_cancellation_listener,
+    mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
+        deferred_commit_resume_listener) {
   TRACE_EVENT0("navigation", "Navigator::OnBeginNavigation");
 
   if (common_params->is_history_navigation_in_new_child_frame) {
@@ -1326,7 +1328,8 @@ void Navigator::OnBeginNavigation(
           controller_.GetEntryCount(), override_user_agent,
           std::move(blob_url_loader_factory), std::move(navigation_client),
           std::move(prefetched_signed_exchange_cache),
-          std::move(renderer_cancellation_listener)));
+          std::move(renderer_cancellation_listener),
+          std::move(deferred_commit_resume_listener)));
   NavigationRequest* navigation_request = frame_tree_node->navigation_request();
 
   metrics_data_ = std::make_unique<NavigationMetricsData>(

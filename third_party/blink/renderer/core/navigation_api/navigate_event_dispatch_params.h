@@ -8,7 +8,9 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -52,6 +54,8 @@ struct CORE_EXPORT NavigateEventDispatchParams
   std::optional<scheduler::TaskAttributionId>
       soft_navigation_heuristics_task_id;
   bool should_skip_screenshot;
+  mojo::PendingReceiver<mojom::blink::NavigationResumeDeferredCommitListener>
+      resume_deferred_commit_listener;
 
   void Trace(Visitor*) const;
 };

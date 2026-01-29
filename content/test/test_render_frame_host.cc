@@ -489,7 +489,8 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
       navigation_client_remote.InitWithNewEndpointAndPassReceiver());
   BeginNavigation(std::move(common_params), std::move(begin_params),
                   mojo::NullRemote(), std::move(navigation_client_remote),
-                  mojo::NullRemote(), mojo::NullReceiver());
+                  mojo::NullRemote(), mojo::NullReceiver(),
+                  mojo::NullReceiver());
 }
 
 void TestRenderFrameHost::SimulateDidChangeOpener(

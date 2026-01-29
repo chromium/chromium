@@ -186,8 +186,9 @@ class MockFrameHost : public mojom::FrameHost {
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>,
       mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle>,
-      mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>)
-      override {}
+      mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>,
+      mojo::PendingReceiver<
+          blink::mojom::NavigationResumeDeferredCommitListener>) override {}
 
   void SubresourceResponseStarted(const url::SchemeHostPort& final_response_url,
                                   net::CertStatus cert_status) override {}

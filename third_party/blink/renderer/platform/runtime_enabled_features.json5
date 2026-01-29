@@ -3579,6 +3579,10 @@
       status: "stable",
     },
     {
+      name: "NavigateEventDeferCrossDocumentCommit",
+      status: "experimental",
+    },
+    {
       name: "NavigateEventPopstateLimitations",
       status: "stable",
     },

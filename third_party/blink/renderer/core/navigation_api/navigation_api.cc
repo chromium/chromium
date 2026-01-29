@@ -895,6 +895,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     navigate_event->MaybeCommitImmediately(script_state);
   } else if (params->event_type != NavigateEventType::kCrossDocument) {
     navigate_event->React(script_state);
+  } else {
+    navigate_event->MaybeDeferCrossDocumentCommit(script_state, params);
   }
 
   // Note: we cannot clean up ongoing_navigation_ for cross-document

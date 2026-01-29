@@ -882,6 +882,9 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         NavigationApi::DispatchResult::kContinue) {
       return;
     }
+
+    request.SetResumeDeferredCommitListener(
+        std::move(params->resume_deferred_commit_listener));
   }
 
   // https://whatpr.org/html/10903/d1c086a...0e0afb3/browsing-the-web.html#beginning-navigation
@@ -960,7 +963,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.GetInitiatorFrameToken(), request.GetSourceLocation(),
       request.TakeInitiatorNavigationStateKeepAliveHandle(),
       request.IsContainerInitiated(),
-      request.GetWindowFeatures().explicit_opener);
+      request.GetWindowFeatures().explicit_opener,
+      request.TakeResumeDeferredCommitListener());
 }
 
 static void FillStaticResponseIfNeeded(WebNavigationParams* params,

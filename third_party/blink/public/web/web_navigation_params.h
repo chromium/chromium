@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -214,6 +215,11 @@ struct BLINK_EXPORT WebNavigationInfo {
   // src. Only container-initiated navigation report resource timing to the
   // parent.
   bool is_container_initiated = false;
+
+  // Used by the navigation API to indicate that a deferred commit should be
+  // resumed.
+  mojo::PendingReceiver<mojom::NavigationResumeDeferredCommitListener>
+      resume_defer_commit_listener;
 };
 
 // This is a container for yet-unparsed permissions policies from the manifest
