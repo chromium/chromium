@@ -14,6 +14,7 @@
 class BrowserWindowInterface;
 class ExtensionFunction;
 class GURL;
+struct NavigateParams;
 
 namespace content {
 class WebContents;
@@ -53,6 +54,12 @@ class OpenTabHelper {
       BrowserWindowInterface& browser,
       const ExtensionFunction& function,
       const Params& params);
+
+  // If `function` is for the PDF Viewer, then mark the PDF-initiated navigation
+  // as renderer-initiated in `navigate_params` and return true. Otherwise
+  // return false and `navigate_params` remains the same.
+  static bool MaybeSetPdfNavigateParams(const ExtensionFunction& function,
+                                        NavigateParams& navigate_params);
 };
 
 }  // namespace extensions
