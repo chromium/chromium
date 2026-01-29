@@ -4,34 +4,32 @@
 
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 
+#include <optional>
 #include <string>
-#include <utility>
 
-#include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/test/content_settings_mock_provider.h"
-#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_log_record.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/check.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace supervised_user {
 namespace {
@@ -104,19 +102,7 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     TestingProfile::TestingFactories factories =
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories();
-    factories.emplace_back(
-        SupervisedUserServiceFactory::GetInstance(),
-        base::BindOnce(
-            &FamilyLinkUserMetricsProviderTest::BuildSupervisedUserService,
-            base::Unretained(this)));
     return factories;
-  }
-
-  // Default supervised user service, as in production.
-  virtual std::unique_ptr<KeyedService> BuildSupervisedUserService(
-      content::BrowserContext* browser_context) {
-    return SupervisedUserServiceFactory::BuildInstanceFor(
-        Profile::FromBrowserContext(browser_context));
   }
 
   void SetFamilyRole(Profile* profile, kidsmanagement::FamilyRole family_role) {
@@ -517,6 +503,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
 struct ContentFiltersTestCase {
   std::size_t profile_count;
   std::string test_name;
@@ -550,36 +537,6 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
     return CreateTestingProfile(email, profile_name,
                                 /*is_subject_to_parental_controls=*/false,
                                 /*is_opted_in_to_parental_supervision=*/false);
-  }
-
-  // Builds the `SupervisedUserService` with a fake url content filter delegate.
-  std::unique_ptr<KeyedService> BuildSupervisedUserService(
-      content::BrowserContext* browser_context) override {
-    Profile* profile = Profile::FromBrowserContext(browser_context);
-
-    std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
-        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
-    FamilyLinkSettingsService& settings_service =
-        CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
-            profile->GetProfileKey()));
-
-    return std::make_unique<SupervisedUserService>(
-        IdentityManagerFactory::GetForProfile(profile),
-        profile->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess(),
-        *profile->GetPrefs(), settings_service,
-        SyncServiceFactory::GetInstance()->GetForProfile(profile),
-        std::make_unique<FamilyLinkUrlFilter>(
-            settings_service, *profile->GetPrefs(),
-            std::make_unique<FakeURLFilterDelegate>(),
-            std::make_unique<KidsChromeManagementURLCheckerClient>(
-                IdentityManagerFactory::GetForProfile(profile),
-                profile->GetDefaultStoragePartition()
-                    ->GetURLLoaderFactoryForBrowserProcess(),
-                *profile->GetPrefs(), platform_delegate->GetCountryCode(),
-                platform_delegate->GetChannel())),
-        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        TestingBrowserProcess::GetGlobal()->device_parental_controls());
   }
 
   // Enables or disables the browser content filters for all profiles.
