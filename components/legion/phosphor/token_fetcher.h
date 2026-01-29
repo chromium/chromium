@@ -13,6 +13,10 @@
 #include "base/types/expected.h"
 #include "components/legion/phosphor/data_types.h"
 
+namespace quiche {
+enum class ProxyLayer;
+}  // namespace quiche
+
 namespace legion::phosphor {
 
 // Interface that manages requesting and fetching blind-signed authentication
@@ -40,6 +44,7 @@ class TokenFetcher {
   // vector of tokens or, on error, a time before which the method should not be
   // called again.
   virtual void GetAuthnTokens(int batch_size,
+                              quiche::ProxyLayer proxy_layer,
                               GetAuthnTokensCallback callback) = 0;
 
  protected:

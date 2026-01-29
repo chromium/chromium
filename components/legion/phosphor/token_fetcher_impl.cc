@@ -67,6 +67,7 @@ TokenFetcherImpl::TokenFetcherImpl(
 TokenFetcherImpl::~TokenFetcherImpl() = default;
 
 void TokenFetcherImpl::GetAuthnTokens(int batch_size,
+                                      quiche::ProxyLayer proxy_layer,
                                       GetAuthnTokensCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (batch_size <= 0) {
@@ -86,13 +87,15 @@ void TokenFetcherImpl::GetAuthnTokens(int batch_size,
 
   auto request_token_callback = base::BindOnce(
       &TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens,
-      weak_ptr_factory_.GetWeakPtr(), batch_size, std::move(callback));
+      weak_ptr_factory_.GetWeakPtr(), batch_size, proxy_layer,
+      std::move(callback));
 
   oauth_token_provider_->RequestOAuthToken(std::move(request_token_callback));
 }
 
 void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(
     int batch_size,
+    quiche::ProxyLayer proxy_layer,
     GetAuthnTokensCallback callback,
     GetAuthnTokensResult result,
     std::optional<std::string> access_token) {
@@ -112,8 +115,7 @@ void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(
       .AsyncCall(
           &TokenFetcherImpl::SequenceBoundFetch::GetTokensFromBlindSignAuth)
       .WithArgs(quiche::BlindSignAuthServiceType::kChromePrivateAratea,
-                std::move(access_token), batch_size,
-                quiche::ProxyLayer::kTerminalLayer,
+                std::move(access_token), batch_size, proxy_layer,
                 base::BindPostTaskToCurrentDefault(base::BindOnce(
                     &TokenFetcherImpl::OnFetchBlindSignedTokenCompleted,
                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));

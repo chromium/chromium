@@ -35,6 +35,8 @@ class TokenManagerImpl : public TokenManager {
   // TokenManager implementation.
   void GetAuthToken(GetAuthTokenCallback callback) override;
   void PrefetchAuthTokens() override;
+  void GetAuthTokenForProxy(GetAuthTokenCallback callback) override;
+  void PrefetchAuthTokensForProxy() override;
 
  private:
   const int batch_size_;
@@ -42,7 +44,8 @@ class TokenManagerImpl : public TokenManager {
 
   std::unique_ptr<TokenFetcher> fetcher_;
 
-  std::unique_ptr<internal::FeatureTokenManager> feature_token_manager_;
+  std::unique_ptr<internal::FeatureTokenManager> terminal_token_manager_;
+  std::unique_ptr<internal::FeatureTokenManager> proxy_token_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

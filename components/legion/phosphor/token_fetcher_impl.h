@@ -43,7 +43,9 @@ class TokenFetcherImpl : public TokenFetcher {
   ~TokenFetcherImpl() override;
 
   // TokenFetcher implementation:
-  void GetAuthnTokens(int batch_size, GetAuthnTokensCallback callback) override;
+  void GetAuthnTokens(int batch_size,
+                      quiche::ProxyLayer proxy_layer,
+                      GetAuthnTokensCallback callback) override;
 
   // The account status has changed, so the delegate's `RequestOAuthToken`
   // behavior may change.
@@ -79,6 +81,7 @@ class TokenFetcherImpl : public TokenFetcher {
 
   void OnRequestOAuthTokenCompletedForGetAuthnTokens(
       int batch_size,
+      quiche::ProxyLayer proxy_layer,
       GetAuthnTokensCallback callback,
       GetAuthnTokensResult result,
       std::optional<std::string> access_token);

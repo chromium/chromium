@@ -28,6 +28,7 @@
 #include "components/legion/phosphor/token_fetcher_helper.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -125,7 +126,8 @@ class TokenFetcherImplTest : public testing::Test {
 
   // Call `GetAuthnTokens()` and run until it completes.
   void GetAuthnTokens(int num_tokens) {
-    fetcher_->GetAuthnTokens(num_tokens, tokens_future_.GetCallback());
+    fetcher_->GetAuthnTokens(num_tokens, quiche::ProxyLayer::kTerminalLayer,
+                             tokens_future_.GetCallback());
 
     CHECK(tokens_future_.Wait()) << "GetAuthnTokens did not call back";
   }
@@ -530,7 +532,8 @@ TEST_F(ProdBlindSignAuthTokenFetcherImplTest, FetchFails) {
   base::test::TestFuture<
       base::expected<std::vector<BlindSignedAuthToken>, base::Time>>
       tokens_future;
-  fetcher.GetAuthnTokens(1, tokens_future.GetCallback());
+  fetcher.GetAuthnTokens(1, quiche::ProxyLayer::kTerminalLayer,
+                         tokens_future.GetCallback());
 
   ASSERT_TRUE(tokens_future.Wait());
   auto& result = tokens_future.Get();

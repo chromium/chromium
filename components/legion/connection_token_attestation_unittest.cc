@@ -31,6 +31,10 @@ class FakeTokenManager : public phosphor::TokenManager {
   }
 
   void PrefetchAuthTokens() override {}
+  void GetAuthTokenForProxy(GetAuthTokenCallback callback) override {
+    NOTREACHED();
+  }
+  void PrefetchAuthTokensForProxy() override { NOTREACHED(); }
 
   std::optional<phosphor::BlindSignedAuthToken> GetToken() {
     if (!return_token_) {

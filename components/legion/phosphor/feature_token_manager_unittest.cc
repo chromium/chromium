@@ -23,6 +23,7 @@
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_fetcher.h"
 #include "net/base/features.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +34,8 @@ namespace {
 struct ExpectedGetAuthnTokensCall {
   // The expected batch_size argument for the call.
   int batch_size;
+  // The expected proxy_layer argument for the call.
+  quiche::ProxyLayer proxy_layer;
   // The response to the call.
   std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens;
   std::optional<base::Time> try_again_after;
@@ -45,9 +48,11 @@ class MockTokenFetcher : public TokenFetcher {
   // Register an expectation of a call to `GetAuthnTokens()` returning the
   // given tokens.
   void ExpectGetAuthnTokensCall(int batch_size,
+                                quiche::ProxyLayer proxy_layer,
                                 std::vector<BlindSignedAuthToken> bsa_tokens) {
     expected_get_authn_token_calls_.emplace_back(ExpectedGetAuthnTokensCall{
         .batch_size = batch_size,
+        .proxy_layer = proxy_layer,
         .bsa_tokens = std::move(bsa_tokens),
         .try_again_after = std::nullopt,
     });
@@ -55,9 +60,12 @@ class MockTokenFetcher : public TokenFetcher {
 
   // Register an expectation of a call to `GetAuthnTokens()` returning no
   // tokens and the given `try_again_after`.
-  void ExpectGetAuthnTokensCall(int batch_size, base::Time try_again_after) {
+  void ExpectGetAuthnTokensCall(int batch_size,
+                                quiche::ProxyLayer proxy_layer,
+                                base::Time try_again_after) {
     expected_get_authn_token_calls_.emplace_back(ExpectedGetAuthnTokensCall{
         .batch_size = batch_size,
+        .proxy_layer = proxy_layer,
         .bsa_tokens = std::nullopt,
         .try_again_after = try_again_after,
     });
@@ -69,12 +77,14 @@ class MockTokenFetcher : public TokenFetcher {
   }
 
   void GetAuthnTokens(int batch_size,
+                      quiche::ProxyLayer proxy_layer,
                       GetAuthnTokensCallback callback) override {
     CHECK(!expected_get_authn_token_calls_.empty())
         << "Unexpected call to GetAuthnTokens";
     auto exp = std::move(expected_get_authn_token_calls_.front());
     expected_get_authn_token_calls_.pop_front();
     EXPECT_EQ(batch_size, exp.batch_size);
+    EXPECT_EQ(proxy_layer, exp.proxy_layer);
 
     base::expected<std::vector<BlindSignedAuthToken>, base::Time> result;
     if (exp.bsa_tokens) {
@@ -97,7 +107,8 @@ class FeatureTokenManagerTest : public testing::Test {
     owned_mock_fetcher_ = std::make_unique<MockTokenFetcher>();
     mock_fetcher_ = owned_mock_fetcher_.get();
     feature_token_manager_ = std::make_unique<FeatureTokenManager>(
-        mock_fetcher_, legion::kLegionAuthTokenCacheBatchSize.Get(),
+        mock_fetcher_, quiche::ProxyLayer::kTerminalLayer,
+        legion::kLegionAuthTokenCacheBatchSize.Get(),
         legion::kLegionAuthTokenCacheLowWaterMark.Get());
   }
 
@@ -129,7 +140,7 @@ class FeatureTokenManagerTest : public testing::Test {
 
 TEST_F(FeatureTokenManagerTest, GetAuthToken) {
   mock_fetcher_->ExpectGetAuthnTokensCall(
-      expected_batch_size_,
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   // The first call to `GetAuthToken` will be asynchronous.
@@ -152,10 +163,11 @@ TEST_F(FeatureTokenManagerTest, GetAuthToken) {
 TEST_F(FeatureTokenManagerTest, OnGotAuthTokens_FewerTokensThanCallbacks) {
   // The first fetch will return only 2 tokens.
   mock_fetcher_->ExpectGetAuthnTokensCall(expected_batch_size_,
+                                          quiche::ProxyLayer::kTerminalLayer,
                                           TokenBatch(2, kFutureExpiration));
   // The pending callback will trigger another fetch.
   mock_fetcher_->ExpectGetAuthnTokensCall(
-      expected_batch_size_,
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   // Queue 3 token requests.
@@ -180,7 +192,7 @@ TEST_F(FeatureTokenManagerTest, OnGotAuthTokens_FewerTokensThanCallbacks) {
 
 TEST_F(FeatureTokenManagerTest, PrefetchAuthTokens) {
   mock_fetcher_->ExpectGetAuthnTokensCall(
-      expected_batch_size_,
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   feature_token_manager_->PrefetchAuthTokens();
@@ -198,7 +210,7 @@ TEST_F(FeatureTokenManagerTest, PrefetchAuthTokens) {
 
 TEST_F(FeatureTokenManagerTest, ExpiredToken) {
   mock_fetcher_->ExpectGetAuthnTokensCall(
-      expected_batch_size_,
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, base::Time::Now() + base::Seconds(1)));
 
   // This will trigger the first fetch.
@@ -210,7 +222,7 @@ TEST_F(FeatureTokenManagerTest, ExpiredToken) {
   // A token should be available.
   // Another fetch should be triggered automatically when the token expires.
   mock_fetcher_->ExpectGetAuthnTokensCall(
-      expected_batch_size_,
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   // Advance time so the token expires and the timer for refill fires.
@@ -227,6 +239,7 @@ TEST_F(FeatureTokenManagerTest, ExpiredToken) {
 TEST_F(FeatureTokenManagerTest, FetchError_BacksOff) {
   base::Time try_again_after = base::Time::Now() + base::Seconds(10);
   mock_fetcher_->ExpectGetAuthnTokensCall(expected_batch_size_,
+                                          quiche::ProxyLayer::kTerminalLayer,
                                           try_again_after);
 
   // This will trigger the first fetch, which will fail.
@@ -244,7 +257,7 @@ TEST_F(FeatureTokenManagerTest, FetchError_BacksOff) {
 
   // Expect a new fetch to be triggered automatically after the backoff period.
   mock_fetcher_->ExpectGetAuthnTokensCall(
-      expected_batch_size_,
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   // Advance time past the backoff period.

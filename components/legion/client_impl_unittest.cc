@@ -171,6 +171,10 @@ class FakeTokenManager : public phosphor::TokenManager {
   }
 
   void PrefetchAuthTokens() override {}
+  void GetAuthTokenForProxy(GetAuthTokenCallback callback) override {
+    NOTREACHED();
+  }
+  void PrefetchAuthTokensForProxy() override { NOTREACHED(); }
 
   void SetReturnToken(bool return_token) { return_token_ = return_token; }
 

@@ -25,15 +25,16 @@
 #include "components/legion/phosphor/token_fetcher.h"
 #include "components/legion/phosphor/token_manager.h"
 #include "net/base/features.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 
 namespace legion::phosphor::internal {
 
-
-
 FeatureTokenManager::FeatureTokenManager(TokenFetcher* fetcher,
+                                         quiche::ProxyLayer proxy_layer,
                                          int batch_size,
                                          size_t cache_low_water_mark)
-    : batch_size_(batch_size),
+    : proxy_layer_(proxy_layer),
+      batch_size_(batch_size),
       cache_low_water_mark_(cache_low_water_mark),
       fetcher_(fetcher) {}
 
@@ -144,8 +145,9 @@ void FeatureTokenManager::MaybeRefillCache() {
     // base::Unretained is unsafe here, because the FeatureTokenManager can be
     // destroyed while a token fetch is in progress.
     fetcher_->GetAuthnTokens(
-        batch_size_, base::BindOnce(&FeatureTokenManager::OnGotAuthTokens,
-                                    weak_ptr_factory_.GetWeakPtr()));
+        batch_size_, proxy_layer_,
+        base::BindOnce(&FeatureTokenManager::OnGotAuthTokens,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 

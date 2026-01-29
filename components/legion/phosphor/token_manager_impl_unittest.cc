@@ -23,6 +23,7 @@
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_fetcher.h"
 #include "net/base/features.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +34,8 @@ namespace {
 struct ExpectedGetAuthnTokensCall {
   // The expected batch_size argument for the call.
   int batch_size;
+  // The expected proxy_layer argument for the call.
+  quiche::ProxyLayer proxy_layer;
   // The response to the call.
   std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens;
   std::optional<base::Time> try_again_after;
@@ -45,9 +48,11 @@ class MockTokenFetcher : public TokenFetcher {
   // Register an expectation of a call to `GetAuthnTokens()` returning the
   // given tokens.
   void ExpectGetAuthnTokensCall(int batch_size,
+                                quiche::ProxyLayer proxy_layer,
                                 std::vector<BlindSignedAuthToken> bsa_tokens) {
     expected_get_authn_token_calls_.emplace_back(ExpectedGetAuthnTokensCall{
         .batch_size = batch_size,
+        .proxy_layer = proxy_layer,
         .bsa_tokens = std::move(bsa_tokens),
         .try_again_after = std::nullopt,
     });
@@ -55,9 +60,12 @@ class MockTokenFetcher : public TokenFetcher {
 
   // Register an expectation of a call to `GetAuthnTokens()` returning no
   // tokens and the given `try_again_after`.
-  void ExpectGetAuthnTokensCall(int batch_size, base::Time try_again_after) {
+  void ExpectGetAuthnTokensCall(int batch_size,
+                                quiche::ProxyLayer proxy_layer,
+                                base::Time try_again_after) {
     expected_get_authn_token_calls_.emplace_back(ExpectedGetAuthnTokensCall{
         .batch_size = batch_size,
+        .proxy_layer = proxy_layer,
         .bsa_tokens = std::nullopt,
         .try_again_after = try_again_after,
     });
@@ -69,12 +77,14 @@ class MockTokenFetcher : public TokenFetcher {
   }
 
   void GetAuthnTokens(int batch_size,
+                      quiche::ProxyLayer proxy_layer,
                       GetAuthnTokensCallback callback) override {
     CHECK(!expected_get_authn_token_calls_.empty())
         << "Unexpected call to GetAuthnTokens";
     auto exp = std::move(expected_get_authn_token_calls_.front());
     expected_get_authn_token_calls_.pop_front();
     EXPECT_EQ(batch_size, exp.batch_size);
+    EXPECT_EQ(proxy_layer, exp.proxy_layer);
 
     base::expected<std::vector<BlindSignedAuthToken>, base::Time> result;
     if (exp.bsa_tokens) {
@@ -128,7 +138,7 @@ class TokenManagerImplTest : public testing::Test {
 TEST_F(TokenManagerImplTest, GetAuthToken) {
   // Request a token. This should trigger a fetch for a batch of tokens.
   mock_fetcher_->ExpectGetAuthnTokensCall(
-      expected_batch_size_,
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   {
@@ -142,7 +152,7 @@ TEST_F(TokenManagerImplTest, GetAuthToken) {
   // The rest of the batch should be available from the cache. A prefetch will
   // be triggered when the cache runs low.
   mock_fetcher_->ExpectGetAuthnTokensCall(
-      expected_batch_size_,
+      expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, kFutureExpiration));
   for (int i = 0; i < expected_batch_size_ - 1; ++i) {
     base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
@@ -159,6 +169,21 @@ TEST_F(TokenManagerImplTest, GetAuthToken) {
     token_manager_->GetAuthToken(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     ASSERT_TRUE(future.Get().has_value());
+  }
+}
+
+TEST_F(TokenManagerImplTest, GetAuthTokenForProxy) {
+  // Request a token. This should trigger a fetch for a batch of tokens.
+  mock_fetcher_->ExpectGetAuthnTokensCall(
+      expected_batch_size_, quiche::ProxyLayer::kProxyB,
+      TokenBatch(expected_batch_size_, kFutureExpiration));
+
+  {
+    base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+    token_manager_->GetAuthTokenForProxy(future.GetCallback());
+    EXPECT_FALSE(future.IsReady());
+    ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
+    EXPECT_TRUE(future.Get().has_value());
   }
 }
 

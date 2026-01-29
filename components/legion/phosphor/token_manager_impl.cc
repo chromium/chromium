@@ -13,6 +13,7 @@
 #include "components/legion/features.h"
 #include "components/legion/phosphor/feature_token_manager.h"
 #include "components/legion/phosphor/token_fetcher.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 
 namespace legion::phosphor {
 
@@ -20,20 +21,34 @@ TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> fetcher)
     : batch_size_(legion::kLegionAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(legion::kLegionAuthTokenCacheLowWaterMark.Get()),
       fetcher_(std::move(fetcher)) {
-  feature_token_manager_ = std::make_unique<internal::FeatureTokenManager>(
-      fetcher_.get(), batch_size_, cache_low_water_mark_);
+  terminal_token_manager_ = std::make_unique<internal::FeatureTokenManager>(
+      fetcher_.get(), quiche::ProxyLayer::kTerminalLayer, batch_size_,
+      cache_low_water_mark_);
+  proxy_token_manager_ = std::make_unique<internal::FeatureTokenManager>(
+      fetcher_.get(), quiche::ProxyLayer::kProxyB, batch_size_,
+      cache_low_water_mark_);
 }
 
 TokenManagerImpl::~TokenManagerImpl() = default;
 
 void TokenManagerImpl::GetAuthToken(GetAuthTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  feature_token_manager_->GetAuthToken(std::move(callback));
+  terminal_token_manager_->GetAuthToken(std::move(callback));
 }
 
 void TokenManagerImpl::PrefetchAuthTokens() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  feature_token_manager_->PrefetchAuthTokens();
+  terminal_token_manager_->PrefetchAuthTokens();
+}
+
+void TokenManagerImpl::GetAuthTokenForProxy(GetAuthTokenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  proxy_token_manager_->GetAuthToken(std::move(callback));
+}
+
+void TokenManagerImpl::PrefetchAuthTokensForProxy() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  proxy_token_manager_->PrefetchAuthTokens();
 }
 
 }  // namespace legion::phosphor

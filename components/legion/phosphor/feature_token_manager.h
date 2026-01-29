@@ -22,6 +22,10 @@ namespace base {
 class OneShotTimer;
 }
 
+namespace quiche {
+enum class ProxyLayer;
+}  // namespace quiche
+
 namespace legion::phosphor {
 
 class TokenFetcher;
@@ -33,6 +37,7 @@ namespace internal {
 class FeatureTokenManager {
  public:
   FeatureTokenManager(TokenFetcher* fetcher,
+                      quiche::ProxyLayer proxy_layer,
                       int batch_size,
                       size_t cache_low_water_mark);
   ~FeatureTokenManager();
@@ -71,6 +76,7 @@ class FeatureTokenManager {
   // Returns true if the cache should be refilled with new tokens.
   bool NeedsRefill() const;
 
+  const quiche::ProxyLayer proxy_layer_;
   const int batch_size_;
   const size_t cache_low_water_mark_;
 

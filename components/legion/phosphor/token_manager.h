@@ -22,12 +22,21 @@ class TokenManager {
 
   virtual ~TokenManager() = default;
 
-  // Gets a token asynchronously.
+  // Gets a token for the terminal layer asynchronously.
   virtual void GetAuthToken(GetAuthTokenCallback callback) = 0;
 
-  // Ensures that tokens are available, fetching them if necessary. This method
-  // is intended for pre-fetching and does not return a token.
+  // Ensures that tokens are available for the terminal layer, fetching them if
+  // necessary. This method is intended for pre-fetching and does not return a
+  // token.
   virtual void PrefetchAuthTokens() = 0;
+
+  // Gets a token for the proxy layer asynchronously.
+  virtual void GetAuthTokenForProxy(GetAuthTokenCallback callback) = 0;
+
+  // Ensures that tokens are available for the proxy layer, fetching them if
+  // necessary. This method is intended for pre-fetching and does not return a
+  // token.
+  virtual void PrefetchAuthTokensForProxy() = 0;
 };
 
 }  // namespace legion::phosphor
