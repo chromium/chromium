@@ -8,6 +8,9 @@ build_webui("build") {
   grd_prefix = "whats_new"
   static_files = [ "whats_new.html" ]
   ts_files = [
+    "format_module_name.ts",
+    "handlers.ts",
+    "types.ts",
     "whats_new_app.html.ts",
     "whats_new_app.ts",
     "whats_new_proxy.ts",

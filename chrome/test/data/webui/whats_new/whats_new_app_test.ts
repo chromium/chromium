@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://whats-new/whats_new_app.js';
+
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {formatModuleName} from 'chrome://whats-new/format_module_name.js';
 import {ModulePosition, ScrollDepth} from 'chrome://whats-new/whats_new.mojom-webui.js';
-import {formatModuleName} from 'chrome://whats-new/whats_new_app.js';
 import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
 import {TestWhatsNewBrowserProxy} from './test_whats_new_browser_proxy.js';
