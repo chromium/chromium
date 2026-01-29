@@ -222,6 +222,9 @@ class TabStripActionContainer : public views::View,
   std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton();
   void SetupButtonProperties(TabStripNudgeButton* button);
 
+  // Helper to handles teardown logic when the task icon is fully gone.
+  void FinalizeHideGlicActorTaskIcon();
+
   // TODO(crbug.com/387356481) make ProductSpecificationsButton a subclass of
   // TabStripNudgeButton
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
@@ -264,6 +267,8 @@ class TabStripActionContainer : public views::View,
   // Border insets as passed down from the HorizontalTabStripRegionView, used to
   // update button view borders.
   gfx::Insets border_insets_;
+
+  base::WeakPtrFactory<TabStripActionContainer> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_ACTION_CONTAINER_H_
