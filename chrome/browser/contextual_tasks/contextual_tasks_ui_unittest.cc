@@ -107,7 +107,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
   MockContextualTasksUiService(
       Profile* profile,
       contextual_tasks::ContextualTasksService* contextual_tasks_service)
-      : ContextualTasksUiService(profile, contextual_tasks_service, nullptr) {}
+      : ContextualTasksUiService(profile,
+                                 contextual_tasks_service,
+                                 nullptr,
+                                 nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(void,
@@ -118,6 +121,7 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                bool is_shown_in_tab),
               (override));
   MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
+  MOCK_METHOD(bool, IsAiUrl, (const GURL& url), (override));
 };
 
 }  // namespace
@@ -131,6 +135,7 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
     service_for_nav_ =
         std::make_unique<testing::NiceMock<MockContextualTasksUiService>>(
             profile_.get(), contextual_tasks_service_.get());
+    ON_CALL(*service_for_nav_, IsAiUrl(_)).WillByDefault(Return(true));
 
     profile_ = std::make_unique<TestingProfile>();
     embedded_web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -607,6 +612,13 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
       {GURL("https://www.google.com/search?udm=50&q=%20"),
        false},  // Whitespace
   };
+
+  ON_CALL(*service_for_nav_, IsAiUrl(GURL("https://google.com")))
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsAiUrl(GURL("https://google.com?q=test")))
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsAiUrl(GURL("https://google.com/search")))
+      .WillByDefault(Return(false));
 
   for (const auto& test_case : test_cases) {
     testing::NiceMock<MockTaskInfoDelegate> delegate;

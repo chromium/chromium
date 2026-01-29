@@ -84,7 +84,7 @@ class MockPage : public mojom::Page {
 class MockUiService : public ContextualTasksUiService {
  public:
   MockUiService(Profile* profile, ContextualTasksService* service)
-      : ContextualTasksUiService(profile, service, nullptr) {}
+      : ContextualTasksUiService(profile, service, nullptr, nullptr) {}
 
   MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
   MOCK_METHOD(std::optional<GURL>,

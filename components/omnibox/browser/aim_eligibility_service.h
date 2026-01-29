@@ -130,8 +130,12 @@ class AimEligibilityService
   // Checks if user is eligible for Canvas in AIM features.
   virtual bool IsCanvasEligible() const;
 
+  // Determining whether the provided URL is an AI page based on server-provided
+  // params.
+  virtual bool HasAimUrlParams(const GURL& url) const;
+
   // Returns the most recent eligibility response proto.
-  const omnibox::AimEligibilityResponse& GetMostRecentResponse() const;
+  virtual const omnibox::AimEligibilityResponse& GetMostRecentResponse() const;
 
   // Returns the source of the most recent eligibility response.
   EligibilityResponseSource GetMostRecentResponseSource() const;

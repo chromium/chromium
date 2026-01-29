@@ -428,6 +428,26 @@ bool AimEligibilityService::IsCanvasEligible() const {
   return IsEligibleByServer(server_eligible);
 }
 
+bool AimEligibilityService::HasAimUrlParams(const GURL& url) const {
+  for (const auto& rule : GetMostRecentResponse().aim_detection_url_rule()) {
+    int matched_params = 0;
+    for (const auto& required_param : rule.required_params()) {
+      std::string param_value;
+      if (!net::GetValueForKeyInQuery(url, required_param.key(),
+                                      &param_value) ||
+          param_value != required_param.value()) {
+        break;
+      }
+      matched_params++;
+    }
+    if (matched_params == rule.required_params_size()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 const omnibox::AimEligibilityResponse&
 AimEligibilityService::GetMostRecentResponse() const {
   return most_recent_response_;
