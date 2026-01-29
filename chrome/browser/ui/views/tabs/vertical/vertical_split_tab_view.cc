@@ -231,23 +231,29 @@ VerticalSplitTabView::RemoveChildViewForReparenting(views::View* child_view) {
   CHECK(collection_node_);
 
   auto children = collection_node_->GetDirectChildren();
+  auto source_layout_info = std::make_unique<
+      TabCollectionAnimatingLayoutManager::SourceLayoutInfo>(
+      TabCollectionAnimatingLayoutManager::SourceLayoutInfo{
+          .animation_axis =
+              TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal,
+          // Note: Tabs are removed from the split view collection from the
+          // front first so it is necessary to test the number of children
+          // in the collection when computing the animation direction.
+          .animation_direction =
+              (children.size() == 2 && children[0] == child_view)
+                  ? TabCollectionAnimatingLayoutManager::AnimationDirection::
+                        kEndToStart
+                  : TabCollectionAnimatingLayoutManager::AnimationDirection::
+                        kStartToEnd,
+      });
+
+  // Ensure we remove the child view before setting source layout info to
+  // prevent the manager from clearing the metadata.
+  auto removed_child_view = RemoveChildViewT(child_view);
   TabCollectionAnimatingLayoutManager::SetSourceLayoutInfo(
-      child_view,
-      std::make_unique<TabCollectionAnimatingLayoutManager::SourceLayoutInfo>(
-          TabCollectionAnimatingLayoutManager::SourceLayoutInfo{
-              .animation_axis = TabCollectionAnimatingLayoutManager::
-                  AnimationAxis::kHorizontal,
-              // Note: Tabs are removed from the split view collection from the
-              // front first so it is necessary to test the number of children
-              // in the collection when computing the animation direction.
-              .animation_direction =
-                  (children.size() == 2 && children[0] == child_view)
-                      ? TabCollectionAnimatingLayoutManager::
-                            AnimationDirection::kEndToStart
-                      : TabCollectionAnimatingLayoutManager::
-                            AnimationDirection::kStartToEnd,
-          }));
-  return RemoveChildViewT(child_view);
+      child_view, std::move(source_layout_info));
+
+  return removed_child_view;
 }
 
 BEGIN_METADATA(VerticalSplitTabView)

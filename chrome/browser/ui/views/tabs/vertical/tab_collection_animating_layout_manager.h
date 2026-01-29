@@ -65,6 +65,7 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   ~TabCollectionAnimatingLayoutManager() override;
 
   // LayoutManagerBase:
+  bool OnViewRemoved(views::View* host, views::View* view) override;
   gfx::Size GetPreferredSize(const views::View* host) const override;
   gfx::Size GetPreferredSize(
       const views::View* host,
@@ -133,6 +134,9 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // between independent TabCollectionNodes. Invoked after the current
   // `animation_` has ended.
   void ClearViewAnimationMetadata();
+
+  // Clears any metadata specific to the animating layout manager from `view`.
+  void ClearViewAnimationMetadataForView(views::View* view);
 
   // The layout manager that defines the goal state.
   const raw_ref<LayoutManagerBase> target_layout_manager_;

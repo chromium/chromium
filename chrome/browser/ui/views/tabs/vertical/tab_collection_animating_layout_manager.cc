@@ -10,7 +10,6 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -70,6 +69,12 @@ TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
 
 TabCollectionAnimatingLayoutManager::~TabCollectionAnimatingLayoutManager() =
     default;
+
+bool TabCollectionAnimatingLayoutManager::OnViewRemoved(views::View* host,
+                                                        views::View* view) {
+  ClearViewAnimationMetadataForView(view);
+  return LayoutManagerBase::OnViewRemoved(host, view);
+}
 
 gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
     const views::View* host) const {
@@ -452,12 +457,15 @@ void TabCollectionAnimatingLayoutManager::
 
 void TabCollectionAnimatingLayoutManager::ClearViewAnimationMetadata() {
   for (views::View* child_view : host_view()->children()) {
-    if (child_view->GetProperty(kPreviousCollectionBounds)) {
-      child_view->DestroyLayer();
-      child_view->ClearProperty(kPreviousCollectionBounds);
-    }
-    if (child_view->GetProperty(kSourceLayoutInfo)) {
-      child_view->ClearProperty(kSourceLayoutInfo);
-    }
+    ClearViewAnimationMetadataForView(child_view);
   }
+}
+
+void TabCollectionAnimatingLayoutManager::ClearViewAnimationMetadataForView(
+    views::View* view) {
+  if (view->GetProperty(kPreviousCollectionBounds)) {
+    view->DestroyLayer();
+    view->ClearProperty(kPreviousCollectionBounds);
+  }
+  view->ClearProperty(kSourceLayoutInfo);
 }
