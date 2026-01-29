@@ -2024,6 +2024,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                                                           std::move(receiver));
   }
 
+  void NotifyContextualSkillPreviewsChanged(
+      std::vector<mojom::SkillPreviewPtr> contextual_skill_previews) override {
+    web_client_->NotifyContextualSkillPreviewsChanged(
+        std::move(contextual_skill_previews));
+  }
+
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)

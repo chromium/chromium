@@ -192,6 +192,15 @@ export class WebClientImpl implements WebClientInterface {
         });
   }
 
+  notifyContextualSkillPreviewsChanged(skillPreviews: SkillPreviewMojo[]):
+      void {
+    this.sender.sendLatestWhenActive(
+        'glicWebClientNotifyContextualSkillPreviewsChanged', {
+          contextualSkillPreviews: skillPreviews.map(
+              s => ({...s, source: s.source as number as SkillSource})),
+        });
+  }
+
   notifySkillPreviewChanged(skillPreview: SkillPreviewMojo): void {
     this.sender.sendLatestWhenActive(
         'glicWebClientNotifySkillPreviewChanged', {

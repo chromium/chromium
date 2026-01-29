@@ -728,6 +728,11 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
       skillPreview: SkillPreview,
     },
   },
+  glicWebClientNotifyContextualSkillPreviewsChanged: {
+    request: {
+      contextualSkillPreviews: SkillPreview[],
+    },
+  },
   glicWebClientNotifySkillToInvokeChanged: {
     request: {
       skill: Skill,

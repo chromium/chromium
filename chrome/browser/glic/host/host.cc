@@ -218,6 +218,14 @@ void Host::NotifySkillToInvokeChanged(mojom::SkillPtr skill) {
   }
 }
 
+void Host::NotifyContextualSkillsChanged(
+    std::vector<mojom::SkillPreviewPtr> contextual_skill_previews) {
+  if (auto* client = GetPrimaryWebClient()) {
+    client->NotifyContextualSkillPreviewsChanged(
+        std::move(contextual_skill_previews));
+  }
+}
+
 void Host::Close() {
   delegate_->ClosePanel();
 }

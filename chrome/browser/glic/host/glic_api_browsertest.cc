@@ -75,8 +75,8 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -3825,6 +3825,33 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testShowManageSkillsUi) {
            base::StartsWith(tab->GetContents()->GetLastCommittedURL().spec(),
                             chrome::kChromeUISkillsURL);
   }));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills,
+                       testSendingContextualSkillsToGlic) {
+  SkillsService()->AddSkill(/*name=*/"user_skill_1", /*icon=*/"user_icon_1",
+                            /*prompt=*/"test_prompt_1");
+  SkillsService()->AddSkill(/*name=*/"user_skill_2", /*icon=*/"user_icon_2",
+                            /*prompt=*/"user_prompt_2");
+
+  ExecuteJsTest();
+
+  std::vector<mojom::SkillPreviewPtr> skills_batch_1;
+  skills_batch_1.push_back(mojom::SkillPreview::New(
+      "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
+      mojom::SkillSource::kFirstParty));
+  skills_batch_1.push_back(mojom::SkillPreview::New(
+      "contextual_skill_id_2", "contextual_skill_2", "contextual_skill_icon_2",
+      mojom::SkillSource::kFirstParty));
+  GetHost()->NotifyContextualSkillsChanged(std::move(skills_batch_1));
+  ContinueJsTest();
+
+  std::vector<mojom::SkillPreviewPtr> skills_batch_2;
+  skills_batch_2.push_back(mojom::SkillPreview::New(
+      "contextual_skill_id_3", "contextual_skill_3", "contextual_skill_icon_3",
+      mojom::SkillSource::kFirstParty));
+  GetHost()->NotifyContextualSkillsChanged(std::move(skills_batch_2));
+  ContinueJsTest();
 }
 
 INSTANTIATE_TEST_SUITE_P(

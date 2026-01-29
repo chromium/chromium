@@ -1451,6 +1451,9 @@ interface WebClient {
   // Notify that a skill preview has changed.
   NotifySkillPreviewChanged(SkillPreview skill_preview);
 
+  // Notify that the contextual skills previews have changed.
+  NotifyContextualSkillPreviewsChanged(array<SkillPreview> skill_previews);
+
   // Notify that the skills previews have changed.
   NotifySkillPreviewsChanged(array<SkillPreview> skill_previews);
 

@@ -2745,6 +2745,43 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     assertDefined(this.host.showManageSkillsUi);
     this.host.showManageSkillsUi();
   }
+
+  async testSendingContextualSkillsToGlic() {
+    assertDefined(this.host.getSkillPreviews);
+    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
+    let skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
+    const user_skill_1 = skills.find(s => s.name === 'user_skill_1');
+    assertDefined(user_skill_1);
+    const user_skill_2 = skills.find(s => s.name === 'user_skill_2');
+    assertDefined(user_skill_2);
+    await this.advanceToNextStep();
+
+    // Verify that the skills cache is updated with both the user owned skills
+    // and the contextual skills.
+    skills = await skillPreviewsSequence.waitFor(s => s.length === 4);
+    const contextual_skill_1 =
+        skills.find(s => s.id === 'contextual_skill_id_1');
+    assertDefined(contextual_skill_1);
+    assertEquals('contextual_skill_1', contextual_skill_1.name);
+    const contextual_skill_2 =
+        skills.find(s => s.id === 'contextual_skill_id_2');
+    assertDefined(contextual_skill_2);
+    assertEquals('contextual_skill_2', contextual_skill_2.name);
+    assertDefined(skills.find(s => s.name === 'user_skill_1'));
+    assertDefined(skills.find(s => s.name === 'user_skill_2'));
+    await this.advanceToNextStep();
+
+    // Verify that after a contextual skills update, the skills cache is updated
+    // with the new list of contextual skills and the user owned skills are
+    // still present.
+    skills = await skillPreviewsSequence.waitFor(s => s.length === 3);
+    const contextual_skill_3 =
+        skills.find(s => s.id === 'contextual_skill_id_3');
+    assertDefined(contextual_skill_3);
+    assertEquals('contextual_skill_3', contextual_skill_3.name);
+    assertDefined(skills.find(s => s.name === 'user_skill_1'));
+    assertDefined(skills.find(s => s.name === 'user_skill_2'));
+  }
 }
 
 type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|
