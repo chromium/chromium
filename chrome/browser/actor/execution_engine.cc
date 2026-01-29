@@ -23,6 +23,7 @@
 #include "base/notimplemented.h"
 #include "base/state_transitions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
@@ -245,7 +246,7 @@ ExecutionEngine::ShouldDeferNavigation(
   CHECK(!navigation_handle.HasCommitted());
 
   base::ScopedUmaHistogramTimer timer(
-      "Actor.NavigationGating.TimeElapsedForGating");
+      "Actor.NavigationGating.TimeElapsedForGating2");
 
   const GatingDecision decision = DetermineGatingDecision(
       /*source_url=*/GetPrimaryMainFrame(navigation_handle)
@@ -272,7 +273,7 @@ ExecutionEngine::ShouldDeferNavigation(
           base::BindOnce(&ExecutionEngine::CheckNavigationSensitiveUrlList,
                          GetWeakPtr(), navigation_handle.GetInitiatorOrigin(),
                          navigation_handle.GetURL(), skip_prompt,
-                         std::move(callback)));
+                         std::move(timer), std::move(callback)));
       return content::NavigationThrottle::DEFER;
     }
   }
@@ -350,33 +351,34 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
     base::optional_ref<const url::Origin> initiator_origin,
     const GURL& navigation_url,
     bool skip_prompt,
+    base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback) {
   // Check previously confirmed origins on the sensitive list. If the user
   // has previously confirmed the origin is allowed, we should proceed and not
   // double prompt.
   if (origin_checker_.IsSensitiveUrlConfirmed(navigation_url)) {
     OnNavigationSensitiveUrlListChecked(initiator_origin, navigation_url,
-                                        skip_prompt, std::move(callback),
+                                        skip_prompt, std::move(timer),
+                                        std::move(callback),
                                         /*not_sensitive=*/true);
     return;
   }
-  auto [callback1, callback2] = base::SplitOnceCallback(std::move(callback));
-  if (MaybeCheckOptimizationGuideForSensitiveUrl(
+  base::expected<void, DecisionCallback> sensitive_check_result =
+      MaybeCheckOptimizationGuideForSensitiveUrl(
           navigation_url, profile_,
           base::BindOnce(&ExecutionEngine::OnNavigationSensitiveUrlListChecked,
                          GetWeakPtr(), initiator_origin, navigation_url,
-                         skip_prompt, std::move(callback1)))) {
-    return;
+                         skip_prompt, std::move(timer), std::move(callback)));
+  if (!sensitive_check_result.has_value()) {
+    std::move(sensitive_check_result).error().Run(/*not_sensitive=*/true);
   }
-  OnNavigationSensitiveUrlListChecked(initiator_origin, navigation_url,
-                                      skip_prompt, std::move(callback2),
-                                      /*not_sensitive=*/true);
 }
 
 void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
     base::optional_ref<const url::Origin> initiator_origin,
     const GURL navigation_url,
     bool skip_prompt,
+    base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback,
     bool not_sensitive) {
   // If not sensitive, check if it's an origin the actor has previously
@@ -402,7 +404,7 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
   // prompt the user depending on the feature state.
   if (not_sensitive) {
     HandleNavigationToNewOrigin(url::Origin::Create(navigation_url),
-                                std::move(callback));
+                                std::move(timer), std::move(callback));
     return;
   }
 
@@ -415,11 +417,12 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
   // Otherwise, present a user confirmation dialog to continue.
   SendUserConfirmationDialogRequest(url::Origin::Create(navigation_url),
                                     /*for_sensitive_origin=*/true,
-                                    std::move(callback));
+                                    std::move(timer), std::move(callback));
 }
 
 void ExecutionEngine::HandleNavigationToNewOrigin(
     const url::Origin& navigation_origin,
+    base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!kGlicConfirmNavigationToNewOrigins.Get()) {
     std::move(callback).Run(/*may_continue=*/true);
@@ -428,14 +431,16 @@ void ExecutionEngine::HandleNavigationToNewOrigin(
   if (kGlicPromptUserForNavigationToNewOrigins.Get()) {
     SendUserConfirmationDialogRequest(navigation_origin,
                                       /*for_sensitive_origin=*/false,
-                                      std::move(callback));
+                                      std::move(timer), std::move(callback));
     return;
   }
-  SendNavigationConfirmationRequest(navigation_origin, std::move(callback));
+  SendNavigationConfirmationRequest(navigation_origin, std::move(timer),
+                                    std::move(callback));
 }
 
 void ExecutionEngine::SendNavigationConfirmationRequest(
     const url::Origin& navigation_origin,
+    base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!task_->delegate()) {
     std::move(callback).Run(/*may_continue=*/false);
@@ -444,11 +449,13 @@ void ExecutionEngine::SendNavigationConfirmationRequest(
   task_->delegate()->RequestToConfirmNavigation(
       task_->id(), navigation_origin,
       base::BindOnce(&ExecutionEngine::OnNavigationConfirmationDecision,
-                     GetWeakPtr(), navigation_origin, std::move(callback)));
+                     GetWeakPtr(), navigation_origin, std::move(timer),
+                     std::move(callback)));
 }
 
 void ExecutionEngine::OnNavigationConfirmationDecision(
-    url::Origin navigation_origin,
+    const url::Origin& navigation_origin,
+    base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback,
     webui::mojom::NavigationConfirmationResponsePtr response) {
   if (response->result->is_permission_granted()) {
@@ -471,6 +478,7 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
 void ExecutionEngine::SendUserConfirmationDialogRequest(
     const url::Origin& navigation_origin,
     bool for_sensitive_origin,
+    std::optional<base::ScopedUmaHistogramTimer> timer,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!task_->delegate()) {
     std::move(callback).Run(/*may_continue=*/false);
@@ -712,6 +720,7 @@ void ExecutionEngine::OnMayActOnTabDecision(
         SendUserConfirmationDialogRequest(
             evaluated_origin,
             /*for_sensitive_origin=*/true,
+            /*timer=*/std::nullopt,
             base::BindOnce(&ExecutionEngine::DidFinishAsyncSafetyChecks,
                            GetWeakPtr(), evaluated_origin));
         return;

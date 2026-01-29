@@ -43,6 +43,10 @@ namespace affiliations {
 struct Facet;
 }  // namespace affiliations
 
+namespace base {
+class ScopedUmaHistogramTimer;
+}
+
 namespace content {
 class NavigationHandle;
 }
@@ -288,11 +292,13 @@ class ExecutionEngine : public ToolDelegate {
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL& navigation_url,
       bool skip_prompt,
+      base::ScopedUmaHistogramTimer timer,
       NavigationDecisionCallback callback);
   void OnNavigationSensitiveUrlListChecked(
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL navigation_url,
       bool skip_prompt,
+      base::ScopedUmaHistogramTimer timer,
       NavigationDecisionCallback callback,
       bool not_sensitive);
 
@@ -300,12 +306,15 @@ class ExecutionEngine : public ToolDelegate {
   // client-side-initiated navigation to a novel origin.
   void HandleNavigationToNewOrigin(
       const url::Origin& navigation_origin,
+      base::ScopedUmaHistogramTimer timer,
       ExecutionEngine::NavigationDecisionCallback callback);
 
   void SendNavigationConfirmationRequest(const url::Origin& navigation_origin,
+                                         base::ScopedUmaHistogramTimer timer,
                                          NavigationDecisionCallback callback);
   void OnNavigationConfirmationDecision(
-      url::Origin navigation_origin,
+      const url::Origin& navigation_origin,
+      base::ScopedUmaHistogramTimer timer,
       NavigationDecisionCallback callback,
       webui::mojom::NavigationConfirmationResponsePtr response);
 
@@ -314,9 +323,11 @@ class ExecutionEngine : public ToolDelegate {
   // actor is allowed to navigate to this origin.
   // This may also be called when the browser detects the actor navigating to
   // a novel origin when `kGlicPromptUserForNavigationToNewOrigins` is enabled.
-  void SendUserConfirmationDialogRequest(const url::Origin& navigation_origin,
-                                         bool for_sensitive_origin,
-                                         NavigationDecisionCallback callback);
+  void SendUserConfirmationDialogRequest(
+      const url::Origin& navigation_origin,
+      bool for_sensitive_origin,
+      std::optional<base::ScopedUmaHistogramTimer> timer,
+      NavigationDecisionCallback callback);
   void OnPromptUserToConfirmNavigationDecision(
       url::Origin navigation_origin,
       bool for_sensitive_origin,

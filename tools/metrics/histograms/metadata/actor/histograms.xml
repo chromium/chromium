@@ -272,14 +272,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.NavigationGating.TimeElapsedForGating" units="ms"
+<histogram name="Actor.NavigationGating.TimeElapsedForGating2" units="ms"
     expires_after="2026-05-31">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>
     Records how long origin gating processing is taking when it decides if an
-    actor can navigate to a new origin. Recorded when the actor navigates the
-    main frame.
+    actor can navigate to a new origin. Includes time for synchronous and
+    asynchronous checks, but does not include time for user prompts. Recorded
+    when the actor navigates the main frame.
   </summary>
 </histogram>
 

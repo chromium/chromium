@@ -292,13 +292,19 @@ class BASE_EXPORT ScopedUmaHistogramTimer {
 
   ScopedUmaHistogramTimer(const ScopedUmaHistogramTimer&) = delete;
   ScopedUmaHistogramTimer& operator=(const ScopedUmaHistogramTimer&) = delete;
+  ScopedUmaHistogramTimer(ScopedUmaHistogramTimer&&);
+  // Move-assignment is deleted because it's not clear whether the author would
+  // intend to record the assigned-into object's sample at the time of the
+  // assignment, or to ignore the sample entirely. Both options seem likely to
+  // be footguns.
+  ScopedUmaHistogramTimer& operator=(ScopedUmaHistogramTimer&&) = delete;
 
   ~ScopedUmaHistogramTimer();
 
  private:
   const base::TimeTicks constructed_;
   const ScopedHistogramTiming timing_;
-  const std::string name_;
+  std::string name_;
 };
 
 }  // namespace base

@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
@@ -197,8 +198,10 @@ TEST_F(ActorSitePolicyTest, BlockIfInBlocklist) {
 
 TEST_F(ActorSitePolicyTest, AllowIfNotBlockedForOriginGating) {
   base::test::TestFuture<bool> got_may_act;
-  EXPECT_TRUE(MaybeCheckOptimizationGuideForSensitiveUrl(
-      GURL("https://c.test/"), profile(), got_may_act.GetCallback()));
+  EXPECT_THAT(
+      MaybeCheckOptimizationGuideForSensitiveUrl(
+          GURL("https://c.test/"), profile(), got_may_act.GetCallback()),
+      base::test::HasValue());
   EXPECT_TRUE(got_may_act.Get());
 }
 
@@ -207,8 +210,9 @@ TEST_F(ActorSitePolicyTest, BlockIfInBlocklistForOriginGating) {
   SetExpectedOptimizationGuideCall(
       url, optimization_guide::OptimizationGuideDecision::kFalse);
   base::test::TestFuture<bool> got_may_act;
-  EXPECT_TRUE(MaybeCheckOptimizationGuideForSensitiveUrl(
-      url, profile(), got_may_act.GetCallback()));
+  EXPECT_THAT(MaybeCheckOptimizationGuideForSensitiveUrl(
+                  url, profile(), got_may_act.GetCallback()),
+              base::test::HasValue());
   EXPECT_FALSE(got_may_act.Get());
 }
 

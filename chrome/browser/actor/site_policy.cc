@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -353,9 +354,10 @@ void MayActOnUrl(const GURL& url,
                       enterprise_policy_eval_url, std::move(decision_wrapper));
 }
 
-bool MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
-                                                Profile* profile,
-                                                DecisionCallback callback) {
+base::expected<void, DecisionCallback>
+MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
+                                           Profile* profile,
+                                           DecisionCallback callback) {
   // Check that the optimization guide component has loaded. It could be
   // missing, for example, if the user has very recently installed chrome and
   // the component updater has not yet run. We don't want to reject every URL,
@@ -365,13 +367,13 @@ bool MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
            GetInstance()
                ->hints_component_info()
                .has_value()) {
-    return false;
+    return base::unexpected(std::move(callback));
   }
 
   auto* optimization_guide_decider =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   if (!optimization_guide_decider) {
-    return false;
+    return base::unexpected(std::move(callback));
   }
 
   optimization_guide_decider->CanApplyOptimization(
@@ -380,7 +382,7 @@ bool MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
                         const optimization_guide::OptimizationMetadata&) {
         return ShouldContinueFromOptimizationGuideDecision(decision);
       }).Then(std::move(callback)));
-  return true;
+  return base::ok();
 }
 
 }  // namespace actor

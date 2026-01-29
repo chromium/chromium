@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
+#include "base/types/expected.h"
 #include "chrome/common/actor/task_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
@@ -96,12 +97,14 @@ void MayActOnUrl(const GURL& url,
 // invoked with `false`, the actor should block navigation or ask the user to
 // confirm.
 //
-// Returns true if this function will eventually invoke `callback`, false
-// otherwise (maybe because the feature was disabled, or OptimizationGuide is
-// not available for some other reason).
-bool MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
-                                                Profile* profile,
-                                                DecisionCallback callback);
+// Returns `base::ok()` if this function will eventually invoke `callback`;
+// otherwise returns `base::unexpected(callback)` and the caller is responsible
+// for invoking `callback` themselves (maybe because the feature was disabled,
+// or OptimizationGuide is not available for some other reason).
+base::expected<void, DecisionCallback>
+MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
+                                           Profile* profile,
+                                           DecisionCallback callback);
 
 }  // namespace actor
 

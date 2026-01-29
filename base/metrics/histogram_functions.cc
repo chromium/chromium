@@ -439,9 +439,21 @@ void UmaHistogramSparse(const char* name, int sample) {
 
 ScopedUmaHistogramTimer::ScopedUmaHistogramTimer(std::string_view name,
                                                  ScopedHistogramTiming timing)
-    : constructed_(base::TimeTicks::Now()), timing_(timing), name_(name) {}
+    : constructed_(base::TimeTicks::Now()), timing_(timing), name_(name) {
+  DCHECK(!name_.empty());
+}
+
+ScopedUmaHistogramTimer::ScopedUmaHistogramTimer(
+    ScopedUmaHistogramTimer&& other)
+    : constructed_(other.constructed_),
+      timing_(other.timing_),
+      name_(std::exchange(other.name_, "")) {}
 
 ScopedUmaHistogramTimer::~ScopedUmaHistogramTimer() {
+  if (name_.empty()) {
+    // This object has been moved-from, so we shouldn't record the histogram.
+    return;
+  }
   base::TimeDelta elapsed = base::TimeTicks::Now() - constructed_;
   switch (timing_) {
     case ScopedHistogramTiming::kMicrosecondTimes:
