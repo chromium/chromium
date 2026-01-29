@@ -473,6 +473,10 @@ class CONTENT_EXPORT DatabaseConnection {
   // directly to the DB.
   std::optional<std::set<int64_t>> legacy_blob_files_;
 
+  // Only used during migration. This holds the paths to legacy blob files that
+  // must be moved IFF the database portion of the migration succeeds.
+  std::map<int64_t, base::FilePath> legacy_blob_files_to_move_;
+
   // True once `DeleteIdbDatabase` has been called, or if a fatal error occurred
   // that we can't recover from.
   bool marked_for_permanent_deletion_ = false;

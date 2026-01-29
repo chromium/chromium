@@ -167,19 +167,7 @@ TEST_P(BackingStoreTest, Snapshots) {
   StatusOr<base::DictValue> empty_snapshot = SnapshotDatabase(db);
   ASSERT_TRUE(empty_snapshot.has_value());
 
-  {
-    std::unique_ptr<BackingStore::Transaction> transaction =
-        CreateAndBeginTransaction(
-            db, blink::mojom::IDBTransactionMode::VersionChange);
-
-    EXPECT_TRUE(transaction
-                    ->CreateObjectStore(1, u"object_store_name",
-                                        IndexedDBKeyPath(u"object_store_key"),
-                                        /*auto_increment=*/true)
-                    .ok());
-    EXPECT_TRUE(transaction->SetDatabaseVersion(2).ok());
-    CommitTransactionAndVerify(*transaction);
-  }
+  CreateObjectStore(db);
 
   int total_record_count = 0;
   auto add_records = [&](size_t num_records) {
@@ -192,7 +180,8 @@ TEST_P(BackingStoreTest, Snapshots) {
     for (size_t i = 0; i < num_records; ++i) {
       IndexedDBKey key(i + total_record_count,
                        blink::mojom::IDBKeyType::Number);
-      EXPECT_TRUE(transaction->PutRecord(1, key, value1_.Clone()).has_value());
+      EXPECT_TRUE(transaction->PutRecord(kObjectStoreId1, key, value1_.Clone())
+                      .has_value());
     }
     total_record_count += num_records;
     CommitTransactionAndVerify(*transaction);
@@ -217,7 +206,8 @@ TEST_P(BackingStoreTest, Snapshots) {
     transaction->Begin(CreateDummyLock());
 
     IndexedDBKey key(15, blink::mojom::IDBKeyType::Number);
-    EXPECT_TRUE(transaction->PutRecord(1, key, value2_.Clone()).has_value());
+    EXPECT_TRUE(transaction->PutRecord(kObjectStoreId1, key, value2_.Clone())
+                    .has_value());
     CommitTransactionAndVerify(*transaction);
   };
 
@@ -235,7 +225,8 @@ TEST_P(BackingStoreTest, Snapshots) {
     transaction->Begin(CreateDummyLock());
 
     IndexedDBKey key(15, blink::mojom::IDBKeyType::Number);
-    EXPECT_TRUE(transaction->PutRecord(1, key, value1_.Clone()).has_value());
+    EXPECT_TRUE(transaction->PutRecord(kObjectStoreId1, key, value1_.Clone())
+                    .has_value());
     CommitTransactionAndVerify(*transaction);
   };
   StatusOr<base::DictValue> snapshot4 = SnapshotDatabase(db);
@@ -258,8 +249,6 @@ TEST_P(BackingStoreTest, Snapshots) {
   // we were to encode it as a string (e.g. with base64), this check would pass.
   EXPECT_EQ(snapshot6->DebugString().size(), snapshot5->DebugString().size());
 
-  VerifyClone(db);
-
   // Delete all records and verify the snapshot works, and is distinct from the
   // one for a database that lacks object stores/indices.
   {
@@ -269,7 +258,9 @@ TEST_P(BackingStoreTest, Snapshots) {
 
     transaction->Begin(CreateDummyLock());
 
-    EXPECT_TRUE(transaction->DeleteRange(1, blink::IndexedDBKeyRange()).ok());
+    EXPECT_TRUE(
+        transaction->DeleteRange(kObjectStoreId1, blink::IndexedDBKeyRange())
+            .ok());
     CommitTransactionAndVerify(*transaction);
   };
   StatusOr<base::DictValue> no_record_snapshot = SnapshotDatabase(db);
@@ -532,7 +523,6 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
     auto transaction2 =
         db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
                              blink::mojom::IDBTransactionMode::ReadWrite);
-    // auto& transaction2 = *txn2;
     transaction2->Begin(CreateDummyLock());
     auto result = transaction2->GetRecord(1, key3_);
     EXPECT_TRUE(result.has_value());
@@ -845,6 +835,42 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
       EXPECT_TRUE(result_value.empty());
     }
   }
+}
+
+class BackingStoreMigrationTest
+    : public BackingStoreWithExternalObjectsTestBase {
+ public:
+  BackingStoreMigrationTest()
+      : BackingStoreWithExternalObjectsTestBase(
+            /*use_sqlite=*/false) {}
+  ~BackingStoreMigrationTest() override = default;
+
+  bool IncludesBlobs() override { return true; }
+  bool IncludesFileSystemAccessHandles() override { return true; }
+};
+
+TEST_F(BackingStoreMigrationTest, Migrate) {
+  blob_context_->SetWriteFilesToDisk(true);
+  ASSERT_OK_AND_ASSIGN(auto db,
+                       backing_store()->CreateOrOpenDatabase(u"test_db"));
+  CreateObjectStore(*db);
+
+  {
+    auto transaction =
+        db->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                              blink::mojom::IDBTransactionMode::ReadWrite);
+    transaction->Begin(CreateDummyLock());
+    EXPECT_TRUE(transaction->PutRecord(kObjectStoreId1, key1_, value1_.Clone())
+                    .has_value());
+    EXPECT_TRUE(transaction->PutRecord(kObjectStoreId1, key2_, value2_.Clone())
+                    .has_value());
+    EXPECT_TRUE(transaction->PutRecord(kObjectStoreId1, key3_, value3_.Clone())
+                    .has_value());
+    CommitTransactionAndVerify(*transaction);
+  }
+  db.reset();
+
+  MigrateAndVerifyBackingStore();
 }
 
 }  // namespace content::indexed_db

@@ -145,7 +145,6 @@ void IndexedDBExternalObject::set_serialized_file_system_access_handle(
 }
 
 void IndexedDBExternalObject::set_blob_number(int64_t blob_number) {
-  DCHECK_EQ(DatabaseMetaDataKey::kInvalidBlobNumber, blob_number_);
   blob_number_ = blob_number;
 }
 

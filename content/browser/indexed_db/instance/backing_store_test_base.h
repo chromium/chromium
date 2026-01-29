@@ -58,10 +58,12 @@ class BackingStoreTestBase : public testing::Test {
 
   std::vector<PartitionedLock> CreateDummyLock();
 
+  void CreateObjectStore(BackingStore::Database& db);
+
   void DestroyFactoryAndBackingStore();
 
-  // Clones the give database and attempts to verify the cloning worked.
-  void VerifyClone(BackingStore::Database& db);
+  // Migrates the entire backing store and attempts to verify cloning worked.
+  void MigrateAndVerifyBackingStore();
 
   BackingStore* backing_store();
 
@@ -78,6 +80,8 @@ class BackingStoreTestBase : public testing::Test {
   static IndexedDBExternalObject CreateFileSystemAccessHandle();
 
  protected:
+  static const int64_t kObjectStoreId1 = 1;
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

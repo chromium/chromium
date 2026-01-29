@@ -7,6 +7,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
@@ -330,8 +331,10 @@ StatusOr<base::DictValue> SnapshotDatabase(BackingStore::Database& db) {
   return result;
 }
 
-void CloneDatabase(BackingStore::Database& source,
-                   BackingStore::Database& target) {
+namespace {
+
+Status MigrateDatabase(BackingStore::Database& source,
+                       BackingStore::Database& target) {
   const blink::IndexedDBDatabaseMetadata& metadata = source.GetMetadata();
 
   // All the writes into `target` occur in a single VersionChange transaction.
@@ -389,12 +392,10 @@ void CloneDatabase(BackingStore::Database& source,
       blink::IndexedDBKey key = cursor->GetKey().Clone();
       IndexedDBValue value = std::move(cursor->GetValue());
 
-      // TODO(crbug.com/419264073): handle Blobs.
-      CHECK(value.external_objects.empty());
-
       // Put the record into `target`.
-      BackingStore::RecordIdentifier record_result =
-          target_txn->PutRecord(object_store.id, key, std::move(value)).value();
+      ASSIGN_OR_RETURN(
+          BackingStore::RecordIdentifier record_result,
+          target_txn->PutRecord(object_store.id, key, std::move(value)));
 
       // Store the record identifier in the map.
       primary_key_to_record_id.emplace(std::move(key),
@@ -438,12 +439,26 @@ void CloneDatabase(BackingStore::Database& source,
     }
   }
 
-  // Commit the target transaction. There should be no blobs yet so no need for
-  // async commit.
-  bool async_work =
-      target_txn->CommitPhaseOne({}, base::NullCallback()).value();
-  CHECK(!async_work);
-  CHECK(target_txn->CommitPhaseTwo().ok());
+  // Commit the target transaction. We can skip phase one because there are no
+  // async blob writing operations.
+  return target_txn->CommitPhaseTwo();
+}
+
+}  // namespace
+
+void MigrateBackingStore(BackingStore& source, BackingStore& target) {
+  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions =
+      source.GetDatabaseNamesAndVersions().value();
+
+  for (const auto& name_and_version : names_and_versions) {
+    std::unique_ptr<BackingStore::Database> source_db =
+        source.CreateOrOpenDatabase(name_and_version->name).value();
+    std::unique_ptr<BackingStore::Database> target_db =
+        target.CreateOrOpenDatabase(name_and_version->name).value();
+
+    Status status = MigrateDatabase(*source_db, *target_db);
+    CHECK(status.ok()) << status.ToString();
+  }
 }
 
 }  // namespace content::indexed_db
