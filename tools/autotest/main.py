@@ -630,11 +630,16 @@ class TargetCache:
     self.path: str = os.path.join(out_dir, 'autotest_cache')
     self.gold_mtime: float = self.GetBuildNinjaMtime()
     self.cache: dict[str, list[str]] = {}
+
+    if not os.path.exists(self.path):
+      return
+
     try:
-      mtime, cache = json.load(open(self.path, 'r'))
+      with open(self.path, 'r') as f:
+        mtime, cache = json.load(f)
       if mtime == self.gold_mtime:
         self.cache = cache
-    except Exception:
+    except (json.JSONDecodeError, ValueError, OSError):
       pass
 
   def Save(self) -> None:
