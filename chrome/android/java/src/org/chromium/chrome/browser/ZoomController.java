@@ -34,10 +34,10 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomIn(@Nullable WebContents webContents) {
-        if (!AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
-            return pinchByDelta(webContents, ZoomConstants.ZOOM_IN_DELTA);
+        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
+            return zoomInPage(webContents);
         }
-        return changeZoomLevel(webContents, /* zoomIn= */ false);
+        return zoomInVisual(webContents);
     }
 
     /**
@@ -48,10 +48,50 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomOut(@Nullable WebContents webContents) {
-        if (!AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
-            return pinchByDelta(webContents, ZoomConstants.ZOOM_OUT_DELTA);
+        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
+            return zoomOutPage(webContents);
         }
-        return changeZoomLevel(webContents, /* zoomIn= */ true);
+        return zoomOutVisual(webContents);
+    }
+
+    /**
+     * Zooms in the WebContents using Page Zoom (layout reflow).
+     *
+     * @param webContents {@link WebContents} to zoom in.
+     * @return True if there was a zoom change, false otherwise.
+     */
+    public static boolean zoomInPage(@Nullable WebContents webContents) {
+        return changePageZoomLevel(webContents, /* decrease= */ false);
+    }
+
+    /**
+     * Zooms out the WebContents using Page Zoom (layout reflow).
+     *
+     * @param webContents {@link WebContents} to zoom out.
+     * @return True if there was a zoom change, false otherwise.
+     */
+    public static boolean zoomOutPage(@Nullable WebContents webContents) {
+        return changePageZoomLevel(webContents, /* decrease= */ true);
+    }
+
+    /**
+     * Zooms in the WebContents using Visual Zoom (pinch-to-zoom simulation).
+     *
+     * @param webContents {@link WebContents} to zoom in.
+     * @return True if there was a zoom change, false otherwise.
+     */
+    public static boolean zoomInVisual(@Nullable WebContents webContents) {
+        return pinchByDelta(webContents, ZoomConstants.ZOOM_IN_DELTA);
+    }
+
+    /**
+     * Zooms out the WebContents using Visual Zoom (pinch-to-zoom simulation).
+     *
+     * @param webContents {@link WebContents} to zoom out.
+     * @return True if there was a zoom change, false otherwise.
+     */
+    public static boolean zoomOutVisual(@Nullable WebContents webContents) {
+        return pinchByDelta(webContents, ZoomConstants.ZOOM_OUT_DELTA);
     }
 
     /**
@@ -63,13 +103,13 @@ public class ZoomController {
     public static boolean zoomReset(
             @Nullable WebContents webContents,
             @Nullable BrowserContextHandle browserContextHandle) {
-        if (!AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
-            return pinchByDelta(webContents, ZoomConstants.ZOOM_RESET_DELTA);
+        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
+            if (webContents == null || browserContextHandle == null) return false;
+            double defaultZoomFactor = HostZoomMap.getDefaultZoomLevel(browserContextHandle);
+            HostZoomMap.setZoomLevel(webContents, defaultZoomFactor);
+            return true;
         }
-        if (webContents == null || browserContextHandle == null) return false;
-        double defaultZoomFactor = HostZoomMap.getDefaultZoomLevel(browserContextHandle);
-        HostZoomMap.setZoomLevel(webContents, defaultZoomFactor);
-        return true;
+        return pinchByDelta(webContents, ZoomConstants.ZOOM_RESET_DELTA);
     }
 
     private static boolean pinchByDelta(@Nullable WebContents webContents, float delta) {
@@ -82,10 +122,11 @@ public class ZoomController {
         return true;
     }
 
-    private static boolean changeZoomLevel(@Nullable WebContents webContents, boolean zoomIn) {
+    private static boolean changePageZoomLevel(
+            @Nullable WebContents webContents, boolean decrease) {
         if (webContents == null) return false;
         double currentZoomFactor = HostZoomMap.getZoomLevel(webContents);
-        int index = PageZoomUtils.getNextIndex(zoomIn, currentZoomFactor);
+        int index = PageZoomUtils.getNextIndex(decrease, currentZoomFactor);
 
         if (index >= 0) {
             snapToIndex(index, webContents);

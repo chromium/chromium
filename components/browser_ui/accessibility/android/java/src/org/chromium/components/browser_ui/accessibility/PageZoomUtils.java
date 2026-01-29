@@ -236,6 +236,20 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean shouldShowZoomMenuItem() {
+        return shouldShowZoomMenuItem(null);
+    }
+
+    /**
+     * Returns true if the Zoom AppMenu item should be shown, false otherwise.
+     *
+     * <p>If there is a current user choice set in Accessibility Settings, respect and return the
+     * user setting. Otherwise, return true if there is an OS level font size set or if the user has
+     * ever set a custom zoom level for any site.
+     *
+     * @param context BrowserContextHandle to check for custom zoom levels.
+     * @return boolean
+     */
+    public static boolean shouldShowZoomMenuItem(@Nullable BrowserContextHandle context) {
         if (sShouldShowMenuItemForTesting != null) return sShouldShowMenuItemForTesting;
         // Always respect the user's choice if the user has set this in Accessibility Settings.
         if (hasUserSetShouldAlwaysShowZoomMenuItemOption()) {
@@ -257,6 +271,18 @@ public class PageZoomUtils {
         if (!isUsingDefaultSystemFontScale) {
             PageZoomUma.logAppMenuEnabledStateHistogram(
                     PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED);
+            return true;
+        }
+
+        // If the user has ever set a custom zoom level, show the menu item.
+        // This is restricted to LFF (Tablets) as UX has not approved this for mobile/phones.
+        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                        ContextUtils.getApplicationContext())
+                && context != null
+                && !HostZoomMap.getAllHostZoomLevels(context).isEmpty()) {
+            PageZoomUma.logAppMenuEnabledStateHistogram(
+                    PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.USER_HAS_CUSTOM_ZOOM);
             return true;
         }
 
@@ -331,27 +357,15 @@ public class PageZoomUtils {
 
     /**
      * Get the index of the next closest zoom factor in the cached available values in the given
-     * direction from the current zoom factor.
-     * Current zoom factor must be within range of possible zoom factors.
-     * @param decrease boolean      True if the next index should be decreasing from the current,
-     *         false otherwise
-     * @param currentZoomFactor double      The current zoom factor for which to search
-     * @throws IllegalArgumentException if current zoom factor is <= the smallest cached zoom factor
-     *         or >= the largest cached zoom factor
-     * @return int      The index of the next closest zoom factor
+     * direction from the current zoom factor. Current zoom factor must be within range of possible
+     * zoom factors.
+     *
+     * @param decrease boolean True if the next index should be decreasing from the current, false
+     *     otherwise
+     * @param currentZoomFactor double The current zoom factor for which to search
+     * @return int The index of the next closest zoom factor
      */
     public static int getNextIndex(boolean decrease, double currentZoomFactor) {
-        // Assert valid current zoom factor
-        if (decrease && currentZoomFactor <= AVAILABLE_ZOOM_FACTORS[0]) {
-            throw new IllegalArgumentException(
-                    "currentZoomFactor should be greater than " + AVAILABLE_ZOOM_FACTORS[0]);
-        } else if (!decrease
-                && currentZoomFactor >= AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]) {
-            throw new IllegalArgumentException(
-                    "currentZoomFactor should be less than "
-                            + AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
-        }
-
         // BinarySearch will return the index of the first value equal to the given value.
         // Otherwise it will return (-(insertion point) - 1).
         // If a negative value is returned, then add one and negate to get the insertion point.
@@ -374,6 +388,10 @@ public class PageZoomUtils {
             // decreasing zoom, we will decrement once.
             if (decrease) --index;
         }
+
+        // Clamp values to the available zoom factors
+        if (index < 0) index = 0;
+        if (index >= AVAILABLE_ZOOM_FACTORS.length) index = AVAILABLE_ZOOM_FACTORS.length - 1;
 
         return index;
     }

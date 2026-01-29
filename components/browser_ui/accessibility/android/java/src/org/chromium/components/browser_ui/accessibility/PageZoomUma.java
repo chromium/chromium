@@ -34,6 +34,7 @@ public class PageZoomUma {
         AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED,
         AccessibilityPageZoomAppMenuEnabledState.USER_DISABLED,
         AccessibilityPageZoomAppMenuEnabledState.FORM_FACTOR_ENABLED,
+        AccessibilityPageZoomAppMenuEnabledState.USER_HAS_CUSTOM_ZOOM,
         AccessibilityPageZoomAppMenuEnabledState.MAX_VALUE
     })
     public @interface AccessibilityPageZoomAppMenuEnabledState {
@@ -42,9 +43,10 @@ public class PageZoomUma {
         int OS_ENABLED = 2;
         int USER_DISABLED = 3;
         int FORM_FACTOR_ENABLED = 4;
+        int USER_HAS_CUSTOM_ZOOM = 5;
 
         // Be sure to also update enums.xml when updating these values.
-        int MAX_VALUE = 5;
+        int MAX_VALUE = 6;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityPageZoomAppMenuEnabledState)

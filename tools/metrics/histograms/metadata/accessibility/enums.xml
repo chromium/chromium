@@ -173,6 +173,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OS Enabled"/>
   <int value="3" label="User Disabled"/>
   <int value="4" label="Form Factor Enabled"/>
+  <int value="5" label="User Has Custom Zoom"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomAppMenuEnabledState) -->
@@ -1762,6 +1763,8 @@ Unknown properties are collapsed to zero. -->
   <int value="61"
       label="Use a custom keyboard shortcut registered by an extension"/>
   <int value="62" label="Toggle multiselect"/>
+  <int value="63" label="Zoom in (Visual/Legacy)"/>
+  <int value="64" label="Zoom out (Visual/Legacy)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning) -->
