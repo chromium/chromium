@@ -29,7 +29,6 @@
 
 namespace {
 constexpr int kRegionVeritcalInteriorMargin = 8;
-constexpr int kRegionVerticalPadding = 5;
 
 void SetScrollViewProperties(views::ScrollView* scroll_view) {
   scroll_view->SetUseContentsPreferredSize(true);
@@ -82,15 +81,18 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
       is_collapsed_ ? LayoutConstant::kVerticalTabStripCollapsedPadding
                     : LayoutConstant::kVerticalTabStripUncollapsedPadding);
 
+  const int region_vertical_padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
+
   int y = 0;
 
   // Allocate the available space between the pinned and unpinned containers so
   // that the pinned container will never take more than half of the available
   // space.
-  int remaining_height = size_bounds.height().value() - kRegionVerticalPadding;
+  int remaining_height = size_bounds.height().value();
   if (tabs_separator_->GetVisible()) {
     remaining_height -=
-        tabs_separator_->GetPreferredSize().height() + kRegionVerticalPadding;
+        tabs_separator_->GetPreferredSize().height() + region_vertical_padding;
   }
 
   // Place the pinned container.
@@ -111,11 +113,15 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
                                      pinned_container_bounds);
 
   remaining_height -= pinned_container_bounds.height();
-  y += pinned_container_bounds.height() + kRegionVerticalPadding;
 
   // Place the tabs separator if visible.
   const bool has_pinned_tabs = pinned_tabs_container_view_ &&
                                !pinned_tabs_container_view_->children().empty();
+  if (has_pinned_tabs) {
+    y += pinned_container_bounds.height() + region_vertical_padding;
+    remaining_height -= region_vertical_padding;
+  }
+
   if (is_collapsed_ && has_pinned_tabs) {
     int separator_width =
         size_bounds.width().value() - 2 * region_horizontal_padding;
@@ -125,7 +131,7 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
     layouts.child_layouts.emplace_back(tabs_separator_.get(), true,
                                        tabs_separator_bounds);
 
-    y += tabs_separator_bounds.height() + kRegionVerticalPadding;
+    y += tabs_separator_bounds.height() + region_vertical_padding;
   } else {
     layouts.child_layouts.emplace_back(tabs_separator_.get(), false,
                                        gfx::Rect());

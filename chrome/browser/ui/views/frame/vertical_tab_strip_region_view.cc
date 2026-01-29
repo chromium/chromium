@@ -463,9 +463,13 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded));
-  tab_strip_view_->SetProperty(views::kMarginsKey,
-                               gfx::Insets::VH(kRegionVerticalPadding, 0));
+  tab_strip_view_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(
+          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding),
+          0));
   tab_strip_view_->InitializeTabStrip(*tab_strip_model_);
+
   std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
   CHECK(separator_index.has_value());
   ReorderChildView(tab_strip_view_, separator_index.value() + 1);
@@ -514,7 +518,9 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
 
   bottom_button_container_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(kRegionVerticalPadding, padding, 0, padding));
+      gfx::Insets::TLBR(
+          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding),
+          padding, 0, padding));
 
   flex_layout_->SetInteriorMargin(gfx::Insets::TLBR(
       0, 0,
