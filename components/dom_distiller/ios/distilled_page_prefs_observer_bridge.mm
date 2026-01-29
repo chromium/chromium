@@ -5,11 +5,8 @@
 #import "components/dom_distiller/ios/distilled_page_prefs_observer_bridge.h"
 
 DistilledPagePrefsObserverBridge::DistilledPagePrefsObserverBridge(
-    id<DistilledPagePrefsObserving> observer,
-    dom_distiller::DistilledPagePrefs* distilled_page_prefs)
-    : observer_(observer) {
-  observation_.Observe(distilled_page_prefs);
-}
+    id<DistilledPagePrefsObserving> observer)
+    : observer_(observer) {}
 
 DistilledPagePrefsObserverBridge::~DistilledPagePrefsObserverBridge() = default;
 

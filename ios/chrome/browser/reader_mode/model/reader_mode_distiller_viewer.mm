@@ -33,7 +33,7 @@ ReaderModeDistillerViewer::ReaderModeDistillerViewer(
   DCHECK(url.is_valid());
   DCHECK(!page->ShouldFetchOfflineData());
 
-  observation_.Observe(distilled_page_prefs_);
+  distilled_page_prefs_->AddObserver(this);
 
   SendCommonJavaScript();
   distiller_service->DistillPage(
@@ -45,7 +45,9 @@ ReaderModeDistillerViewer::ReaderModeDistillerViewer(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-ReaderModeDistillerViewer::~ReaderModeDistillerViewer() {}
+ReaderModeDistillerViewer::~ReaderModeDistillerViewer() {
+  distilled_page_prefs_->RemoveObserver(this);
+}
 
 void ReaderModeDistillerViewer::OnArticleDistillationUpdated(
     const dom_distiller::ArticleDistillationUpdate& article_update) {}

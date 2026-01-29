@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/scoped_observation.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 
 // Protocol that corresponds to the DistilledPagePrefs::Observer API.
@@ -24,9 +23,8 @@
 class DistilledPagePrefsObserverBridge
     : public dom_distiller::DistilledPagePrefs::Observer {
  public:
-  DistilledPagePrefsObserverBridge(
-      id<DistilledPagePrefsObserving> observer,
-      dom_distiller::DistilledPagePrefs* distilled_page_prefs);
+  explicit DistilledPagePrefsObserverBridge(
+      id<DistilledPagePrefsObserving> observer);
   ~DistilledPagePrefsObserverBridge() override;
 
   DistilledPagePrefsObserverBridge(const DistilledPagePrefsObserverBridge&) =
@@ -44,9 +42,6 @@ class DistilledPagePrefsObserverBridge
 
  private:
   __weak id<DistilledPagePrefsObserving> observer_ = nil;
-  base::ScopedObservation<dom_distiller::DistilledPagePrefs,
-                          dom_distiller::DistilledPagePrefs::Observer>
-      observation_{this};
 };
 
 #endif  // COMPONENTS_DOM_DISTILLER_IOS_DISTILLED_PAGE_PREFS_OBSERVER_BRIDGE_H_
