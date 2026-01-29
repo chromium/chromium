@@ -13,14 +13,12 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
 SessionRestorationWebStateObserver::~SessionRestorationWebStateObserver() {
-  if (web_state_->IsRealized()) {
-    web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
-    [web_state_->GetWebViewProxy().scrollViewProxy
-        removeObserver:scroll_observer_];
+  web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
+  [web_state_->GetWebViewProxy().scrollViewProxy
+      removeObserver:scroll_observer_];
 
-    [scroll_observer_ shutdown];
-    scroll_observer_ = nil;
-  }
+  [scroll_observer_ shutdown];
+  scroll_observer_ = nil;
 
   web_state_->RemoveObserver(this);
 }
@@ -44,21 +42,6 @@ void SessionRestorationWebStateObserver::DidFinishNavigation(
   }
 
   MarkDirty();
-}
-
-void SessionRestorationWebStateObserver::WebStateRealized(
-    web::WebState* web_state) {
-  DCHECK_EQ(web_state, web_state_);
-  // Using base::Unretained(this) is safe since the object calls -shutdown
-  // on the SessionRestorationScrollObserver in its destructor which
-  // invalidates the callback.
-  scroll_observer_ = [[SessionRestorationScrollObserver alloc]
-      initWithClosure:base::BindRepeating(
-                          &SessionRestorationWebStateObserver::OnScrollEvent,
-                          base::Unretained(this))];
-
-  [web_state_->GetWebViewProxy().scrollViewProxy addObserver:scroll_observer_];
-  web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
 }
 
 void SessionRestorationWebStateObserver::WebStateDestroyed(
@@ -96,10 +79,19 @@ SessionRestorationWebStateObserver::SessionRestorationWebStateObserver(
     web::WebState* web_state,
     WebStateDirtyCallback callback)
     : web_state_(web_state), callback_(callback) {
+  CHECK(web_state_->IsRealized());
   web_state_->AddObserver(this);
-  if (web_state_->IsRealized()) {
-    WebStateRealized(web_state_);
-  }
+
+  // Using base::Unretained(this) is safe since the object calls -shutdown
+  // on the SessionRestorationScrollObserver in its destructor which
+  // invalidates the callback.
+  scroll_observer_ = [[SessionRestorationScrollObserver alloc]
+      initWithClosure:base::BindRepeating(
+                          &SessionRestorationWebStateObserver::OnScrollEvent,
+                          base::Unretained(this))];
+
+  [web_state_->GetWebViewProxy().scrollViewProxy addObserver:scroll_observer_];
+  web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
 }
 
 void SessionRestorationWebStateObserver::OnScrollEvent() {

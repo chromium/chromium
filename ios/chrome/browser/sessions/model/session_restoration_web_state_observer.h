@@ -41,7 +41,6 @@ class SessionRestorationWebStateObserver final
   void WasShown(web::WebState* web_state) final;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) final;
-  void WebStateRealized(web::WebState* web_state) final;
   void WebStateDestroyed(web::WebState* web_state) final;
 
   // web::WebFramesManager::Observer implementation.
