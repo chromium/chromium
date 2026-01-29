@@ -583,6 +583,10 @@ struct EffectNode {
   // (and no other transform).
   bool needs_effect_for_2d_scale_transform;
 
+  // If true, the subtree rooted at this node only draws content that is visible
+  // in the target surface.
+  bool only_draws_visible_content;
+
   // The CopyOutputRequests that have been made for this node.
   array<CopyOutputRequest> copy_output_requests;
 };

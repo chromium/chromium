@@ -245,6 +245,7 @@ void ComputePropertyTreeNodeUpdate(
   wire->may_have_backdrop_effect = new_node.may_have_backdrop_effect;
   wire->needs_effect_for_2d_scale_transform =
       new_node.needs_effect_for_2d_scale_transform;
+  wire->only_draws_visible_content = new_node.only_draws_visible_content;
 
   container.push_back(std::move(wire));
 }

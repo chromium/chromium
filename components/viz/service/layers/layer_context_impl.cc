@@ -428,6 +428,7 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.may_have_backdrop_effect = wire.may_have_backdrop_effect;
   node.needs_effect_for_2d_scale_transform =
       wire.needs_effect_for_2d_scale_transform;
+  node.only_draws_visible_content = wire.only_draws_visible_content;
 
   return base::ok();
 }

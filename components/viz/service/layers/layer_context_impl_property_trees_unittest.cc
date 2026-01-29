@@ -1899,6 +1899,35 @@ INSTANTIATE_TEST_SUITE_P(
       return name.str();
     });
 
+TEST_P(LayerContextImplUpdateDisplayTreeEffectNodeWithBoolParamTest,
+       OnlyDrawsVisibleContent) {
+  const bool only_draws_visible_content = GetParam();
+  auto update = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootEffectNode();
+  node_update->only_draws_visible_content = only_draws_visible_content;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  cc::EffectNode* node_impl =
+      GetEffectNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->only_draws_visible_content, only_draws_visible_content);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    OnlyDrawsVisibleContent,
+    LayerContextImplUpdateDisplayTreeEffectNodeWithBoolParamTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreeEffectNodeWithBoolParamTest::
+            ParamType>& info) {
+      std::stringstream name;
+      name << (info.param ? "True" : "False");
+      return name.str();
+    });
+
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, BackdropFilterBounds) {
   auto update = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootEffectNode();
