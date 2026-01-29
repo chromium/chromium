@@ -7122,6 +7122,57 @@
             ]
         }
     ],
+    "CompositedAnimationsForceMainFrames": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "anchor-transform": "true",
+                        "intersection-observer": "true"
+                    },
+                    "enable_features": [
+                        "CompositedAnimationsForceMainFrames"
+                    ]
+                },
+                {
+                    "name": "IntersectionObserverOnly",
+                    "params": {
+                        "anchor-transform": "false",
+                        "intersection-observer": "true"
+                    },
+                    "enable_features": [
+                        "CompositedAnimationsForceMainFrames"
+                    ]
+                },
+                {
+                    "name": "AnchorTransformOnly",
+                    "params": {
+                        "anchor-transform": "true",
+                        "intersection-observer": "false"
+                    },
+                    "enable_features": [
+                        "CompositedAnimationsForceMainFrames"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CompositedAnimationsForceMainFrames"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompressionDictionaryPreload": [
         {
             "platforms": [

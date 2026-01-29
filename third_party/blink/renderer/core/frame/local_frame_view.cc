@@ -2322,9 +2322,18 @@ cc::PropertyChangeForcesCommitCriteria LocalFrameView::ForceCommitCriteria()
     const {
   cc::PropertyChangeForcesCommitCriteria criteria =
       cc::PropertyChangeForcesCommitCriteria::kNone;
-  if (HasActiveIntersectionObservations() ||
-      HasRunningAnchorTransformAnimation()) {
-    criteria = NeedsOcclusionTracking() && HasActiveIntersectionObservations()
+  if (!base::FeatureList::IsEnabled(
+          features::kCompositedAnimationsForceMainFrames)) {
+    return criteria;
+  }
+  bool force_for_intersection_observer =
+      HasActiveIntersectionObservations() &&
+      features::kForceMainFramesForIntersectionObserver.Get();
+  bool force_for_anchor_transform =
+      HasRunningAnchorTransformAnimation() &&
+      features::kForceMainFramesForAnchorTransform.Get();
+  if (force_for_intersection_observer || force_for_anchor_transform) {
+    criteria = force_for_intersection_observer && NeedsOcclusionTracking()
                    ? cc::PropertyChangeForcesCommitCriteria::kAny
                    : cc::PropertyChangeForcesCommitCriteria::kTransform;
   }

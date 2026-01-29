@@ -394,6 +394,19 @@ BASE_FEATURE(kClientHintsResourceWidth_DEPRECATED,
 BASE_FEATURE(kClientHintsViewportWidth_DEPRECATED,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCompositedAnimationsForceMainFrames,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kForceMainFramesForIntersectionObserver,
+                   &kCompositedAnimationsForceMainFrames,
+                   "intersection-observer",
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kForceMainFramesForAnchorTransform,
+                   &kCompositedAnimationsForceMainFrames,
+                   "anchor-transform",
+                   true);
+
 // Disabling this will cause parkable strings to never be compressed.
 // This is useful for headless mode + virtual time. Since virtual time advances
 // quickly, strings may be parked too eagerly in that mode.
