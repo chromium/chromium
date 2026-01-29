@@ -938,7 +938,9 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
             // Specifying a dangerous type here would take precedence over the
             // blocking of the file.
             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-            download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+            danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE
+                ? download::DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED
+                : download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
       } else {
         item->OnContentCheckCompleted(
             download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
@@ -1852,7 +1854,10 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
             item->GetTargetFilePath().AsUTF8Unsafe(), item);
       }
       item->OnContentCheckCompleted(
-          danger_type, download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+          danger_type,
+          danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE
+              ? download::DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED
+              : download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     } else {
       item->OnContentCheckCompleted(danger_type,
                                     download::DOWNLOAD_INTERRUPT_REASON_NONE);

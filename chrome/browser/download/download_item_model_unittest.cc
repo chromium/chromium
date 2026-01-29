@@ -294,7 +294,8 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
        u"Failed - Virus detected", u"Virus detected"},
       // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately
       {download::DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED,
-       u"Failed - Blocked", u"Blocked by your organization"},
+       u"Failed - Blocked",
+       u"Your organization blocked the local download of this file."},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, u"Failed - Blocked",
        u"Blocked by your organization"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED,
