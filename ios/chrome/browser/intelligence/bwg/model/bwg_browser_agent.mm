@@ -66,16 +66,10 @@ BWGPageContextComputationStateFromPageContextWrapperError(
   }
 }
 
-// The offset for the Gemini overlay when fullscreen mode is enabled. Fullscreen
-// mode is enabled when the fullscreen progress value is 0. A negative value
-// will bring the overlay towards the bottom of the viewport while a positive
-// value will do the reverse.
-CGFloat kOverlayFullscreenOffset = -100;
-
-// Used to modify the toolbar height that is factored into the floaty offset
-// above the toolbar. Lowering the toolbar height brings the floaty closer to
-// the toolbar.
-CGFloat kToolbarHeightMultiplier = 0.89;
+// The floaty has innate padding which causes the floaty to be farther away from
+// the bottom toolbar. To properly position the floaty closer to the toolbar,
+// this constant is used to remove some of that innate padding.
+CGFloat kFloatyIntrinsicPaddingCorrection = 8.0;
 
 // Used for forcing fullscreen progress value.
 CGFloat kFullscreenEnabled = 0.0;
@@ -238,10 +232,11 @@ bool BwgBrowserAgent::HasCompletedFirstRun() {
 
 CGFloat BwgBrowserAgent::GetFloatyOffsetFromFullscreenController(
     FullscreenController* controller) {
-  CGFloat fullyExpandedBottomToolbarHeight =
+  CGFloat fully_expanded_bottom_toolbar_height =
       controller->GetMaxViewportInsets().bottom;
-  CGFloat offset = fullyExpandedBottomToolbarHeight * kToolbarHeightMultiplier +
-                   kOverlayFullscreenOffset * (1.0 - controller->GetProgress());
+  CGFloat offset =
+      (fully_expanded_bottom_toolbar_height * controller->GetProgress()) -
+      kFloatyIntrinsicPaddingCorrection;
   return offset;
 }
 
@@ -594,9 +589,8 @@ void BwgBrowserAgent::FullscreenProgressUpdated(
   CGFloat offset = GetFloatyOffsetFromFullscreenController(controller);
 
   // When fullscreen mode is disabled (progress == 1), the offset will be a
-  // positive value equal to the `fullyExpandedBottomToolbarHeight`. When
-  // fullscreen mode is enabled (progress == 0), the offset will be a negative
-  // value, `kOverlayFullscreenOffset`.
+  // positive value. When fullscreen mode is enabled (progress == 0), the offset
+  // will be a negative value.
   if (is_keyboard_visible_) {
     // When the keyboard is visible, force the opacity to 1.0 (fully opaque) to
     // prevent the floaty from disappearing, even if the fullscreen progress is
