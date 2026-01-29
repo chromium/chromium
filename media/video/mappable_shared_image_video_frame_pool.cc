@@ -194,10 +194,11 @@ class MappableSharedImageVideoFramePool::PoolImpl
   // in the front of |frame_copy_requests_| queue.
   void StartCopy();
 
-  // Copy |video_frame| data into |frame_resource| and calls |frame_ready_cb|
-  // when done.
-  void CopyVideoFrameToGpuMemoryBuffer(scoped_refptr<VideoFrame> video_frame,
-                                       FrameResource* frame_resource);
+  // Copy |video_frame| data into the mappable SharedImage stored in
+  // |frame_resource| and calls |frame_ready_cb| when done.
+  void CopyVideoFrameToMappableSharedImage(
+      scoped_refptr<VideoFrame> video_frame,
+      FrameResource* frame_resource);
 
   // Called when all the data has been copied.
   void OnCopiesDone(bool copy_failed,
@@ -820,10 +821,11 @@ void MappableSharedImageVideoFramePool::PoolImpl::OnCopiesDone(
     bool copy_failed,
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
-  TRACE_EVENT_END("media",
-                  /*"CopyVideoFrameToGpuMemoryBuffer"*/ perfetto::NamedTrack(
-                      "CopyVideoFrameToGpuMemoryBuffer",
-                      video_frame->timestamp().InNanoseconds()));
+  TRACE_EVENT_END(
+      "media",
+      /*"CopyVideoFrameToMappableSharedImage"*/ perfetto::NamedTrack(
+          "CopyVideoFrameToMappableSharedImage",
+          video_frame->timestamp().InNanoseconds()));
 
   media_task_runner_->PostTask(
       FROM_HERE,
@@ -864,18 +866,19 @@ void MappableSharedImageVideoFramePool::PoolImpl::StartCopy() {
     }
 
     worker_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PoolImpl::CopyVideoFrameToGpuMemoryBuffer,
-                                  this, request.video_frame, frame_resource));
+        FROM_HERE,
+        base::BindOnce(&PoolImpl::CopyVideoFrameToMappableSharedImage, this,
+                       request.video_frame, frame_resource));
     break;
   }
 }
 
-// Copies |video_frame| into |frame_resource| asynchronously, posting n tasks
-// that will be synchronized by a barrier.
+// Copies |video_frame| into the mappable SharedImage stored in |frame_resource|
+// asynchronously, posting n tasks that will be synchronized by a barrier.
 // After the barrier is passed OnCopiesDone will be called.
 void MappableSharedImageVideoFramePool::PoolImpl::
-    CopyVideoFrameToGpuMemoryBuffer(scoped_refptr<VideoFrame> video_frame,
-                                    FrameResource* frame_resource) {
+    CopyVideoFrameToMappableSharedImage(scoped_refptr<VideoFrame> video_frame,
+                                        FrameResource* frame_resource) {
   CHECK(frame_resource);
   CHECK(frame_resource->shared_image);
   CHECK(frame_resource->scoped_mapping);
@@ -884,8 +887,8 @@ void MappableSharedImageVideoFramePool::PoolImpl::
       base::BindOnce(&PoolImpl::OnCopiesDone, this, /*copy_failed=*/false,
                      video_frame, frame_resource);
   TRACE_EVENT_BEGIN(
-      "media", "CopyVideoFrameToGpuMemoryBuffer",
-      perfetto::NamedTrack("CopyVideoFrameToGpuMemoryBuffer",
+      "media", "CopyVideoFrameToMappableSharedImage",
+      perfetto::NamedTrack("CopyVideoFrameToMappableSharedImage",
                            video_frame->timestamp().InNanoseconds()));
 
   // Compute the number of tasks to post and create the barrier.
