@@ -13,6 +13,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
+#include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -500,6 +501,19 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         summary_.with_card_info_retrieval_enrolled,
         is_virtual_card_standalone_cvc_field,
         std::move(summary_.metadata_logging_context));
+  }
+
+  // Don't provide credit card suggestions for non-secure pages, but do provide
+  // them for secure pages with passive mixed content (see implementation of
+  // IsContextSecure).
+  if (!suggestions.empty() &&
+      IsFormOrClientNonSecure(client, *form_structure)) {
+    // Replace the suggestion content with a warning message explaining why
+    // Autofill is disabled for a website. The string is different if the credit
+    // card autofill HTTP warning experiment is enabled.
+    suggestions = {Suggestion(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
+        SuggestionType::kInsecureContextPaymentDisabledMessage)};
   }
 
   callback({FillingProduct::kCreditCard, suggestions});

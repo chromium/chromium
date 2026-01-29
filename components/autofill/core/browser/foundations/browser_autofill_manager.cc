@@ -3346,21 +3346,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     }
   }
 
-  // Don't provide credit card suggestions for non-secure pages, but do provide
-  // them for secure pages with passive mixed content (see implementation of
-  // IsContextSecure).
-  if (suggestions.empty() ||
-      context.filling_product != FillingProduct::kCreditCard ||
-      !IsFormOrClientNonSecure(client(), *form_structure)) {
-    return suggestions;
-  }
-
-  // Replace the suggestion content with a warning message explaining why
-  // Autofill is disabled for a website. The string is different if the credit
-  // card autofill HTTP warning experiment is enabled.
-  return {Suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
-      SuggestionType::kInsecureContextPaymentDisabledMessage)};
+  return suggestions;
 }
 
 autofill_metrics::FormEventLoggerBase*
