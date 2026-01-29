@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/file_operation_proxy_impl.h"
+#include "components/on_device_translation/file_operation_proxy_impl.h"
 
 #include "base/files/file_util.h"
 

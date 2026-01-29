@@ -14,8 +14,6 @@ source_set("on_device_translation") {
     "../component_updater/translate_kit_language_pack_component_installer.h",
     "component_manager.cc",
     "component_manager.h",
-    "file_operation_proxy_impl.cc",
-    "file_operation_proxy_impl.h",
     "installer_impl.cc",
     "installer_impl.h",
     "service_controller.cc",
@@ -69,7 +67,6 @@ source_set("unit_tests") {
   sources = [
     "../component_updater/translate_kit_component_installer_unittest.cc",
     "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
-    "file_operation_proxy_impl_unittest.cc",
     "installer_impl_unittest.cc",
   ]
   deps = [

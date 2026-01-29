@@ -22,6 +22,8 @@ source_set("features") {
 
 source_set("on_device_translation") {
   sources = [
+    "file_operation_proxy_impl.cc",
+    "file_operation_proxy_impl.h",
     "installer.cc",
     "installer.h",
     "metrics.cc",
@@ -31,16 +33,21 @@ source_set("on_device_translation") {
     "translator.cc",
     "translator.h",
   ]
-  public_deps = [ ":features" ]
+  public_deps = [
+    ":features",
+    "//components/prefs",
+    "//content/public/browser",
+     ]
   deps = [
     ":public",
     "//base",
     "//components/language/core/browser",
     "//components/on_device_translation/public/mojom",
-    "//components/prefs",
     "//components/user_prefs",
-    "//content/public/browser",
-    "//ui/base",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/common:headers",
   ]
 }
 
@@ -63,6 +70,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "features_unittest.cc",
+    "file_operation_proxy_impl_unittest.cc",
     "metrics_unittest.cc",
     "public/language_pack_unittest.cc",
     "translation_manager_util_unittest.cc",
@@ -70,7 +78,12 @@ source_set("unit_tests") {
   deps = [
     ":on_device_translation",
     ":public",
+    "//base",
     "//base/test:test_support",
+    "//components/on_device_translation/public/mojom",
+    "//components/on_device_translation/service:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
   ]

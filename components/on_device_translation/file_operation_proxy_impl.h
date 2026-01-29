@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_
-#define CHROME_BROWSER_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_
 
 #include <vector>
 
@@ -47,4 +47,4 @@ class FileOperationProxyImpl : public mojom::FileOperationProxy {
 
 }  // namespace on_device_translation
 
-#endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_

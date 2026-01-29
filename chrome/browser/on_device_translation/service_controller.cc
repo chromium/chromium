@@ -25,10 +25,11 @@
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/constants.h"
-#include "chrome/browser/on_device_translation/file_operation_proxy_impl.h"
 #include "chrome/browser/on_device_translation/service_controller_manager.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/file_operation_proxy_impl.h"
 #include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -202,7 +203,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   if (ComponentManager::GetTranslateKitLibraryPath().empty() ||
       !language_pack_requirements.required_not_installed_packs.empty()) {
     // When the size of pending tasks is too large, we will not queue the new
-    // task and hadle the request as failure to avoid OOM of the browser
+    // task and handle the request as failure to avoid OOM of the browser
     // process.
     if (pending_tasks_.size() == kMaxPendingTaskCount) {
       std::move(callback).Run(base::unexpected(
