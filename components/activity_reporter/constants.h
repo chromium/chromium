@@ -5,15 +5,16 @@
 #ifndef COMPONENTS_ACTIVITY_REPORTER_CONSTANTS_H_
 #define COMPONENTS_ACTIVITY_REPORTER_CONSTANTS_H_
 
-#include "components/update_client/configurator.h"
+#include <string_view>
 
 namespace activity_reporter {
 
-inline constexpr char kChromeActivityId[] =
+inline constexpr std::string_view kChromeActivityId =
     "{afb5a10b-511f-4904-9596-d3f2937fd403}";
 
 // Refer to ./buildflags.gni to enable/disable reporting.
-inline constexpr char kUrl[] = "https://update.googleapis.com/service2/json";
+inline constexpr std::string_view kUrl =
+    "https://update.googleapis.com/service/update2/json";
 
 }  // namespace activity_reporter
 

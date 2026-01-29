@@ -89,7 +89,7 @@ TEST_F(ActivityReporterImplTest, ReportActive_Throttling) {
             ++call_count;
             EXPECT_EQ(id, kChromeActivityId);
             std::move(crx_data_callback)
-                .Run({kChromeActivityId}, base::DoNothing());
+                .Run({std::string{kChromeActivityId}}, base::DoNothing());
           });
 
   // The first report should go through.

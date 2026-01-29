@@ -64,7 +64,7 @@ class ActivityReporterImpl : public ActivityReporter {
     }
     last_reported_ = base::Time::Now();
     update_client_->CheckForUpdate(
-        kChromeActivityId,
+        std::string{kChromeActivityId},
         base::BindOnce([](const std::vector<std::string>& ids,
                           base::OnceCallback<void(
                               const std::vector<std::optional<

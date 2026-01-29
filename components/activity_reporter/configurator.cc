@@ -43,8 +43,9 @@ class ActivityService final : public update_client::ActivityDataService {
                          callback) const override {
     // This is only called when we have activity to report, assume active.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  std::set<std::string>{kChromeActivityId}));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::set<std::string>{std::string{kChromeActivityId}}));
   }
 
   void GetAndClearActiveBits(
