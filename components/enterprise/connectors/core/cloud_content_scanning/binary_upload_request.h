@@ -145,6 +145,7 @@ class BinaryUploadRequest {
   void set_require_metadata_verdict(bool require_metadata_verdict);
   void set_is_content_encrypted(bool is_content_encrypted);
   void set_is_content_too_large(bool is_content_too_large);
+  void set_should_skip_malware_scan(bool should_skip);
   void set_blocking(bool blocking);
   void add_local_ips(const std::string& ip_address);
   void set_referrer_chain(const google::protobuf::RepeatedPtrField<
@@ -174,6 +175,7 @@ class BinaryUploadRequest {
   bool blocking() const;
   bool is_content_encrypted() const;
   bool is_content_too_large() const;
+  bool should_skip_malware_scan() const;
   bool content_hash_in_final_call() const;
 
   // Called when beginning to try upload.
@@ -227,6 +229,7 @@ class BinaryUploadRequest {
   bool image_paste_ = false;
 
   bool is_content_too_large_ = false;
+  bool should_skip_malware_scan_ = false;
 };
 
 }  // namespace enterprise_connectors

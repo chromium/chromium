@@ -1341,4 +1341,46 @@ TEST_F(CloudBinaryUploadServiceTest, VerifyBlockingSet) {
   ASSERT_FALSE(request->blocking());
 }
 
+TEST_F(CloudBinaryUploadServiceTest, SkipMalwareScanForLargeFiles) {
+  enterprise_connectors::ScanRequestUploadResult scanning_result =
+      enterprise_connectors::ScanRequestUploadResult::kUnknown;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+  request->add_tag("malware");
+  request->add_tag("dlp");
+
+  // Set up the request to return a large file size.
+  enterprise_connectors::BinaryUploadRequest::Data large_data;
+  large_data.size =
+      enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes + 1;
+  large_data.contents = "large file content placeholder";
+
+  EXPECT_CALL(*request, GetRequestData(_))
+      .WillOnce([&large_data](BinaryUploadRequest::DataCallback callback) {
+        std::move(callback).Run(
+            enterprise_connectors::ScanRequestUploadResult::kSuccess,
+            large_data);
+      });
+
+  // Simulate a response that only contains DLP result.
+  enterprise_connectors::ContentAnalysisResponse simulated_response;
+  auto* dlp_result = simulated_response.add_results();
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  dlp_result->set_tag("dlp");
+  // No malware result in response.
+
+  ExpectNetworkResponse(true, simulated_response);
+
+  UploadForDeepScanning(std::move(request));
+
+  content::RunAllTasksUntilIdle();
+
+  // The result should be success because malware scan was skipped and DLP
+  // passed.
+  EXPECT_EQ(scanning_result,
+            enterprise_connectors::ScanRequestUploadResult::kSuccess);
+}
+
 }  // namespace safe_browsing

@@ -468,6 +468,9 @@ void CloudBinaryUploadService::OnGetRequestData(
     }
   }
 
+  request->set_should_skip_malware_scan(
+      data.size > BinaryUploadService::kMaxUploadSizeBytes);
+
   if (!request->IsAuthRequest() && data.size == 0) {
     // A size of 0 implies an edge case like an empty file being uploaded. In
     // such a case, the file doesn't need to scan so the request can simply
@@ -817,6 +820,11 @@ bool CloudBinaryUploadService::ResponseIsComplete(
   }
 
   for (const std::string& tag : request->content_analysis_request().tags()) {
+    if (tag == enterprise_connectors::kMalwareTag &&
+        request->should_skip_malware_scan()) {
+      // If the content is too large, we don't do a malware scan.
+      continue;
+    }
     if (received_connector_results_[request_id].count(tag) == 0) {
       return false;
     }

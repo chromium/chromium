@@ -209,6 +209,10 @@ void BinaryUploadRequest::set_is_content_too_large(bool is_content_too_large) {
   is_content_too_large_ = is_content_too_large;
 }
 
+void BinaryUploadRequest::set_should_skip_malware_scan(bool should_skip) {
+  should_skip_malware_scan_ = should_skip;
+}
+
 void BinaryUploadRequest::set_blocking(bool blocking) {
   content_analysis_request_.set_blocking(blocking);
 }
@@ -331,6 +335,10 @@ void BinaryUploadRequest::set_image_paste(bool image_paste) {
 
 bool BinaryUploadRequest::is_content_too_large() const {
   return is_content_too_large_;
+}
+
+bool BinaryUploadRequest::should_skip_malware_scan() const {
+  return should_skip_malware_scan_;
 }
 
 bool BinaryUploadRequest::is_content_encrypted() const {
