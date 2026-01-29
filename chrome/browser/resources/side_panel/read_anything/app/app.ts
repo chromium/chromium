@@ -356,6 +356,16 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (this.isReadAloudEnabled_) {
       this.speechController_.onScroll();
     }
+    // Add fading effect to Immersive Mode text when scrolling.
+    if (this.isImmersiveEnabled_) {
+      const fontSize = Number.parseInt(window.getComputedStyle(this.$.container)
+                                           .getPropertyValue('font-size'));
+      // Add fade to scroller after the first line of text to avoid fading the
+      // top of the text.
+      this.$.containerScroller.scrollTop > fontSize ?
+          this.$.containerScroller.classList.add('fade') :
+          this.$.containerScroller.classList.remove('fade');
+    }
     this.onTextLocationsChange_();
   }
 
