@@ -133,6 +133,14 @@ InputStateModel::InputStateModel(
   updateDisabledState();
 }
 
+InputStateModel::InputStateModel(
+    const InputStateModel& new_input_state_model,
+    contextual_search::ContextualSearchSessionHandle& new_session_handle)
+    : session_handle_(new_session_handle) {
+  state_ = new_input_state_model.state_;
+  rule_set_ = new_input_state_model.rule_set_;
+}
+
 InputStateModel::~InputStateModel() = default;
 
 void InputStateModel::Initialize() {

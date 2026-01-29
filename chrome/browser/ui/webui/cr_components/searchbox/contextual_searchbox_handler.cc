@@ -834,17 +834,27 @@ void ContextualSearchboxHandler::OpenUrl(
   new_contextual_session_handle->CheckSearchContentSharingSettings(
       profile_->GetPrefs());
 
+  std::unique_ptr<contextual_search::InputStateModel> new_input_state_model;
+  if (input_state_model_) {
+    new_input_state_model =
+        std::make_unique<contextual_search::InputStateModel>(
+            *input_state_model_, *new_contextual_session_handle);
+  }
+
   auto navigation_handle_callback = base::BindOnce(
       [](std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
              handle,
+         std::unique_ptr<contextual_search::InputStateModel> input_state_model,
          content::NavigationHandle& navigation_handle) {
         content::WebContents* new_web_contents =
             navigation_handle.GetWebContents();
         ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
             new_web_contents)
-            ->SetTaskSession(std::nullopt, std::move(handle));
+            ->SetTaskSession(std::nullopt, std::move(handle),
+                             std::move(input_state_model));
       },
-      std::move(new_contextual_session_handle));
+      std::move(new_contextual_session_handle),
+      std::move(new_input_state_model));
   // TODO(crbug.com/469137247): Consider moving this logic to the specific
   // subclasses that have aim navigation.
   if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {

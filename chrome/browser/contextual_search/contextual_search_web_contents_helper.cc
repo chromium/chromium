@@ -14,4 +14,9 @@ ContextualSearchWebContentsHelper::ContextualSearchWebContentsHelper(
 ContextualSearchWebContentsHelper::~ContextualSearchWebContentsHelper() =
     default;
 
+std::unique_ptr<contextual_search::InputStateModel>
+ContextualSearchWebContentsHelper::TakeInputStateModel() {
+  return std::move(input_state_model_);
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualSearchWebContentsHelper);

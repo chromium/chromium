@@ -494,8 +494,7 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
 }
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   // Set deep search tool.
-  handler().input_state_model()->setActiveTool(
-      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
 
   SubmitQueryAndWaitForNavigation();
   GURL query_url =
@@ -505,8 +504,7 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   EXPECT_EQ("1", dr_param);
 
   // Set create images tool.
-  handler().input_state_model()->setActiveTool(
-      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
 
   SubmitQueryAndWaitForNavigation();
   GURL query_url_imgn =
