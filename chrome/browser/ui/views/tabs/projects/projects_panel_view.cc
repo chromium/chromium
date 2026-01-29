@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
@@ -74,31 +75,34 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
       std::make_unique<ProjectsPanelTabGroupsView>(
           root_action_item_.get(), action_view_controller_.get()));
 
-  auto* threads_list_title =
-      content_container_->AddChildView(std::make_unique<views::Label>());
-  threads_list_title->SetText(
-      l10n_util::GetStringUTF16(IDS_RECENT_CHATS_TITLE));
-  threads_list_title->SetTextStyle(views::style::TextStyle::STYLE_BODY_3_BOLD);
-  threads_list_title->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-  threads_list_title->SetProperty(views::kMarginsKey, kListHeaderPadding);
+  if (tabs::IsThreadsInProjectsPanelEnabled()) {
+    auto* threads_list_title =
+        content_container_->AddChildView(std::make_unique<views::Label>());
+    threads_list_title->SetText(
+        l10n_util::GetStringUTF16(IDS_RECENT_CHATS_TITLE));
+    threads_list_title->SetTextStyle(
+        views::style::TextStyle::STYLE_BODY_3_BOLD);
+    threads_list_title->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+    threads_list_title->SetProperty(views::kMarginsKey, kListHeaderPadding);
 
-  threads_scroll_view_ =
-      content_container_->AddChildView(std::make_unique<views::ScrollView>(
-          views::ScrollView::ScrollWithLayers::kEnabled));
-  // TODO(crbug.com/475300882): Fetch thread data from the controller once
-  // available.
-  threads_scroll_view_->SetContents(
-      std::make_unique<ProjectsPanelRecentThreadsView>(threads_));
-  threads_scroll_view_->SetBackgroundColor(std::nullopt);
-  threads_scroll_view_->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  threads_scroll_view_->SetOverflowGradientMask(
-      views::ScrollView::GradientDirection::kVertical);
-  threads_scroll_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
+    threads_scroll_view_ =
+        content_container_->AddChildView(std::make_unique<views::ScrollView>(
+            views::ScrollView::ScrollWithLayers::kEnabled));
+    // TODO(crbug.com/475300882): Fetch thread data from the controller once
+    // available.
+    threads_scroll_view_->SetContents(
+        std::make_unique<ProjectsPanelRecentThreadsView>(threads_));
+    threads_scroll_view_->SetBackgroundColor(std::nullopt);
+    threads_scroll_view_->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    threads_scroll_view_->SetOverflowGradientMask(
+        views::ScrollView::GradientDirection::kVertical);
+    threads_scroll_view_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+  }
 
   resize_animation_.SetSlideDuration(
       gfx::Animation::RichAnimationDuration(base::Milliseconds(450)));

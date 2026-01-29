@@ -32,6 +32,7 @@ source_set("projects") {
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs/projects:impl",
     "//chrome/browser/ui/tabs/saved_tab_groups",

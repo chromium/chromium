@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace tabs {
 
@@ -23,8 +24,11 @@ BASE_DECLARE_FEATURE(kBackToOpener);
 
 BASE_DECLARE_FEATURE(kProjectsPanel);
 
+extern const base::FeatureParam<bool> kProjectsPanelWithThreads;
+
 bool IsVerticalTabsFeatureEnabled();
 bool IsProjectsPanelFeatureEnabled();
+bool IsThreadsInProjectsPanelEnabled();
 
 }  // namespace tabs
 
