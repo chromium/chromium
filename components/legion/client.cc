@@ -43,11 +43,7 @@ std::unique_ptr<Client> Client::CreateWithUrl(
   auto factory = base::BindRepeating(
       [](const GURL& url, network::mojom::NetworkContext* context)
           -> std::unique_ptr<SecureChannel> {
-        auto transport = std::make_unique<WebSocketClient>(
-            url,
-            base::BindRepeating(
-                [](network::mojom::NetworkContext* context) { return context; },
-                base::Unretained(context)));
+        auto transport = std::make_unique<WebSocketClient>(url, context);
         auto secure_session = std::make_unique<SecureSessionAsyncImpl>();
         auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
 

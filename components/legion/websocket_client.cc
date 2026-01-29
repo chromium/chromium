@@ -61,11 +61,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 }  // namespace
 
-WebSocketClient::WebSocketClient(const GURL& service_url,
-                                 NetworkContextFactory network_context_factory)
+WebSocketClient::WebSocketClient(
+    const GURL& service_url,
+    network::mojom::NetworkContext* network_context)
     : service_url_(service_url),
-      network_context_factory_(std::move(network_context_factory)),
-      readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
+      network_context_(network_context),
+      readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
+  CHECK(network_context_);
+}
 
 WebSocketClient::~WebSocketClient() = default;
 
@@ -148,7 +151,7 @@ void WebSocketClient::Connect() {
   additional_headers.push_back(network::mojom::HttpHeader::New(
       "X-WebChannel-Content-Type", "application/x-protobuf"));
 
-  network_context_factory_.Run()->CreateWebSocket(
+  network_context_->CreateWebSocket(
       service_url_, requested_protocols, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone,
       net::IsolationInfo::CreateForInternalRequest(
