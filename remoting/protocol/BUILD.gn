@@ -123,6 +123,8 @@ static_library("protocol") {
     "input_stub.h",
     "it2me_host_authenticator_factory.cc",
     "it2me_host_authenticator_factory.h",
+    "jingle_message_xml_converter.cc",
+    "jingle_message_xml_converter.h",
     "jingle_messages.cc",
     "jingle_messages.h",
     "jingle_session.cc",
