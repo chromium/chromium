@@ -55,6 +55,7 @@
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -380,19 +381,19 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
                   FilesPolicyDialog::Info::Warn(
                       FilesPolicyDialog::BlockReason::kDlp, warning_files)))
       .Times(2)
-      .WillRepeatedly(
-          [](WarningWithJustificationCallback callback,
-             dlp::FileAction file_action, gfx::NativeWindow modal_parent,
-             std::optional<DlpFileDestination> destination,
-             FilesPolicyDialog::Info dialog_info) {
-            views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-                std::make_unique<FilesPolicyWarnDialog>(
-                    std::move(callback), file_action, modal_parent, destination,
-                    std::move(dialog_info)),
-                /*context=*/nullptr, modal_parent);
-            widget->Show();
-            return widget;
-          });
+      .WillRepeatedly([](WarningWithJustificationCallback callback,
+                         dlp::FileAction file_action,
+                         gfx::NativeWindow modal_parent,
+                         std::optional<DlpFileDestination> destination,
+                         FilesPolicyDialog::Info dialog_info) {
+        views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+            std::make_unique<FilesPolicyWarnDialog>(
+                std::move(callback), file_action, modal_parent, destination,
+                std::move(dialog_info)),
+            /*context=*/nullptr, modal_parent);
+        widget->Show();
+        return widget;
+      });
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());
@@ -827,6 +828,7 @@ class IOTaskBrowserTest
   }
 
   void TearDownOnMainThread() override {
+    content::RunAllTasksUntilIdle();
     // The files controller must be destroyed before the profile since it's
     // holding a pointer to it.
     files_controller_.reset();
@@ -1202,7 +1204,6 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
     ASSERT_TRUE(first_app);
     ASSERT_EQ(first_app, FindFilesApp());
   } else if (second_call_has_modal_parent) {
-    ASSERT_FALSE(first_app);
     first_app = FindFilesApp();
     ASSERT_TRUE(first_app);
   }

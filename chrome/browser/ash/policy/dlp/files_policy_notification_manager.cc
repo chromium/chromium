@@ -393,7 +393,7 @@ void FilesPolicyNotificationManager::ShowDialog(
   }
 
   // No window found, so open a new one. This should notify us through
-  // OnBrowserSetLastActive() to show the dialog.
+  // OnBrowserCreated() to show the dialog.
   LaunchFilesApp(std::make_unique<DialogInfo>(
       base::BindOnce(&FilesPolicyNotificationManager::ShowDialogForIOTask,
                      weak_factory_.GetWeakPtr(), task_id, type),
@@ -516,7 +516,7 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
       } else {
         // Review
         // Always open the Files app. This should notify us through
-        // OnBrowserSetLastActive() to show the dialog.
+        // OnBrowserCreated() to show the dialog.
         LaunchFilesApp(std::make_unique<DialogInfo>(
             base::BindOnce(
                 &FilesPolicyNotificationManager::ShowDialogForNonIOTask,
@@ -565,7 +565,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
                              std::move(dialog_info));
         non_io_tasks_.emplace(notification_id, std::move(info));
         // Always open the Files app. This should notify us through
-        // OnBrowserSetLastActive() to show the dialog.
+        // OnBrowserCreated() to show the dialog.
         LaunchFilesApp(std::make_unique<DialogInfo>(
             base::BindOnce(
                 &FilesPolicyNotificationManager::ShowDialogForNonIOTask,
