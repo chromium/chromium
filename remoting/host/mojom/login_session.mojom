@@ -1,0 +1,47 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+// Information about the systemd login session.
+struct LoginSessionInfo {
+  // The XDG_SESSION_ID environment variable.
+  string xdg_session_id;
+
+  // The XDG_CURRENT_DESKTOP environment variable. Typical values are "GNOME"
+  // and "KDE".
+  string xdg_current_desktop;
+
+  // The DBUS_SESSION_BUS_ADDRESS environment variable, for the desktop process
+  // to call D-BUS APIs via the session bus.
+  string dbus_session_bus_address;
+
+  // The DISPLAY environment variable.
+  string display;
+
+  // The WAYLAND_DISPLAY environment variable.
+  string wayland_display;
+};
+
+// Interface for the UNTRUSTED login session reporter process
+// (the caller/remote) to report additional information about a systemd login
+// session to the TRUSTED daemon process (the receiver).
+// While some session information is available by making D-BUS calls to the
+// org.freedesktop.login1 interface, information such as the D-BUS session bus
+// address and the wayland display can only be discovered by inspecting a
+// process that is run under the login session. See this discussion thread:
+// https://discourse.gnome.org/t/persistent-remote-desktop-access-api/19415
+// When GDM creates a new login session, the login session reporter process will
+// be launched as the session user via XDG autostart, then it will connect to
+// the daemon process, which is a systemd service that is run as root, via a
+// mojo named platform channel, and use this interface to report the additional
+// session information.
+// The endpoint security check is performed in:
+// remoting/host/mojo_caller_security_checker.cc
+// See also: go/crd-linux-multi-process#heading=h.vi04tcx6jzy3
+[EnableIf=is_linux]
+interface LoginSessionObserver {
+  // Called when a login session is created.
+  OnLoginSessionCreated(LoginSessionInfo session_info);
+};

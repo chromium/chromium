@@ -37,6 +37,7 @@ constexpr auto kAllowedCallerProgramNames =
     base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         "remote-open-url",
         "remote-webauthn",
+        "login-session-reporter",
     });
 #elif BUILDFLAG(IS_WIN)
 constexpr auto kAllowedCallerProgramNames =

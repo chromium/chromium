@@ -38,6 +38,15 @@ extern const char kAgentProcessBrokerMessagePipeId[];
 const mojo::NamedPlatformChannel::ServerName& GetAgentProcessBrokerServerName();
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+// Message pipe ID used for LoginSessionReporter.
+extern const char kLoginSessionReporterMessagePipeId[];
+
+// Returns the server name for the login session reporter.
+const mojo::NamedPlatformChannel::ServerName&
+GetLoginSessionReporterServerName();
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_IPC_CONSTANTS_H_

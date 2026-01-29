@@ -276,9 +276,8 @@ int HostMain(int argc, char** argv) {
   // Mac, where the broker process is the agent process broker.
   is_broker_process |= main_routine == &SingleProcessHostProcessMain;
 #endif
-#if BUILDFLAG(IS_WIN)
-  // For multi-process Windows hosts, the daemon process should act as the
-  // broker.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  // For multi-process hosts, the daemon process acts as the broker.
   is_broker_process |= main_routine == &DaemonProcessMain;
 #endif
 

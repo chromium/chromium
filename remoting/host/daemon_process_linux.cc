@@ -42,14 +42,15 @@
 #include "remoting/host/chromoting_host_services_server.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/host_main.h"
-#include "remoting/host/ipc_constants.h"
+#include "remoting/host/linux/login_session_reporter_server.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/usage_stats_consent.h"
 
 namespace remoting {
 
-class DaemonProcessLinux : public DaemonProcess {
+class DaemonProcessLinux : public DaemonProcess,
+                           public mojom::LoginSessionObserver {
  public:
   DaemonProcessLinux(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                      scoped_refptr<AutoThreadTaskRunner> io_task_runner,
@@ -70,7 +71,9 @@ class DaemonProcessLinux : public DaemonProcess {
       int session_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) override;
 
- protected:
+  void StartLoginSessionReporterServer();
+
+ private:
   // DaemonProcess implementation.
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
       int terminal_id,
@@ -83,7 +86,9 @@ class DaemonProcessLinux : public DaemonProcess {
   void SendTerminalDisconnected(int terminal_id) override;
   void StartChromotingHostServices() override;
 
- private:
+  // mojom::LoginSessionObserver implementation.
+  void OnLoginSessionCreated(mojom::LoginSessionInfoPtr session_info) override;
+
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
       base::ProcessId peer_pid);
@@ -94,6 +99,7 @@ class DaemonProcessLinux : public DaemonProcess {
   mojo::core::ScopedIPCSupport ipc_support_;
 
   std::unique_ptr<ChromotingHostServicesServer> ipc_server_;
+  std::unique_ptr<LoginSessionReporterServer> login_session_reporter_server_;
 
   mojo::AssociatedRemote<mojom::DesktopSessionConnectionEvents>
       desktop_session_connection_events_;
@@ -137,6 +143,15 @@ bool DaemonProcessLinux::OnDesktopSessionAgentAttached(
   }
 
   return true;
+}
+
+void DaemonProcessLinux::StartLoginSessionReporterServer() {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+
+  login_session_reporter_server_ =
+      std::make_unique<LoginSessionReporterServer>(this);
+  login_session_reporter_server_->StartServer();
+  HOST_LOG << "Login session reporter IPC server has been started.";
 }
 
 std::unique_ptr<DesktopSession> DaemonProcessLinux::DoCreateDesktopSession(
@@ -197,12 +212,30 @@ void DaemonProcessLinux::StartChromotingHostServices() {
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
 }
 
+void DaemonProcessLinux::OnLoginSessionCreated(
+    mojom::LoginSessionInfoPtr session_info) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+
+  // TODO: crbug.com/475611769 - Remove logging and launch desktop process with
+  // the environment variables instead.
+
+  LOG(INFO) << "Login session created.";
+  LOG(INFO) << "  xdg_session_id: " << session_info->xdg_session_id;
+  LOG(INFO) << "  xdg_current_desktop: " << session_info->xdg_current_desktop;
+  LOG(INFO) << "  dbus_session_bus_address: "
+            << session_info->dbus_session_bus_address;
+  LOG(INFO) << "  display: " << session_info->display;
+  LOG(INFO) << "  wayland_display: " << session_info->wayland_display;
+}
+
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
     base::OnceClosure stopped_callback) {
   auto daemon_process = std::make_unique<DaemonProcessLinux>(
       caller_task_runner, io_task_runner, std::move(stopped_callback));
+
+  daemon_process->StartLoginSessionReporterServer();
 
   // Finishes configuring the Daemon process and launches the network process.
   daemon_process->Initialize();
