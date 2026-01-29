@@ -270,6 +270,59 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   ASSERT_TRUE(base::test::RunUntil([&]() { return !is_good_candidate_; }));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingMode_DeniedDomainIsNotCandidate) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.docs.google.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  static bool is_good_candidate_ = true;
+  auto result_callback = base::BindOnce(
+      [](bool is_good_candidate) { is_good_candidate_ = is_good_candidate; });
+
+  read_anything::ReadAnythingEntryPointController::
+      CheckIfShouldSuggestReadingMode(browser(), std::move(result_callback));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !is_good_candidate_; }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingModeNaive_ReturnsFalseForNonHttp) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ASSERT_FALSE(read_anything::ReadAnythingEntryPointController::
+                   CheckIfShouldSuggestReadingModeNaive(browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingModeNaive_ReturnsFalseForDenyList) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.docs.google.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ASSERT_FALSE(read_anything::ReadAnythingEntryPointController::
+                   CheckIfShouldSuggestReadingModeNaive(browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingModeNaive_ReturnsTrueForAllowedDomains) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ASSERT_TRUE(read_anything::ReadAnythingEntryPointController::
+                  CheckIfShouldSuggestReadingModeNaive(browser()));
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        OnPageActionIgnored_IncrementsIgnoredCount) {
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();

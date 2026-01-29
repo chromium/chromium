@@ -62,10 +62,7 @@ void ReadAnythingOmniboxController::OnTabForegrounded(tabs::TabInterface* tab) {
 }
 
 void ReadAnythingOmniboxController::OnTabBackgrounded(tabs::TabInterface* tab) {
-  if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
-    iph_response_timer_->Stop();
-    RecordOpenedAfterPromo();
-  }
+  StopTimers();
 }
 
 void ReadAnythingOmniboxController::Activate(
@@ -91,11 +88,7 @@ void ReadAnythingOmniboxController::Activate(
 }
 
 void ReadAnythingOmniboxController::OnDestroyed() {
-  if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
-    iph_response_timer_->Stop();
-    RecordOpenedAfterPromo();
-  }
-
+  StopTimers();
   if (features::IsImmersiveReadAnythingEnabled()) {
     auto* read_anything_controller = ReadAnythingController::From(tab_);
     CHECK(read_anything_controller);
@@ -105,17 +98,29 @@ void ReadAnythingOmniboxController::OnDestroyed() {
 
 void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
   UpdateIgnored(GetCurrentPageActionState().showing);
-
-  // If the user navigated to a new page, stop any pending IPH response timer,
-  // since they are likely not interested in opening RM after seeing the IPH.
-  if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
-    iph_response_timer_->Stop();
-    RecordOpenedAfterPromo();
+  if (!read_anything::ReadAnythingEntryPointController::
+          CheckIfShouldSuggestReadingModeNaive(
+              tab_->GetBrowserWindowInterface())) {
+    UpdateVisibility(false);
   }
+
+  StopTimers();
 }
 
 void ReadAnythingOmniboxController::DidStopLoading() {
-  CheckIfShouldSuggestReadingMode();
+  // DidStopLoading can be called multiple times during page load; debounce the
+  // calls to CheckIfShouldSuggestReadingMode since it's a CPU-intensive
+  // operation.
+  if (check_suggestion_debouncer_ && check_suggestion_debouncer_->IsRunning()) {
+    check_suggestion_debouncer_->Reset();
+  } else {
+    check_suggestion_debouncer_ = std::make_unique<base::OneShotTimer>();
+    check_suggestion_debouncer_->Start(
+        FROM_HERE, base::Seconds(kDebounceDelaySecs),
+        base::BindOnce(
+            &ReadAnythingOmniboxController::CheckIfShouldSuggestReadingMode,
+            weak_factory_.GetWeakPtr()));
+  }
 }
 
 void ReadAnythingOmniboxController::CheckIfShouldSuggestReadingMode() {
@@ -192,4 +197,16 @@ void ReadAnythingOmniboxController::RecordOpenedAfterPromo() {
       "Accessibility.ReadAnything.OpenedAfterOmniboxIPH",
       read_anything::ReadAnythingEntryPointController::IsUIShowing(
           tab_->GetBrowserWindowInterface()));
+}
+
+void ReadAnythingOmniboxController::StopTimers() {
+  if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
+    iph_response_timer_->Stop();
+    // If the IPH response timer is running and is stopped early, record whether
+    // the user opened RM after seeing the IPH.
+    RecordOpenedAfterPromo();
+  }
+  if (check_suggestion_debouncer_ && check_suggestion_debouncer_->IsRunning()) {
+    check_suggestion_debouncer_->Stop();
+  }
 }

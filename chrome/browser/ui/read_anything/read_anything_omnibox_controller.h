@@ -47,6 +47,9 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
   // the omnibox entrypoint. If they don't open RM within this time, log that
   // they didn't open it, as it's unlikely the IPH convinced them to open RM.
   static const int kIPHResponseTimeoutSecs = 20;
+  // Delay before checking again if to suggest reading mode. Running the check
+  // can be CPU-intensive, so don't overload it.
+  static const int kDebounceDelaySecs = 1;
 
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
@@ -75,6 +78,9 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
   // Log whether the user opened RM after seeing the omnibox IPH.
   void RecordOpenedAfterPromo();
 
+  // Stops any running timers.
+  void StopTimers();
+
   // The time when CheckIfShouldSuggestReadingMode was triggered.
   base::TimeTicks candidate_check_triggered_time_ms_;
 
@@ -83,6 +89,7 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
 
   // A timer for logging whether the user opened RM after seeing the IPH.
   std::unique_ptr<base::OneShotTimer> iph_response_timer_;
+  std::unique_ptr<base::OneShotTimer> check_suggestion_debouncer_;
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

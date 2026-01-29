@@ -45,7 +45,17 @@ class ReadAnythingEntryPointController {
   // user.
   static void OnPageActionIgnored(BrowserWindowInterface* bwi);
 
-  // Checks whether to suggest reading mode to the user on the current page.
+  // Returns false if the reading mode suggestion should be hidden immediately
+  // for the current page. This is separate from CheckIfShouldSuggestReadingMode
+  // to allow callers to avoid running the asynchronous readability heuristic if
+  // they just want to do a quick synchronous check if the suggestion should be
+  // hidden.
+  static bool CheckIfShouldSuggestReadingModeNaive(BrowserWindowInterface* bwi);
+
+  // Checks whether to suggest reading mode to the user on the current page and
+  // asynchronously returns the result via `result_callback`. This is
+  // asynchronous because it runs a heuristic to determine if the page is a good
+  // candidate for reading mode.
   static void CheckIfShouldSuggestReadingMode(
       BrowserWindowInterface* bwi,
       base::OnceCallback<void(bool)> result_callback);

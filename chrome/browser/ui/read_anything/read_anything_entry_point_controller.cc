@@ -28,6 +28,10 @@
 namespace {
 
 static const int kMaxChipIgnoredCount = 5;
+const char* const kDenyList[] = {
+    "mail.google.com",         "whatsapp.com", "chatgpt.com", "docs.google.com",
+    "docs.sandbox.google.com",
+};
 
 int GetOmniboxChipIgnoredCount(PrefService* prefs) {
   return prefs->GetInteger(
@@ -184,11 +188,10 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
 }
 
 // static
-void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
-    BrowserWindowInterface* bwi,
-    base::OnceCallback<void(bool)> result_callback) {
+bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
+    BrowserWindowInterface* bwi) {
   if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
-    return;
+    return false;
   }
 
   // Don't show the omnibox entrypoint for non-HTTP(S) URLs. These URLs are
@@ -197,12 +200,35 @@ void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
   content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
   const GURL& url = contents->GetLastCommittedURL();
   if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  // Don't show the omnibox entrypoint for sites we know don't distill well.
+  for (const char* domain : kDenyList) {
+    if (url.DomainIs(domain)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// static
+void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+    BrowserWindowInterface* bwi,
+    base::OnceCallback<void(bool)> result_callback) {
+  if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
+    return;
+  }
+
+  if (!CheckIfShouldSuggestReadingModeNaive(bwi)) {
     std::move(result_callback).Run(false);
     return;
   }
 
   // Readability will callback with whether or not the current contents are a
   // good candidate for distillation.
+  content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
   RunReadabilityHeuristicsOnWebContents(contents, std::move(result_callback));
 }
 
