@@ -414,6 +414,7 @@ class CORE_EXPORT HTMLInputElement
   bool IsEnumeratable() const final;
   bool IsInteractiveContent() const final;
   bool IsLabelable() const final;
+  FocusgroupFlags NativeArrowKeyAxes() const final;
   bool MatchesDefaultPseudoClass() const override;
   bool IsTextControl() const final { return IsTextField(); }
   int scrollWidth() override;

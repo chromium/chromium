@@ -179,6 +179,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool IsKeyboardFocusableSlow(
       UpdateBehavior update_behavior =
           UpdateBehavior::kStyleAndLayout) const override;
+  FocusgroupFlags NativeArrowKeyAxes() const final;
   void FrameOwnerPropertiesChanged() override;
 
   void DisposePluginSoon(WebPluginContainerImpl*);

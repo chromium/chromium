@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -390,6 +391,94 @@ bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
   return IsA<LayoutTableCell>(element->GetLayoutObject());
 }
 
+bool FocusgroupControllerUtils::IsInArrowKeyHandler(const Element* element) {
+  return GetArrowKeyHandlerRoot(element) != nullptr;
+}
+
+bool FocusgroupControllerUtils::IsInArrowKeyHandler(
+    const Element& element,
+    FocusgroupDirection direction) {
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(
+          element.GetExecutionContext())) {
+    return false;
+  }
+
+  Element* owner = focusgroup::FindFocusgroupOwner(&element);
+  if (!owner) {
+    return false;
+  }
+
+  FocusgroupData owner_data = owner->GetFocusgroupData();
+  if (!focusgroup::IsActualFocusgroup(owner_data)) {
+    return false;
+  }
+
+  // Determine which axis the navigation direction uses.
+  FocusgroupFlags direction_axis = IsDirectionInline(direction)
+                                       ? FocusgroupFlags::kInline
+                                       : FocusgroupFlags::kBlock;
+
+  // Check if the focusgroup owner enables this axis.
+  FocusgroupFlags flags = owner_data.flags;
+  // If the owner doesn't enable this axis, no conflict is possible.
+  if (!(flags & direction_axis)) {
+    return false;
+  }
+
+  // Walk up to find an arrow key handler that uses the navigation axis.
+  const Element* current = &element;
+  while (current && current != owner) {
+    FocusgroupFlags native_axes = current->NativeArrowKeyAxes();
+    if (native_axes & direction_axis) {
+      return true;
+    }
+    current = FlatTreeTraversal::ParentElement(*current);
+  }
+
+  return false;
+}
+
+const Element* FocusgroupControllerUtils::GetArrowKeyHandlerRoot(
+    const Element* element) {
+  if (!element) {
+    return nullptr;
+  }
+
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(
+          element->GetExecutionContext())) {
+    return nullptr;
+  }
+
+  Element* owner = focusgroup::FindFocusgroupOwner(element);
+  if (!owner) {
+    return nullptr;
+  }
+
+  FocusgroupData owner_data = owner->GetFocusgroupData();
+  if (!focusgroup::IsActualFocusgroup(owner_data)) {
+    return nullptr;
+  }
+
+  FocusgroupFlags flags = owner_data.flags;
+  const bool has_axis_flags = static_cast<bool>(
+      flags & (FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
+  const FocusgroupFlags enabled_axes =
+      has_axis_flags
+          ? (flags & (FocusgroupFlags::kInline | FocusgroupFlags::kBlock))
+          : (FocusgroupFlags::kInline | FocusgroupFlags::kBlock);
+
+  const Element* current = element;
+  while (current && current != owner) {
+    FocusgroupFlags native_axes = current->NativeArrowKeyAxes();
+    if (native_axes & enabled_axes) {
+      return current;
+    }
+    current = FlatTreeTraversal::ParentElement(*current);
+  }
+
+  return nullptr;
+}
+
 bool FocusgroupControllerUtils::IsEntryElementForFocusgroupSegment(
     const Element& item,
     const Element& owner) {
@@ -441,8 +530,17 @@ FocusgroupControllerUtils::GetEntryElementForFocusgroupSegmentFromFirst(
     if (item_in_segment->IsFocusedElementInDocument()) {
       // If another item in the segment is already focused, return it, as
       // only one focusgroup item per segment can be in the sequential focus
-      // order.
-      return item_in_segment;
+      // order. However, if the focused item is an arrow key handler, don't
+      // return it - the arrow key handler is treated as if it has
+      // focusgroup="none", so the segment's normal entry logic should apply.
+      if (!IsInArrowKeyHandler(item_in_segment)) {
+        return item_in_segment;
+      }
+      // Skip this focused arrow key handler entirely; don't consider it for
+      // entry priority or first item tracking.
+      item_in_segment = NextFocusgroupItemInSegmentInDirection(
+          *item_in_segment, owner, mojom::blink::FocusType::kForward);
+      continue;
     }
 
     if (memory_item && item_in_segment == memory_item) {
@@ -736,6 +834,34 @@ const Element* FocusgroupControllerUtils::GetOptedOutSubtreeRoot(
     }
     current = FlatTreeTraversal::ParentElement(*current);
   }
+  return nullptr;
+}
+
+bool FocusgroupControllerUtils::IsEffectivelyOptedOut(const Element* element) {
+  return GetEffectiveOptOutRoot(element) != nullptr;
+}
+
+const Element* FocusgroupControllerUtils::GetEffectiveOptOutRoot(
+    const Element* element) {
+  if (!element) {
+    return nullptr;
+  }
+
+  // Check for explicit opt-out first.
+  const Element* opt_out_root = GetOptedOutSubtreeRoot(element);
+  if (opt_out_root) {
+    return opt_out_root;
+  }
+
+  // Check for focused arrow key handler. When an arrow key handler is
+  // focused, it acts as if opted out to allow normal Tab navigation.
+  if (element->IsFocusedElementInDocument()) {
+    const Element* handler_root = GetArrowKeyHandlerRoot(element);
+    if (handler_root) {
+      return handler_root;
+    }
+  }
+
   return nullptr;
 }
 

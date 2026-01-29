@@ -9,8 +9,11 @@ const kArrowRight = '\uE014';
 const kArrowDown = '\uE015';
 
 // Set the focus on target and send the arrow key press event from it.
-function focusAndKeyPress(target, key) {
+async function focusAndKeyPress(target, key) {
   target.focus();
+  // Wait for a render frame to ensure focus is established before sending keys.
+  // This prevents race conditions in slower environments.
+  await new Promise(resolve => requestAnimationFrame(resolve));
   return test_driver.send_keys(target, key);
 }
 

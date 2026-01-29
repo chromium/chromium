@@ -46,6 +46,17 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
     return false;
   }
 
+  // If the currently focused element is (or is within) an arrow key handler
+  // for its focusgroup owner on the navigation axis, do not run focusgroup
+  // arrow navigation. The interactive control's native arrow-key behavior
+  // should take precedence. Note: Unlike some controls (e.g., text inputs),
+  // scroll containers don't consume arrow key events; they scroll but allow
+  // the event to propagate. This check is necessary to prevent focusgroup
+  // navigation from interfering with native scrolling.
+  if (utils::IsInArrowKeyHandler(*focused, direction)) {
+    return false;
+  }
+
   return Advance(focused, direction);
 }
 

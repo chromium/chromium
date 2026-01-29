@@ -1226,6 +1226,14 @@ class CORE_EXPORT Element : public ContainerNode {
   Element* AdjustedFocusedElementInTreeScope() const;
   bool IsAutofocusable() const;
 
+  // Returns the axes (using FocusgroupFlags::kInline and kBlock) on which this
+  // element has native (built-in) arrow key behavior, e.g., cursor movement in
+  // text fields, scrolling in focusable scroll containers. Elements with
+  // author-defined script handlers are not considered.
+  // Base implementation handles focusable scrollable containers; subclasses
+  // override to add element-specific behavior.
+  virtual FocusgroupFlags NativeArrowKeyAxes() const;
+
   // Returns true if `last_focus_type_` was not the result of an unknown or
   // script source. For more see:
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/

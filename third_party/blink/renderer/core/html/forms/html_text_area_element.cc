@@ -804,6 +804,11 @@ bool HTMLTextAreaElement::IsInteractiveContent() const {
   return true;
 }
 
+FocusgroupFlags HTMLTextAreaElement::NativeArrowKeyAxes() const {
+  // Textareas always use arrow keys for caret navigation in both axes.
+  return FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
+}
+
 void HTMLTextAreaElement::CloneNonAttributePropertiesFrom(
     const Element& source,
     NodeCloningData& data) {

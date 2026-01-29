@@ -2167,8 +2167,11 @@ TEST_F(FocusgroupControllerTest, DoesElementContainBarrierWithOptOut) {
   EXPECT_TRUE(utils::DoesElementContainBarrier(*fg));
 }
 
-// Exercises the condition where ScopedFocusNavigation::IsNonEntryFocusgroupItem
-// is called with an element that is not focusable.
+// Exercises arrow key handler behavior with select elements.
+// Select elements are arrow key handlers because they consume arrow keys
+// on both axes for option navigation. When an arrow key handler is focused,
+// it is treated as if it has focusgroup="none", so Tab follows normal document
+// order (skipping non-entry focusgroup items).
 TEST_F(FocusgroupControllerTest, FocusgroupWithSelect) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup="toolbar inline">
@@ -2183,19 +2186,68 @@ TEST_F(FocusgroupControllerTest, FocusgroupWithSelect) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
+  auto* btn1 = GetElementById("btn1");
   auto* sel1 = GetElementById("sel1");
+  auto* btn2 = GetElementById("btn2");
   auto* after = GetElementById("after");
+  ASSERT_TRUE(btn1);
   ASSERT_TRUE(sel1);
+  ASSERT_TRUE(btn2);
   ASSERT_TRUE(after);
 
-  // Focus the select and use Tab to exit the focusgroup.
+  // Arrow key can navigate TO the select (entry works).
+  btn1->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), btn1);
+  auto* right_event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, btn1);
+  SendEvent(right_event);
+  EXPECT_EQ(GetDocument().FocusedElement(), sel1)
+      << "Arrow right should navigate to select (entry allowed)";
+
+  // Tab from select: arrow key handler is treated as if it has
+  // focusgroup="none". Normal Tab order applies, skipping non-entry items.
+  auto* tab_event = KeyDownEvent(ui::DomKey::TAB, sel1);
+  SendEvent(tab_event);
+  EXPECT_EQ(GetDocument().FocusedElement(), after)
+      << "Tab from arrow key handler should follow normal Tab order";
+}
+
+// Exercises Shift+Tab from an arrow key handler in a separate test
+// to avoid state from previous navigations affecting the result.
+TEST_F(FocusgroupControllerTest, FocusgroupWithSelectShiftTab) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <button id=before type="button">Before</button>
+    <div focusgroup="toolbar inline">
+      <button id=btn1 type="button">Bold</button>
+      <select id=sel1>
+        <option>12px</option>
+        <option>14px</option>
+      </select>
+      <button id=btn2 type="button">Italic</button>
+    </div>
+    <button id=after type="button">After</button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* before = GetElementById("before");
+  auto* btn1 = GetElementById("btn1");
+  auto* sel1 = GetElementById("sel1");
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(sel1);
+
+  // Start from sel1 and Shift+Tab backward.
   sel1->Focus();
+  UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(GetDocument().FocusedElement(), sel1);
 
-  auto* event = KeyDownEvent(ui::DomKey::TAB, sel1);
-  SendEvent(event);
-  EXPECT_EQ(GetDocument().FocusedElement(), after)
-      << "Tab from select should exit focusgroup to the button after";
+  auto* shift_tab_event =
+      KeyDownEvent(ui::DomKey::TAB, sel1, WebInputEvent::kShiftKey);
+  SendEvent(shift_tab_event);
+  // Shift+Tab from sel1: arrow key handler is treated as if it has
+  // focusgroup="none". Looking backward, btn1 is the entry element so it
+  // should be visited.
+  EXPECT_EQ(GetDocument().FocusedElement(), btn1)
+      << "Shift+Tab from arrow key handler should go to entry element";
 }
 
 }  // namespace blink

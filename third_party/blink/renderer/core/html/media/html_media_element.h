@@ -534,6 +534,7 @@ class CORE_EXPORT HTMLMediaElement
   bool CanStartSelection() const override { return false; }
 
   bool IsInteractiveContent() const final;
+  FocusgroupFlags NativeArrowKeyAxes() const final;
 
   // ExecutionContextLifecycleStateObserver functions.
   void ContextLifecycleStateChanged(mojom::blink::FrameLifecycleState) override;

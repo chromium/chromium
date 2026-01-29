@@ -375,6 +375,7 @@ class CORE_EXPORT HTMLSelectElement final
   bool IsEnumeratable() const override { return true; }
   bool IsInteractiveContent() const override;
   bool IsLabelable() const override { return true; }
+  FocusgroupFlags NativeArrowKeyAxes() const final;
 
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;

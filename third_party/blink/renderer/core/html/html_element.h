@@ -219,6 +219,9 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool IsInteractiveContent() const;
   void DefaultEventHandler(Event&) override;
 
+  // Returns the axes on which this element has native arrow key behavior.
+  FocusgroupFlags NativeArrowKeyAxes() const override;
+
   // Used to handle return/space key events and simulate clicks. Returns true
   // if the event is handled.
   bool HandleKeyboardActivation(Event& event);

@@ -1461,6 +1461,12 @@ bool HTMLSelectElement::IsInteractiveContent() const {
   return true;
 }
 
+FocusgroupFlags HTMLSelectElement::NativeArrowKeyAxes() const {
+  // Select elements use arrow keys for option navigation (up/down and
+  // left/right both cycle through options in Chromium).
+  return FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
+}
+
 void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(list_items_);
   visitor->Trace(last_on_change_option_);

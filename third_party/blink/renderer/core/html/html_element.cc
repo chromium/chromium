@@ -3363,6 +3363,14 @@ bool HTMLElement::IsInteractiveContent() const {
   return false;
 }
 
+FocusgroupFlags HTMLElement::NativeArrowKeyAxes() const {
+  // Contenteditable uses arrow keys for cursor movement in both axes.
+  if (isContentEditableForBinding()) {
+    return FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
+  }
+  return Element::NativeArrowKeyAxes();
+}
+
 void HTMLElement::DefaultEventHandler(Event& event) {
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
 

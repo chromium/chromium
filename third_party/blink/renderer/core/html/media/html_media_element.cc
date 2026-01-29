@@ -4520,6 +4520,15 @@ bool HTMLMediaElement::IsInteractiveContent() const {
   return FastHasAttribute(html_names::kControlsAttr);
 }
 
+FocusgroupFlags HTMLMediaElement::NativeArrowKeyAxes() const {
+  // Media elements with controls use arrow keys for scrubbing (left/right)
+  // and volume adjustment (up/down).
+  if (ShouldShowControls()) {
+    return FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
+  }
+  return HTMLElement::NativeArrowKeyAxes();
+}
+
 void HTMLMediaElement::BindMediaPlayerReceiver(
     mojo::PendingAssociatedReceiver<media::mojom::blink::MediaPlayer>
         receiver) {

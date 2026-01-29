@@ -189,6 +189,44 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // subtree is the nearest ancestor (or self) with focusgroup="none".
   static const Element* GetOptedOutSubtreeRoot(const Element* element);
 
+  // Returns true if |element| is itself a native arrow key handler or is
+  // within a subtree rooted at one for its nearest ancestor focusgroup owner.
+  // Native arrow key handlers are interactive controls whose built-in arrow
+  // key behavior should take precedence over focusgroup navigation (e.g. text
+  // inputs, textareas, select controls, contenteditable regions, focusable
+  // scroll containers, media elements with controls, and frame elements).
+  // Elements with author-defined script handlers are not considered here.
+  // When this returns true, focusgroup arrow navigation should not run while
+  // focus is within the handler element.
+  static bool IsInArrowKeyHandler(const Element* element);
+
+  // Returns true if |element| is in a native arrow key handler that handles
+  // the specified |direction|. This allows per-axis detection, e.g., a
+  // horizontal-only scroll container only handles inline (left/right)
+  // navigation, not block (up/down) navigation.
+  static bool IsInArrowKeyHandler(const Element& element,
+                                  FocusgroupDirection direction);
+
+  // Returns the nearest ancestor (or self) that is a native arrow key handler
+  // for |element|'s nearest focusgroup owner, or nullptr if none exists.
+  static const Element* GetArrowKeyHandlerRoot(const Element* element);
+
+  // Returns true if the element should be treated as opted out of focusgroup
+  // navigation. This is true when:
+  // 1. The element has focusgroup="none" (kOptOut behavior), OR
+  // 2. The element is currently focused AND is a native arrow key handler.
+  //
+  // Native arrow key handlers (inputs, textareas, selects, etc.) are treated
+  // as opted-out when focused, allowing normal Tab order to apply and
+  // providing an escape mechanism from controls that capture arrow keys.
+  static bool IsEffectivelyOptedOut(const Element* element);
+
+  // Returns the root element that causes |element| to be effectively opted
+  // out, or nullptr if not effectively opted out. This returns:
+  // - The opted-out subtree root (element with focusgroup="none"), OR
+  // - The focused native arrow key handler root element.
+  static const Element* GetEffectiveOptOutRoot(const Element* element);
+
   // Returns true if the element has the focusgroupstart attribute.
   // This boolean attribute marks an element as the preferred entry point when
   // entering a focusgroup segment via sequential focus navigation.

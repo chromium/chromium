@@ -8607,6 +8607,24 @@ bool Element::IsAutofocusable() const {
          FastHasAttribute(html_names::kAutofocusAttr);
 }
 
+FocusgroupFlags Element::NativeArrowKeyAxes() const {
+  // Focusable scrollable containers use arrow keys for scrolling. Check each
+  // axis independently since a container may only scroll in one direction.
+  if (IsFocusable()) {
+    if (const ComputedStyle* style = GetComputedStyle()) {
+      FocusgroupFlags axes = FocusgroupFlags::kNone;
+      if (style->ScrollsOverflowX()) {
+        axes |= FocusgroupFlags::kInline;
+      }
+      if (style->ScrollsOverflowY()) {
+        axes |= FocusgroupFlags::kBlock;
+      }
+      return axes;
+    }
+  }
+  return FocusgroupFlags::kNone;
+}
+
 // This is used by FrameSelection to denote when the active-state of the page
 // has changed independent of the focused element changing.
 void Element::FocusStateChanged() {

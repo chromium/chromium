@@ -789,6 +789,14 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
     return false;
   }
 
+  // When an element is effectively opted out (either explicitly via
+  // focusgroup="none", or because it's a focused arrow key handler),
+  // treat it as not a focusgroup item for sequential navigation purposes.
+  // This allows normal Tab order to apply.
+  if (FocusgroupControllerUtils::IsEffectivelyOptedOut(&element)) {
+    return false;
+  }
+
   // Calling this on every element is expensive. TODO(janewman): We should keep
   // track of when we enter/exit focusgroups during navigation, and only call
   // this when we are inside a focusgroup.

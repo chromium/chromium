@@ -391,6 +391,12 @@ bool HTMLFrameOwnerElement::IsKeyboardFocusableSlow(
          HTMLElement::IsKeyboardFocusableSlow(update_behavior);
 }
 
+FocusgroupFlags HTMLFrameOwnerElement::NativeArrowKeyAxes() const {
+  // Frames (iframe/frame) and object/embed elements host content that
+  // typically has its own arrow key handling.
+  return FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
+}
+
 void HTMLFrameOwnerElement::DisposePluginSoon(WebPluginContainerImpl* plugin) {
   if (PluginDisposeSuspendScope::suspend_count_) {
     PluginsPendingDispose().insert(plugin);

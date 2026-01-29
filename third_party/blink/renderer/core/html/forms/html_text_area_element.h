@@ -114,6 +114,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool IsEnumeratable() const override { return true; }
   bool IsInteractiveContent() const override;
   bool IsLabelable() const override { return true; }
+  FocusgroupFlags NativeArrowKeyAxes() const final;
 
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
