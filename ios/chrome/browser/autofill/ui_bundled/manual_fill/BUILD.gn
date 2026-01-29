@@ -41,6 +41,8 @@ source_set("manual_fill") {
     "manual_fill_password_mediator.mm",
     "manual_fill_plus_address_mediator.h",
     "manual_fill_plus_address_mediator.mm",
+    "manual_fill_virtual_card_cache.h",
+    "manual_fill_virtual_card_cache.mm",
     "plus_address_coordinator_delegate.h",
   ]
   deps = [
@@ -220,6 +222,7 @@ source_set("unit_tests") {
     "manual_fill_credit_card_unittest.mm",
     "manual_fill_labeled_chip_unittest.mm",
     "manual_fill_password_mediator_unittest.mm",
+    "manual_fill_virtual_card_cache_unittest.mm",
     "password_view_controller_unittest.mm",
   ]
   deps = [
@@ -236,6 +239,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:test_support",
     "//components/leveldb_proto",

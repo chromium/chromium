@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
@@ -319,6 +320,13 @@ std::vector<CreditCard> FetchCards(
 - (void)onFullCardRequestSucceeded:(const CreditCard&)card
                          fieldType:(manual_fill::PaymentFieldType)fieldType
                        forWebState:(web::WebState*)webState {
+  // If we successfully retrieved an unmasked virtual card, cache it for this
+  // WebState.
+  if (webState && card.record_type() == CreditCard::RecordType::kVirtualCard) {
+    // CreateForWebState ensures the cache exists (lazy initialization).
+    ManualFillVirtualCardCache::CreateForWebState(webState);
+    ManualFillVirtualCardCache::FromWebState(webState)->CacheUnmaskedCard(card);
+  }
   // Credit card are not shown as 'Secure'.
   ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
       initWithCreditCard:card

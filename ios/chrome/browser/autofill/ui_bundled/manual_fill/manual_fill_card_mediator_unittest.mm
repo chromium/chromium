@@ -8,9 +8,17 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_cell+Testing.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -35,6 +43,13 @@ NSString* ExpectedCellIndexAccessibilityLabel(int cell_index, int cell_count) {
           l10n_util::GetStringUTF16(IDS_IOS_MANUAL_FALLBACK_PAYMENT_CELL_INDEX),
           "position", cell_index + 1, "count", cell_count));
 }
+
+// Helper class to use ChromeAutofillClientIOS in tests. This allows
+// WithFakedFromWebState to instantiate the client correctly.
+class TestChromeAutofillClient : public autofill::ChromeAutofillClientIOS {
+ public:
+  using ChromeAutofillClientIOS::ChromeAutofillClientIOS;
+};
 
 }  // namespace
 
@@ -128,4 +143,80 @@ TEST_F(ManualFillCardMediatorTest, CreateManualFillCardItemsWithVirtualCard) {
   RunUntilIdle();
 
   EXPECT_OCMOCK_VERIFY(consumer());
+}
+
+// Tests that successfully retrieving a virtual card caches the unmasked card
+// in the WebState's virtual card cache.
+TEST_F(ManualFillCardMediatorTest,
+       OnFullCardRequestSucceeded_CachesVirtualCard) {
+  // Setup ScopedTestingWebClient with FakeWebClient.
+  web::ScopedTestingWebClient web_client(
+      std::make_unique<web::FakeWebClient>());
+
+  // Create a REAL WebState.
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  web::WebState::CreateParams params(profile.get());
+  auto web_state = web::WebState::Create(params);
+
+  // Setup InfoBarManager.
+  InfoBarManagerImpl::CreateForWebState(web_state.get());
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state.get());
+
+  // Attach Client.
+  auto client = std::make_unique<
+      autofill::WithFakedFromWebState<TestChromeAutofillClient>>(
+      profile.get(), web_state.get(), infobar_manager, /*bridge=*/nil);
+
+  // Prepare test data.
+  CreditCard card = autofill::test::GetVirtualCard();
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+
+  // Simulate the request.
+  [mediator()
+      onFullCardRequestSucceeded:card
+                       fieldType:manual_fill::PaymentFieldType::kCardNumber
+                     forWebState:web_state.get()];
+
+  // Verify the cache.
+  ManualFillVirtualCardCache* cache =
+      ManualFillVirtualCardCache::FromWebState(web_state.get());
+  ASSERT_TRUE(cache);
+
+  const CreditCard* cached_card = cache->GetUnmaskedCard(card.guid());
+  ASSERT_TRUE(cached_card);
+  EXPECT_EQ(cached_card->number(), card.number());
+}
+
+// Tests that successfully retrieving a non-virtual card (e.g. server card)
+// does NOT cache it.
+TEST_F(ManualFillCardMediatorTest,
+       OnFullCardRequestSucceeded_DoesNotCacheServerCard) {
+  web::ScopedTestingWebClient web_client(
+      std::make_unique<web::FakeWebClient>());
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  web::WebState::CreateParams params(profile.get());
+  auto web_state = web::WebState::Create(params);
+
+  InfoBarManagerImpl::CreateForWebState(web_state.get());
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state.get());
+
+  auto client = std::make_unique<
+      autofill::WithFakedFromWebState<TestChromeAutofillClient>>(
+      profile.get(), web_state.get(), infobar_manager, /*bridge=*/nil);
+
+  CreditCard card = autofill::test::GetMaskedServerCard();
+
+  [mediator()
+      onFullCardRequestSucceeded:card
+                       fieldType:manual_fill::PaymentFieldType::kCardNumber
+                     forWebState:web_state.get()];
+
+  ManualFillVirtualCardCache* cache =
+      ManualFillVirtualCardCache::FromWebState(web_state.get());
+
+  if (cache) {
+    EXPECT_EQ(nullptr, cache->GetUnmaskedCard(card.guid()));
+  }
 }

@@ -7,6 +7,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_full_card_requester.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -165,15 +167,7 @@
                     fieldType:(manual_fill::PaymentFieldType)fieldType {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    std::optional<const autofill::CreditCard> autofillCreditCard =
-        [weakSelf.cardMediator findCreditCardfromGUID:card.GUID];
-    if (!autofillCreditCard) {
-      return;
-    }
-    [weakSelf.cardRequester requestFullCreditCard:*autofillCreditCard
-                           withBaseViewController:weakSelf.baseViewController
-                                       recordType:card.recordType
-                                        fieldType:fieldType];
+    [weakSelf onDismissCompleted:card fieldType:fieldType];
   }];
 }
 
@@ -186,6 +180,41 @@
 }
 
 #pragma mark - Private
+
+- (void)onDismissCompleted:(ManualFillCreditCard*)card
+                 fieldType:(manual_fill::PaymentFieldType)fieldType {
+  std::optional<const autofill::CreditCard> autofillCreditCard =
+      [self.cardMediator findCreditCardfromGUID:card.GUID];
+  if (!autofillCreditCard) {
+    return;
+  }
+
+  // Check if the card is already unmasked in the tab's virtual card cache.
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+
+  if (activeWebState) {
+    ManualFillVirtualCardCache* cache =
+        ManualFillVirtualCardCache::FromWebState(activeWebState);
+    if (cache) {
+      const autofill::CreditCard* cachedCard =
+          cache->GetUnmaskedCard(autofillCreditCard->guid());
+
+      if (cachedCard) {
+        // Cache Hit: Skip network request and fill directly.
+        [self.cardMediator onFullCardRequestSucceeded:*cachedCard
+                                            fieldType:fieldType
+                                          forWebState:activeWebState];
+        return;
+      }
+    }
+  }
+
+  [self.cardRequester requestFullCreditCard:*autofillCreditCard
+                     withBaseViewController:self.baseViewController
+                                 recordType:card.recordType
+                                  fieldType:fieldType];
+}
 
 - (void)didTriggerOpenCardDetails:(autofill::CreditCard)card
                        inEditMode:(BOOL)editMode {
