@@ -11,6 +11,7 @@
 
 #include <utility>
 
+#include "base/apple/app_plist_size_buildflags.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_dispatch_object.h"
@@ -44,8 +45,11 @@ namespace {
 // PID of the server.
 constexpr char kBootstrapNameFormat[] = "%s.MachPortRendezvousServer.%d";
 
-// This can be safely increased if Info.plist grows in the future.
-constexpr size_t kMaxInfoPlistDataSize = 24 * 1024;
+// The size of the on-disk app-Info.plist with extra size added to account for
+// size increases that occur during hydration. The extra size can safely be
+// increased in the future.
+constexpr size_t kMaxInfoPlistDataSize =
+    BUILDFLAG(APP_INFO_PLIST_FILE_SIZE) + 1024;
 
 // The state of the peer validation policy features is passed to child processes
 // via this environment variable as Mach port rendezvous is performed before the
