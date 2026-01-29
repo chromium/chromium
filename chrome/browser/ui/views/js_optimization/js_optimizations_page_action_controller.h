@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_JS_OPTIMIZATION_JS_OPTIMIZATIONS_PAGE_ACTION_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace page_actions {
 class PageActionController;
@@ -19,6 +21,7 @@ class TabInterface;
 
 namespace views {
 class BubbleDialogModelHost;
+class Widget;
 }  // namespace views
 
 namespace actions {
@@ -27,7 +30,8 @@ class ActionItem;
 
 // Controls the visibility of the JS optimizations omnibar icon and bubble.
 class JsOptimizationsPageActionController
-    : public tabs::ContentsObservingTabFeature {
+    : public tabs::ContentsObservingTabFeature,
+      public views::WidgetObserver {
  public:
   explicit JsOptimizationsPageActionController(
       tabs::TabInterface& tab_interface,
@@ -44,6 +48,9 @@ class JsOptimizationsPageActionController
   // tabs::ContentsObservingTabFeature
   void PrimaryPageChanged(content::Page& page) override;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   void ShowBubble(views::BubbleAnchor anchor, actions::ActionItem* item);
 
  private:
@@ -55,6 +62,8 @@ class JsOptimizationsPageActionController
 
   const raw_ref<page_actions::PageActionController> page_action_controller_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_JS_OPTIMIZATION_JS_OPTIMIZATIONS_PAGE_ACTION_CONTROLLER_H_
