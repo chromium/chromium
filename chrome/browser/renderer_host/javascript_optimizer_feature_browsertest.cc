@@ -1021,8 +1021,16 @@ IN_PROC_BROWSER_TEST_F(
                    ->AreV8OptimizationsDisabled());
 }
 
+// TODO(crbug.com/461777786): Flaky on Linux and CrOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ExpectOptimizationsEnabledInSpareRenderer \
+  DISABLED_ExpectOptimizationsEnabledInSpareRenderer
+#else
+#define MAYBE_ExpectOptimizationsEnabledInSpareRenderer \
+  ExpectOptimizationsEnabledInSpareRenderer
+#endif
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
-                       ExpectOptimizationsEnabledInSpareRenderer) {
+                       MAYBE_ExpectOptimizationsEnabledInSpareRenderer) {
   // TODO(crbug.com/452689705): Consider creating both: (1) spare renderer
   // processes with v8-optimizer enabled and (2) spare renderer processes with
   // v8-optimizer disabled.
