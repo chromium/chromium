@@ -502,6 +502,9 @@ enum ActionResultCode {
   // navigation was committed.
   kScriptToolCrossOriginNavigation = 1204,
 
+  // Tool was cancelled.
+  kScriptToolCancelled = 1205,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

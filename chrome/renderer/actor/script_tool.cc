@@ -36,6 +36,8 @@ mojom::ActionResultPtr OnToolExecuted(
             mojom::ActionResultCode::kScriptToolInvalidInputArguments);
       case blink::WebDocument::ScriptToolError::kToolInvocationFailed:
         return MakeResult(mojom::ActionResultCode::kScriptToolInvocationFailed);
+      case blink::WebDocument::ScriptToolError::kToolCancelled:
+        return MakeResult(mojom::ActionResultCode::kScriptToolCancelled);
     }
     NOTREACHED();
   }
@@ -70,11 +72,19 @@ ScriptTool::ScriptTool(content::RenderFrame& frame,
 ScriptTool::~ScriptTool() = default;
 
 void ScriptTool::Execute(ToolFinishedCallback callback) {
-  frame_->GetWebFrame()->GetDocument().ExecuteScriptTool(
+  execution_id_ = frame_->GetWebFrame()->GetDocument().ExecuteScriptTool(
       blink::WebString::FromUTF8(action_->name),
       blink::WebString::FromUTF8(action_->input_arguments),
       base::BindOnce(&OnToolExecuted, action_->name, action_->input_arguments)
           .Then(std::move(callback)));
+}
+
+void ScriptTool::Cancel() {
+  if (!execution_id_.has_value()) {
+    return;
+  }
+  frame_->GetWebFrame()->GetDocument().CancelScriptTool(execution_id_.value());
+  execution_id_.reset();
 }
 
 std::string ScriptTool::DebugString() const {

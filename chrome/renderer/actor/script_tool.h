@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACTOR_SCRIPT_TOOL_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
@@ -31,10 +32,12 @@ class ScriptTool : public ToolBase {
 
   // actor::ToolBase
   void Execute(ToolFinishedCallback callback) override;
+  void Cancel() override;
   std::string DebugString() const override;
 
  private:
   mojom::ScriptToolActionPtr action_;
+  std::optional<uint32_t> execution_id_;
 };
 
 }  // namespace actor

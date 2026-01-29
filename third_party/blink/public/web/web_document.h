@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/types/expected.h"
@@ -222,16 +223,21 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // A null response indicates a navigation was triggered and the response will
   // be on the next Document.
   // An error is returned if the execution failed.
+  //
+  // The return value is a document-scoped execution ID which can be used to
+  // cancel the tool execution.
   enum class ScriptToolError {
     kInvalidToolName,
     kInvalidInputArguments,
-    kToolInvocationFailed
+    kToolInvocationFailed,
+    kToolCancelled,
   };
   using ScriptToolExecutedCallback =
       base::OnceCallback<void(base::expected<WebString, ScriptToolError>)>;
-  void ExecuteScriptTool(const WebString& name,
-                         const WebString& input_arguments,
-                         ScriptToolExecutedCallback tool_executed_cb);
+  std::optional<uint32_t> ExecuteScriptTool(
+      const WebString& name,
+      const WebString& input_arguments,
+      ScriptToolExecutedCallback tool_executed_cb);
 
   // Provides the result of a script tool execution initiated on an old
   // Document.
@@ -239,6 +245,9 @@ class BLINK_EXPORT WebDocument : public WebNode {
       base::OnceCallback<void(WebString)>;
   void GetCrossDocumentScriptToolResult(
       CrossDocumentScriptToolResultCallback result_callback);
+
+  // Cancels a script tool with the given execution ID.
+  void CancelScriptTool(uint32_t execution_id);
 
   // Dispatches an autofill event on the document with the given field data.
   // This is called by the autofill agent before filling form fields.

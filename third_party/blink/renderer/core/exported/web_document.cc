@@ -407,14 +407,23 @@ size_t WebDocument::ActiveResourceRequestCount() const {
   return ConstUnwrap<Document>()->Fetcher()->ActiveRequestCount();
 }
 
-void WebDocument::ExecuteScriptTool(
+std::optional<uint32_t> WebDocument::ExecuteScriptTool(
     const WebString& name,
     const WebString& input_arguments,
     ScriptToolExecutedCallback tool_executed_cb) {
+  std::optional<uint32_t> execution_id;
   if (auto* model_context = ModelContextSupplement::modelContext(
           *Unwrap<Document>()->domWindow()->navigator())) {
-    model_context->ExecuteTool(name, input_arguments,
-                               std::move(tool_executed_cb));
+    execution_id = model_context->ExecuteTool(name, input_arguments,
+                                              std::move(tool_executed_cb));
+  }
+  return execution_id;
+}
+
+void WebDocument::CancelScriptTool(uint32_t execution_id) {
+  if (auto* model_context = ModelContextSupplement::modelContext(
+          *Unwrap<Document>()->domWindow()->navigator())) {
+    model_context->CancelTool(execution_id);
   }
 }
 

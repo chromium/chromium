@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_MODEL_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_MODEL_CONTEXT_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
@@ -55,13 +57,17 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
                       ExceptionState& exception_state);
   void clearContext();
 
-  void ExecuteTool(const String& name,
-                   const String& input_arguments,
-                   WebDocument::ScriptToolExecutedCallback tool_executed_cb);
+  // TODO: crbug.com/479291237 - remove public/web dependency
+  std::optional<uint32_t> ExecuteTool(
+      const String& name,
+      const String& input_arguments,
+      WebDocument::ScriptToolExecutedCallback tool_executed_cb);
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
   void GetCrossDocumentScriptToolResult(
       CrossDocumentScriptToolResultCallback result_callback);
+
+  void CancelTool(uint32_t execution_id);
 
   void SetToolsChangedCallback(std::optional<base::RepeatingClosure> cb) {
     tools_changed_closure_ = std::move(cb);
@@ -77,10 +83,11 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
  private:
   class ToolFunctionFinishedCallback;
 
-  void ExecuteV8Tool(V8ToolFunction* tool_function,
-                     const String& name,
-                     const String& input_arguments,
-                     WebDocument::ScriptToolExecutedCallback tool_executed_cb);
+  std::optional<uint32_t> ExecuteV8Tool(
+      V8ToolFunction* tool_function,
+      const String& name,
+      const String& input_arguments,
+      WebDocument::ScriptToolExecutedCallback tool_executed_cb);
   void ExecuteDeclarativeTool(
       DeclarativeWebMCPTool* tool,
       const String& input_arguments,
