@@ -42,6 +42,7 @@ source_set("model") {
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",

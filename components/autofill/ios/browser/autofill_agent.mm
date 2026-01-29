@@ -137,6 +137,26 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 // appropriately.
 constexpr CGFloat kSuggestionIconWidth = 32;
 
+// Gets the icon that will be used for the specified suggestion.
+SuggestionIconType GetSuggestionIconType(const autofill::Suggestion& suggestion,
+                                         BOOL hasValue) {
+  // TODO(crbug.com/40266549): Remove kClear when undo is fully enabled.
+  if ((suggestion.icon == autofill::Suggestion::Icon::kClear ||
+       suggestion.icon == autofill::Suggestion::Icon::kUndo) &&
+      base::FeatureList::IsEnabled(kAutofillUndoIos)) {
+    return SuggestionIconType::kUndoAutofill;
+  } else if (suggestion.icon == autofill::Suggestion::Icon::kHome && hasValue &&
+             base::FeatureList::IsEnabled(
+                 autofill::features::kAutofillEnableSupportForHomeAndWork)) {
+    return SuggestionIconType::kAccountHome;
+  } else if (suggestion.icon == autofill::Suggestion::Icon::kWork && hasValue &&
+             base::FeatureList::IsEnabled(
+                 autofill::features::kAutofillEnableSupportForHomeAndWork)) {
+    return SuggestionIconType::kAccountWork;
+  }
+  return SuggestionIconType::kNone;
+}
+
 bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   auto it =
       std::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
@@ -628,10 +648,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         icon = [self createIcon:popup_suggestion];
       }
     } else if (popup_suggestion.type ==
-               autofill::SuggestionType::kUndoOrClear) {
+                   autofill::SuggestionType::kUndoOrClear &&
+               !base::FeatureList::IsEnabled(kAutofillUndoIos)) {
       // Show the "clear form" button.
-      // TODO(crbug.com/40266549): Replace Clear Form with Undo once this
-      // changes
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     } else if (popup_suggestion.type ==
                autofill::SuggestionType::kFillExistingPlusAddress) {
@@ -644,7 +663,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       }
     }
 
-    if (!value) {
+    SuggestionIconType suggestionIconType =
+        GetSuggestionIconType(popup_suggestion, value.length > 0);
+
+    // Skip if there is no text or icon to show.
+    if (!value && !icon && suggestionIconType == SuggestionIconType::kNone) {
       continue;
     }
 
@@ -657,17 +680,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         (popup_suggestion.field_by_field_filling_type_used
              ? *popup_suggestion.field_by_field_filling_type_used
              : autofill::FieldType::EMPTY_TYPE);
-
-    SuggestionIconType suggestionIconType = SuggestionIconType::kNone;
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForHomeAndWork)) {
-      suggestionIconType =
-          (popup_suggestion.icon == autofill::Suggestion::Icon::kHome)
-              ? SuggestionIconType::kAccountHome
-          : (popup_suggestion.icon == autofill::Suggestion::Icon::kWork)
-              ? SuggestionIconType::kAccountWork
-              : SuggestionIconType::kNone;
-    }
     FormSuggestion* suggestion = [FormSuggestion
                 suggestionWithValue:value
                          minorValue:minorValue

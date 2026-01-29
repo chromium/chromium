@@ -402,43 +402,48 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
     BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 
-    // On phones, store the suggestion information in a stack view so that it
-    // can be selectively truncated if necessary.
-    if (!isTablet) {
-      UIStackView* verticalStackView =
-          [[UIStackView alloc] initWithArrangedSubviews:@[]];
-      verticalStackView.axis = UILayoutConstraintAxisVertical;
-      verticalStackView.alignment = UIStackViewAlignmentLeading;
-      verticalStackView.layoutMarginsRelativeArrangement = YES;
-      verticalStackView.layoutMargins =
-          UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
-      verticalStackView.spacing = kVerticalSpacing;
-      [stackView addArrangedSubview:verticalStackView];
+    BOOL hasText = suggestionText.length > 0 ||
+                   suggestion.minorValue.length > 0 ||
+                   suggestion.displayDescription.length > 0;
 
-      // Insert the next subviews vertically instead of horizontally.
-      stackView = verticalStackView;
-    }
-
-    if (isTablet) {
-      // On tablets, the stage manager causes an issue where an infinite loop
-      // happens if we add stack views here, so we can't use more stack views
-      // until the stage manager issue is fixed. As a workaround, on tablets,
-      // since we don't need to truncate the suggestion text, the stack views
-      // can be replaced by a single attributed string to present the data the
-      // same way without having to rely on a stack of UILabel objects, which,
-      // on the plus side, might actually be more light weight in the end.
-      [stackView addArrangedSubview:AttributedTextLabel(
-                                        suggestionText, suggestion.minorValue,
-                                        suggestion.displayDescription,
-                                        suggestion.icon)];
-    } else {
-      // Format the suggestion information using a stack view so that each piece
-      // of information can be truncated individually when truncation is needed.
-      NSArray<UIView*>* views = TextViews(suggestionText, suggestion.minorValue,
+    if (hasText) {
+      if (isTablet) {
+        // On tablets, the stage manager causes an issue where an infinite loop
+        // happens if we add stack views here, so we can't use more stack views
+        // until the stage manager issue is fixed. As a workaround, on tablets,
+        // since we don't need to truncate the suggestion text, the stack views
+        // can be replaced by a single attributed string to present the data the
+        // same way without having to rely on a stack of UILabel objects, which,
+        // on the plus side, might actually be more light weight in the end.
+        [stackView addArrangedSubview:AttributedTextLabel(
+                                          suggestionText, suggestion.minorValue,
                                           suggestion.displayDescription,
-                                          [self isCreditCardSuggestion]);
-      for (UIView* view in views) {
-        [stackView addArrangedSubview:view];
+                                          suggestion.icon)];
+      } else {
+        // On phones, store the suggestion information in a stack view so that
+        // it can be selectively truncated if necessary.
+        UIStackView* verticalStackView =
+            [[UIStackView alloc] initWithArrangedSubviews:@[]];
+        verticalStackView.axis = UILayoutConstraintAxisVertical;
+        verticalStackView.alignment = UIStackViewAlignmentLeading;
+        verticalStackView.layoutMarginsRelativeArrangement = YES;
+        verticalStackView.layoutMargins =
+            UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
+        verticalStackView.spacing = kVerticalSpacing;
+        [stackView addArrangedSubview:verticalStackView];
+
+        // Insert the next subviews vertically instead of horizontally.
+        stackView = verticalStackView;
+
+        // Format the suggestion information using a stack view so that each
+        // piece of information can be truncated individually when truncation is
+        // needed.
+        NSArray<UIView*>* views = TextViews(
+            suggestionText, suggestion.minorValue,
+            suggestion.displayDescription, [self isCreditCardSuggestion]);
+        for (UIView* view in views) {
+          [stackView addArrangedSubview:view];
+        }
       }
     }
 

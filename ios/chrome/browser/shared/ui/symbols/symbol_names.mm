@@ -272,6 +272,7 @@ NSString* const kCartSymbol = @"cart";
 NSString* const kArrowUTurnForwardSymbol = @"arrow.uturn.forward";
 NSString* const kArrowUTurnForwardCircleFillSymbol =
     @"arrow.uturn.forward.circle.fill";
+NSString* const kArrowUTurnBackwardSymbol = @"arrow.uturn.backward";
 NSString* const kIPhoneAndArrowForwardSymbol = @"iphone.and.arrow.forward";
 NSString* const kPersonPlusSymbol = @"person.crop.circle.badge.plus";
 NSString* const kArrowUpTrashSymbol = @"arrow.up.trash";

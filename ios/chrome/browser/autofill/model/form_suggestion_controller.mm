@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/plus_addresses/core/common/features.h"
 #import "components/prefs/pref_service.h"
@@ -96,6 +97,18 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
 // Returns the default icon for the suggestion type.
 UIImage* defaultIconForType(FormSuggestion* suggestion) {
   switch (suggestion.type) {
+    case autofill::SuggestionType::kUndoOrClear:
+      if (suggestion.suggestionIconType == SuggestionIconType::kUndoAutofill &&
+          base::FeatureList::IsEnabled(kAutofillUndoIos)) {
+        return SymbolWithPalette(
+            DefaultSymbolWithPointSize(kArrowUTurnBackwardSymbol,
+                                       kSymbolActionPointSize),
+            @[
+              [UIColor colorNamed:kTextPrimaryColor],
+            ]);
+      } else {
+        return nil;
+      }
     case autofill::SuggestionType::kGeneratePasswordEntry:
       return MakeSymbolMulticolor(
           CustomSymbolWithPointSize(kPasswordManagerSymbol, kSymbolPointSize));
@@ -504,6 +517,7 @@ bool IsRequestDedupingAllowed() {
       // TODO(crbug.com/452315148): Include `featureForIPH` in the
       // `FormSuggestion` constructor.
       suggestionCopy.featureForIPH = suggestion.featureForIPH;
+      suggestionCopy.suggestionIconType = suggestion.suggestionIconType;
       [suggestionsCopy addObject:suggestionCopy];
     } else {
       [suggestionsCopy addObject:suggestion];
