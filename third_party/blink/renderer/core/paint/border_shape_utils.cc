@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/geometry_box_utils.h"
 
@@ -32,6 +33,19 @@ std::optional<BorderShapeReferenceRects> ComputeBorderShapeReferenceRects(
   reference_rects.outer = make_rect(border_shape.OuterBox());
   reference_rects.inner = make_rect(border_shape.InnerBox());
   return reference_rects;
+}
+
+Path ComputeBorderShapeOuterPath(const ComputedStyle& style,
+                                 const PhysicalRect& rect,
+                                 const LayoutObject* layout_object) {
+  std::optional<BorderShapeReferenceRects> shape_ref_rects;
+  if (layout_object) {
+    shape_ref_rects =
+        ComputeBorderShapeReferenceRects(rect, style, *layout_object);
+  }
+  PhysicalRect outer_reference_rect =
+      shape_ref_rects ? shape_ref_rects->outer : rect;
+  return BorderShapePainter::OuterPath(style, outer_reference_rect);
 }
 
 }  // namespace blink

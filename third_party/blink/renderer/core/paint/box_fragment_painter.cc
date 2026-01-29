@@ -2319,7 +2319,13 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
             physical_offset, kExcludeOverlayScrollbarSizeForHitTesting))) {
       skip_children = true;
     }
-    if (!skip_children && style.HasBorderRadius()) {
+    // Also check border-radius and border-shape clipping.
+    if (!skip_children && style.HasBorderShape()) {
+      PhysicalRect rect(physical_offset, size);
+      const Path outer_path = ComputeBorderShapeOuterPath(
+          style, rect, box_fragment_.GetLayoutObject());
+      skip_children = !hit_test.location.Intersects(outer_path);
+    } else if (!skip_children && style.HasBorderRadius()) {
       PhysicalRect bounds_rect(physical_offset, size);
       skip_children = !hit_test.location.Intersects(
           ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
@@ -2343,9 +2349,18 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     }
   }
 
-  if (style.HasBorderRadius() &&
-      HitTestClippedOutByBorder(hit_test.location, physical_offset))
+  // Check border-shape and border-radius clipping.
+  if (style.HasBorderShape()) {
+    PhysicalRect rect(physical_offset, size);
+    const Path outer_path = ComputeBorderShapeOuterPath(
+        style, rect, box_fragment_.GetLayoutObject());
+    if (!hit_test.location.Intersects(outer_path)) {
+      return false;
+    }
+  } else if (style.HasBorderRadius() &&
+             HitTestClippedOutByBorder(hit_test.location, physical_offset)) {
     return false;
+  }
 
   bool pointer_events_bounding_box = false;
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.phase);

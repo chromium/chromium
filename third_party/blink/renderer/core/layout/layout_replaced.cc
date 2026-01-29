@@ -45,6 +45,8 @@
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -114,6 +116,20 @@ void LayoutReplaced::NaturalSizeChanged() {
       layout_invalidation_reason::kSizeChanged);
 }
 
+namespace {
+
+bool HitTestClippedOutByBorderShape(const LayoutBox& box,
+                                    const HitTestLocation& hit_test_location,
+                                    const PhysicalOffset& border_box_location) {
+  PhysicalRect border_rect = box.PhysicalBorderBoxRect();
+  border_rect.Move(border_box_location);
+  Path hit_shape =
+      ComputeBorderShapeOuterPath(box.StyleRef(), border_rect, &box);
+  return !hit_test_location.Intersects(hit_shape);
+}
+
+}  // namespace
+
 bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
@@ -139,7 +155,10 @@ bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
             accumulated_offset, kExcludeOverlayScrollbarSizeForHitTesting))) {
       skip_children = true;
     }
-    if (!skip_children && StyleRef().HasBorderRadius()) {
+    if (!skip_children && StyleRef().HasBorderShape()) {
+      skip_children = HitTestClippedOutByBorderShape(*this, hit_test_location,
+                                                     accumulated_offset);
+    } else if (!skip_children && StyleRef().HasBorderRadius()) {
       PhysicalRect bounds_rect(accumulated_offset, StitchedSize());
       skip_children = !hit_test_location.Intersects(
           ContouredBorderGeometry::PixelSnappedContouredInnerBorder(

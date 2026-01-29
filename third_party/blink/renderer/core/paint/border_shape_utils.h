@@ -18,6 +18,13 @@ std::optional<BorderShapeReferenceRects> ComputeBorderShapeReferenceRects(
     const ComputedStyle& style,
     const LayoutObject& layout_object);
 
+// Computes the outer path for border-shape clipping/hit-testing.
+// Uses the provided reference rect and the layout object to resolve
+// reference-box-relative shapes.
+Path ComputeBorderShapeOuterPath(const ComputedStyle& style,
+                                 const PhysicalRect& rect,
+                                 const LayoutObject* layout_object);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BORDER_SHAPE_UTILS_H_

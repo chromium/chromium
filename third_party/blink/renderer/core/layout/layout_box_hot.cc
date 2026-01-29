@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-
 namespace blink {
 
 bool LayoutBox::HasHitTestableOverflow() const {
