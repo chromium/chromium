@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -764,8 +765,20 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
       CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
                         kSearchA),
       // Reload the page to clear the matching result.
-      MoveMouseTo(kReloadButtonElementId), ClickMouse(),
-      WaitForWebContentsNavigation(kTabId),
+      // TODO(crbug.com/479732140): improve the test method to simplify the call.
+      MoveMouseTo(kReloadButtonElementId,
+#if !BUILDFLAG(IS_ANDROID)
+                  features::IsWebUIReloadButtonEnabled()
+                      ? RelativePositionSpecifier(
+                            base::BindOnce([](ui::TrackedElement* el) {
+                              return el->GetScreenBounds().CenterPoint();
+                            }))
+                      : CenterPoint()
+#else
+                  CenterPoint()
+#endif  // !BUILDFLAG(IS_ANDROID)
+                      ),
+      ClickMouse(), WaitForWebContentsNavigation(kTabId),
       WaitForState(views::test::kCurrentFocusedViewId,
                    ContentsWebView::kContentsWebViewElementId),
       // Focus the Find bar again to make sure the text is selected.
