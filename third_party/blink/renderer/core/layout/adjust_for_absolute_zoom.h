@@ -91,6 +91,11 @@ class AdjustForAbsoluteZoom {
     return PhysicalSize(AdjustLayoutUnit(size.width, style),
                         AdjustLayoutUnit(size.height, style));
   }
+  inline static gfx::SizeF AdjustSize(gfx::SizeF size,
+                                      const ComputedStyle& style) {
+    return gfx::SizeF{AdjustFloat(size.width(), style),
+                      AdjustFloat(size.height(), style)};
+  }
 
   inline static void AdjustQuadMaybeExcludingCSSZoom(
       gfx::QuadF& quad,

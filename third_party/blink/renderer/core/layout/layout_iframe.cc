@@ -56,6 +56,10 @@ PhysicalNaturalSizingInfo LayoutIFrame::GetNaturalDimensions() const {
       // Use the natural size received from the child frame if it exists.
       if (std::optional<NaturalSizingInfo> sizing_info =
               frame_view->GetNaturalDimensions()) {
+        // Use the block-size only.
+        // TODO(crbug.com/418397278): `writing-mode` isn't supported yet.
+        sizing_info->has_width = false;
+
         // Scale based on our zoom as the embedded document doesn't have that
         // info.
         sizing_info->size.Scale(StyleRef().EffectiveZoom());

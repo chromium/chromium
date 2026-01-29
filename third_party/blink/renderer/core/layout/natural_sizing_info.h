@@ -18,9 +18,15 @@ struct NaturalSizingInfo {
   static NaturalSizingInfo None() {
     return {gfx::SizeF(), gfx::SizeF(), false, false};
   }
+  // Create an instance of the specified size, with the same aspect ratio.
   static NaturalSizingInfo MakeFixed(const gfx::SizeF& natural_size) {
     return {natural_size, natural_size, true, true};
   }
+  // Create an instance of the specified size, without the aspect ratio.
+  static NaturalSizingInfo MakeSize(const gfx::SizeF& natural_size) {
+    return {.size = natural_size, .has_width = true, .has_height = true};
+  }
+  // Create an instance of the specified height.
   static NaturalSizingInfo MakeHeight(float height) {
     return {{0, height}, {}, false, true};
   }
