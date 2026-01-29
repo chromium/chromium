@@ -46,23 +46,22 @@ constexpr uint8_t BaseForType(SharedCharTypes type) {
 // The input is assumed to be ASCII. The components are assumed to be non-empty.
 template <typename CHAR>
 constexpr CanonHostInfo::Family IPv4ComponentToNumber(
-    const CHAR* spec,
-    const Component& component,
+    const std::basic_string_view<CHAR> component,
     uint32_t* number) {
   // Empty components are considered non-numeric.
-  if (component.is_empty()) {
+  if (component.empty()) {
     return CanonHostInfo::NEUTRAL;
   }
 
+  size_t len = component.length();
   // Figure out the base
   SharedCharTypes base;
-  int base_prefix_len = 0;  // Size of the prefix for this base.
-  if (UNSAFE_TODO(spec[component.begin]) == '0') {
+  size_t base_prefix_len = 0;  // Size of the prefix for this base.
+  if (component[0] == '0') {
     // Either hex or dec, or a standalone zero.
-    if (component.len == 1) {
+    if (len == 1) {
       base = CHAR_DEC;
-    } else if (UNSAFE_TODO(spec[component.begin + 1]) == 'X' ||
-               UNSAFE_TODO(spec[component.begin + 1]) == 'x') {
+    } else if (component[1] == 'X' || component[1] == 'x') {
       base = CHAR_HEX;
       base_prefix_len = 2;
     } else {
@@ -74,8 +73,7 @@ constexpr CanonHostInfo::Family IPv4ComponentToNumber(
   }
 
   // Extend the prefix to consume all leading zeros.
-  while (base_prefix_len < component.len &&
-         UNSAFE_TODO(spec[component.begin + base_prefix_len]) == '0') {
+  while (base_prefix_len < len && component[base_prefix_len] == '0') {
     base_prefix_len++;
   }
 
@@ -84,17 +82,17 @@ constexpr CanonHostInfo::Family IPv4ComponentToNumber(
   // discarded, filling the entire buffer is guaranteed to trigger the 32-bit
   // overflow check.
   const int kMaxComponentLen = 16;
-  char buf[kMaxComponentLen + 1];  // digits + '\0'
-  int dest_i = 0;
+  std::array<char, kMaxComponentLen + 1> buf;  // digits + '\0'
+  size_t dest_i = 0;
   bool may_be_broken_octal = false;
-  for (int i = component.begin + base_prefix_len; i < component.end(); i++) {
-    if (UNSAFE_TODO(spec[i]) >= 0x80) {
+  for (size_t i = base_prefix_len; i < len; ++i) {
+    if (component[i] >= 0x80) {
       return CanonHostInfo::NEUTRAL;
     }
 
     // We know the input is 7-bit, so convert to narrow (if this is the wide
     // version of the template) by casting.
-    auto input = static_cast<unsigned char>(UNSAFE_TODO(spec[i]));
+    auto input = static_cast<unsigned char>(component[i]);
 
     // Validate that this character is OK for the given base.
     if (!IsCharOfType(input, base)) {
@@ -110,7 +108,7 @@ constexpr CanonHostInfo::Family IPv4ComponentToNumber(
     // Fill the buffer, if there's space remaining. This check allows us to
     // verify that all characters are numeric, even those that don't fit.
     if (dest_i < kMaxComponentLen) {
-      UNSAFE_TODO(buf[dest_i++]) = static_cast<char>(input);
+      buf[dest_i++] = static_cast<char>(input);
     }
   }
 
@@ -118,11 +116,10 @@ constexpr CanonHostInfo::Family IPv4ComponentToNumber(
     return CanonHostInfo::BROKEN;
   }
 
-  UNSAFE_TODO(buf[dest_i]) = '\0';
-
   // Use the 64-bit StringToUint64WithBase so we get a big number (no hex,
   // decimal, or octal number can overflow a 64-bit number in <= 16 characters).
-  uint64_t num = StringToUint64WithBase(buf, BaseForType(base));
+  uint64_t num = StringToUint64WithBase(std::string_view(buf.data(), dest_i),
+                                        BaseForType(base));
 
   // Check for 32-bit overflow.
   if (num > std::numeric_limits<uint32_t>::max()) {
@@ -173,10 +170,8 @@ constexpr CanonHostInfo::Family DoIPv4AddressToNumber(
     }
 
     CanonHostInfo::Family family = IPv4ComponentToNumber(
-        host_view.data(),
-        Component(
-            base::checked_cast<int>(current_position),
-            base::checked_cast<int>(current_component_end - current_position)),
+        host_view.substr(current_position,
+                         current_component_end - current_position),
         &component_values[existing_components]);
 
     // If `family` is NEUTRAL and this is the last component, return NEUTRAL. If
