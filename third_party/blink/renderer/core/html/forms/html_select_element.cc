@@ -1138,10 +1138,14 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
         option_element->SetDirty(true);
         last_on_change_option_ = option_element;
       } else {
+        // If we couldn't restore any option, then reset to default selection
+        // instead of leaving this select in a broken state where no option is
+        // selected. See http://crbug.com/41360677
+        ResetToDefaultSelection();
         option_element = nullptr;
       }
     }
-    UpdateAllSelectedcontents(option_element);
+    UpdateAllSelectedcontents(last_on_change_option_);
   } else {
     wtf_size_t start_index = 0;
     for (wtf_size_t i = 0; i < state.ValueSize(); i += 2) {

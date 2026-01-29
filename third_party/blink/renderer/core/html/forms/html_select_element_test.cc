@@ -182,7 +182,7 @@ TEST_F(HTMLSelectElementTest, RestoreUnmatchedFormControlState) {
 
   SetHtmlInnerHTML(R"HTML(
     <select id='sel'>
-    <option selected>Default</option>
+    <option id='1' selected>Default</option>
     <option id='2'>222</option>
     </select>
   )HTML");
@@ -202,8 +202,9 @@ TEST_F(HTMLSelectElementTest, RestoreUnmatchedFormControlState) {
 
   // Restore
   select->RestoreFormControlState(select_state);
-  EXPECT_EQ(-1, To<HTMLSelectElement>(element)->selectedIndex());
-  EXPECT_EQ(nullptr, To<HTMLSelectElement>(element)->OptionToBeShown());
+  EXPECT_EQ(0, To<HTMLSelectElement>(element)->selectedIndex());
+  EXPECT_EQ(GetElementById("1"),
+            To<HTMLSelectElement>(element)->OptionToBeShown());
 }
 
 TEST_F(HTMLSelectElementTest, VisibleBoundsInLocalRoot) {
