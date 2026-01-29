@@ -1,0 +1,21 @@
+Name: Swift
+Short Name: Swift
+URL: https://github.com/swiftlang/swift.git
+Version: N/A
+Revision: 7f91815fb875c8bca266b895e45b4b95aff238c8
+Update Mechanism: Manual
+Security Critical: no
+Shipped: no
+License: Apache-2.0
+License File: src/LICENSE.txt
+
+Description:
+The swift compiler
+
+Local Modifications:
+This is a heavily pruned copy of the source repository, containing only the
+license file and the contents of the stdlib/public/Cxx subdirectory.
+Added OWNERS, README.chromium, README.md.
+Ported build rules from CMake to GN, with modifications to use Chromium's
+libc++, and added the 'Chromium' prefix to module names to disambiguate them
+from system modules.

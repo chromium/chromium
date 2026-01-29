@@ -1,0 +1,9 @@
+module CxxShim {
+  header "libcxxshim.h"
+  requires cplusplus
+}
+
+module CxxStdlibShim {
+  header "libcxxstdlibshim.h"
+  requires cplusplus
+}
