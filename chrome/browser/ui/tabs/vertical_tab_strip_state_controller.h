@@ -9,13 +9,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/sessions/session_service_base_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class BrowserList;
 class BrowserWindowInterface;
 class PrefService;
 class SessionService;
@@ -27,7 +27,7 @@ class ActionItem;
 namespace tabs {
 
 class VerticalTabStripStateController : public SessionServiceBaseObserver,
-                                        public BrowserListObserver {
+                                        public BrowserCollectionObserver {
  public:
   DECLARE_USER_DATA(VerticalTabStripStateController);
 
@@ -88,8 +88,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   // SessionServiceBase::SessionServiceBaseObserver:
   void OnDestroying(SessionServiceBase* service) override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   const raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
@@ -104,8 +104,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
       on_collapse_changed_callback_list_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
       on_mode_changed_callback_list_;
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   ui::ScopedUnownedUserData<VerticalTabStripStateController>
       scoped_unowned_user_data_;
 };

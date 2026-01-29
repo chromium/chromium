@@ -464,6 +464,7 @@ if (!is_android) {
       "//chrome/browser/sessions",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/startup:startup_tab",
