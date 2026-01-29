@@ -43,16 +43,17 @@ void PermissionsAiv3Executor::SetThresholdValues(
     // ...
     // val < thr[4] -> High
     // val >= thr[4] -> VeryHigh
-    relevance_thresholds() = {0.2f, 0.4f, 0.7f, 0.84f};
     if (request_type() == RequestType::kGeolocation) {
-      relevance_thresholds() = {0.2f, 0.4f, 0.5f, 0.65f};
+      set_relevance_thresholds({0.2f, 0.4f, 0.5f, 0.65f});
+    } else {
+      set_relevance_thresholds({0.2f, 0.4f, 0.7f, 0.84f});
     }
     return;
   }
   const auto& thresholds = metadata.value().relevance_thresholds();
-  relevance_thresholds() = {
-      thresholds.min_low_relevance(), thresholds.min_medium_relevance(),
-      thresholds.min_high_relevance(), thresholds.min_very_high_relevance()};
+  set_relevance_thresholds(
+      {thresholds.min_low_relevance(), thresholds.min_medium_relevance(),
+       thresholds.min_high_relevance(), thresholds.min_very_high_relevance()});
 }
 
 }  // namespace permissions
