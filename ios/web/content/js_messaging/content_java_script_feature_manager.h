@@ -63,9 +63,9 @@ class ContentJavaScriptFeatureManager {
   // The features which are managed by this feature manager.
   std::set<const JavaScriptFeature*> features_;
 
-  // Maps handler names to message handlers.
-  std::map<std::string, JavaScriptFeature::ScriptMessageHandler>
-      script_message_handlers_;
+  // Maps handler names to features that handle script messages.
+  std::map<std::string, base::WeakPtr<JavaScriptFeature>>
+      script_message_features_;
 
   // Scripts that are injected when the document element is created.
   std::vector<std::u16string> document_start_scripts_;

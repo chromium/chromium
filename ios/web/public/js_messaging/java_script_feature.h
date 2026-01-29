@@ -37,6 +37,7 @@ class WebFramesManager;
 // state itself and can be used application-wide across browser states. However,
 // this is not guaranteed of JavaScriptFeature subclasses.
 class JavaScriptFeature {
+  friend class ContentJavaScriptFeatureManager;
   // `FuzzerEnvWithJavaScriptFeature` stores subclasses of `JavaScriptFeature`
   // and invokes `ScriptMessageReceived` function in a public API. So fuzzers
   // can call `ScriptMessageReceived` functions without friending with each
