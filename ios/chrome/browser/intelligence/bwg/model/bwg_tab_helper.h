@@ -104,11 +104,6 @@ class BwgTabHelper : public web::WebStateObserver,
   // Gets the state of `is_first_run`.
   bool GetIsFirstRun();
 
-  // Gets the state of Gemini eligibility for the tab. The value starts as
-  // `std::nullopt` until the computation occurs in `ComputeGeminiEligibility`.
-  // Whenever a new navigation starts, it is reset to `std::nullopt`.
-  std::optional<bool> GetIsGeminiEligible();
-
   // Returns whether to prevent contextual panel entrypoint based on Gemini IPH
   // criteria.
   bool ShouldPreventContextualPanelEntryPoint();
@@ -260,10 +255,6 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Whether this is a first run experience.
   bool is_first_run_ = false;
-
-  // Whether the content has been deemed eligible for Gemini usage. Optional
-  // because we don't know the true value until it gets computed async.
-  std::optional<bool> is_gemini_eligible_;
 
   // The URL from the previous successful main frame navigation. This will be
   // empty if this is the first navigation for this tab or post-restart.

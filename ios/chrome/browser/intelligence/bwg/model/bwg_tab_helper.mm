@@ -256,10 +256,6 @@ bool BwgTabHelper::GetIsFirstRun() {
   return is_first_run_;
 }
 
-std::optional<bool> BwgTabHelper::GetIsGeminiEligible() {
-  return is_gemini_eligible_;
-}
-
 bool BwgTabHelper::ShouldPreventContextualPanelEntryPoint() {
   return prevent_contextual_panel_entry_point_;
 }
@@ -283,9 +279,7 @@ void BwgTabHelper::SetContextualCueLabel(NSString* cue_label) {
 GeminiPageContext* BwgTabHelper::GetPartialPageContext() {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
   gemini_page_context.BWGPageContextComputationState =
-      is_gemini_eligible_.value_or(true)
-          ? ios::provider::BWGPageContextComputationState::kPending
-          : ios::provider::BWGPageContextComputationState::kBlocked;
+      ios::provider::BWGPageContextComputationState::kPending;
   gemini_page_context.favicon = current_favicon_;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
@@ -450,7 +444,6 @@ void BwgTabHelper::DidStartNavigation(
   }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
-  is_gemini_eligible_ = std::nullopt;
   current_url_ = new_url;
   if (IsGeminiCopresenceEnabled()) {
     NotifyPageContextUpdated(web_state_);
@@ -778,11 +771,6 @@ void BwgTabHelper::OnGeminiEligibilityDecision(
   }
 
   const bool eligible = ComputeGeminiEligibility(decision, metadata);
-  is_gemini_eligible_ = eligible;
-  if (IsGeminiCopresenceEnabled()) {
-    NotifyPageContextUpdated(web_state_);
-  }
-
   if (IsZeroStateSuggestionsEnabled()) {
     zero_state_suggestions_->can_apply = eligible;
   }
