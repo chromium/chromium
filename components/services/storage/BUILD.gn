@@ -214,6 +214,7 @@ source_set("tests") {
     "dom_storage/session_storage_metadata_unittest.cc",
     "dom_storage/session_storage_namespace_impl_unittest.cc",
     "dom_storage/sqlite/local_storage_sqlite_unittest.cc",
+    "dom_storage/sqlite/map_entries_table_unittest.cc",
     "dom_storage/sqlite/session_storage_sqlite_unittest.cc",
     "dom_storage/storage_area_impl_unittest.cc",
     "indexed_db/locks/partitioned_lock_manager_unittest.cc",

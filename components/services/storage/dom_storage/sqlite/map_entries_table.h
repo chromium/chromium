@@ -41,16 +41,16 @@ class MapEntriesTable {
 
   // Read all of a map's key/value pairs.
   StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
-  GetMapKeyValues(const DomStorageDatabase::MapLocator& map_locator);
+  GetMapKeyValues(int64_t map_id);
 
-  // Persist all `map_updates`. Each update adds, modifies and/or deletes
-  // key/value pairs in a map.
-  DbStatus UpdateMaps(
-      std::vector<DomStorageDatabase::MapBatchUpdate> map_updates);
+  // Persist `map_update`, which adds, modifies and/or deletes the map's
+  // key/value pairs. The caller must begin a database transaction before
+  // calling this function.
+  DbStatus UpdateMap(DomStorageDatabase::MapBatchUpdate map_update);
 
-  // Delete all of the key/value pairs for each map in `maps_to_delete`.
-  DbStatus DeleteMaps(
-      std::vector<DomStorageDatabase::MapLocator> maps_to_delete);
+  // Delete all of the key/value pairs in `map_id`. The
+  // caller must begin a database transaction before calling this function.
+  DbStatus DeleteMap(int64_t map_id);
 
  private:
   raw_ptr<sql::Database> database_;
