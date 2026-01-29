@@ -122,10 +122,9 @@ void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
       break;
     case TabStripModelChange::kRemoved: {
       for (const auto& contents : change.GetRemove()->contents) {
-        if (contents.remove_reason ==
-                TabStripModelChange::RemoveReason::kDeleted ||
+        if (contents.remove_reason == TabRemovedReason::kDeleted ||
             contents.remove_reason ==
-                TabStripModelChange::RemoveReason::kInsertedIntoSidePanel) {
+                TabRemovedReason::kInsertedIntoSidePanel) {
           DispatchTabClosingAt(tab_strip_model, contents.contents,
                                contents.index);
         }

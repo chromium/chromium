@@ -1124,7 +1124,7 @@ void TabWebContentsInteractionTestUtil::OnTabStripModelChanged(
       // We won't handle deleted reason here, since we already capture
       // WebContentsDestroyed().
       if (removed_tab.remove_reason ==
-          TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip) {
+          TabRemovedReason::kInsertedIntoOtherTabStrip) {
         DiscardCurrentElement();
         Observe(nullptr);
       }

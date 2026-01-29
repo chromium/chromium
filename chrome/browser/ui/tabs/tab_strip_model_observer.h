@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tabs/tab_removed_reason.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -55,22 +56,10 @@ class TabStripModelChange {
  public:
   enum Type { kSelectionOnly, kInserted, kRemoved, kMoved, kReplaced };
 
-  // Used to specify what will happen with the tab after it is removed.
-  enum class RemoveReason {
-    // Tab will be deleted.
-    kDeleted,
-
-    // Tab got detached from a TabStrip and inserted into another TabStrip.
-    kInsertedIntoOtherTabStrip,
-
-    // Insert the WebContents into side panel.
-    kInsertedIntoSidePanel
-  };
-
   struct RemovedTab {
     RemovedTab(tabs::TabInterface* tab,
                int index,
-               RemoveReason remove_reason,
+               TabRemovedReason remove_reason,
                tabs::TabInterface::DetachReason tab_detach_reason,
                std::optional<SessionID> session_id);
     virtual ~RemovedTab();
@@ -81,7 +70,7 @@ class TabStripModelChange {
     raw_ptr<tabs::TabInterface> tab = nullptr;
     raw_ptr<content::WebContents> contents = nullptr;
     int index;
-    RemoveReason remove_reason;
+    TabRemovedReason remove_reason;
     tabs::TabInterface::DetachReason tab_detach_reason;
     std::optional<SessionID> session_id;
   };

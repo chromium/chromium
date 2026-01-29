@@ -196,7 +196,7 @@ DetachedTab::DetachedTab(int index_before_any_removals,
                          int index_at_time_of_removal,
                          bool was_pinned_at_time_of_removal,
                          std::unique_ptr<tabs::TabModel> tab,
-                         TabStripModelChange::RemoveReason remove_reason,
+                         TabRemovedReason remove_reason,
                          tabs::TabInterface::DetachReason tab_detach_reason,
                          std::optional<SessionID> id)
     : tab(std::move(tab)),
@@ -439,15 +439,14 @@ std::unique_ptr<content::WebContents> TabStripModel::DiscardWebContentsAt(
 std::unique_ptr<tabs::TabModel> TabStripModel::DetachTabAtForInsertion(
     int index) {
   auto dt = DetachTabWithReasonAt(
-      index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
+      index, TabRemovedReason::kInsertedIntoOtherTabStrip,
       tabs::TabInterface::DetachReason::kInsertIntoOtherWindow);
   return std::move(dt->tab);
 }
 
 std::unique_ptr<content::WebContents>
-TabStripModel::DetachWebContentsAtForInsertion(
-    int index,
-    TabStripModelChange::RemoveReason reason) {
+TabStripModel::DetachWebContentsAtForInsertion(int index,
+                                               TabRemovedReason reason) {
   auto dt = DetachTabWithReasonAt(index, reason,
                                   tabs::TabInterface::DetachReason::kDelete);
   return tabs::TabModel::DestroyAndTakeWebContents(std::move(dt->tab));
@@ -455,7 +454,7 @@ TabStripModel::DetachWebContentsAtForInsertion(
 
 void TabStripModel::DetachAndDeleteWebContentsAt(int index) {
   // Drops the returned unique pointer.
-  DetachTabWithReasonAt(index, TabStripModelChange::RemoveReason::kDeleted,
+  DetachTabWithReasonAt(index, TabRemovedReason::kDeleted,
                         tabs::TabInterface::DetachReason::kDelete);
 }
 
@@ -492,7 +491,7 @@ TabStripModel::DetachTabsAndCollectionsForInsertion(
           DetachSplitTabForInsertion(tab_interface->GetSplit().value()));
     } else {
       owned_tabs_and_collections.emplace_back(DetachTabWithReasonAt(
-          index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
+          index, TabRemovedReason::kInsertedIntoOtherTabStrip,
           tabs::TabInterface::DetachReason::kInsertIntoOtherWindow));
     }
   }
@@ -502,7 +501,7 @@ TabStripModel::DetachTabsAndCollectionsForInsertion(
 
 std::unique_ptr<DetachedTab> TabStripModel::DetachTabWithReasonAt(
     int index,
-    TabStripModelChange::RemoveReason web_contents_remove_reason,
+    TabRemovedReason web_contents_remove_reason,
     tabs::TabInterface::DetachReason tab_detach_reason) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
@@ -736,8 +735,7 @@ TabStripModelChange::Remove TabStripModel::ProcessTabsForDetach(
 
     // Record this removal in the `Remove` event payload.
     remove.contents.emplace_back(
-        tab, index,
-        TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
+        tab, index, TabRemovedReason::kInsertedIntoOtherTabStrip,
         tabs::TabInterface::DetachReason::kInsertIntoOtherWindow, std::nullopt);
   }
 
@@ -915,7 +913,7 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
     int index_before_any_removals,
     int index_at_time_of_removal,
     bool create_historical_tab,
-    TabStripModelChange::RemoveReason web_contents_remove_reason,
+    TabRemovedReason web_contents_remove_reason,
     tabs::TabInterface::DetachReason tab_detach_reason) {
   if (empty()) {
     return nullptr;
@@ -996,7 +994,7 @@ void TabStripModel::SendDetachWebContentsNotifications(
   }
 
   for (auto& dt : notifications->detached_tab) {
-    if (dt->remove_reason == TabStripModelChange::RemoveReason::kDeleted) {
+    if (dt->remove_reason == TabRemovedReason::kDeleted) {
       // This destroys the WebContents, which will also send
       // WebContentsDestroyed notifications.
       dt->tab.reset();
@@ -3945,10 +3943,9 @@ bool TabStripModel::CloseWebContentses(
 
     bool create_historical_tab =
         close_types & TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB;
-    auto dt =
-        DetachTabImpl(original_indices[i], current_index, create_historical_tab,
-                      TabStripModelChange::RemoveReason::kDeleted,
-                      tabs::TabInterface::DetachReason::kDelete);
+    auto dt = DetachTabImpl(original_indices[i], current_index,
+                            create_historical_tab, TabRemovedReason::kDeleted,
+                            tabs::TabInterface::DetachReason::kDelete);
     detached_tab.push_back(std::move(dt));
   }
 

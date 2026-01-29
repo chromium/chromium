@@ -416,8 +416,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         // Transfer the WebContents from tab 4 to the side panel.
         std::unique_ptr<content::WebContents> contextual_task_contents =
             tab_strip_model->DetachWebContentsAtForInsertion(
-                detach_index,
-                TabStripModelChange::RemoveReason::kInsertedIntoSidePanel);
+                detach_index, TabRemovedReason::kInsertedIntoSidePanel);
         tab_web_contents = contextual_task_contents.get();
 
         coordinator->TransferWebContentsFromTab(
@@ -487,8 +486,7 @@ IN_PROC_BROWSER_TEST_F(
         // Transfer the WebContents from tab 4 to the side panel.
         std::unique_ptr<content::WebContents> contextual_task_contents =
             tab_strip_model->DetachWebContentsAtForInsertion(
-                detach_index,
-                TabStripModelChange::RemoveReason::kInsertedIntoSidePanel);
+                detach_index, TabRemovedReason::kInsertedIntoSidePanel);
         tab_web_contents = contextual_task_contents.get();
 
         coordinator->TransferWebContentsFromTab(

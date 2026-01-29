@@ -25,6 +25,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_removed_reason.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -111,7 +112,7 @@ struct DetachedTab {
               int index_at_time_of_removal,
               bool was_pinned_at_time_of_removal,
               std::unique_ptr<tabs::TabModel> tab,
-              TabStripModelChange::RemoveReason remove_reason,
+              TabRemovedReason remove_reason,
               tabs::TabInterface::DetachReason tab_detach_reason,
               std::optional<SessionID> id);
   DetachedTab(const DetachedTab&) = delete;
@@ -138,7 +139,7 @@ struct DetachedTab {
   // tab is detached for re-insertion into a browser of different type,
   // in which case the TabInterface is destroyed but the WebContents is
   // retained.
-  TabStripModelChange::RemoveReason remove_reason;
+  TabRemovedReason remove_reason;
   tabs::TabInterface::DetachReason tab_detach_reason;
 
   // The |contents| associated optional SessionID, used as key for
@@ -351,8 +352,7 @@ class TabStripModel {
   // or TabModel.
   std::unique_ptr<content::WebContents> DetachWebContentsAtForInsertion(
       int index,
-      TabStripModelChange::RemoveReason reason =
-          TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip);
+      TabRemovedReason reason = TabRemovedReason::kInsertedIntoOtherTabStrip);
 
   // Detaches the WebContents at the specified index and immediately deletes it.
   void DetachAndDeleteWebContentsAt(int index);
@@ -1010,7 +1010,7 @@ class TabStripModel {
   // owning TabModel may be destroyed).
   std::unique_ptr<DetachedTab> DetachTabWithReasonAt(
       int index,
-      TabStripModelChange::RemoveReason web_contents_remove_reason,
+      TabRemovedReason web_contents_remove_reason,
       tabs::TabInterface::DetachReason tab_detach_reason);
 
   // Performs all the work to detach a TabModel instance but avoids sending
@@ -1021,7 +1021,7 @@ class TabStripModel {
       int index_before_any_removals,
       int index_at_time_of_removal,
       bool create_historical_tab,
-      TabStripModelChange::RemoveReason web_contents_remove_reason,
+      TabRemovedReason web_contents_remove_reason,
       tabs::TabInterface::DetachReason tab_detach_reason);
 
   // Removes a tab collection from `contents_data_` using

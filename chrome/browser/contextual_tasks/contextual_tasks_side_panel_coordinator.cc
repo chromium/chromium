@@ -703,10 +703,9 @@ void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
     for (const auto& content : change.GetRemove()->contents) {
       // Do not disassociate the tab from the task if insert into side panel or
       // another tab strip.
-      if (content.remove_reason !=
-              TabStripModelChange::RemoveReason::kInsertedIntoSidePanel &&
+      if (content.remove_reason != TabRemovedReason::kInsertedIntoSidePanel &&
           content.remove_reason !=
-              TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip) {
+              TabRemovedReason::kInsertedIntoOtherTabStrip) {
         DisassociateTabFromTask(content.contents);
       }
     }

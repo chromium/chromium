@@ -280,14 +280,14 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
     auto* remove = change.GetRemove();
     for (const auto& contents : remove->contents) {
       switch (contents.remove_reason) {
-        case TabStripModelChange::RemoveReason::kDeleted:
-        case TabStripModelChange::RemoveReason::kInsertedIntoSidePanel:
+        case TabRemovedReason::kDeleted:
+        case TabRemovedReason::kInsertedIntoSidePanel:
 #if DCHECK_IS_ON()
           DCHECK(!tabs_in_transit_.contains(contents.contents));
 #endif
           OnTabClosing(contents.contents);
           break;
-        case TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip:
+        case TabRemovedReason::kInsertedIntoOtherTabStrip:
           // The tab will be reinserted immediately into another browser, so
           // this event is ignored.
           if (browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS) {

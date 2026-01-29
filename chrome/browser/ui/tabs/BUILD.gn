@@ -14,6 +14,7 @@ source_set("tabs_public") {
     "public/tab_dialog_manager.h",
     "public/tab_features.h",
     "tab_network_state.h",
+    "tab_removed_reason.h",
   ]
   sources = [ "tab_network_state.cc" ]
   public_deps = [

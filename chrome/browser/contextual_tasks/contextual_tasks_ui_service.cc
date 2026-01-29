@@ -407,8 +407,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // Detach the WebContents from tab.
   std::unique_ptr<content::WebContents> contextual_task_contents =
       tab_strip_model->DetachWebContentsAtForInsertion(
-          current_index,
-          TabStripModelChange::RemoveReason::kInsertedIntoSidePanel);
+          current_index, TabRemovedReason::kInsertedIntoSidePanel);
   content::WebContents* contextual_task_contents_ptr =
       contextual_task_contents.get();
 

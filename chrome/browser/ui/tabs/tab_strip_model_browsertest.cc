@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
       }
     }
 
-    std::optional<TabStripModelChange::RemoveReason> remove_reason() const {
+    std::optional<TabRemovedReason> remove_reason() const {
       return remove_reason_;
     }
     std::optional<tabs::TabInterface::DetachReason> tab_detach_reason() const {
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
     }
 
    private:
-    std::optional<TabStripModelChange::RemoveReason> remove_reason_;
+    std::optional<TabRemovedReason> remove_reason_;
     std::optional<tabs::TabInterface::DetachReason> tab_detach_reason_;
   };
 
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
                   tabs::TabInterface::DetachReason::kDelete));
   std::unique_ptr<content::WebContents> extracted_contents =
       tab_strip_model->DetachWebContentsAtForInsertion(1);
-  EXPECT_EQ(TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
+  EXPECT_EQ(TabRemovedReason::kInsertedIntoOtherTabStrip,
             removed_observer.remove_reason());
   EXPECT_EQ(tabs::TabInterface::DetachReason::kDelete,
             removed_observer.tab_detach_reason());

@@ -291,11 +291,11 @@ class MockTabStripModelObserver : public TabStripModelObserver {
       case TabStripModelChange::kRemoved: {
         for (const auto& contents : change.GetRemove()->contents) {
           switch (contents.remove_reason) {
-            case TabStripModelChange::RemoveReason::kDeleted:
-            case TabStripModelChange::RemoveReason::kInsertedIntoSidePanel:
+            case TabRemovedReason::kDeleted:
+            case TabRemovedReason::kInsertedIntoSidePanel:
               PushCloseState(contents.contents, contents.index);
               break;
-            case TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip:
+            case TabRemovedReason::kInsertedIntoOtherTabStrip:
               break;
           }
           PushDetachState(contents.contents, contents.index,
