@@ -473,6 +473,10 @@ const char kDisableLensCameraDescription[] =
     "camera menu when Google is the selected search engine, accessible from "
     "the home screen widget, new tab page, and keyboard, is disabled.";
 
+const char kDisableShareButtonName[] = "Disable Share Button in Toolbar";
+const char kDisableShareButtonDescription[] =
+    "Hides the share button in toolbar.";
+
 const char kDownloadAutoDeletionClearFilesOnEveryStartupName[] =
     "Enable Download Auto-Deletion Testing Mode";
 const char kDownloadAutoDeletionClearFilesOnEveryStartupDescription[] =
@@ -1417,6 +1421,18 @@ const char kSendTabToSelfIOSPushNotificationsName[] =
 const char kSendTabToSelfIOSPushNotificationsDescription[] =
     "Feature to allow users to send tabs to their iOS device through a system "
     "push notitification.";
+
+const char kShareInOmniboxLongPressName[] = "Share in Omnibox Long Press";
+const char kShareInOmniboxLongPressDescription[] =
+    "Displays an option to share current page in the omnibox long press menu";
+
+const char kShareInOverflowMenuName[] = "Share in Overflow Menu";
+const char kShareInOverflowMenuDescription[] =
+    "Displays share menu item in overflow menu";
+
+const char kShareInVerbatimMatchName[] = "Share in Verbatim Match";
+const char kShareInVerbatimMatchDescription[] =
+    "Displays share button in the omnibox verbatim match";
 
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =

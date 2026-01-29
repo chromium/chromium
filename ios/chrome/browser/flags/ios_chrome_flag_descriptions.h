@@ -288,6 +288,9 @@ extern const char kDisableKeyboardAccessoryDescription[];
 extern const char kDisableLensCameraName[];
 extern const char kDisableLensCameraDescription[];
 
+extern const char kDisableShareButtonName[];
+extern const char kDisableShareButtonDescription[];
+
 extern const char kDownloadAutoDeletionClearFilesOnEveryStartupName[];
 extern const char kDownloadAutoDeletionClearFilesOnEveryStartupDescription[];
 
@@ -855,6 +858,15 @@ extern const char
 
 extern const char kSendTabToSelfIOSPushNotificationsName[];
 extern const char kSendTabToSelfIOSPushNotificationsDescription[];
+
+extern const char kShareInOmniboxLongPressName[];
+extern const char kShareInOmniboxLongPressDescription[];
+
+extern const char kShareInOverflowMenuName[];
+extern const char kShareInOverflowMenuDescription[];
+
+extern const char kShareInVerbatimMatchName[];
+extern const char kShareInVerbatimMatchDescription[];
 
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];

@@ -8449,6 +8449,26 @@
     "expiry_milestone": 170
   },
   {
+    "name": "share-ablation-hide-share-in-toolbar",
+    "owners": [ "stkhapugin@google.com", "bling-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "share-ablation-omnibox-long-press",
+    "owners": [ "stkhapugin@google.com", "bling-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "share-ablation-omnibox-overflow-menu",
+    "owners": [ "stkhapugin@google.com", "bling-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "share-ablation-verbatim-match",
+    "owners": [ "stkhapugin@google.com", "bling-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "shared-data-types-kill-switch",
     "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 150

@@ -926,4 +926,10 @@ bool IsEnableNewStartupFlowEnabled();
 // Updates EnableNewStartupFlow NSUserDefaults key if the value was changed.
 void SaveEnableNewStartupFlowForNextStart();
 
+// Flags for Share Ablation study.
+BASE_DECLARE_FEATURE(kDisableShareButton);
+BASE_DECLARE_FEATURE(kShareInOmniboxLongPress);
+BASE_DECLARE_FEATURE(kShareInOverflowMenu);
+BASE_DECLARE_FEATURE(kShareInVerbatimMatch);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
