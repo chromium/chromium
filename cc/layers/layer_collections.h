@@ -25,8 +25,7 @@ using OwnedLayerImplList = std::vector<std::unique_ptr<LayerImpl>>;
 using LayerImplList = RAW_PTR_EXCLUSION std::vector<LayerImpl*>;
 using RenderSurfaceList = RAW_PTR_EXCLUSION std::vector<RenderSurfaceImpl*>;
 using OwnedLayerImplMap = std::unordered_map<int, std::unique_ptr<LayerImpl>>;
-using LayerImplMap =
-    std::unordered_map<int, raw_ptr<LayerImpl, CtnExperimental>>;
+using LayerImplMap = RAW_PTR_EXCLUSION std::unordered_map<int, LayerImpl*>;
 
 }  // namespace cc
 
