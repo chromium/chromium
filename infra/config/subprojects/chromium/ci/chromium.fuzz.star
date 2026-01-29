@@ -869,7 +869,6 @@ libfuzzer_builder(
         "asan",
         "no_dsyms",
         "no_remoting",
-        "disable_be_deferred_context_menu",
     ],
     use_component_build = False,
     xcode = xcode.xcode_default,
