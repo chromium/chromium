@@ -29,7 +29,6 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/ios_security_interstitial_page.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 
@@ -55,16 +54,13 @@ void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
           chrome_test_util::GetOriginalProfile()));
 }
 
-bool isShowingInterstitialForState(web::WebState* web_state) {
+bool IsShowingInterstitialForState(web::WebState* web_state) {
   CHECK(web_state);
-  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
-    // If kCreateTabHelperOnlyForRealizedWebStates feature is enabled, then
-    // the tab helpers are not created for unrealized WebStates. If the tab
-    // helpers are not created, they cannot be presenting an interstitial,
-    // so return early in that case.
-    if (!web_state->IsRealized()) {
-      return false;
-    }
+  // The tab helpers are not created for unrealized WebStates. If the tab
+  // helpers are not created, they cannot be presenting an interstitial,
+  // so return early in that case.
+  if (!web_state->IsRealized()) {
+    return false;
   }
 
   auto* blocking_tab_helper =
@@ -174,7 +170,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   int count = 0;
   int tab_count = chrome_test_util::GetMainTabCount();
   for (int i = 0; i < tab_count; i++) {
-    if (isShowingInterstitialForState(
+    if (IsShowingInterstitialForState(
             chrome_test_util::GetWebStateAtIndexInCurrentMode(i))) {
       count++;
     }
