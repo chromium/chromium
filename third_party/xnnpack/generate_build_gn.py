@@ -351,19 +351,21 @@ def _run_bazel_cmd(args: list[str]) -> str:
     Raises:
       Exception if the command failed.
     """
-    # Use standard Bazel install instead of the one included with depot_tools.
-    exec_path = "/usr/bin/bazel"
-    if not exec_path:
-        raise Exception(
-            "bazel is not installed. Please run `sudo apt-get install " +
-            "bazel` or put the bazel executable in $PATH")
+    # Use bazelisk so that we can select a specific bazel version. We need a
+    # version prior to 9.0.0 since that version no longer has built-in support
+    # for cc_* rules, and XNNPACK doesn't have the necessary load statements to
+    # load those rules.
+    exec_path = "/google/bin/releases/bazel-infra/bazelisk/gbazelisk"
 
     cmd = [exec_path]
     cmd.extend(args)
     logging.info('Running: %s', cmd)
+    env = dict(os.environ)
+    env['USE_BAZEL_VERSION'] = '8.x'
     proc = subprocess.Popen(cmd,
                             text=True,
                             cwd=_bazelroot(),
+                            env=env,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
@@ -383,7 +385,7 @@ def _query_object_builds(platform: _Platform) -> list[ObjectBuild]:
         ObjectBuilds for each compile command on XNNPACK sources.
     """
     logging.info('Querying xnnpack compile commands '
-                 'for {platform.bazel_platform} with bazel...')
+                 f'for {platform.bazel_platform} with bazel...')
     # Make sure we have a clean start, this is important if the Android NDK
     # version changed.
     _run_bazel_cmd(['clean'])
