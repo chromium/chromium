@@ -11375,21 +11375,6 @@
             ]
         }
     ],
-    "GeminiCopresence": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiCopresence"
-                    ]
-                }
-            ]
-        }
-    ],
     "GeminiRefactoredFRE": [
         {
             "platforms": [
