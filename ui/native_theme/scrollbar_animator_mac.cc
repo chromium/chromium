@@ -154,6 +154,19 @@ void OverlayScrollbarAnimatorMac::DidScroll() {
   FadeOutTimerUpdate();
 }
 
+void OverlayScrollbarAnimatorMac::FadeInScrollbar() {
+  fade_out_deferred_ = true;
+  DidScroll();
+}
+
+void OverlayScrollbarAnimatorMac::FadeOutScrollbarIfNeeded() {
+  if (!fade_out_deferred_) {
+    return;
+  }
+  fade_out_deferred_ = false;
+  FadeOutTimerUpdate();
+}
+
 void OverlayScrollbarAnimatorMac::ExpandThumbAnimationStart() {
   DCHECK(!expand_thumb_animation_);
   DCHECK_NE(thumb_width_, thumb_width_expanded_);
@@ -199,7 +212,7 @@ void OverlayScrollbarAnimatorMac::FadeInTrackAnimationTicked(double progress) {
 }
 
 void OverlayScrollbarAnimatorMac::FadeOutTimerUpdate() {
-  if (mouse_in_track_) {
+  if (mouse_in_track_ || fade_out_deferred_) {
     start_scrollbar_fade_out_timer_.reset();
     return;
   }

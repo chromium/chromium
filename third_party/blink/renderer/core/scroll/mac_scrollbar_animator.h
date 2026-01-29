@@ -51,6 +51,7 @@ class CORE_EXPORT MacScrollbarAnimator
   virtual void Dispose() = 0;
 
   virtual bool FadeInScrollbarIfExists(bool horizontal, bool vertical) = 0;
+  virtual void FadeOutScrollbarIfNeeded() = 0;
 };
 
 }  // namespace blink

@@ -1142,6 +1142,18 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
     }
   }
 
+  if (result == DROP_EVENT) {
+    // Do not drop began and cancelled events to ensure that the events are
+    // forwarded to the main thread to start fading out scrollbars after a
+    // MayBegin event.
+    if (wheel_event.phase == WebMouseWheelEvent::kPhaseBegan ||
+        wheel_event.momentum_phase == WebMouseWheelEvent::kPhaseBegan) {
+      result = DID_NOT_HANDLE_NON_BLOCKING;
+    } else if (wheel_event.phase == WebMouseWheelEvent::kPhaseCancelled) {
+      result = DID_NOT_HANDLE;
+    }
+  }
+
   mouse_wheel_result_ = result;
   return result;
 }

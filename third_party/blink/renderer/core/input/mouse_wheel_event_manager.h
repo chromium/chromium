@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/input/scroll_manager.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -16,6 +17,7 @@ class Document;
 class LocalFrame;
 class LocalFrameView;
 class Node;
+class ScrollableArea;
 class WebMouseWheelEvent;
 
 class MouseWheelEventManager final
@@ -36,10 +38,16 @@ class MouseWheelEventManager final
   Node* FindTargetNode(const WebMouseWheelEvent&,
                        const Document*,
                        const LocalFrameView*);
+  void UpdateWheelTarget(Node* wheel_target);
+  void FadeInChainedScrollbarsAndDeferFadeOut();
+  void FadeOutScrollbarsIfNeeded();
 
   const Member<LocalFrame> frame_;
   Member<Node> wheel_target_;
   Member<ScrollManager> scroll_manager_;
+  // Keeps scrollables that contains a scrollbar deferred fade-out after
+  // faded-in at kPhaseMayBegin wheel event.
+  HeapHashSet<WeakMember<ScrollableArea>> fade_out_deferred_scrollables_;
 };
 
 }  // namespace blink

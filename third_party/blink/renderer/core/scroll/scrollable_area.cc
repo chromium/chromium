@@ -168,6 +168,12 @@ bool ScrollableArea::FadeInScrollbarIfExists(bool horizontal, bool vertical) {
   return false;
 }
 
+void ScrollableArea::FadeOutScrollbarIfNeeded() {
+  if (GetMacScrollbarAnimator()) {
+    GetMacScrollbarAnimator()->FadeOutScrollbarIfNeeded();
+  }
+}
+
 ScrollAnimatorBase& ScrollableArea::GetScrollAnimator() const {
   if (!scroll_animator_) {
     scroll_animator_ =

@@ -78,6 +78,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) OverlayScrollbarAnimatorMac {
   // Called in response to a scroll in the direction of this scrollbar.
   void DidScroll();
 
+  void FadeInScrollbar();
+  void FadeOutScrollbarIfNeeded();
+
   // Retrieve the rendering properties of the scrollbar.
   float GetThumbAlpha() const { return thumb_alpha_; }
   float GetTrackAlpha() const { return track_alpha_; }
@@ -104,6 +107,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OverlayScrollbarAnimatorMac {
   float track_alpha_ = 0;
   bool mouse_in_track_ = false;
   bool animations_enabled_;
+  bool fade_out_deferred_ = false;
 
   static constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
   static constexpr base::TimeDelta kFadeOutDelay = base::Milliseconds(500);

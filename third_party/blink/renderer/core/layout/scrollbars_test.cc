@@ -3588,70 +3588,123 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
 }
 
 #if BUILDFLAG(IS_MAC)
-class MockMacScrollbarAnimator : public MacScrollbarAnimator {
+class ScrollbarsTestWithMacScrollbarAnimatorProxy : public ScrollbarsTest {
  public:
-  MockMacScrollbarAnimator() : animator_impl_(nullptr) {}
-  explicit MockMacScrollbarAnimator(MacScrollbarAnimator* animator_impl)
-      : animator_impl_(animator_impl) {}
-  virtual ~MockMacScrollbarAnimator() = default;
+  void SetUp() override { ScrollbarsTest::SetUp(); }
 
-  void MouseEnteredScrollbar(Scrollbar& scrollbar) const override {
-    if (animator_impl_) {
+  void TearDown() override { ScrollbarsTest::TearDown(); }
+
+ protected:
+  struct Counters {
+    int tried_fade_in_scrollbar = 0;
+    int did_fade_in_scrollbar_and_begin_deferring_fade_out = 0;
+    int tried_stop_deferring_fade_out = 0;
+    int tried_fade_in_horizontal = 0;
+    int tried_fade_in_vertical = 0;
+
+    void Clear() {
+      tried_fade_in_scrollbar = 0;
+      did_fade_in_scrollbar_and_begin_deferring_fade_out = 0;
+      tried_stop_deferring_fade_out = 0;
+      tried_fade_in_horizontal = 0;
+      tried_fade_in_vertical = 0;
+    }
+  };
+
+  class MacScrollbarAnimatorProxy : public MacScrollbarAnimator {
+   public:
+    MacScrollbarAnimatorProxy(MacScrollbarAnimator* animator_impl,
+                              Counters* counters)
+        : animator_impl_(animator_impl), counters_(counters) {}
+    virtual ~MacScrollbarAnimatorProxy() = default;
+
+    void MouseEnteredScrollbar(Scrollbar& scrollbar) const override {
+      CHECK(animator_impl_);
       animator_impl_->MouseEnteredScrollbar(scrollbar);
     }
-  }
-  void MouseExitedScrollbar(Scrollbar& scrollbar) const override {
-    if (animator_impl_) {
+    void MouseExitedScrollbar(Scrollbar& scrollbar) const override {
+      CHECK(animator_impl_);
       animator_impl_->MouseExitedScrollbar(scrollbar);
     }
-  }
 
-  void DidAddVerticalScrollbar(Scrollbar& scrollbar) override {
-    if (animator_impl_) {
+    void DidAddVerticalScrollbar(Scrollbar& scrollbar) override {
+      CHECK(animator_impl_);
       animator_impl_->DidAddVerticalScrollbar(scrollbar);
     }
-  }
-  void WillRemoveVerticalScrollbar(Scrollbar& scrollbar) override {
-    if (animator_impl_) {
+    void WillRemoveVerticalScrollbar(Scrollbar& scrollbar) override {
+      CHECK(animator_impl_);
       animator_impl_->WillRemoveVerticalScrollbar(scrollbar);
     }
-  }
-  void DidAddHorizontalScrollbar(Scrollbar& scrollbar) override {
-    if (animator_impl_) {
+    void DidAddHorizontalScrollbar(Scrollbar& scrollbar) override {
+      CHECK(animator_impl_);
       animator_impl_->DidAddHorizontalScrollbar(scrollbar);
     }
-  }
-  void WillRemoveHorizontalScrollbar(Scrollbar& scrollbar) override {
-    if (animator_impl_) {
+    void WillRemoveHorizontalScrollbar(Scrollbar& scrollbar) override {
+      CHECK(animator_impl_);
       animator_impl_->WillRemoveHorizontalScrollbar(scrollbar);
     }
-  }
 
-  void DidChangeUserVisibleScrollOffset(
-      const ScrollOffset& scroll_offset) override {
-    if (animator_impl_) {
+    void DidChangeUserVisibleScrollOffset(
+        const ScrollOffset& scroll_offset) override {
+      CHECK(animator_impl_);
       animator_impl_->DidChangeUserVisibleScrollOffset(scroll_offset);
     }
-  }
 
-  void Dispose() override {
-    if (animator_impl_) {
+    void Dispose() override {
+      CHECK(animator_impl_);
       animator_impl_->Dispose();
     }
+
+    bool FadeInScrollbarIfExists(bool horizontal, bool vertical) override {
+      CHECK(animator_impl_);
+      counters_->tried_fade_in_scrollbar++;
+      if (horizontal) {
+        counters_->tried_fade_in_horizontal++;
+      }
+      if (vertical) {
+        counters_->tried_fade_in_vertical++;
+      }
+      if (animator_impl_->FadeInScrollbarIfExists(horizontal, vertical)) {
+        counters_->did_fade_in_scrollbar_and_begin_deferring_fade_out++;
+        return true;
+      }
+      return false;
+    }
+
+    void FadeOutScrollbarIfNeeded() override {
+      CHECK(animator_impl_);
+      counters_->tried_stop_deferring_fade_out++;
+      animator_impl_->FadeOutScrollbarIfNeeded();
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(animator_impl_);
+      MacScrollbarAnimator::Trace(visitor);
+    }
+
+   private:
+    Member<MacScrollbarAnimator> animator_impl_;
+    Counters* counters_;
+  };
+
+  void ProxyingMacScrollbarAnimator(ScrollableArea* scrollable_area,
+                                    Counters* counters = nullptr) {
+    auto* scrollbar_animator = scrollable_area->GetMacScrollbarAnimator();
+    auto* scrollbar_animator_proxy =
+        MakeGarbageCollected<MacScrollbarAnimatorProxy>(
+            scrollbar_animator, counters ? counters : &counters_);
+    scrollable_area->SetMacScrollbarAnimatorForTesting(
+        scrollbar_animator_proxy);
   }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(animator_impl_);
-    MacScrollbarAnimator::Trace(visitor);
-  }
+  void ClearCounters() { counters_.Clear(); }
 
-  MOCK_METHOD2(FadeInScrollbarIfExists, bool(bool horizontal, bool vertical));
-
- private:
-  Member<MacScrollbarAnimator> animator_impl_;
+  Counters counters_;
 };
 
-TEST_P(ScrollbarsTestWithVirtualTimer,
+INSTANTIATE_PAINT_TEST_SUITE_P(ScrollbarsTestWithMacScrollbarAnimatorProxy);
+
+TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
        FadeInOverlayScrollbarWhenMouseWheelEventMayBeginPhase) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -3673,48 +3726,126 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   EXPECT_EQ(scrollable_area,
             &*ScrollableAreaTraversal(GetDocument().body()).begin());
 
-  EXPECT_EQ(
-      WebInputEventResult::kNotHandled,
-      HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  ProxyingMacScrollbarAnimator(scrollable_area);
 
-  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
-  scrollable_area->SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+  ENABLE_OVERLAY_SCROLLBARS(true);
+  ClearCounters();
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists).Times(0);
-  EXPECT_EQ(
-      WebInputEventResult::kNotHandled,
-      HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  ClearCounters();
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseBegan);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseEnded);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
 
   feature_list.Reset();
 
-  bool did_fade_in = false;
-  auto fade_in_scrollbar = [&did_fade_in](bool horizontal,
-                                          bool vertical) -> bool {
-    return did_fade_in;
-  };
+  ENABLE_OVERLAY_SCROLLBARS(false);
+  ClearCounters();
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillOnce(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kNotHandled,
-      HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
 
-  did_fade_in = true;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillOnce(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  ClearCounters();
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseBegan);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseEnded);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  ENABLE_OVERLAY_SCROLLBARS(true);
+  ClearCounters();
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
+
+  ClearCounters();
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseBegan);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseEnded);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
+
+  ClearCounters();
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseBegan);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseChanged);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseEnded);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
 }
 
-TEST_P(ScrollbarsTestWithVirtualTimer,
+TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
        FadeInOverlayScrollbarWhenMouseWheelEventMayBeginPhaseOnSlottedText) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
+  ENABLE_OVERLAY_SCROLLBARS(true);
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -3755,17 +3886,22 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   EXPECT_EQ(scrollable_area,
             &*ScrollableAreaTraversal(hit_test_result.InnerNode()).begin());
 
-  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
-  scrollable_area->SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+  ProxyingMacScrollbarAnimator(scrollable_area);
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillOnce([](bool horizontal, bool vertical) -> bool { return true; });
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
 }
 
-TEST_P(ScrollbarsTestWithVirtualTimer,
+TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
        FadeInAllPossiblyChainedOverlayScrollbars) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -3810,121 +3946,141 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   HitTestResult hit_test_result = HitTest(50, 50);
   EXPECT_EQ(hit_test_result.InnerElement(), scroller4);
 
-  EXPECT_EQ(WebInputEventResult::kNotHandled,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-
-  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
-
   int scrollable_area_count = 0;
   for (ScrollableArea& scrollable_area :
        ScrollableAreaTraversal(hit_test_result.InnerElement())) {
-    scrollable_area.SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+    ProxyingMacScrollbarAnimator(&scrollable_area);
     scrollable_area_count++;
   }
   EXPECT_EQ(scrollable_area_count, 6);
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists).Times(0);
-  EXPECT_EQ(WebInputEventResult::kNotHandled,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-
-  feature_list.Reset();
-
   scroller1->setScrollTop(scroller1->scrollHeight());
   scroller3->setScrollLeft(scroller3->scrollWidth());
 
-  bool did_fade_in = false;
-  int fade_in_scrollbar_count = 0;
-  auto fade_in_scrollbar = [&did_fade_in, &fade_in_scrollbar_count](
-                               bool horizontal, bool vertical) -> bool {
-    fade_in_scrollbar_count++;
-    return did_fade_in;
-  };
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kNotHandled,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 4);
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 4);
+  feature_list.Reset();
+
+  ENABLE_OVERLAY_SCROLLBARS(false);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  ENABLE_OVERLAY_SCROLLBARS(true);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(4, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(4, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_LE(4, counters_.tried_stop_deferring_fade_out);
 
   scroller4->setScrollLeft(scroller4->scrollWidth() / 2);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 3);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(3, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(3, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(3, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(3, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(3, counters_.tried_stop_deferring_fade_out);
 
   scroller2->setScrollTop(scroller2->scrollHeight() / 2);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 2);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
 
   scroller3->setScrollLeft(0);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 2);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
 
   scroller1->setScrollTop(0);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 2);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
 
   scroller4->setScrollLeft(scroller4->scrollWidth());
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 3);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(3, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(3, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(3, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(3, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(3, counters_.tried_stop_deferring_fade_out);
 
   scroller2->setScrollTop(scroller2->scrollHeight());
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 4);
+  ClearCounters();
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(4, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(4, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(4, counters_.tried_stop_deferring_fade_out);
 }
 
-TEST_P(ScrollbarsTestWithVirtualTimer,
+TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
        FadeInAllPossiblyChainedOverlayScrollbarsWithWritingMode) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -3973,128 +4129,141 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   HitTestResult hit_test_result = HitTest(200, 200);
   EXPECT_EQ(hit_test_result.InnerElement(), scroller4);
 
-  EXPECT_EQ(
-      WebInputEventResult::kNotHandled,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-
-  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
-
   int scrollable_area_count = 0;
   for (ScrollableArea& scrollable_area :
        ScrollableAreaTraversal(hit_test_result.InnerElement())) {
-    scrollable_area.SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+    ProxyingMacScrollbarAnimator(&scrollable_area);
     scrollable_area_count++;
   }
   EXPECT_EQ(scrollable_area_count, 6);
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists).Times(0);
-  EXPECT_EQ(
-      WebInputEventResult::kNotHandled,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  ENABLE_OVERLAY_SCROLLBARS(true);
+  ClearCounters();
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(0, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
 
   feature_list.Reset();
 
-  bool did_fade_in = false;
-  int fade_in_scrollbar_count = 0;
-  auto fade_in_scrollbar = [&did_fade_in, &fade_in_scrollbar_count](
-                               bool horizontal, bool vertical) -> bool {
-    fade_in_scrollbar_count++;
-    return did_fade_in;
-  };
+  ENABLE_OVERLAY_SCROLLBARS(false);
+  ClearCounters();
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kNotHandled,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 4);
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 4);
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  ENABLE_OVERLAY_SCROLLBARS(true);
+  ClearCounters();
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(4, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(4, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(4, counters_.tried_stop_deferring_fade_out);
 
   scroller4->setScrollLeft(scroller4->scrollWidth() / 2);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 3);
+  ClearCounters();
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(3, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(3, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(3, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(3, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(3, counters_.tried_stop_deferring_fade_out);
 
   scroller2->setScrollTop(-scroller2->scrollHeight() / 2);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 2);
+  ClearCounters();
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
 
   scroller3->setScrollLeft(-scroller3->scrollWidth());
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 2);
+  ClearCounters();
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
 
   scroller1->setScrollTop(scroller1->scrollHeight());
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 2);
+  ClearCounters();
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
 
   scroller4->setScrollLeft(scroller4->scrollWidth());
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 3);
+  ClearCounters();
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(3, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(3, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(3, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(3, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(3, counters_.tried_stop_deferring_fade_out);
 
   scroller2->setScrollTop(-scroller2->scrollHeight());
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 4);
+  ClearCounters();
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(4, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(4, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(4, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(4, counters_.tried_stop_deferring_fade_out);
 }
 
-TEST_P(ScrollbarsTestWithVirtualTimer,
+TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
        FadeInAllPossiblyChainedOverlayScrollbarsWithMacScrollbarAnimatorImpl) {
   ENABLE_OVERLAY_SCROLLBARS(true);
 
@@ -4137,138 +4306,105 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   EXPECT_EQ(hit_test_result1.InnerElement(), scroller1);
   auto* scrollable_area1 = GetScrollableArea(*scroller1);
   ASSERT_TRUE(scrollable_area1);
-  auto* scrollbar_animator1 = scrollable_area1->GetMacScrollbarAnimator();
-  ASSERT_TRUE(scrollbar_animator1);
-  auto* scrollbar_animator1_proxy =
-      MakeGarbageCollected<MockMacScrollbarAnimator>(scrollbar_animator1);
-  scrollable_area1->SetMacScrollbarAnimatorForTesting(
-      scrollbar_animator1_proxy);
-  bool horizontal1 = false;
-  bool vertical1 = false;
-  auto fade_in_scrollbar1 = [&scrollbar_animator1, &horizontal1, &vertical1](
-                                bool horizontal, bool vertical) -> bool {
-    horizontal1 = horizontal;
-    vertical1 = vertical;
-    return scrollbar_animator1->FadeInScrollbarIfExists(horizontal, vertical);
-  };
+  Counters counters1;
+  ProxyingMacScrollbarAnimator(scrollable_area1, &counters1);
 
   HitTestResult hit_test_result2 = HitTest(50, 150);
   EXPECT_EQ(hit_test_result1.InnerElement(), scroller1);
   auto* scrollable_area2 = GetScrollableArea(*scroller2);
   ASSERT_TRUE(scrollable_area2);
-  auto* scrollbar_animator2 = scrollable_area2->GetMacScrollbarAnimator();
-  ASSERT_TRUE(scrollbar_animator2);
-  auto* scrollbar_animator2_proxy =
-      MakeGarbageCollected<MockMacScrollbarAnimator>(scrollbar_animator2);
-  scrollable_area2->SetMacScrollbarAnimatorForTesting(
-      scrollbar_animator2_proxy);
-  bool horizontal2 = false;
-  bool vertical2 = false;
-  auto fade_in_scrollbar2 = [&scrollbar_animator2, &horizontal2, &vertical2](
-                                bool horizontal, bool vertical) -> bool {
-    horizontal2 = horizontal;
-    vertical2 = vertical;
-    return scrollbar_animator2->FadeInScrollbarIfExists(horizontal, vertical);
-  };
+  Counters counters2;
+  ProxyingMacScrollbarAnimator(scrollable_area2, &counters2);
 
   HitTestResult hit_test_result3 = HitTest(200, 150);
   EXPECT_EQ(hit_test_result3.InnerElement(), scroller3);
   auto* scrollable_area3 = GetScrollableArea(*scroller3);
   ASSERT_TRUE(scrollable_area3);
-  auto* scrollbar_animator3 = scrollable_area3->GetMacScrollbarAnimator();
-  ASSERT_TRUE(scrollbar_animator3);
-  auto* scrollbar_animator3_proxy =
-      MakeGarbageCollected<MockMacScrollbarAnimator>(scrollbar_animator3);
-  scrollable_area3->SetMacScrollbarAnimatorForTesting(
-      scrollbar_animator3_proxy);
-  bool horizontal3 = false;
-  bool vertical3 = false;
-  auto fade_in_scrollbar3 = [&scrollbar_animator3, &horizontal3, &vertical3](
-                                bool horizontal, bool vertical) -> bool {
-    horizontal3 = horizontal;
-    vertical3 = vertical;
-    return scrollbar_animator3->FadeInScrollbarIfExists(horizontal, vertical);
-  };
+  Counters counters3;
+  ProxyingMacScrollbarAnimator(scrollable_area3, &counters3);
 
-  horizontal1 = horizontal2 = horizontal3 = false;
-  vertical1 = vertical2 = vertical3 = false;
-  EXPECT_CALL(*scrollbar_animator1_proxy, FadeInScrollbarIfExists)
-      .WillOnce(fade_in_scrollbar1);
-  EXPECT_CALL(*scrollbar_animator2_proxy, FadeInScrollbarIfExists).Times(0);
-  EXPECT_CALL(*scrollbar_animator3_proxy, FadeInScrollbarIfExists).Times(0);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator1_proxy);
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator2_proxy);
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator3_proxy);
-  EXPECT_TRUE(horizontal1);
-  EXPECT_TRUE(vertical1);
-  EXPECT_FALSE(horizontal2);
-  EXPECT_FALSE(vertical2);
-  EXPECT_FALSE(horizontal3);
-  EXPECT_FALSE(vertical3);
+  counters1.Clear();
+  counters2.Clear();
+  counters3.Clear();
 
-  horizontal1 = horizontal2 = horizontal3 = false;
-  vertical1 = vertical2 = vertical3 = false;
-  EXPECT_CALL(*scrollbar_animator1_proxy, FadeInScrollbarIfExists)
-      .WillOnce(fade_in_scrollbar1);
-  EXPECT_CALL(*scrollbar_animator2_proxy, FadeInScrollbarIfExists)
-      .WillOnce(fade_in_scrollbar2);
-  EXPECT_CALL(*scrollbar_animator3_proxy, FadeInScrollbarIfExists).Times(0);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(50, 150, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator1_proxy);
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator2_proxy);
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator3_proxy);
-  EXPECT_TRUE(horizontal1);
-  EXPECT_FALSE(vertical1);
-  EXPECT_FALSE(horizontal2);
-  EXPECT_TRUE(vertical2);
-  EXPECT_FALSE(horizontal3);
-  EXPECT_FALSE(vertical3);
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters1.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters1.tried_fade_in_horizontal);
+  EXPECT_EQ(1, counters1.tried_fade_in_vertical);
+  EXPECT_EQ(0, counters2.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters2.tried_fade_in_horizontal);
+  EXPECT_EQ(0, counters2.tried_fade_in_vertical);
+  EXPECT_EQ(0, counters3.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters3.tried_fade_in_horizontal);
+  EXPECT_EQ(0, counters3.tried_fade_in_vertical);
+  HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
 
-  horizontal1 = horizontal2 = horizontal3 = false;
-  vertical1 = vertical2 = vertical3 = false;
-  EXPECT_CALL(*scrollbar_animator1_proxy, FadeInScrollbarIfExists)
-      .WillOnce(fade_in_scrollbar1);
-  EXPECT_CALL(*scrollbar_animator2_proxy, FadeInScrollbarIfExists).Times(0);
-  EXPECT_CALL(*scrollbar_animator3_proxy, FadeInScrollbarIfExists)
-      .WillOnce(fade_in_scrollbar3);
-  EXPECT_EQ(
-      WebInputEventResult::kHandledSystem,
-      HandleWheelEvent(200, 150, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator1_proxy);
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator2_proxy);
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator3_proxy);
-  EXPECT_FALSE(horizontal1);
-  EXPECT_TRUE(vertical1);
-  EXPECT_FALSE(horizontal2);
-  EXPECT_FALSE(vertical2);
-  EXPECT_TRUE(horizontal3);
-  EXPECT_FALSE(vertical3);
+  counters1.Clear();
+  counters2.Clear();
+  counters3.Clear();
+
+  HandleWheelEvent(50, 150, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters1.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters1.tried_fade_in_horizontal);
+  EXPECT_EQ(0, counters1.tried_fade_in_vertical);
+  EXPECT_EQ(1, counters2.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters2.tried_fade_in_horizontal);
+  EXPECT_EQ(1, counters2.tried_fade_in_vertical);
+  EXPECT_EQ(0, counters3.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters3.tried_fade_in_horizontal);
+  EXPECT_EQ(0, counters3.tried_fade_in_vertical);
+  HandleWheelEvent(50, 150, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+
+  counters1.Clear();
+  counters2.Clear();
+  counters3.Clear();
+
+  HandleWheelEvent(200, 150, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters1.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters1.tried_fade_in_horizontal);
+  EXPECT_EQ(1, counters1.tried_fade_in_vertical);
+  EXPECT_EQ(0, counters2.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters2.tried_fade_in_horizontal);
+  EXPECT_EQ(0, counters2.tried_fade_in_vertical);
+  EXPECT_EQ(1, counters3.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters3.tried_fade_in_horizontal);
+  EXPECT_EQ(0, counters3.tried_fade_in_vertical);
+  HandleWheelEvent(200, 150, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
 }
 
-TEST_P(ScrollbarsTest,
+TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
        FadeInAllPossiblyChainedOverlayScrollbarsCrossingDocumentBoundaries) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
-  SimRequest child_request("https://example.com/subframe.html", "text/html");
+  SimRequest child_request_1("https://example.com/subframe1.html", "text/html");
+  SimRequest child_request_2("https://example.com/subframe2.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <style>
       body { height: 3000px; }
       iframe { width: 300px; height: 300px; }
+      .fixed_position { position: fixed; top: 100px; left: 100px }
     </style>
-    <iframe src="https://example.com/subframe.html"></iframe>
+    <iframe id="subframe1" src="https://example.com/subframe1.html"></iframe>
+    <iframe id="subframe2" class="fixed_position"
+            src="https://example.com/subframe2.html"></iframe>
   )HTML");
   Compositor().BeginFrame();
-  child_request.Complete(R"HTML(
+  child_request_1.Complete(R"HTML(
     <!DOCTYPE html>
     <style>
       body { height: 3000px; }
-      div { width: 100%; height: 100% }
+      div { width: 100%; height: 50%; }
+    </style>
+    <div></div>
+    <div id="scroll_target"></div>
+  )HTML");
+  child_request_2.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { height: 3000px; }
+      div { width: 100%; height: 100%; }
     </style>
     <div id="scroll_target"></div>
   )HTML");
@@ -4286,47 +4422,216 @@ TEST_P(ScrollbarsTest,
   child_document->documentElement()->setScrollTop(
       child_document->documentElement()->scrollHeight());
 
-  Element* scroll_target =
+  Element* scroll_target_1 =
       child_document->getElementById(AtomicString("scroll_target"));
-  ASSERT_TRUE(scroll_target);
+  ASSERT_TRUE(scroll_target_1);
+  ASSERT_EQ(HitTest(30, 30).InnerElement(), scroll_target_1);
 
-  HitTestResult hit_test_result = HitTest(30, 30);
-  ASSERT_EQ(hit_test_result.InnerElement(), scroll_target);
+  HeapHashSet<Member<ScrollableArea>> proxied_areas;
+  for (ScrollableArea& scrollable_area :
+       ScrollableAreaTraversal(scroll_target_1)) {
+    ProxyingMacScrollbarAnimator(&scrollable_area);
+    proxied_areas.insert(&scrollable_area);
+  }
 
-  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
-  int scrollable_area_count = 0;
+  child_frame = DynamicTo<LocalFrame>(child_frame->NextSibling());
+  ASSERT_TRUE(child_frame);
+
+  child_document = child_frame->GetDocument();
+  ASSERT_TRUE(child_document);
+
+  Element* scroll_target_2 =
+      child_document->getElementById(AtomicString("scroll_target"));
+  ASSERT_TRUE(scroll_target_2);
+
+  child_document->documentElement()->setScrollTop(
+      child_document->documentElement()->scrollHeight());
 
   for (ScrollableArea& scrollable_area :
-       ScrollableAreaTraversal(scroll_target)) {
-    scrollable_area.SetMacScrollbarAnimatorForTesting(scrollbar_animator);
-    scrollable_area_count++;
+       ScrollableAreaTraversal(scroll_target_2)) {
+    if (proxied_areas.Contains(&scrollable_area)) {
+      continue;
+    }
+    ProxyingMacScrollbarAnimator(&scrollable_area);
+    proxied_areas.insert(&scrollable_area);
   }
-  EXPECT_EQ(scrollable_area_count, 3);
+  EXPECT_EQ(proxied_areas.size(), 4);
 
-  bool did_fade_in = false;
-  int fade_in_scrollbar_count = 0;
-  auto fade_in_scrollbar = [&did_fade_in, &fade_in_scrollbar_count](
-                               bool horizontal, bool vertical) -> bool {
-    fade_in_scrollbar_count++;
-    return did_fade_in;
-  };
+  ENABLE_OVERLAY_SCROLLBARS(false);
+  ClearCounters();
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kNotHandled,
-            HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 2);
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
 
-  did_fade_in = true;
-  fade_in_scrollbar_count = 0;
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(0, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
 
-  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillRepeatedly(fade_in_scrollbar);
-  EXPECT_EQ(WebInputEventResult::kHandledSystem,
-            HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
-  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
-  EXPECT_EQ(fade_in_scrollbar_count, 2);
+  ENABLE_OVERLAY_SCROLLBARS(true);
+  ClearCounters();
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
+
+  ClearCounters();
+
+  Element* subframe_1 = GetDocument().getElementById(AtomicString("subframe1"));
+  Element* subframe_2 = GetDocument().getElementById(AtomicString("subframe2"));
+  EXPECT_GT(30, subframe_1->OffsetLeft());
+  EXPECT_GT(30, subframe_1->OffsetTop());
+  EXPECT_EQ(100, subframe_2->OffsetLeft());
+  EXPECT_EQ(100, subframe_2->OffsetTop());
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  subframe_1->setAttribute(html_names::kClassAttr,
+                           AtomicString("fixed_position"));
+  Compositor().BeginFrame();
+  EXPECT_EQ(HitTest(30, 30).InnerElement(), GetDocument().body());
+
+  EXPECT_EQ(100, subframe_1->OffsetLeft());
+  EXPECT_EQ(100, subframe_1->OffsetTop());
+  EXPECT_EQ(100, subframe_2->OffsetLeft());
+  EXPECT_EQ(100, subframe_2->OffsetTop());
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseBegan);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseEnded);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
+
+  subframe_1->setAttribute(html_names::kClassAttr, AtomicString(""));
+  Compositor().BeginFrame();
+  ClearCounters();
+  EXPECT_EQ(HitTest(30, 30).InnerElement(), scroll_target_1);
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  subframe_1->setAttribute(html_names::kClassAttr,
+                           AtomicString("fixed_position"));
+  subframe_2->setAttribute(html_names::kClassAttr, AtomicString(""));
+  Compositor().BeginFrame();
+  EXPECT_EQ(HitTest(30, 30).InnerElement(), scroll_target_2);
+
+  EXPECT_EQ(100, subframe_1->OffsetLeft());
+  EXPECT_EQ(100, subframe_1->OffsetTop());
+  EXPECT_GT(30, subframe_2->OffsetLeft());
+  EXPECT_GT(30, subframe_2->OffsetTop());
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseBegan);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseEnded);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
+
+  subframe_1->setAttribute(html_names::kClassAttr, AtomicString(""));
+  subframe_2->setAttribute(html_names::kClassAttr,
+                           AtomicString("fixed_position"));
+  Compositor().BeginFrame();
+  ClearCounters();
+  EXPECT_EQ(HitTest(30, 30).InnerElement(), scroll_target_1);
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  subframe_1->setAttribute(html_names::kClassAttr,
+                           AtomicString("fixed_position"));
+  scroll_target_1->remove();
+  Compositor().BeginFrame();
+  EXPECT_EQ(HitTest(30, 30).InnerElement(), GetDocument().body());
+
+  EXPECT_EQ(100, subframe_1->OffsetLeft());
+  EXPECT_EQ(100, subframe_1->OffsetTop());
+  EXPECT_EQ(100, subframe_2->OffsetLeft());
+  EXPECT_EQ(100, subframe_2->OffsetTop());
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseBegan);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseEnded);
+  EXPECT_EQ(2, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(2, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(2, counters_.tried_stop_deferring_fade_out);
+}
+
+TEST_P(ScrollbarsTestWithMacScrollbarAnimatorProxy,
+       FadeInOutOverlayScrollbarWhenMouseWheelEventWithScrollbarAnimatorImpl) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style> body { height: 3000px; } </style>)HTML");
+  Compositor().BeginFrame();
+
+  ScrollableArea* scrollable_area = GetDocument().View()->LayoutViewport();
+  DCHECK(scrollable_area);
+
+  HitTestResult hit_test_result = HitTest(100, 100);
+  EXPECT_EQ(hit_test_result.InnerElement(), GetDocument().body());
+  EXPECT_EQ(scrollable_area,
+            &*ScrollableAreaTraversal(GetDocument().body()).begin());
+
+  ProxyingMacScrollbarAnimator(scrollable_area);
+
+  ClearCounters();
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseCancelled);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
+
+  ClearCounters();
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(0, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseBegan);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
+
+  HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseEnded);
+  EXPECT_EQ(1, counters_.tried_fade_in_scrollbar);
+  EXPECT_EQ(1, counters_.did_fade_in_scrollbar_and_begin_deferring_fade_out);
+  EXPECT_EQ(1, counters_.tried_stop_deferring_fade_out);
 }
 
 TEST_P(ScrollbarsTest, ScrollableAreaTraversal) {

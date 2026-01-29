@@ -32,6 +32,8 @@ class CORE_EXPORT MacScrollbarImplV2
   void MouseDidEnter();
   void MouseDidExit();
   bool DidScroll();
+  bool FadeInScrollbarIfExists();
+  void FadeOutScrollbarIfNeeded();
 
   // MacScrollbar:
   void SetEnabled(bool) final {}
@@ -69,6 +71,7 @@ class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
   void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
   void Dispose() final;
   bool FadeInScrollbarIfExists(bool horizontal, bool vertical) final;
+  void FadeOutScrollbarIfNeeded() final;
 
  private:
   std::unique_ptr<MacScrollbarImplV2> horizontal_scrollbar_;

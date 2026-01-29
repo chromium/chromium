@@ -269,6 +269,10 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
     return *keyboard_event_manager_;
   }
 
+  MouseWheelEventManager& GetMouseWheelEventManager() const {
+    return *mouse_wheel_event_manager_;
+  }
+
   void RecomputeMouseHoverStateIfNeeded();
 
   void MarkHoverStateDirty();

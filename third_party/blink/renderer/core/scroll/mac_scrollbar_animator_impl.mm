@@ -99,6 +99,20 @@ bool MacScrollbarImplV2::DidScroll() {
   return false;
 }
 
+bool MacScrollbarImplV2::FadeInScrollbarIfExists() {
+  if (overlay_animator_) {
+    overlay_animator_->FadeInScrollbar();
+    return true;
+  }
+  return false;
+}
+
+void MacScrollbarImplV2::FadeOutScrollbarIfNeeded() {
+  if (overlay_animator_) {
+    overlay_animator_->FadeOutScrollbarIfNeeded();
+  }
+}
+
 float MacScrollbarImplV2::GetKnobAlpha() {
   if (overlay_animator_)
     return overlay_animator_->GetThumbAlpha();
@@ -194,14 +208,25 @@ void MacScrollbarAnimatorV2::DidChangeUserVisibleScrollOffset(
 
 bool MacScrollbarAnimatorV2::FadeInScrollbarIfExists(bool horizontal,
                                                      bool vertical) {
-  bool did_scroll = false;
+  bool did_fade_in_and_begin_deferring_fade_out = false;
   if (horizontal && horizontal_scrollbar_) {
-    did_scroll |= horizontal_scrollbar_->DidScroll();
+    did_fade_in_and_begin_deferring_fade_out |=
+        horizontal_scrollbar_->FadeInScrollbarIfExists();
   }
   if (vertical && vertical_scrollbar_) {
-    did_scroll |= vertical_scrollbar_->DidScroll();
+    did_fade_in_and_begin_deferring_fade_out |=
+        vertical_scrollbar_->FadeInScrollbarIfExists();
   }
-  return did_scroll;
+  return did_fade_in_and_begin_deferring_fade_out;
+}
+
+void MacScrollbarAnimatorV2::FadeOutScrollbarIfNeeded() {
+  if (horizontal_scrollbar_) {
+    horizontal_scrollbar_->FadeOutScrollbarIfNeeded();
+  }
+  if (vertical_scrollbar_) {
+    vertical_scrollbar_->FadeOutScrollbarIfNeeded();
+  }
 }
 
 void MacScrollbarAnimatorV2::Dispose() {
