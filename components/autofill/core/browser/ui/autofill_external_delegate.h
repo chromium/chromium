@@ -143,6 +143,12 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   std::optional<AutofillProfile> GetProfileFromAddressSuggestion(
       const Suggestion& suggestion) const;
 
+  // Returns the `EntityInstance` that an Autofill AI suggestion contains as
+  // payload or `std::nullopt` if it cannot be found. Assumes that `suggestion`
+  // has an `AutofillAiPayload`.
+  base::optional_ref<const EntityInstance> GetEntityInstance(
+      const Suggestion& suggestion) const;
+
   // Tries to display `suggestions` in the suggestions UI. If `is_update` is
   // true, then `AutofillClient::UpdateAutofillSuggestions` is called, which
   // means that suggestions will only be shown if there is currently suggestion

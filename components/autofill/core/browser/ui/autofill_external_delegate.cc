@@ -312,6 +312,17 @@ AutofillExternalDelegate::GetProfileFromAddressSuggestion(
       std::get<Suggestion::AutofillProfilePayload>(suggestion.payload));
 }
 
+base::optional_ref<const EntityInstance>
+AutofillExternalDelegate::GetEntityInstance(
+    const Suggestion& suggestion) const {
+  EntityDataManager* edm = manager_->client().GetEntityDataManager();
+  if (!edm) {
+    return std::nullopt;
+  }
+  return edm->GetEntityInstance(
+      suggestion.GetPayload<Suggestion::AutofillAiPayload>().guid);
+}
+
 void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
@@ -585,15 +596,11 @@ void AutofillExternalDelegate::DidSelectSuggestion(
                    /*is_preview=*/true, GetTriggerSource());
       break;
     case SuggestionType::kFillAutofillAi:
-      if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
-        const auto& payload =
-            suggestion.GetPayload<Suggestion::AutofillAiPayload>();
-        if (base::optional_ref<const EntityInstance> entity =
-                edm->GetEntityInstance(payload.guid)) {
-          manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
-                                      query_form_, query_field_.global_id(),
-                                      entity.as_ptr(), GetTriggerSource());
-        }
+      if (base::optional_ref<const EntityInstance> entity =
+              GetEntityInstance(suggestion)) {
+        manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
+                                    query_form_, query_field_.global_id(),
+                                    entity.as_ptr(), GetTriggerSource());
       }
       break;
     case SuggestionType::kAddressEntryOnTyping:
@@ -606,7 +613,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kIdentityCredential: {
       VerifiedProfile profile =
           suggestion.GetPayload<Suggestion::IdentityCredentialPayload>().fields;
-
       manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
                                   query_form_, query_field_.global_id(),
                                   &profile, GetTriggerSource());
@@ -1375,14 +1381,9 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
     manager_->client().HideAutofillSuggestions(
         SuggestionHidingReason::kAcceptSuggestion);
   };
-  const EntityDataManager* const edm =
-      manager_->client().GetEntityDataManager();
-  if (!edm) {
-    return;
-  }
+
   const base::optional_ref<const EntityInstance> entity =
-      edm->GetEntityInstance(
-          suggestion.GetPayload<Suggestion::AutofillAiPayload>().guid);
+      GetEntityInstance(suggestion);
   if (!entity) {
     return;
   }
