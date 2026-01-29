@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_CONTROLLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -24,9 +25,13 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
    public:
     virtual void OnTabGroupsInitialized(
         const std::vector<tab_groups::SavedTabGroup>& tab_groups) = 0;
-    virtual void OnTabGroupAdded(const tab_groups::SavedTabGroup& group) = 0;
-    virtual void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group) = 0;
-    virtual void OnTabGroupRemoved(const base::Uuid& sync_id) = 0;
+    virtual void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
+                                 int index) = 0;
+    virtual void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group,
+                                   int old_index,
+                                   std::optional<int> new_index) = 0;
+    virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
+                                   int old_index) = 0;
   };
 
   explicit ProjectsPanelController(
@@ -52,6 +57,8 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
                          tab_groups::TriggerSource source) override;
 
  private:
+  void SortTabGroups();
+
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
   std::vector<tab_groups::SavedTabGroup> tab_groups_;
 
