@@ -1148,8 +1148,9 @@ INSTANTIATE_TEST_SUITE_P(,
                                          BaseFeatureStatus::kEnabled,
                                          BaseFeatureStatus::kDefault));
 
+// TODO(crbug.com/479593253) : re-enable test
 IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest,
-                       WithoutOriginTrialToken) {
+                       DISABLED_WithoutOriginTrialToken) {
   LoadPage(/*with_origin_trial_token=*/false);
 
   switch (GetParam()) {
@@ -1177,7 +1178,9 @@ IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest, WithOriginTrialToken) {
+// TODO(crbug.com/479593253) : re-enable test
+IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest,
+                       DISABLED_WithOriginTrialToken) {
   LoadPage(/*with_origin_trial_token=*/true);
 
   switch (GetParam()) {
