@@ -12,3 +12,5 @@ BASE_FEATURE(kIOSPasskeyModalLoginWithShim, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSPasskeyConditionalLoginWithShim,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSPasskeyUVPAAWorkaround, base::FEATURE_ENABLED_BY_DEFAULT);

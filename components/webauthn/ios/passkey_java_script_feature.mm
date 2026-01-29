@@ -50,11 +50,17 @@ GetPlaceholderReplacements() {
       base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
   bool handle_conditional_passkey_requests =
       base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim);
+  // Overrides the placeholder for whether to shim
+  // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable.
+  bool shim_is_uvpaa = base::FeatureList::IsEnabled(kIOSPasskeyUVPAAWorkaround);
+
   std::u16string handle_passkey_requests_script_block = base::StrCat(
       {u"const shouldHandleModalPasskeyRequests = () => { return ",
        handle_modal_passkey_requests ? u"true;" : u"false;", u" };\n\n",
        u"const shouldHandleConditionalPasskeyRequests = () => { return ",
-       handle_conditional_passkey_requests ? u"true;" : u"false;", u" };"});
+       handle_conditional_passkey_requests ? u"true;" : u"false;", u" };\n\n",
+       u"const shouldShimIsUVPAA = () => { return ",
+       shim_is_uvpaa ? u"true;" : u"false;", u" };"});
   return @{
     base::SysUTF8ToNSString(kHandlePasskeyRequestsPlaceholder) :
         base::SysUTF16ToNSString(handle_passkey_requests_script_block),
