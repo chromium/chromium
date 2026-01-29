@@ -1573,10 +1573,8 @@ CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   }
 
   DCHECK(!paint_image.IsTextureBacked());
-  scoped_refptr<UnacceleratedStaticBitmapImage> snapshot =
-      UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                             orientation);
-  return snapshot;
+  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
+                                                orientation);
 }
 
 gpu::raster::RasterInterface*
