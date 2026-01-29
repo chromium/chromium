@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
@@ -76,6 +77,8 @@
       drive::DriveServiceFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
   PrefService* prefService = profile->GetPrefs();
   id<SaveToDriveCommands> saveToDriveHandler =
       HandlerForProtocol(dispatcher, SaveToDriveCommands);
@@ -86,6 +89,7 @@
                                    accountPickerHandler:self
                                             prefService:prefService
                                   accountManagerService:accountManagerService
+                                        identityManager:identityManager
                                            driveService:driveService];
 
   AccountPickerConfiguration* accountPickerConfiguration =

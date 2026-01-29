@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
@@ -28,6 +29,8 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -53,7 +56,14 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
     profile_ = std::move(builder).Build();
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile_.get()), "test@gmail.com",
+        signin::ConsentLevel::kSignin);
     drive_service_ = drive::DriveServiceFactory::GetForProfile(profile_.get());
     account_manager_service_ =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
@@ -100,6 +110,8 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
                      accountPickerHandler:[OCMArg any]
                               prefService:pref_service_
                     accountManagerService:account_manager_service_
+                          identityManager:ios::OCM::AnyPointer<
+                                              signin::IdentityManager>()
                              driveService:drive_service_])
         .andReturn(mock_save_to_drive_mediator_);
   }
@@ -165,6 +177,8 @@ TEST_F(SaveToDriveCoordinatorTest, StartsAndDisconnectsMediator) {
                      accountPickerHandler:account_picker_commands
                               prefService:pref_service_
                     accountManagerService:account_manager_service_
+                          identityManager:IdentityManagerFactory::GetForProfile(
+                                              profile_.get())
                              driveService:drive_service_])
       .andReturn(mock_save_to_drive_mediator_);
   [coordinator start];

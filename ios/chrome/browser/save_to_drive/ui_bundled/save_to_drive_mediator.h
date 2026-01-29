@@ -22,6 +22,10 @@ namespace drive {
 class DriveService;
 }
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace web {
 class DownloadTask;
 }
@@ -43,6 +47,7 @@ class DownloadTask;
                          prefService:(PrefService*)prefService
                accountManagerService:
                    (ChromeAccountManagerService*)accountManagerService
+                     identityManager:(signin::IdentityManager*)identityManager
                         driveService:(drive::DriveService*)driveService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

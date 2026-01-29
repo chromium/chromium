@@ -13,10 +13,12 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/google_one/shared/google_one_entry_point.h"
@@ -81,7 +83,7 @@ NSString* const kGooglePhotosRecentlyAddedURLString =
 
 NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
-@interface SaveToPhotosMediator ()
+@interface SaveToPhotosMediator () <IdentityManagerObserverBridgeDelegate>
 
 // Identity used to perform an upload. Should be set when the user selects an
 // identity, right before starting to upload. If the upload fails, should be
@@ -95,6 +97,8 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   raw_ptr<PrefService> _prefService;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   id<ManageStorageAlertCommands> _manageStorageAlertHandler;
   id<SceneCommands> _sceneHandler;
   id<GoogleOneCommands> _googleOneHandler;
@@ -133,6 +137,12 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     _manageStorageAlertHandler = manageStorageAlertHandler;
     _sceneHandler = sceneHandler;
     _googleOneHandler = googleOneHandler;
+
+    CHECK(_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+          base::NotFatalUntil::M152);
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
   }
   return self;
 }
@@ -235,6 +245,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   _prefService = nullptr;
   _accountManagerService = nullptr;
   _identityManager = nullptr;
+  _identityManagerObserver.reset();
   _imageName = nil;
   _imageData = nil;
   _identity = nil;
@@ -539,6 +550,16 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   base::UmaHistogramEnumeration(kSaveToPhotosActionsHistogram,
                                 SaveToPhotosActions::kSuccessAndOpenPhotosApp);
   [self.delegate hideSaveToPhotos];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    [self.delegate hideSaveToPhotos];
+  }
 }
 
 @end

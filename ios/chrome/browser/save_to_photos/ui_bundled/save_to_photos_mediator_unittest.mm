@@ -154,6 +154,8 @@ class SaveToPhotosMediatorTest : public PlatformTest {
 
     mock_application_ = OCMClassMock([UIApplication class]);
     OCMStub([mock_application_ sharedApplication]).andReturn(mock_application_);
+    // The feature requires the user being signed-in.
+    SignIn();
   }
 
   // Set-up the FakeImageFetchTabHelper so it quits the run loop when calling
@@ -245,9 +247,6 @@ TEST_F(SaveToPhotosMediatorTest, StartGetsImageData) {
 // Tests that the mediator shows the account picker if preferences do not
 // contain a default account choice for Save to Photos.
 TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
-  // The feature requires the user being signed-in.
-  SignIn();
-
   // This test assumes there is no default account memorized for Save to Photos.
   profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
   profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosSkipAccountPicker);
@@ -297,8 +296,6 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
 // default account choice for Save to Photos.
 TEST_F(SaveToPhotosMediatorTest,
        DoesNotShowAccountPickerIfDefaultAccountInPrefs) {
-  // The feature requires the user being signed-in.
-  SignIn();
 
   // This test assumes there is a default account memorized for Save to Photos
   // and that the user opted-in skipping the account picker.
@@ -344,8 +341,6 @@ TEST_F(SaveToPhotosMediatorTest,
 // snackbar message when the PhotosService reports upload completion.
 TEST_F(SaveToPhotosMediatorTest,
        DidSelectIdentityUploadsImageAndShowsSnackbarMessage) {
-  // The feature requires the user being signed-in.
-  SignIn();
 
   // This test assumes there is no default account memorized for Save to Photos.
   profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
@@ -416,8 +411,6 @@ TEST_F(SaveToPhotosMediatorTest,
 // Tests after the account picker has been displayed, the user can dismiss it
 // using the "Cancel" button.
 TEST_F(SaveToPhotosMediatorTest, DidCancelBeforeUploadDismissesAccountPicker) {
-  // The feature requires the user being signed-in.
-  SignIn();
 
   // This test assumes there is no default account memorized for Save to Photos.
   profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
@@ -468,8 +461,6 @@ TEST_F(SaveToPhotosMediatorTest, DidCancelBeforeUploadDismissesAccountPicker) {
 // detects that it is installed and the user taps "Open" in the success
 // snackbar.
 TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
-  // The feature requires the user being signed-in.
-  SignIn();
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -560,8 +551,6 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
 // success snackbar.
 TEST_F(SaveToPhotosMediatorTest,
        SnackbarOpenButtonOpensStoreKitIfAppNotInstalled) {
-  // The feature requires the user being signed-in.
-  SignIn();
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -645,8 +634,6 @@ TEST_F(SaveToPhotosMediatorTest,
 // Tests that the SaveToPhotosMediator shows an alert with Try Again and Cancel
 // options if the PhotosService fails to upload the image.
 TEST_F(SaveToPhotosMediatorTest, ShowsTryAgainOrCancelAlertIfUploadFails) {
-  // The feature requires the user being signed-in.
-  SignIn();
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -691,5 +678,19 @@ TEST_F(SaveToPhotosMediatorTest, ShowsTryAgainOrCancelAlertIfUploadFails) {
   task_environment_.RunUntilQuit();
 
   // Verify that the failure alert has been presented.
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+}
+
+// Tests that the mediator hides Save to Photos when the user signs out.
+TEST_F(SaveToPhotosMediatorTest, HidesSaveToPhotosOnSignOut) {
+  SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
+  id mock_save_to_photos_mediator_delegate =
+      OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
+
+  OCMExpect([mock_save_to_photos_mediator_delegate hideSaveToPhotos]);
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
 }

@@ -6,6 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
@@ -21,6 +22,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -65,7 +68,15 @@ class SaveToDriveMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    profile_ = std::move(builder).Build();
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile_.get()), "test@gmail.com",
+        signin::ConsentLevel::kSignin);
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());
     DriveTabHelper::GetOrCreateForWebState(web_state_.get());
@@ -88,6 +99,8 @@ class SaveToDriveMediatorTest : public PlatformTest {
                       prefService:profile_->GetPrefs()
             accountManagerService:ChromeAccountManagerServiceFactory::
                                       GetForProfile(profile_.get())
+                  identityManager:IdentityManagerFactory::GetForProfile(
+                                      profile_.get())
                      driveService:drive::DriveServiceFactory::GetForProfile(
                                       profile_.get())];
   }
@@ -206,4 +219,12 @@ TEST_F(SaveToDriveMediatorTest, SavesToDriveIfDestinationIsDrive) {
   // Test that expected histograms were recorded.
   histogram_tester.ExpectUniqueSample(kDriveStorageQuotaResultSuccessful, true,
                                       1);
+}
+
+// Tests that the Save to Drive UI is hidden when the user signs out.
+TEST_F(SaveToDriveMediatorTest, HidesSaveToDriveOnSignOut) {
+  OCMExpect([save_to_drive_commands_handler_ hideSaveToDrive]);
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
+  EXPECT_OCMOCK_VERIFY(save_to_drive_commands_handler_);
 }

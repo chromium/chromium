@@ -13,6 +13,7 @@ source_set("ui_bundled") {
   deps = [
     "//base",
     "//components/prefs",
+    "//components/signin/public/identity_manager/objc",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
