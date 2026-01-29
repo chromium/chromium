@@ -22,7 +22,6 @@ group("build") {
     ":enhanced_network_tts_manifests",
     ":select_to_speak_manifests",
     ":switch_access_manifests",
-    "accessibility_common/mv2:build",
     "accessibility_common/mv3:build",
     "braille_ime:build",
     "chromevox/mv2:build",

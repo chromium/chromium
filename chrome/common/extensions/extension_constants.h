@@ -192,15 +192,9 @@ inline constexpr char kAccessibilityCommonExtensionPath[] =
 // The manifest filename of the Accessibility Common extension.
 inline constexpr char kAccessibilityCommonManifestFilename[] =
     "accessibility_common_manifest.json";
-// The manifest v3 filename of the Accessibility Common extension.
-inline constexpr char kAccessibilityCommonManifestV3Filename[] =
-    "accessibility_common_manifest_v3.json";
 // The guest manifest filename of the Accessibility Common extension.
 inline constexpr char kAccessibilityCommonGuestManifestFilename[] =
     "accessibility_common_manifest_guest.json";
-// The guest manifest v3 filename of the Accessibility Common extension.
-inline constexpr char kAccessibilityCommonGuestManifestV3Filename[] =
-    "accessibility_common_manifest_guest_v3.json";
 // Path to preinstalled ChromeVox screen reader extension (relative to
 // |chrome::DIR_RESOURCES|).
 inline constexpr char kChromeVoxExtensionPath[] = "chromeos/accessibility";

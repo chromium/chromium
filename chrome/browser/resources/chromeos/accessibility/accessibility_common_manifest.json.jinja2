@@ -2,7 +2,6 @@
 {%if key is defined %}
   "key": "{{key}}",
 {% endif %}
-{% if is_manifest_v3 == '1' %}
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
@@ -16,13 +15,6 @@
   "sandbox": {
      "pages": ["accessibility_common/mv3/sandboxed_pumpkin_tagger.html"]
   },
-{% else %}
-  "manifest_version": 2,
-  "background": {
-    "page": "accessibility_common/mv2/background.html"
-  },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-{% endif %}
   "name": "Accessibility Common",
   "version": "{{set_version}}",
   "description": "Accessibility Common extension to communicate with the Automation API",
@@ -40,9 +32,7 @@
     "metricsPrivate",
     "settingsPrivate",
     "languageSettingsPrivate",
-{% if is_manifest_v3 == '1' %}
     "offscreen",
-{% endif %}
     "speechRecognitionPrivate",
     "tabs",
     "videoCapture"
