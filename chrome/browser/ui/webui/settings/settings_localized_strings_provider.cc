@@ -770,28 +770,7 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
     return false;
   }
 
-  // Don't show the toggle if allowed tiers are configured, but the
-  // corresponding flag is disabled.
-  const base::flat_set<int32_t>& allowed_tiers =
-      actor::ActorPolicyChecker::GetActorEligibleTiers();
-  if (!allowed_tiers.empty() &&
-      base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
-    auto* subscription_service = subscription_eligibility::
-        SubscriptionEligibilityServiceFactory::GetForProfile(profile);
-    CHECK(subscription_service);
-    if (!allowed_tiers.contains(
-            subscription_service->GetAiSubscriptionTier())) {
-      return false;
-    }
-  }
-
-  // Show the toggle if the user has explicitly modified the preference before.
-  const PrefService::Preference* pref = profile->GetPrefs()->FindPreference(
-      glic::prefs::kGlicUserEnabledActuationOnWeb);
-  if (pref && !pref->IsDefaultValue()) {
-    return true;
-  }
-
+  // If the account is ineligible, hide the toggle.
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
   if (!actor_service) {
@@ -803,10 +782,28 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
     return false;
   }
 
-  // If tiers are empty and the user hasn't set the pref, still show toggle
-  // if enterprise policy is actively blocking it. This ensures users see the
-  // enterprise enforced state instead of it just being missing.
-  if (IsWebActuationDisabledForEnterprise(profile)) {
+  // NOTE: kGlicWebActuationSettingsToggle controls toggle visibility based
+  // solely on subscription eligibility. If this feature is disabled, the
+  // toggle remains visible only if the user has previously accepted the
+  // consent card.
+
+  // If tiers are configured and the toggle feature is on,
+  // enforce toggle visibility based on subscription eligibility.
+  const base::flat_set<int32_t>& allowed_tiers =
+      actor::ActorPolicyChecker::GetActorEligibleTiers();
+  if (!allowed_tiers.empty() &&
+      base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
+    auto* subscription_service = subscription_eligibility::
+        SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+    CHECK(subscription_service);
+    return allowed_tiers.contains(
+        subscription_service->GetAiSubscriptionTier());
+  }
+  // Show the toggle if the user has explicitly modified the preference before
+  // (via accepting the consent card).
+  const auto* pref = profile->GetPrefs()->FindPreference(
+      glic::prefs::kGlicUserEnabledActuationOnWeb);
+  if (pref && !pref->IsDefaultValue()) {
     return true;
   }
   return false;
