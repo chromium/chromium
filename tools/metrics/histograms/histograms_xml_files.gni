@@ -2,6 +2,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/enums.xml",
   "//tools/metrics/histograms/metadata/accessibility/enums.xml",
   "//tools/metrics/histograms/metadata/accessibility/histograms.xml",
+  "//tools/metrics/histograms/metadata/accessibility_annotator/histograms.xml",
   "//tools/metrics/histograms/metadata/account_manager/histograms.xml",
   "//tools/metrics/histograms/metadata/actor/enums.xml",
   "//tools/metrics/histograms/metadata/actor/histograms.xml",
