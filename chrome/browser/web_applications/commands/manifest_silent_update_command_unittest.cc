@@ -106,9 +106,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     manifest->display = DisplayMode::kStandalone;
     manifest->name = u"Foo App";
     manifest->icons = {icon};
-    manifest->has_background_color = true;
     manifest->background_color = kManifestIconColor;
-    manifest->has_theme_color = true;
     manifest->theme_color = kManifestIconColor;
     manifest->has_valid_specified_start_url = true;
     auto note_taking = blink::mojom::ManifestNoteTaking::New();

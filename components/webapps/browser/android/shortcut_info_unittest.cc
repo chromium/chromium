@@ -76,7 +76,6 @@ TEST_F(ShortcutInfoTest, CreateShortcutInfo) {
   metadata->application_url = GURL("https://example.com/path/application-url");
 
   manifest_.display = blink::mojom::DisplayMode::kFullscreen;
-  manifest_.has_theme_color = true;
   manifest_.theme_color = 0xffcc0000;
   manifest_.id = GURL("https://example.com/path/id");
 
@@ -116,19 +115,15 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   manifest_.display = blink::mojom::DisplayMode::kFullscreen;
 
   info_.theme_color = 0xffff0000;
-  manifest_.has_theme_color = true;
   manifest_.theme_color = 0xffcc0000;
 
   info_.background_color = 0xffaa0000;
-  manifest_.has_background_color = true;
   manifest_.background_color = 0xffbb0000;
 
   info_.dark_theme_color = 0x000000;
-  manifest_.has_dark_theme_color = true;
   manifest_.dark_theme_color = 0x7a7a7a;
 
   info_.dark_background_color = 0x000000;
-  manifest_.has_dark_background_color = true;
   manifest_.dark_background_color = 0x7a7a7a;
 
   info_.icon_urls.push_back("https://old.com/icon.png");

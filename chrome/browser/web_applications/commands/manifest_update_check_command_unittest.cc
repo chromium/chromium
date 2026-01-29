@@ -428,10 +428,7 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
     manifest->scope = info.scope;
     manifest->display = info.display_mode;
     manifest->name = info.title.value();
-    manifest->has_theme_color = info.theme_color.has_value();
-    if (manifest->has_theme_color) {
-      manifest->theme_color = info.theme_color.value();
-    }
+    manifest->theme_color = info.theme_color;
 
     // Set up icons in the manifest, which is necessary to verify that icon
     // downloads have indeed succeeded.

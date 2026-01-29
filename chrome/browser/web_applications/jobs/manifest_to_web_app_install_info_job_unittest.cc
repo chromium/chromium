@@ -144,9 +144,7 @@ class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
     manifest->display = DisplayMode::kStandalone;
     manifest->name = u"Foo App";
     manifest->icons = {icon};
-    manifest->has_background_color = true;
     manifest->background_color = SK_ColorRED;
-    manifest->has_theme_color = true;
     manifest->theme_color = SK_ColorGREEN;
     manifest->launch_handler = LaunchHandler(
         blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew);

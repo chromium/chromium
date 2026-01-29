@@ -385,7 +385,6 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
     manifest->start_url = manifest_start_url;
     manifest->id = GenerateManifestIdFromStartUrlOnly(manifest_start_url);
     manifest->scope = manifest_scope;
-    manifest->has_theme_color = true;
     manifest->theme_color = manifest_theme_color;
 
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(

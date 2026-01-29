@@ -205,15 +205,9 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
     }
   }
 
-  // Set the theme color based on the manifest value, if any.
-  theme_color = manifest.has_theme_color
-                    ? std::make_optional(manifest.theme_color)
-                    : std::nullopt;
-
-  // Set the background color based on the manifest value, if any.
-  background_color = manifest.has_background_color
-                         ? std::make_optional(manifest.background_color)
-                         : std::nullopt;
+  // Set the theme and background colors based on the manifest values, if any.
+  theme_color = manifest.theme_color;
+  background_color = manifest.background_color;
 
   // Set the icon urls based on the icons in the manifest, if any.
   icon_urls.clear();
@@ -268,16 +262,10 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
     best_shortcut_icon_urls.push_back(std::move(best_url));
   }
 
-  // Set the dark theme color based on the manifest value, if any.
-  dark_theme_color = manifest.has_dark_theme_color
-                         ? std::make_optional(manifest.dark_theme_color)
-                         : std::nullopt;
-
-  // Set the dark background color based on the manifest value, if any.
-  dark_background_color =
-      manifest.has_dark_background_color
-          ? std::make_optional(manifest.dark_background_color)
-          : std::nullopt;
+  // Set the dark theme and dark background colors based on the manifest values,
+  // if any.
+  dark_theme_color = manifest.dark_theme_color;
+  dark_background_color = manifest.dark_background_color;
 }
 
 void ShortcutInfo::UpdateBestSplashIcon(

@@ -755,14 +755,15 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
   CHECK(!install_info().scope.is_empty());
 
-  if (manifest_->has_theme_color) {
+  if (manifest_->theme_color.has_value()) {
     install_info().theme_color = SkColorSetA(
-        static_cast<SkColor>(manifest_->theme_color), SK_AlphaOPAQUE);
+        static_cast<SkColor>(manifest_->theme_color.value()), SK_AlphaOPAQUE);
   }
 
-  if (manifest_->has_background_color) {
-    install_info().background_color = SkColorSetA(
-        static_cast<SkColor>(manifest_->background_color), SK_AlphaOPAQUE);
+  if (manifest_->background_color.has_value()) {
+    install_info().background_color =
+        SkColorSetA(static_cast<SkColor>(manifest_->background_color.value()),
+                    SK_AlphaOPAQUE);
   }
 
   if (manifest_->display != DisplayMode::kUndefined) {

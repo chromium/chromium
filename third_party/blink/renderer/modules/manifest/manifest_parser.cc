@@ -498,19 +498,14 @@ bool ManifestParser::Parse() {
     manifest_->migrate_to = ParseMigrateTo(root_object.get());
   }
 
-  std::optional<RGBA32> theme_color = ParseThemeColor(root_object.get());
-  manifest_->has_theme_color = theme_color.has_value();
-  if (manifest_->has_theme_color) {
-    manifest_->theme_color = *theme_color;
+  manifest_->theme_color = ParseThemeColor(root_object.get());
+  if (manifest_->theme_color.has_value()) {
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestThemeColor);
   }
 
-  std::optional<RGBA32> background_color =
-      ParseBackgroundColor(root_object.get());
-  manifest_->has_background_color = background_color.has_value();
-  if (manifest_->has_background_color) {
-    manifest_->background_color = *background_color;
+  manifest_->background_color = ParseBackgroundColor(root_object.get());
+  if (manifest_->background_color.has_value()) {
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestBackgroundColor);
   }

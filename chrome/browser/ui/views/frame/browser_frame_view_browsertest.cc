@@ -87,7 +87,6 @@ class BrowserFrameViewBrowserTest : public extensions::ExtensionBrowserTest {
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.id = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();
-    manifest.has_theme_color = true;
     manifest.theme_color = app_theme_color_;
 
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info =

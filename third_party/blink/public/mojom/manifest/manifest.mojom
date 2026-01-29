@@ -111,13 +111,9 @@ struct Manifest {
   // The app that this PWA intends to migrate to.
   ManifestMigrateTo? migrate_to;
 
-  // TODO(https://crbug.com/657632): Numeric types are not nullable. =(
-  bool has_theme_color;
-  uint32 theme_color;
-
-  // TODO(https://crbug.com/657632): Numeric types are not nullable. =(
-  bool has_background_color;
-  uint32 background_color;
+  // TODO(https://crbug.com/479448266): Use skia.mojom.SkColor.
+  uint32? theme_color;
+  uint32? background_color;
 
   mojo_base.mojom.String16? gcm_sender_id;
 
@@ -144,12 +140,12 @@ struct Manifest {
   map<mojo_base.mojom.String16, ManifestTranslationItem> translations;
 
   // TODO(b:340126786): Remove these obsolete fields.
-  // TODO(crbug.com/1318305): This field is non-standard and part of a Chrome
+  // TODO(crbug.com/40222835): This field is non-standard and part of a Chrome
   // experiment. See: https://github.com/w3c/manifest/issues/1045
-  bool has_dark_theme_color;
-  uint32 dark_theme_color;
-  bool has_dark_background_color;
-  uint32 dark_background_color;
+  // TODO(https://crbug.com/479448266): Use skia.mojom.SkColor possibly if these
+  // aren't yet removed.
+  uint32? dark_theme_color;
+  uint32? dark_background_color;
 
   // TODO(crbug.com/897314): This field is non-standard and part of a Chrome
   // experiment. See:
