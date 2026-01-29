@@ -36,6 +36,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillFixCivilStateMisclassificationForESPT;
     case RegexFeature::kAutofillAddressImproveBuildingNumberRegex:
       return &features::kAutofillAddressImproveBuildingNumberRegex;
+    case RegexFeature::kAutofillNewRegexForPhoneCountryCode:
+      return &features::kAutofillNewRegexForPhoneCountryCode;
   }
   NOTREACHED();
 }

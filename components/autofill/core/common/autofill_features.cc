@@ -734,6 +734,11 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kAutofillMoveSmallFormLogicToClient,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, more patterns are added to the PHONE_COUNTRY_CODE regex.
+// TODO(crbug.com/479503511): Remove once launched.
+BASE_FEATURE(kAutofillNewRegexForPhoneCountryCode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the new suggestion generation logic is used.
 // TODO(crbug.com/409962888): Remove once launched.
 BASE_FEATURE(kAutofillNewSuggestionGeneration,

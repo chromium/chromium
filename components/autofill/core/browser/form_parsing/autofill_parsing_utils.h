@@ -66,7 +66,8 @@ enum class RegexFeature : uint8_t {
   kAutofillFixStateCountryMisclassification = 7,
   kAutofillFixCivilStateMisclassificationForESPT = 8,
   kAutofillAddressImproveBuildingNumberRegex = 9,
-  kMaxValue = kAutofillAddressImproveBuildingNumberRegex,
+  kAutofillNewRegexForPhoneCountryCode = 10,
+  kMaxValue = kAutofillNewRegexForPhoneCountryCode,
 };
 
 // Returns a `DenseSet` containing all `RegexFeature`s whose corresponding
