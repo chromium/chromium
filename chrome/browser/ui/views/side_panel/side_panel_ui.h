@@ -94,6 +94,12 @@ class SidePanelUI {
       SidePanelEntry::PanelType type,
       ShownCallback callback) = 0;
 
+  // This function is intended to only be called by browser on active tab
+  // change.
+  virtual void OnActiveTabChanged(content::WebContents* old_contents,
+                                  content::WebContents* new_contents,
+                                  bool tab_removed_for_deletion) = 0;
+
   // Returns the content view for the given entry. Returns nullptr if the entry
   // does not exist.
   virtual content::WebContents* GetWebContentsForTest(SidePanelEntryId id) = 0;

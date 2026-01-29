@@ -1073,6 +1073,7 @@ class Browser : public TabStripModelObserver,
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents,
                           int index,
+                          bool tab_removed_for_deletion,
                           int reason);
   void OnTabMoved(int from_index, int to_index);
   void OnTabReplacedAt(content::WebContents* old_contents,

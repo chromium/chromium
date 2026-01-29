@@ -105,6 +105,12 @@ class MockSidePanelUI : public SidePanelUI {
               RegisterSidePanelShown,
               (SidePanelEntry::PanelType type, ShownCallback callback),
               (override));
+  MOCK_METHOD(void,
+              OnActiveTabChanged,
+              (content::WebContents * old_contents,
+               content::WebContents* new_contents,
+               bool tab_removed_for_deletion),
+              (override));
   MOCK_METHOD(content::WebContents*,
               GetWebContentsForTest,
               (SidePanelEntryId id),

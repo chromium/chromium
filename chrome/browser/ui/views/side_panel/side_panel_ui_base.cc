@@ -43,7 +43,6 @@ SidePanelUIBase::SidePanelUIBase(Browser* browser) : browser_(browser) {
   for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
     panel_data_[panel_type] = std::make_unique<PanelData>();
   }
-  browser_->tab_strip_model()->AddObserver(this);
 }
 
 SidePanelUIBase::~SidePanelUIBase() = default;
@@ -224,41 +223,18 @@ SidePanelEntryWaiter* SidePanelUIBase::waiter(
   return panel_data_.at(type)->waiter.get();
 }
 
-void SidePanelUIBase::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  // If the browser window is closing, do nothing.
-  if (tab_strip_model->closing_all()) {
-    return;
-  }
-
-  if (!selection.active_tab_changed()) {
-    return;
-  }
-
-  // Only background tabs can be discarded. In this case, nothing needs to
-  // happen.
-  if (change.type() == TabStripModelChange::kReplaced) {
-    return;
-  }
-
-  // Handle removing the previous tab's contextual registry if one exists.
-  bool tab_removed_for_deletion =
-      (change.type() == TabStripModelChange::kRemoved) &&
-      (change.GetRemove()->contents[0].remove_reason ==
-       TabStripModelChange::RemoveReason::kDeleted);
+void SidePanelUIBase::OnActiveTabChanged(content::WebContents* old_contents,
+                                         content::WebContents* new_contents,
+                                         bool tab_removed_for_deletion) {
   SidePanelRegistry* old_contextual_registry = nullptr;
-  if (!tab_removed_for_deletion && selection.old_contents) {
-    old_contextual_registry =
-        GetSidePanelRegistryFromWebContents(selection.old_contents);
+  if (!tab_removed_for_deletion && old_contents) {
+    old_contextual_registry = GetSidePanelRegistryFromWebContents(old_contents);
   }
 
   // Add the current tab's contextual registry.
   SidePanelRegistry* new_contextual_registry = nullptr;
-  if (selection.new_contents) {
-    new_contextual_registry =
-        GetSidePanelRegistryFromWebContents(selection.new_contents);
+  if (new_contents) {
+    new_contextual_registry = GetSidePanelRegistryFromWebContents(new_contents);
   }
 
   MaybeShowEntryOnTabStripModelChanged(old_contextual_registry,

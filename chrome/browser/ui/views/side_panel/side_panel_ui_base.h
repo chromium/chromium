@@ -27,10 +27,10 @@ class View;
 
 // Base class for Side Panel UIs that contains the common logic for managing
 // side panel entries and state.
-class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
+class SidePanelUIBase : public SidePanelUI {
  public:
   explicit SidePanelUIBase(Browser* browser);
-  ~SidePanelUIBase() override;
+  virtual ~SidePanelUIBase();
 
   SidePanelUIBase(const SidePanelUIBase&) = delete;
   SidePanelUIBase& operator=(const SidePanelUIBase&) = delete;
@@ -67,6 +67,9 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   base::CallbackListSubscription RegisterSidePanelShown(
       SidePanelEntry::PanelType type,
       SidePanelUI::ShownCallback callback) override;
+  void OnActiveTabChanged(content::WebContents* old_contents,
+                          content::WebContents* new_contents,
+                          bool tab_removed_for_deletion) override;
 
   Browser* browser() const { return browser_; }
 
@@ -159,15 +162,8 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
 
   SidePanelEntryWaiter* waiter(SidePanelEntry::PanelType type) const;
 
-  const raw_ptr<Browser> browser_;
-
  private:
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
+  const raw_ptr<Browser> browser_;
   std::map<SidePanelEntry::PanelType, std::unique_ptr<PanelData>> panel_data_;
 };
 

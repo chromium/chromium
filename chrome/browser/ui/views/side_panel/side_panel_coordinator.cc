@@ -264,7 +264,7 @@ SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
     return contextual_entry;
   }
 
-  return SidePanelRegistry::From(browser_)->GetEntryForKey(entry_key);
+  return SidePanelRegistry::From(browser())->GetEntryForKey(entry_key);
 }
 
 void SidePanelCoordinator::PopulateSidePanel(
@@ -367,7 +367,7 @@ void SidePanelCoordinator::PopulateSidePanel(
 
 void SidePanelCoordinator::ClearCachedEntryViews(
     SidePanelEntry::PanelType type) {
-  SidePanelRegistry::From(browser_)->ClearCachedEntryViews(type);
+  SidePanelRegistry::From(browser())->ClearCachedEntryViews(type);
   TabStripModel* model = browser_view_->browser()->tab_strip_model();
   for (tabs::TabInterface* tab : *model) {
     tab->GetTabFeatures()->side_panel_registry()->ClearCachedEntryViews(type);
@@ -466,7 +466,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntryFor(side_panel->type());
   }
-  SidePanelRegistry::From(browser_)->ResetActiveEntryFor(side_panel->type());
+  SidePanelRegistry::From(browser())->ResetActiveEntryFor(side_panel->type());
   ClearCachedEntryViews(side_panel->type());
 
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may

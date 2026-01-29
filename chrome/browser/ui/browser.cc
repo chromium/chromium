@@ -140,6 +140,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -1620,6 +1621,9 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
       selection.new_model.active().has_value()
           ? static_cast<int>(selection.new_model.active().value())
           : TabStripModel::kNoTab,
+      (change.type() == TabStripModelChange::kRemoved) &&
+          (change.GetRemove()->contents[0].remove_reason ==
+           TabStripModelChange::RemoveReason::kDeleted),
       selection.reason);
 }
 
@@ -3101,6 +3105,7 @@ void Browser::OnTabDeactivated(WebContents* contents) {
 void Browser::OnActiveTabChanged(WebContents* old_contents,
                                  WebContents* new_contents,
                                  int index,
+                                 bool tab_removed_for_deletion,
                                  int reason) {
   TRACE_EVENT0("ui", "Browser::OnActiveTabChanged");
 // Mac correctly sets the initial background color of new tabs to the theme
@@ -3129,6 +3134,14 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
 #endif
 
   base::RecordAction(UserMetricsAction("ActiveTabChanged"));
+
+  if (!(reason & CHANGE_REASON_REPLACED) && !tab_strip_model_->closing_all()) {
+    SidePanelUI* side_panel_ui = browser_window_features()->side_panel_ui();
+    if (side_panel_ui) {
+      side_panel_ui->OnActiveTabChanged(old_contents, new_contents,
+                                        tab_removed_for_deletion);
+    }
+  }
 
   // Update the bookmark state, since the BrowserWindow may query it during
   // OnActiveTabChanged() below.
