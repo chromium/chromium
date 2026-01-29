@@ -228,27 +228,70 @@ export function printStats(name, final) {
  * @param {number} finalSe - Standard Error of the test run.
  * @param {number} baselineSe - Standard Error of the baseline run.
  */
-function printDiff(name, finalValue, baselineValue, finalSe, baselineSe) {
+/**
+ * Calculates relative difference metrics including error propagation.
+ *
+ * @param {number} finalValue - Value from the test run (e.g., BiDi).
+ * @param {number} baselineValue - Value from the baseline run (e.g., CDP).
+ * @param {number} finalSe - Standard Error of the test run.
+ * @param {number} baselineSe - Standard Error of the baseline run.
+ * @returns {object} { diffAbs, diffRel, diffSe, diffMoe, diffRelMoe }
+ */
+function calculateDiffMetrics(finalValue, baselineValue, finalSe, baselineSe) {
   // Absolute difference (ms)
   const diffAbs = finalValue - baselineValue;
 
-  // Relative difference (%) - e.g., 50% slower, -20% faster.
+  // Relative difference (%)
   const diffRel = (diffAbs / baselineValue) * 100;
 
-  // Standard Error of the Difference (SE_diff).
-  // Formula: sqrt(SE_1^2 + SE_2^2)
-  // Assumption: The two runs (BiDi and CDP) are independent samples.
-  const diffSe = Math.sqrt(Math.pow(finalSe, 2) + Math.pow(baselineSe, 2));
+  // Standard Error of the absolute difference.
+  const diffSeAbs = Math.sqrt(Math.pow(finalSe, 2) + Math.pow(baselineSe, 2));
+  const diffMoeAbs = diffSeAbs * T_CRIT_95_LARGE_N;
 
-  // Margin of Error for the Difference (95% CI)
-  const diffMoe = diffSe * T_CRIT_95_LARGE_N;
+  // Standard Error of the relative difference (Ratio Error Propagation).
+  // R = A/B - 1
+  // SE(R) ~= |A/B| * sqrt( (SE_A/A)^2 + (SE_B/B)^2 )
+  // We use the ratio (final/baseline) for the error calculation.
+  const ratio = finalValue / baselineValue - 1;
+  const relErrFinal = finalSe / finalValue;
+  const relErrBaseline = baselineSe / baselineValue;
 
-  // MOE expressed as a percentage of the *baseline* value.
-  // This allows us to say: "BiDi is 10% slower ± 2%".
-  const diffRelMoe = (diffMoe / baselineValue) * 100;
+  const diffSeRel =
+    Math.abs(ratio) *
+    Math.sqrt(Math.pow(relErrFinal, 2) + Math.pow(relErrBaseline, 2));
+
+  // Convert SE to MOE (95% CI) and then to percentage.
+  const diffRelMoe = diffSeRel * T_CRIT_95_LARGE_N * 100;
+
+  return {
+    diffAbs,
+    diffRel,
+    diffSeAbs,
+    diffMoeAbs,
+    diffRelMoe,
+  };
+}
+
+/**
+ * Calculates and prints the relative difference between two comparison points.
+ * Includes the Standard Error of the Difference (SE_diff) and Margin of Error (MOE).
+ *
+ * @param {string} name - Name of the metric (e.g., 'Mean', 'Median').
+ * @param {number} finalValue - Value from the test run (e.g., BiDi).
+ * @param {number} baselineValue - Value from the baseline run (e.g., CDP).
+ * @param {number} finalSe - Standard Error of the test run.
+ * @param {number} baselineSe - Standard Error of the baseline run.
+ */
+function printDiff(name, finalValue, baselineValue, finalSe, baselineSe) {
+  const {diffAbs, diffRel, diffMoeAbs, diffRelMoe} = calculateDiffMetrics(
+    finalValue,
+    baselineValue,
+    finalSe,
+    baselineSe,
+  );
 
   console.log(
-    `  ${name.padEnd(6)}: ${diffRel.toFixed(2)}% ±${diffRelMoe.toFixed(2)}% / ${diffAbs.toFixed(4)}ms ±${diffMoe.toFixed(4)}ms`,
+    `  ${name.padEnd(6)}: ${diffRel.toFixed(2)}% ±${diffRelMoe.toFixed(2)}% / ${diffAbs.toFixed(4)}ms ±${diffMoeAbs.toFixed(4)}ms`,
   );
 }
 
@@ -297,13 +340,12 @@ export function printCiComparison(prefix, final, baseline, toolName) {
     finalSe,
     baselineSe,
   ) => {
-    const diffAbs = finalValue - baselineValue;
-    const diffRel = (diffAbs / baselineValue) * 100;
-
-    // Calculate SE of difference to provide a range (error bar) for the metric in the dashboard.
-    const diffSe = Math.sqrt(Math.pow(finalSe, 2) + Math.pow(baselineSe, 2));
-    const diffMoe = diffSe * T_CRIT_95_LARGE_N;
-    const diffRelMoe = (diffMoe / baselineValue) * 100;
+    const {diffRel, diffRelMoe} = calculateDiffMetrics(
+      finalValue,
+      baselineValue,
+      finalSe,
+      baselineSe,
+    );
 
     const metric = {
       // Metric name: <os>-shell:<tool>-perf-metric:<prefix>_<metric>_rel
