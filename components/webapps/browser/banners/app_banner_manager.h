@@ -71,6 +71,16 @@ class AppBannerManager : public content::WebContentsObserver,
     virtual void OnInstallableWebAppStatusUpdated(
         InstallableWebAppCheckResult result,
         const std::optional<WebAppBannerData>& data) = 0;
+
+    // Callback when an app is installed.
+    virtual void OnInstall() {}
+
+    // Called after the manager sends a message to the renderer regarding its
+    // intention to show a prompt.
+    virtual void OnBannerPromptReply() {}
+
+    // Called when the pipeline finishes
+    virtual void OnComplete() {}
   };
 
   // A StatusReporter handles the reporting of |InstallableStatusCode|s.
@@ -180,10 +190,8 @@ class AppBannerManager : public content::WebContentsObserver,
   // performs logging related to the app installation. Appinstalled event is
   // redundant for the beforeinstallprompt event's promise being resolved, but
   // is required by the install event spec.
-  // This is virtual for testing.
-  // TODO(http://crbug.com/322342499): Remove virtual.
-  virtual void OnInstall(blink::mojom::DisplayMode display,
-                         bool set_current_web_app_not_installable);
+  void OnInstall(blink::mojom::DisplayMode display,
+                 bool set_current_web_app_not_installable);
 
   // Sends a message to the renderer that the user accepted the banner.
   void SendBannerAccepted();
@@ -322,10 +330,6 @@ class AppBannerManager : public content::WebContentsObserver,
   UrlType GetUrlType(content::RenderFrameHost* render_frame_host,
                      const GURL& url);
 
-  // Updates the current state to |state|. Virtual to allow overriding in tests.
-  // TODO(http://crbug.com/322342499): Remove virtual & make this private.
-  virtual void UpdateState(State state);
-
   // content::WebContentsObserver override:
   // TODO(http://crbug.com/322342499): Make this private with the rest of the
   // web contents observer overrides.
@@ -352,6 +356,8 @@ class AppBannerManager : public content::WebContentsObserver,
   // Requests an app banner. Virtual for testing.
   // TODO(http://crbug.com/322342499): Remove virtual.
   virtual void RequestAppBanner();
+
+  void UpdateState(State state);
 
   void RecordDidShowBanner(const std::string& identifier) const;
 
@@ -421,9 +427,7 @@ class AppBannerManager : public content::WebContentsObserver,
   // Called after the manager sends a message to the renderer regarding its
   // intention to show a prompt. The renderer will send a message back with the
   // opportunity to cancel.
-  // Virtual for testing.
-  // TODO(http://crbug.com/322342499): Remove virtual.
-  virtual void OnBannerPromptReply(
+  void OnBannerPromptReply(
       const InstallBannerConfig& install_config,
       mojo::Remote<blink::mojom::AppBannerController> controller,
       blink::mojom::AppBannerPromptReply reply);

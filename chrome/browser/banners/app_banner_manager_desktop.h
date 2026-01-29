@@ -78,8 +78,7 @@ class AppBannerManagerDesktop
                     const InstallBannerConfig& config) override;
 
   // Called when the web app install initiated by a banner has completed.
-  // Virtual for testing.
-  virtual void DidFinishCreatingWebApp(
+  void DidFinishCreatingWebApp(
       const webapps::ManifestId& manifest_id,
       base::WeakPtr<AppBannerManagerDesktop> is_navigation_current,
       const webapps::AppId& app_id,

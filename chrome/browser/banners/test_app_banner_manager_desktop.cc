@@ -29,9 +29,12 @@ TestAppBannerManagerDesktop::TestAppBannerManagerDesktop(
   // Ensure no real instance exists. This must be the only instance to avoid
   // observers of AppBannerManager left observing the wrong one.
   DCHECK_EQ(AppBannerManagerDesktop::FromWebContents(web_contents), nullptr);
+  AddObserver(this);
 }
 
-TestAppBannerManagerDesktop::~TestAppBannerManagerDesktop() = default;
+TestAppBannerManagerDesktop::~TestAppBannerManagerDesktop() {
+  RemoveObserver(this);
+}
 
 static std::unique_ptr<AppBannerManagerDesktop> CreateTestAppBannerManager(
     content::WebContents* web_contents) {
@@ -72,8 +75,14 @@ bool TestAppBannerManagerDesktop::WaitForInstallableCheck() {
   return *installable_ && IsPromotableWebApp();
 }
 
-void TestAppBannerManagerDesktop::PrepareDone(base::OnceClosure on_done) {
-  on_done_ = std::move(on_done);
+void TestAppBannerManagerDesktop::SetBannerPromptReplyCallback(
+    base::OnceClosure on_banner_prompt_reply) {
+  on_banner_prompt_reply_ = std::move(on_banner_prompt_reply);
+}
+
+void TestAppBannerManagerDesktop::SetCompleteCallback(
+    base::OnceClosure on_complete) {
+  on_complete_ = std::move(on_complete);
 }
 
 AppBannerManager::State TestAppBannerManagerDesktop::state() {
@@ -136,22 +145,9 @@ TestAppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
   return this;
 }
 
-void TestAppBannerManagerDesktop::OnInstall(
-    blink::mojom::DisplayMode display,
-    bool set_current_web_app_not_installable) {
-  AppBannerManager::OnInstall(display, set_current_web_app_not_installable);
+void TestAppBannerManagerDesktop::OnInstall() {
   if (on_install_)
     std::move(on_install_).Run();
-}
-
-void TestAppBannerManagerDesktop::DidFinishCreatingWebApp(
-    const webapps::ManifestId& manifest_id,
-    base::WeakPtr<AppBannerManagerDesktop> is_navigation_current,
-    const webapps::AppId& app_id,
-    webapps::InstallResultCode code) {
-  AppBannerManagerDesktop::DidFinishCreatingWebApp(
-      manifest_id, is_navigation_current, app_id, code);
-  OnFinished();
 }
 
 void TestAppBannerManagerDesktop::DidFinishLoad(
@@ -167,18 +163,6 @@ void TestAppBannerManagerDesktop::DidFinishLoad(
   AppBannerManagerDesktop::DidFinishLoad(render_frame_host, validated_url);
 }
 
-void TestAppBannerManagerDesktop::UpdateState(AppBannerManager::State state) {
-  debug_log_.Append(
-      base::StringPrintf("State updated to %d", static_cast<int>(state)));
-  AppBannerManager::UpdateState(state);
-
-  if (state == AppBannerManager::State::PENDING_PROMPT_CANCELED ||
-      state == AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED ||
-      state == AppBannerManager::State::COMPLETE) {
-    OnFinished();
-  }
-}
-
 void TestAppBannerManagerDesktop::SetInstallable(bool installable) {
   debug_log_.Append(base::StringPrintf("SetInstallable(%d)", installable));
   DCHECK(!installable_.has_value() || installable_ == installable)
@@ -190,10 +174,17 @@ void TestAppBannerManagerDesktop::SetInstallable(bool installable) {
     std::move(installable_quit_closure_).Run();
 }
 
-void TestAppBannerManagerDesktop::OnFinished() {
-  if (on_done_) {
+void TestAppBannerManagerDesktop::OnBannerPromptReply() {
+  if (on_banner_prompt_reply_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(on_done_));
+        FROM_HERE, std::move(on_banner_prompt_reply_));
+  }
+}
+
+void TestAppBannerManagerDesktop::OnComplete() {
+  if (on_complete_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete_));
   }
 }
 

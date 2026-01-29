@@ -18,7 +18,8 @@ namespace webapps {
 
 // Provides the ability to await the results of the installability check that
 // happens for every page load.
-class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
+class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
+                                    private AppBannerManager::Observer {
  public:
   explicit TestAppBannerManagerDesktop(content::WebContents* web_contents);
 
@@ -43,7 +44,10 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   bool WaitForInstallableCheck();
 
   // Configures a callback to be invoked when the app banner flow finishes.
-  void PrepareDone(base::OnceClosure on_done);
+  void SetBannerPromptReplyCallback(base::OnceClosure on_banner_prompt_reply);
+
+  // Configures a callback to be invoked when the app banner flow finishes.
+  void SetCompleteCallback(base::OnceClosure on_complete);
 
   // Returns the internal state of the AppBannerManager.
   AppBannerManager::State state();
@@ -65,29 +69,28 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
 
  protected:
   // AppBannerManager:
-  void OnInstall(blink::mojom::DisplayMode display,
-                 bool set_current_web_app_not_installable) override;
-  void DidFinishCreatingWebApp(
-      const webapps::ManifestId& manifest_id,
-      base::WeakPtr<AppBannerManagerDesktop> is_navigation_current,
-      const webapps::AppId& app_id,
-      webapps::InstallResultCode code) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  void UpdateState(AppBannerManager::State state) override;
   void RecheckInstallabilityForLoadedPage() override;
 
  private:
   void SetInstallable(bool installable);
   void SetPromotable(bool promotable);
-  void OnFinished();
+
+  // AppBannerManager::Observer:
+  void OnInstallableWebAppStatusUpdated(
+      InstallableWebAppCheckResult,
+      const std::optional<WebAppBannerData>&) override {}
+  void OnInstall() override;
+  void OnBannerPromptReply() override;
+  void OnComplete() override;
 
   std::optional<bool> installable_;
   base::ListValue debug_log_;
   base::OnceClosure tear_down_quit_closure_;
   base::OnceClosure installable_quit_closure_;
-  base::OnceClosure promotable_quit_closure_;
-  base::OnceClosure on_done_;
+  base::OnceClosure on_banner_prompt_reply_;
+  base::OnceClosure on_complete_;
   base::OnceClosure on_install_;
 };
 

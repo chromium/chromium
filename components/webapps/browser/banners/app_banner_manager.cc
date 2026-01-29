@@ -230,6 +230,10 @@ void AppBannerManager::OnInstall(blink::mojom::DisplayMode display,
   DCHECK(installation_service);
   installation_service->OnInstall();
 
+  for (Observer& observer : observer_list_) {
+    observer.OnInstall();
+  }
+
   // App has been installed (possibly by the user), page may no longer request
   // install prompt.
   receiver_.reset();
@@ -611,6 +615,9 @@ void AppBannerManager::Stop(InstallableStatusCode code) {
   }
   ResetBindings();
   UpdateState(State::COMPLETE);
+  for (Observer& observer : observer_list_) {
+    observer.OnComplete();
+  }
   status_reporter_ = std::make_unique<NullStatusReporter>();
 }
 
@@ -885,6 +892,10 @@ void AppBannerManager::OnBannerPromptReply(
         "banner.");
   }
 
+  for (Observer& observer : observer_list_) {
+    observer.OnBannerPromptReply();
+  }
+
   if (state_ == State::SENDING_EVENT) {
     if (!event_canceled) {
       MaybeShowAmbientBadge(install_config);
@@ -932,6 +943,10 @@ void AppBannerManager::ShowBannerForCurrentPageState() {
   ShowBannerUi(install_source, config.value());
   ReportStatus(InstallableStatusCode::SHOWING_APP_INSTALLATION_DIALOG);
   UpdateState(State::COMPLETE);
+
+  for (Observer& observer : observer_list_) {
+    observer.OnComplete();
+  }
 }
 
 void AppBannerManager::DisplayAppBanner() {

@@ -71,15 +71,18 @@ using State = AppBannerManager::State;
 // TODO(http://crbug.com/329145718): Use AppBannerManagerNoFakeBrowserTest style
 // instead of overriding like this.
 // TODO(http://crbug.com/322342499): Completely remove this class.
-class AppBannerManagerTest : public AppBannerManager {
+class AppBannerManagerTest : public AppBannerManager,
+                             private AppBannerManager::Observer {
  public:
   explicit AppBannerManagerTest(content::WebContents* web_contents)
-      : AppBannerManager(web_contents) {}
+      : AppBannerManager(web_contents) {
+    AddObserver(this);
+  }
 
   AppBannerManagerTest(const AppBannerManagerTest&) = delete;
   AppBannerManagerTest& operator=(const AppBannerManagerTest&) = delete;
 
-  ~AppBannerManagerTest() override = default;
+  ~AppBannerManagerTest() override { RemoveObserver(this); }
 
   bool TriggeringDisabledForTesting() const override { return false; }
 
@@ -105,11 +108,6 @@ class AppBannerManagerTest : public AppBannerManager {
 
   // Configures a callback to be invoked when the app banner flow finishes.
   void PrepareDone(base::OnceClosure on_done) { on_done_ = std::move(on_done); }
-
-  // Configures a callback to be invoked from OnBannerPromptReply.
-  void PrepareBannerPromptReply(base::OnceClosure on_banner_prompt_reply) {
-    on_banner_prompt_reply_ = std::move(on_banner_prompt_reply);
-  }
 
   void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
                              std::string result_label) override {}
@@ -188,25 +186,14 @@ class AppBannerManagerTest : public AppBannerManager {
         FROM_HERE, std::move(on_done_));
   }
 
-  void UpdateState(AppBannerManager::State state) override {
-    AppBannerManager::UpdateState(state);
-    if (state == AppBannerManager::State::PENDING_PROMPT_CANCELED ||
-        state == AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED) {
-      if (on_done_)
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(on_done_));
-    }
-  }
+  void OnInstallableWebAppStatusUpdated(
+      InstallableWebAppCheckResult result,
+      const std::optional<WebAppBannerData>& data) override {}
 
-  void OnBannerPromptReply(
-      const InstallBannerConfig& install_config,
-      mojo::Remote<blink::mojom::AppBannerController> controller,
-      blink::mojom::AppBannerPromptReply reply) override {
-    AppBannerManager::OnBannerPromptReply(install_config, std::move(controller),
-                                          reply);
-    if (on_banner_prompt_reply_) {
+  void OnBannerPromptReply() override {
+    if (on_done_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(on_banner_prompt_reply_));
+          FROM_HERE, std::move(on_done_));
     }
   }
 
@@ -237,16 +224,11 @@ class AppBannerManagerTest : public AppBannerManager {
   base::OnceClosure on_done_;
 
  private:
-  // If non-null, |on_banner_prompt_reply_| will be invoked from
-  // OnBannerPromptReply.
-  base::OnceClosure on_banner_prompt_reply_;
-
   std::unique_ptr<bool> banner_shown_;
   std::optional<WebappInstallSource> install_source_;
 
   base::WeakPtrFactory<AppBannerManagerTest> weak_factory_{this};
 };
-
 
 enum class CheckWebAppExistence { kAsync = 0, kSync = 1, kMaxValue = kSync };
 
@@ -738,8 +720,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, WebAppBannerReprompt) {
 
   // Dismiss the banner.
   base::RunLoop run_loop;
-  manager->PrepareDone(base::DoNothing());
-  manager->PrepareBannerPromptReply(run_loop.QuitClosure());
+  manager->PrepareDone(run_loop.QuitClosure());
   manager->SendBannerDismissed();
   // Wait for OnBannerPromptReply event.
   run_loop.Run();
