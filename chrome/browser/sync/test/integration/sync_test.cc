@@ -866,16 +866,16 @@ void SyncTest::TearDownOnMainThread() {
       profiles_[index]->RemoveObserver(this);
 
 #if BUILDFLAG(IS_ANDROID)
-      // A profile could have backend tasks from the associate sync engine.
-      // In browser tests, on non-Android platforms, these tasks are cancelled
-      // during the browser process shutdown.
-      // On Android, however, browser process is not shutdown after test run.
-      // As a result, these backend tasks could keep running and cause timeout
-      // error during test shutdown.
-      // To fix this issue, we explicitly mimic a dashboard reset to cancel
-      // any ongoing sync engine's backend tasks.
-      if (auto* service = GetSyncService(index)) {
-        service->OnActionableProtocolError(
+      if (server_type_ == EXTERNAL_LIVE_SERVER) {
+        // A profile could have backend tasks from the associate sync engine.
+        // In browser tests, on non-Android platforms, these tasks are cancelled
+        // during the browser process shutdown.
+        // On Android, however, browser process is not shutdown after test run.
+        // As a result, these backend tasks could keep running and cause timeout
+        // error during test shutdown.
+        // To fix this issue, we explicitly mimic a dashboard reset to cancel
+        // any ongoing sync engine's backend tasks.
+        GetSyncService(index)->OnActionableProtocolError(
             {.error_type = syncer::NOT_MY_BIRTHDAY,
              .action = syncer::DISABLE_SYNC_ON_CLIENT});
       }
