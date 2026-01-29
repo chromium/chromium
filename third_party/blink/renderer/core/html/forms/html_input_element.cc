@@ -315,10 +315,22 @@ bool HTMLInputElement::IsKeyboardFocusableSlow(
   return input_type_->IsKeyboardFocusableSlow(update_behavior);
 }
 
+bool HTMLInputElement::SupportsWebMCP() const {
+  // TODO(crbug.com/475972617): Support other input elements as well.
+  return input_type_->IsBaseTextInputType();
+}
+
 void HTMLInputElement::FillWebMCPData(JSONValue& data) {
   CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
   String selected_value = GetMCPJSONValue(data);
   SetValue(selected_value);
+}
+
+std::unique_ptr<JSONObject> HTMLInputElement::GetWebMCPParameterSchema() const {
+  CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
+  auto schema = std::make_unique<JSONObject>();
+  schema->SetString("type", "string");
+  return schema;
 }
 
 bool HTMLInputElement::MayTriggerVirtualKeyboard() const {

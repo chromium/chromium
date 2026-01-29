@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/json/json_parser.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -38,6 +40,12 @@ class HTMLFormMcpToolTest : public PageTestBase {
     HTMLFormControlElement* submit_button;
     return form_element.active_webmcp_tool_->FillFormControls(
         input_arguments, require_submit_button, &submit_button);
+  }
+
+  static String ComputeInputSchema(HTMLFormElement& form_element) {
+    CHECK(IsValidWebMCPForm(form_element));
+    CHECK(form_element.active_webmcp_tool_);
+    return form_element.active_webmcp_tool_->ComputeInputSchema();
   }
 
  private:
@@ -307,6 +315,100 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_Transactional) {
   // A failure means no form control values were changed.
   EXPECT_EQ("initial1", text1->Value());
   EXPECT_EQ("initial2", text2->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="text1" type="text">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "text1": {
+           "type": "string"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextInput_Required) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="text1" type="text">
+      <input name="text2" type="text" required>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "text1": {
+           "type": "string"
+         },
+         "text2": {
+           "type": "string"
+         }
+      },
+      "required": ["text2"]
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <select name="select" required>
+        <option value="Option 1">This is option 1</option>
+        <option value="Option 2">This is option 2</option>
+        <option value="Option 3">This is option 3</option>
+      </select>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "select": {
+           "type": "string",
+           "oneOf": [
+             { "const": "Option 1", "title": "This is option 1" },
+             { "const": "Option 2", "title": "This is option 2" },
+             { "const": "Option 3", "title": "This is option 3" }
+           ]
+         }
+      },
+      "required": ["select"]
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
 }  // namespace blink

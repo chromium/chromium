@@ -270,34 +270,31 @@ void HTMLFormElement::HTMLFormMcpTool::CallDoneCallback(
 }
 
 String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {
-  // Hard-coded schema for now - this is temporary.
-  return R"json({
-    "type": "object",
-    "properties": {
-      "origin": {
-        "type": "string",
-        "description": "The origin city for the flight"
-      },
-      "destination": {
-        "type": "string",
-        "description": "The destination city for the flight"
-      },
-      "departureDate": {
-        "type": "string",
-        "description": "The departure date in YYYY-MM-DD format"
-      },
-      "returnDate": {
-        "type": "string",
-        "description": "The return date in YYYY-MM-DD format. Only required for round-trip flights. Omit for one-way trips."
-      },
-      "passengers": {
-        "type": "number",
-        "description": "The number of passengers (1-8)"
+  JSONObject out;
+  out.SetString("type", "object");
+
+  auto required = std::make_unique<JSONArray>();
+  auto properties = std::make_unique<JSONObject>();
+
+  for (ListedElement* element : form_->ListedElements()) {
+    if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+      if (form_control->SupportsWebMCP()) {
+        String name = form_control->GetWebMCPParameterName();
+        std::unique_ptr<JSONObject> parameter_schema =
+            form_control->GetWebMCPParameterSchema();
+        CHECK(parameter_schema);
+        properties->SetObject(name, std::move(parameter_schema));
+        if (form_control->IsRequired()) {
+          required->PushString(name);
+        }
       }
-    },
-    "required": [
-      "origin", "destination", "departureDate", "passengers"]
-  })json";
+    }
+  }
+
+  out.SetObject("properties", std::move(properties));
+  out.SetArray("required", std::move(required));
+
+  return out.ToJSONString();
 }
 
 void HTMLFormElement::HTMLFormMcpTool::Trace(Visitor* visitor) const {

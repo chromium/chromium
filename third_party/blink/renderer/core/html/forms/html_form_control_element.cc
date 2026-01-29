@@ -369,6 +369,12 @@ String HTMLFormControlElement::GetWebMCPParameterName() const {
   // Eventually add more logic here to use the label, tool-param-name, etc.
   return name;
 }
+
+std::unique_ptr<JSONObject> HTMLFormControlElement::GetWebMCPParameterSchema()
+    const {
+  return nullptr;
+}
+
 void HTMLFormControlElement::FillWebMCPData(JSONValue& data) {
   CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
   NOTREACHED();
