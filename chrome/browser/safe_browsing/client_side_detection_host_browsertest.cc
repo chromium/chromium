@@ -874,9 +874,6 @@ class ClientSideDetectionHostVibrateTest : public InProcessBrowserTest {
     std::move(vibrate_done).Run();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kClientSideDetectionVibrationApi};
-
  private:
   std::string flatbuffer_model_str_;
 };
@@ -906,8 +903,7 @@ class VibrationObserverWaiter : public content::WebContentsObserver {
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
                        VibrationApiTriggersPreclassificationCheck) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
-      !base::FeatureList::IsEnabled(kClientSideDetectionVibrationApi)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
@@ -966,8 +962,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
                        VibrationApiClassificationTriggersCSPPPing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
-      !base::FeatureList::IsEnabled(kClientSideDetectionVibrationApi)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),

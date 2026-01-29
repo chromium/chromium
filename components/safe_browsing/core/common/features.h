@@ -154,10 +154,6 @@ BASE_DECLARE_FEATURE(kClientSideDetectionShowScamVerdictWarningAndroid);
 
 BASE_DECLARE_FEATURE(kClientSideDetectionSkipErrorPage);
 
-// Expand CSPP beyond phishing and trigger when vibration API is called on the
-// web page.
-BASE_DECLARE_FEATURE(kClientSideDetectionVibrationApi);
-
 // Set a RESIZE_BEST preference for image resizing algorithm in Client Side
 // Detection renderer processes for both image classification and image
 // embedding. This experiment is done to see if the resizing algorithm

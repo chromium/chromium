@@ -1142,8 +1142,7 @@ void ClientSideDetectionHost::PointerLockRequested() {
 }
 
 void ClientSideDetectionHost::VibrationRequested() {
-  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) ||
-      !base::FeatureList::IsEnabled(kClientSideDetectionVibrationApi)) {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
   }
 
