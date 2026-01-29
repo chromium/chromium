@@ -294,6 +294,8 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
   EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
                                                        /*supports_pss=*/true),
             key->GetAlgorithmPreferences());
+  EXPECT_EQ("CNG: Microsoft Software Key Storage Provider",
+            key->GetProviderName());
   TestSSLPrivateKeyMatches(key.get(), *pkcs8);
 }
 
@@ -344,6 +346,8 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
       SSL_SIGN_RSA_PKCS1_SHA1,
   };
   EXPECT_EQ(expected, key->GetAlgorithmPreferences());
+  EXPECT_EQ("CAPI: Microsoft Enhanced RSA and AES Cryptographic Provider",
+            key->GetProviderName());
   TestSSLPrivateKeyMatches(key.get(), *pkcs8);
 }
 
