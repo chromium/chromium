@@ -160,7 +160,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
-            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         super(
                 PaneId.INCOGNITO_TAB_SWITCHER,
                 context,
@@ -373,7 +373,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private @TabCloseMethod int getFinalTabCloseMethod(TabSwitcherPaneCoordinator paneCoordinator) {
         Supplier<Integer> recentlySwipedTabIdSupplier =
                 paneCoordinator.getRecentlySwipedTabIdSupplier();
-        @Nullable
         Supplier<Boolean> dialogShowingOrAnimationSupplier =
                 paneCoordinator.getTabGridDialogShowingOrAnimationSupplier();
         boolean wasClosedViaSwipe = wasFinalTabSwiped(recentlySwipedTabIdSupplier);

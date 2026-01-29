@@ -31,8 +31,8 @@ import java.util.function.Supplier;
 @NullMarked
 public class TabGroupCreationUiDelegate {
     private final Context mContext;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Supplier<PaneManager> mPaneManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable PaneManager> mPaneManagerSupplier;
     private final Supplier<@Nullable TabGroupModelFilter> mFilterSupplier;
     private final TabGroupCreationDialogManagerFactory mFactory;
 
@@ -45,8 +45,8 @@ public class TabGroupCreationUiDelegate {
      */
     public TabGroupCreationUiDelegate(
             Context context,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<PaneManager> paneManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable PaneManager> paneManagerSupplier,
             Supplier<@Nullable TabGroupModelFilter> filterSupplier,
             TabGroupCreationDialogManagerFactory factory) {
         mContext = context;

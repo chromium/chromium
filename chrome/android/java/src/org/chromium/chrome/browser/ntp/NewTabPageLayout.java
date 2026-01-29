@@ -116,7 +116,7 @@ public class NewTabPageLayout extends LinearLayout
     private Profile mProfile;
     private ActivityResultTracker mActivityResultTracker;
     private BottomSheetController mBottomSheetController;
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private SnackbarManager mSnackbarManager;
     private UiConfig mUiConfig;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
@@ -263,7 +263,7 @@ public class NewTabPageLayout extends LinearLayout
             WindowAndroid windowAndroid,
             ActivityResultTracker activityResultTracker,
             BottomSheetController bottomSheetController,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             boolean isTablet,
             Supplier<Integer> tabStripHeightSupplier,

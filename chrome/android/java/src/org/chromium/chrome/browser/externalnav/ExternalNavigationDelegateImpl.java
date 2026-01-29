@@ -58,7 +58,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     protected final Context mApplicationContext;
     private final Tab mTab;
     private final TabObserver mTabObserver;
-    private final @Nullable Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final @Nullable Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
 
     private boolean mIsTabDestroyed;
     private @TabLaunchType int mTabLaunchType;

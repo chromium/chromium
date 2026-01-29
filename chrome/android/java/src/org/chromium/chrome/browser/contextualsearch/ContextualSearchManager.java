@@ -162,7 +162,7 @@ public class ContextualSearchManager
     /** A means of observing all the browser's tabs. */
     private final TabModelSelector mTabModelSelector;
 
-    private final Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final Supplier<@Nullable EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private ContextualSearchSelectionController mSelectionController;
     private ContextualSearchNetworkCommunicator mNetworkCommunicator;

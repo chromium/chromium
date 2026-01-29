@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubColorMixer.OverviewModeAlphaObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 
@@ -32,7 +31,7 @@ public class HubLayoutDependencyHolder {
     private final LazyOneshotSupplier<ViewGroup> mHubRootViewGroupSupplier;
     private final HubLayoutScrimController mScrimController;
     private final OverviewModeAlphaObserver mOnOverviewAlphaChange;
-    private final @Nullable Supplier<Boolean> mXrFullSpaceModeSupplier;
+    private final Supplier<Boolean> mXrFullSpaceModeSupplier;
 
     /**
      * @param hubManagerSupplier The supplier of {@link HubManager}.
@@ -55,7 +54,7 @@ public class HubLayoutDependencyHolder {
             Supplier<View> scrimAnchorViewSupplier,
             NonNullObservableSupplier<Boolean> isIncognitoSupplier,
             OverviewModeAlphaObserver onOverviewAlphaChange,
-            @Nullable Supplier<Boolean> xrFullSpaceModeSupplier) {
+            Supplier<Boolean> xrFullSpaceModeSupplier) {
         this(
                 hubManagerSupplier,
                 hubRootViewGroupSupplier,
@@ -79,7 +78,7 @@ public class HubLayoutDependencyHolder {
             LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
             HubLayoutScrimController scrimController,
             OverviewModeAlphaObserver onOverviewAlphaChange,
-            @Nullable Supplier<Boolean> xrFullSpaceModeSupplier) {
+            Supplier<Boolean> xrFullSpaceModeSupplier) {
         mHubManagerSupplier = hubManagerSupplier;
         mHubRootViewGroupSupplier = hubRootViewGroupSupplier;
         mScrimController = scrimController;
@@ -109,9 +108,6 @@ public class HubLayoutDependencyHolder {
 
     /** Returns the supplier of the current status of the Full Space mode on XR. */
     public Supplier<Boolean> getXrFullSpaceModeSupplier() {
-        if (mXrFullSpaceModeSupplier != null) {
-            return mXrFullSpaceModeSupplier;
-        }
-        return () -> false;
+        return mXrFullSpaceModeSupplier;
     }
 }

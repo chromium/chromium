@@ -64,8 +64,8 @@ public class CreatorActivity extends SnackbarActivity {
                 @Nullable BottomSheetController controller,
                 ActivityLifecycleDispatcherImpl lifecycleDispatcher,
                 ActivityTabProvider tabProvider,
-                Supplier<TabModelSelector> tabModelSelectorProvider,
-                Supplier profileSupplier,
+                Supplier<@Nullable TabModelSelector> tabModelSelectorProvider,
+                Supplier<@Nullable Profile> profileSupplier,
                 ShareSheetDelegate delegate,
                 boolean isCustomTab) {
             super(

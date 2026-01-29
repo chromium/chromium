@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
@@ -43,8 +42,8 @@ public class TabGroupsPane extends PaneBase {
     private final LazyOneshotSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Supplier<PaneManager> mPaneManagerSupplier;
-    private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final SettableMonotonicObservableSupplier<FullButtonData> mActionButtonSupplier =
             ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Boolean> mHairlineVisibilitySupplier =
@@ -71,8 +70,8 @@ public class TabGroupsPane extends PaneBase {
             DoubleConsumer onToolbarAlphaChange,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             Supplier<PaneManager> paneManagerSupplier,
-            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             DataSharingTabManager dataSharingTabManager) {
         super(PaneId.TAB_GROUPS, context, onToolbarAlphaChange);
@@ -87,7 +86,7 @@ public class TabGroupsPane extends PaneBase {
                 new TabGroupCreationUiDelegate(
                         context,
                         modalDialogManagerSupplier,
-                        paneManagerSupplier,
+                        (Supplier<@Nullable PaneManager>) paneManagerSupplier,
                         mTabGroupModelFilterSupplier::get,
                         TabGroupCreationDialogManager::new);
         mActionButtonSupplier.set(
@@ -120,11 +119,11 @@ public class TabGroupsPane extends PaneBase {
             mTabGroupListCoordinator =
                     new TabGroupListCoordinator(
                             mContext,
-                            assumeNonNull(mTabGroupModelFilterSupplier.get()),
+                            assertNonNull(mTabGroupModelFilterSupplier.get()),
                             assertNonNull(mProfileProviderSupplier.get()),
                             mPaneManagerSupplier.get(),
-                            mTabGroupUiActionHandlerSupplier.get(),
-                            mModalDialogManagerSupplier.get(),
+                            assertNonNull(mTabGroupUiActionHandlerSupplier.get()),
+                            assertNonNull(mModalDialogManagerSupplier.get()),
                             mHairlineVisibilitySupplier::set,
                             mEdgeToEdgeSupplier,
                             mDataSharingTabManager);

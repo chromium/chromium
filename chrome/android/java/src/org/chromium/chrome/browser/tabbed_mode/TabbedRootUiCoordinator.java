@@ -316,7 +316,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final @NonNull CrossDeviceSettingImporter mCrossDeviceSettingImporter;
     private @Nullable SideUiCoordinator mSideUiCoordinator;
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
-    private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final OneshotSupplierImpl<Boolean> mTrackerInitializedOneshotSupplier =
             new OneshotSupplierImpl<>();
 
@@ -481,7 +480,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull
                     MonotonicObservableSupplier<BookmarkManagerOpener>
                             bookmarkManagerOpenerSupplier,
-            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @NonNull OneshotSupplier<ChromeInactivityTracker> inactivityTrackerSupplier) {
         super(
                 activity,
@@ -638,7 +637,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 (inactivityTracker) -> {
                     inactivityTracker.addObserver(mInactivityObserver);
                 });
-        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
 
         mCrossDeviceSettingImporter =
                 new CrossDeviceSettingImporter(
@@ -1053,7 +1051,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)) {
             BookmarkBarUtils.recordStartUpMetrics(
-                    mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier);
+                    mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier.get());
             mBookmarkBarVisibilityProvider =
                     new BookmarkBarVisibilityProvider(
                             mActivity,
@@ -2060,7 +2058,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     public boolean getBookmarkBarVisibility() {
         return BookmarkBarUtils.isBookmarkBarVisible(
-                mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier);
+                mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier.get());
     }
 
     public int getBookmarkBarHeight() {

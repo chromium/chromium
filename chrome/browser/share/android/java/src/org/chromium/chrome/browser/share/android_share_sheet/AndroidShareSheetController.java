@@ -54,7 +54,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private static @Nullable Runnable sShowShareSheetHookForTesting;
     private final BottomSheetController mController;
     private final Supplier<@Nullable Tab> mTabProvider;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Profile mProfile;
     private final Callback<Tab> mPrintCallback;
     private final TabGroupSharingController mTabGroupSharingController;
@@ -82,7 +82,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             ChromeShareExtras chromeShareExtras,
             BottomSheetController controller,
             Supplier<@Nullable Tab> tabProvider,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Profile profile,
             Callback<Tab> printCallback,
             TabGroupSharingController tabGroupSharingController,
@@ -128,7 +128,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     AndroidShareSheetController(
             BottomSheetController controller,
             Supplier<@Nullable Tab> tabProvider,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Profile profile,
             Callback<Tab> printCallback,
             TabGroupSharingController tabGroupSharingController,

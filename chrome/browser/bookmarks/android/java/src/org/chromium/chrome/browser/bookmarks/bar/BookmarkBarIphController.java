@@ -14,7 +14,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -39,7 +39,7 @@ public class BookmarkBarIphController extends BookmarkModelObserver implements D
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final UserEducationHelper mUserEducationHelper;
-    private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /**
      * @param activity The current activity.
@@ -55,7 +55,7 @@ public class BookmarkBarIphController extends BookmarkModelObserver implements D
             AppMenuHandler appMenuHandler,
             View toolbarMenuButton,
             BookmarkModel bookmarkModel,
-            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         this(
                 profile,
                 appMenuHandler,
@@ -72,7 +72,7 @@ public class BookmarkBarIphController extends BookmarkModelObserver implements D
             View toolbarMenuButton,
             BookmarkModel bookmarkModel,
             UserEducationHelper userEducationHelper,
-            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mProfile = profile;
         mAppMenuHandler = appMenuHandler;
         mToolbarMenuButton = toolbarMenuButton;
@@ -186,13 +186,10 @@ public class BookmarkBarIphController extends BookmarkModelObserver implements D
      */
     private boolean passesPreChecks() {
         // If the bookmark bar is already visible, there's no reason to show the IPH.
-        if (BookmarkBarUtils.isBookmarkBarVisible(
-                mToolbarMenuButton.getContext(), mProfile, mXrSpaceModeObservableSupplier)) {
-            return false;
-        }
-
-        if (mXrSpaceModeObservableSupplier != null
-                && Boolean.TRUE.equals(mXrSpaceModeObservableSupplier.get())) {
+        boolean isXrFullSpaceMode = mXrSpaceModeObservableSupplier.get();
+        if (isXrFullSpaceMode
+                || BookmarkBarUtils.isBookmarkBarVisible(
+                        mToolbarMenuButton.getContext(), mProfile, isXrFullSpaceMode)) {
             return false;
         }
 

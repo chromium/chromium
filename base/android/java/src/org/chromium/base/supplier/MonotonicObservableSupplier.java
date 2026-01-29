@@ -9,17 +9,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * A specialization of {@link NullableObservableSupplier} that starts as null, but will never be set
  * to null (except by destroy(), which does not trigger observers).
  */
 @NullMarked
-// TODO(455874046): Supplier<T> -> Supplier<@Nullable T>
-@SuppressWarnings("NullAway") // Remove "T extends @Nullable Object"
-public interface MonotonicObservableSupplier<T extends @Nullable Object>
-        extends Supplier<T>, NullableObservableSupplier<T> {
+public interface MonotonicObservableSupplier<T> extends NullableObservableSupplier<T> {
 
     /** Defines the behavior of the notification when an observer is added. */
     @interface NotifyBehavior {

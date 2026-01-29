@@ -130,7 +130,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final TabContextMenuItemDelegate mItemDelegate;
     private final List<CustomContentAction> mCustomContentActions;
     private final @ContextMenuMode int mMode;
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
     private final ContextMenuParams mParams;
     private final ContextMenuNativeDelegate mNativeDelegate;
 
@@ -379,7 +379,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      */
     public ChromeContextMenuPopulator(
             TabContextMenuItemDelegate itemDelegate,
-            Supplier<ShareDelegate> shareDelegate,
+            Supplier<@Nullable ShareDelegate> shareDelegate,
             List<CustomContentAction> customContentActions,
             @ContextMenuMode int mode,
             Context context,

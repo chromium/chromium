@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.browser.customtabs.CustomContentAction;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -25,13 +26,13 @@ import java.util.function.Supplier;
 @NullMarked
 public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     private final TabContextMenuItemDelegate mItemDelegate;
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
     private final @ContextMenuMode int mContextMenuMode;
     private final List<CustomContentAction> mCustomContentActions;
 
     public ChromeContextMenuPopulatorFactory(
             TabContextMenuItemDelegate itemDelegate,
-            Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
             @ContextMenuMode int contextMenuMode,
             List<CustomContentAction> customContentActions) {
         mItemDelegate = itemDelegate;

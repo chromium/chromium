@@ -146,7 +146,7 @@ public class HistoryManager
             boolean isSeparateActivity,
             SnackbarManager snackbarManager,
             Supplier<BottomSheetController> bottomSheetController,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             ActivityResultTracker activityResultTracker,
             @Nullable Supplier<@Nullable Tab> tabSupplier,
             HistoryProvider historyProvider,

@@ -291,7 +291,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 null,
                 ObservableSuppliers.createNonNull(Color.TRANSPARENT),
                 edgeToEdgeManager,
-                /* xrSpaceModeObservableSupplier= */ null,
+                /* xrSpaceModeObservableSupplier= */ ObservableSuppliers.alwaysFalse(),
                 desktopWindowStateManager);
         mCustomTabProvider = customTabProvider;
         mToolbarCoordinator = customTabToolbarCoordinator;

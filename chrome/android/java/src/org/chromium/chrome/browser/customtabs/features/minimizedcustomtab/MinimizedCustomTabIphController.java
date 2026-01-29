@@ -36,7 +36,7 @@ public class MinimizedCustomTabIphController
     private final Activity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final UserEducationHelper mUserEducationHelper;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     private @Nullable ActivityTabTabObserver mTabObserver;
 
     /**
@@ -51,7 +51,7 @@ public class MinimizedCustomTabIphController
             Activity activity,
             ActivityTabProvider activityTabProvider,
             UserEducationHelper userEducationHelper,
-            Supplier<Profile> profileSupplier) {
+            Supplier<@Nullable Profile> profileSupplier) {
         mActivity = activity;
         mTabProvider = activityTabProvider;
         mUserEducationHelper = userEducationHelper;

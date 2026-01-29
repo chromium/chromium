@@ -759,7 +759,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     /** Provides information on whether the tab grid dialog is showing or animating. */
-    public @Nullable MonotonicObservableSupplier<Boolean>
+    public @Nullable NonNullObservableSupplier<Boolean>
             getTabGridDialogShowingOrAnimationSupplier() {
         return mTabGridDialogCoordinator != null
                 ? mTabGridDialogCoordinator.getShowingOrAnimationSupplier()

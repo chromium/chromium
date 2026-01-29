@@ -37,7 +37,7 @@ public class HistoryPane extends PaneBase {
     private final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
     private final ActivityResultTracker mActivityResultTracker;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<BottomSheetController> mBottomSheetController;
     private final Supplier<@Nullable Tab> mTabSupplier;
 
@@ -62,7 +62,7 @@ public class HistoryPane extends PaneBase {
             Activity activity,
             SnackbarManager snackbarManager,
             Supplier<BottomSheetController> bottomSheetController,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             ActivityResultTracker activityResultTracker,
             Supplier<@Nullable Tab> tabSupplier) {
         super(PaneId.HISTORY, activity, onToolbarAlphaChange);

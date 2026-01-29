@@ -52,7 +52,7 @@ public class TabGridItemLongPressOrchestrator {
 
     private final RunnableTimer mTimer;
     private final TabListModel mModel;
-    private final Supplier<RecyclerView> mRecyclerViewSupplier;
+    private final Supplier<@Nullable RecyclerView> mRecyclerViewSupplier;
     private final OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
     private final float mLongPressDpCancelThresholdSquared;
     private final long mTimerDuration;
@@ -68,7 +68,7 @@ public class TabGridItemLongPressOrchestrator {
      * @param timerDuration The time taken for the timer to expire (in milliseconds).
      */
     public TabGridItemLongPressOrchestrator(
-            Supplier<RecyclerView> recyclerViewSupplier,
+            Supplier<@Nullable RecyclerView> recyclerViewSupplier,
             TabListModel model,
             OnLongPressTabItemEventListener onLongPress,
             float longPressDpCancelThreshold,
@@ -84,7 +84,7 @@ public class TabGridItemLongPressOrchestrator {
 
     @VisibleForTesting
     TabGridItemLongPressOrchestrator(
-            Supplier<RecyclerView> recyclerViewSupplier,
+            Supplier<@Nullable RecyclerView> recyclerViewSupplier,
             TabListModel model,
             OnLongPressTabItemEventListener onLongPress,
             float longPressDpCancelThreshold,

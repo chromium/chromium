@@ -26,7 +26,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
-import java.util.function.Supplier;
 
 /** Utilities for the bookmark bar which provides users with bookmark access from top chrome. */
 @NullMarked
@@ -201,20 +200,15 @@ public class BookmarkBarUtils {
      * @return Whether the Bookmark Bar is currently visible.
      */
     public static boolean isBookmarkBarVisible(
-            Context context,
-            @Nullable Profile profile,
-            @Nullable Supplier<Boolean> isXrFullSpaceMode) {
+            Context context, @Nullable Profile profile, boolean isXrFullSpaceMode) {
         if (sBookmarkBarVisibleForTesting != null) {
             return sBookmarkBarVisibleForTesting;
         }
 
-        if (isXrFullSpaceMode != null && Boolean.TRUE.equals(isXrFullSpaceMode.get())) {
+        if (isXrFullSpaceMode || !isActivityStateBookmarkBarCompatible(context)) {
             return false;
         }
 
-        if (!isActivityStateBookmarkBarCompatible(context)) {
-            return false;
-        }
         // On Desktop, we sync with the UserPrefs.
         // On tablets we use the device preference logic (policy (pref service)  > local pref
         // (shared pref) > FeatureParam).
@@ -433,9 +427,7 @@ public class BookmarkBarUtils {
     }
 
     public static void recordStartUpMetrics(
-            Context context,
-            @Nullable Profile profile,
-            @Nullable Supplier<Boolean> isXrFullSpaceMode) {
+            Context context, @Nullable Profile profile, boolean isXrFullSpaceMode) {
         boolean isCurrentlyVisible = isBookmarkBarVisible(context, profile, isXrFullSpaceMode);
 
         // Record if the Bookmark Bar is visible, but not in cases of a forced feature param.

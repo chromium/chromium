@@ -55,7 +55,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
             Context context,
             MonotonicObservableSupplier<TabGroupModelFilter> tabGroupModelFilter,
             TabListModel model,
-            Supplier<RecyclerView> recyclerViewSupplier,
+            Supplier<@Nullable RecyclerView> recyclerViewSupplier,
             OnLongPressTabItemEventListener onLongPress) {
         super(/* dragDirs= */ 0, /* swipeDirs= */ 0);
         Resources res = context.getResources();

@@ -69,7 +69,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private final int mMenuOmniboxOverlap;
     private int mScreenWidthDp;
     private final Context mContext;
-    private final MonotonicObservableSupplier<@Nullable Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final BooleanSupplier mSuppressLongPressSupplier;
     private final Supplier<@Nullable GURL> mUrlSupplier;
     private final Supplier<ViewRectProvider> mUrlBarViewRectProviderSupplier;
@@ -91,7 +91,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
      */
     public ToolbarLongPressMenuHandler(
             Context context,
-            MonotonicObservableSupplier<@Nullable Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             boolean isCustomTab,
             BooleanSupplier suppressLongPressSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,

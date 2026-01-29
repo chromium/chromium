@@ -126,7 +126,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 hubLayoutDependencyHolder);
 
         mXrSceneCoreSessionManager = xrSceneCoreSessionManager;
-        MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier =
+        NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier =
                 mXrSceneCoreSessionManager != null
                         ? mXrSceneCoreSessionManager.getXrSpaceModeObservableSupplier()
                         : null;

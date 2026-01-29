@@ -116,7 +116,7 @@ public class RecentTabsManager
             Profile profile,
             ActivityResultTracker activityResultTracker,
             BottomSheetController bottomSheetController,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             Runnable showHistoryManager,
             RecentlyClosedEntriesManager recentlyClosedEntriesManager) {

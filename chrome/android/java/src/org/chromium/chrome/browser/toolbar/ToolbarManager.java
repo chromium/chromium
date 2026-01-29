@@ -442,7 +442,7 @@ public class ToolbarManager
     private final NewTabPageDelegate mNtpDelegate;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
-    private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final SettableNonNullObservableSupplier<Float>
             mNtpSearchBoxTransitionPercentageSupplier = ObservableSuppliers.createNonNull(0f);
 
@@ -822,7 +822,7 @@ public class ToolbarManager
             @Nullable VisibilityDelegate menuButtonVisibilityDelegate,
             TopControlsStacker topControlsStacker,
             MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
-            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             PageZoomManager pageZoomManager,
             SnackbarManager snackbarManager) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
@@ -1783,9 +1783,7 @@ public class ToolbarManager
         initializeToolbarPositionController();
 
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
-        if (mXrSpaceModeObservableSupplier != null) {
-            mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);
-        }
+        mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);
 
         mControlContainer
                 .getToolbarResourceAdapter()
@@ -2752,9 +2750,7 @@ public class ToolbarManager
 
         mWindowAndroid.setProgressBarConfigProvider(null);
 
-        if (mXrSpaceModeObservableSupplier != null) {
-            mXrSpaceModeObservableSupplier.removeObserver(mOnXrSpaceModeChanged);
-        }
+        mXrSpaceModeObservableSupplier.removeObserver(mOnXrSpaceModeChanged);
     }
 
     /** Called when the orientation of the activity has changed. */

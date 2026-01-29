@@ -338,7 +338,7 @@ public class HubLayoutUnitTest {
                         rootViewSupplier,
                         mScrimController,
                         mOnAlphaChange,
-                        /* xrFullSpaceModeSupplier= */ null);
+                        /* xrFullSpaceModeSupplier= */ ObservableSuppliers.alwaysFalse());
 
         mTabModelSelectorSupplier = () -> mTabModelSelector;
         mHubLayout =
@@ -814,7 +814,7 @@ public class HubLayoutUnitTest {
                         rootViewSupplier,
                         mScrimController,
                         mOnAlphaChange,
-                        /* xrFullSpaceModeSupplier= */ null);
+                        /* xrFullSpaceModeSupplier= */ ObservableSuppliers.alwaysFalse());
         mHubLayout =
                 new HubLayout(
                         mActivity,

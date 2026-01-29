@@ -145,7 +145,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     private boolean mNativeInitialized;
     private @Nullable PaneHubController mPaneHubController;
     private @Nullable Long mWaitForTabStateInitializedStartTimeMs;
-    private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /**
      * @param context The activity context.
@@ -169,7 +169,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
-            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         super(paneId, context, onToolbarAlphaChange);
         mMenuButtonVisible = true;
         mFactory = factory;
@@ -290,8 +290,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     public HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
             HubContainerView hubContainerView) {
         Context context = hubContainerView.getContext();
-        final boolean isFullSpaceModeOnAndroidXr =
-                mXrSpaceModeObservableSupplier != null && mXrSpaceModeObservableSupplier.get();
+        boolean isFullSpaceModeOnAndroidXr = mXrSpaceModeObservableSupplier.get();
 
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 || isFullSpaceModeOnAndroidXr;

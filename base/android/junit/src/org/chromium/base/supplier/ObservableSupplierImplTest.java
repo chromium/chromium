@@ -21,7 +21,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -32,7 +31,7 @@ public class ObservableSupplierImplTest {
     private static final String TEST_STRING_1 = "Test";
     private static final String TEST_STRING_2 = "Test2";
 
-    private final SettableNullableObservableSupplier<@Nullable String> mSupplier =
+    private final SettableNullableObservableSupplier<String> mSupplier =
             ObservableSuppliers.createNullable();
 
     private int mCallCount;

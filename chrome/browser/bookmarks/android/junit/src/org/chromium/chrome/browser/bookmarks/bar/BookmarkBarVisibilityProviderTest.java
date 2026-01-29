@@ -37,6 +37,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -76,8 +77,8 @@ public class BookmarkBarVisibilityProviderTest {
     private final Set<ConfigurationChangedObserver> mConfigChangeObserverCache = new HashSet<>();
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
-    private final SettableMonotonicObservableSupplier<Boolean> mXrSpaceModeSupplier =
-            ObservableSuppliers.createMonotonic(false);
+    private final SettableNonNullObservableSupplier<Boolean> mXrSpaceModeSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final Set<PrefObserver> mSettingObserverCache = new HashSet<>();
 
     @Before
@@ -262,14 +263,16 @@ public class BookmarkBarVisibilityProviderTest {
         mXrSpaceModeSupplier.set(true);
         verify(mObserver, times(1)).onVisibilityChanged(false);
         assertFalse(
-                BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, mXrSpaceModeSupplier));
+                BookmarkBarUtils.isBookmarkBarVisible(
+                        mActivity, mProfile, /* isXrFullSpaceMode= */ true));
         clearInvocations(mObserver);
 
         // Case: XR space mode changed to false.
         mXrSpaceModeSupplier.set(false);
         verify(mObserver, times(1)).onVisibilityChanged(true);
         assertTrue(
-                BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, mXrSpaceModeSupplier));
+                BookmarkBarUtils.isBookmarkBarVisible(
+                        mActivity, mProfile, /* isXrFullSpaceMode= */ false));
         clearInvocations(mObserver);
 
         // Clean up.

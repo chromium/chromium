@@ -24,7 +24,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,7 +49,7 @@ public class HubPaneHostView extends FrameLayout {
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
     private final AnimationHandler mSlideAnimatorHandler;
-    private @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable OnPaneSwipeListener mOnPaneSwipeListener;
 
     // Pane swipe-to-switch specifics.
@@ -275,7 +275,7 @@ public class HubPaneHostView extends FrameLayout {
     }
 
     public void setXrSpaceModeObservableSupplier(
-            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
     }
 

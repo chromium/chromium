@@ -112,7 +112,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     private final boolean mCanPromoteToNewTab;
 
     /** Supplies a {@link EdgeToEdgeController} that adjusts for more screen-bottom space. */
-    private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private Supplier<@Nullable EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     /** Whether the Panel should be promoted to a new tab after being maximized. */
     private boolean mShouldPromoteToTabAfterMaximizing;
@@ -177,7 +177,7 @@ public class ContextualSearchPanel extends OverlayPanel {
             ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
             Supplier<@Nullable Tab> currentTabSupplier,
-            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            Supplier<@Nullable EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             BottomControlsStacker bottomControlsStacker) {
         super(
@@ -1306,7 +1306,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     }
 
     public void setEdgeToEdgeControllerSupplierForTesting(
-            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            Supplier<@Nullable EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 }

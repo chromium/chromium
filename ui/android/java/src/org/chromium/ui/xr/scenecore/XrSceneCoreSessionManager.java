@@ -5,7 +5,7 @@
 package org.chromium.ui.xr.scenecore;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -43,7 +43,7 @@ public interface XrSceneCoreSessionManager extends Destroyable {
      * Get XR space mode observable supplier. The supplier provides boolean value: true for XR Full
      * Space mode.
      */
-    MonotonicObservableSupplier<Boolean> getXrSpaceModeObservableSupplier();
+    NonNullObservableSupplier<Boolean> getXrSpaceModeObservableSupplier();
 
     /**
      * Is the activity in the Full Space mode. It will report the previous mode until the current
