@@ -1845,7 +1845,6 @@ BASE_FEATURE(kWebAppMigratePreinstalledChat, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebium, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables logging InitialWebUI-related metrics. The metrics are not necessary
 // comes from WebUI but can also come from the C++ version of them.
 // Defaults to enabled to also collect metrics for the C++ group.
@@ -1874,6 +1873,10 @@ const base::FeatureParam<base::TimeDelta>
 // See crbug.com/475397687.
 const base::FeatureParam<bool> kWebUIReloadButtonRestartUnresponsive{
     &kWebUIReloadButton, "WebUIReloadButtonRestartUnresponsive", false};
+// When this is enabled, the `BrowserView` will not show until the reload button
+// has finished loading.
+const base::FeatureParam<bool> kWebUIReloadButtonDeferBrowserViewShow{
+    &kWebUIReloadButton, "WebUIReloadButtonDeferBrowserViewShow", true};
 const base::FeatureParam<base::TimeDelta>
     kWebUIReloadButtonRestartUnresponsiveRenderersTimeout{
         &kWebUIReloadButton,
