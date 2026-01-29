@@ -55,7 +55,10 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
 
     @Override
     public T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
-        assert mObservers != null; // Check not destroyed.
+        assert mObservers != null : "addObserver called on destroyed supplier";
+        if (mObservers == null) {
+            return null;
+        }
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
