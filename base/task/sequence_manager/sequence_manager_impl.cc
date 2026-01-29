@@ -519,63 +519,6 @@ SequenceManagerImpl::SelectNextTask(LazyNow& lazy_now,
   return selected_task;
 }
 
-#if DCHECK_IS_ON()
-void SequenceManagerImpl::LogTaskDebugInfo(
-    const WorkQueue* selected_work_queue) const {
-  const Task* task = selected_work_queue->GetFrontTask();
-  switch (settings_.task_execution_logging) {
-    case Settings::TaskLogging::kNone:
-      break;
-
-    case Settings::TaskLogging::kEnabled:
-      LOG(INFO) << "#" << static_cast<uint64_t>(task->enqueue_order()) << " "
-                << selected_work_queue->task_queue()->GetName()
-                << (task->cross_thread_ ? " Run crossthread " : " Run ")
-                << task->posted_from.ToString();
-      break;
-
-    case Settings::TaskLogging::kEnabledWithBacktrace: {
-      std::array<const void*, PendingTask::kTaskBacktraceLength + 1> task_trace;
-      task_trace[0] = task->posted_from.program_counter();
-      std::ranges::copy(task->task_backtrace, task_trace.begin() + 1);
-      size_t length = 0;
-      while (length < task_trace.size() && task_trace[length]) {
-        ++length;
-      }
-      if (length == 0) {
-        break;
-      }
-      LOG(INFO) << "#" << static_cast<uint64_t>(task->enqueue_order()) << " "
-                << selected_work_queue->task_queue()->GetName()
-                << (task->cross_thread_ ? " Run crossthread " : " Run ")
-                << debug::StackTrace(base::span(task_trace).first(length));
-      break;
-    }
-
-    case Settings::TaskLogging::kReorderedOnly: {
-      std::vector<const Task*> skipped_tasks;
-      main_thread_only().selector.CollectSkippedOverLowerPriorityTasks(
-          selected_work_queue, &skipped_tasks);
-
-      if (skipped_tasks.empty()) {
-        break;
-      }
-
-      LOG(INFO) << "#" << static_cast<uint64_t>(task->enqueue_order()) << " "
-                << selected_work_queue->task_queue()->GetName()
-                << (task->cross_thread_ ? " Run crossthread " : " Run ")
-                << task->posted_from.ToString();
-
-      for (const Task* skipped_task : skipped_tasks) {
-        LOG(INFO) << "# (skipped over) "
-                  << static_cast<uint64_t>(skipped_task->enqueue_order()) << " "
-                  << skipped_task->posted_from.ToString();
-      }
-    }
-  }
-}
-#endif  // DCHECK_IS_ON()
-
 std::optional<SequenceManagerImpl::SelectedTask>
 SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
                                         SelectTaskOption option) {
@@ -625,10 +568,6 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
           std::move(deferred_task));
       continue;
     }
-
-#if DCHECK_IS_ON()
-    LogTaskDebugInfo(work_queue);
-#endif  // DCHECK_IS_ON()
 
     main_thread_only().task_execution_stack.emplace_back(
         work_queue->TakeTaskFromWorkQueue(), work_queue->task_queue(),

@@ -42,34 +42,9 @@ SequenceManager::PrioritySettings::CreateDefault() {
 SequenceManager::PrioritySettings::PrioritySettings(
     TaskQueue::QueuePriority priority_count,
     TaskQueue::QueuePriority default_priority)
-#if DCHECK_IS_ON()
-    : PrioritySettings(priority_count,
-                       default_priority,
-                       std::vector<TimeDelta>(priority_count),
-                       std::vector<TimeDelta>(priority_count)){}
-#else
     : priority_count_(priority_count), default_priority_(default_priority) {
   CheckPriorities(priority_count, default_priority);
 }
-#endif
-
-#if DCHECK_IS_ON()
-      SequenceManager::PrioritySettings::PrioritySettings(
-          TaskQueue::QueuePriority priority_count,
-          TaskQueue::QueuePriority default_priority,
-          std::vector<TimeDelta> per_priority_cross_thread_task_delay,
-          std::vector<TimeDelta> per_priority_same_thread_task_delay)
-    : priority_count_(priority_count),
-      default_priority_(default_priority),
-      per_priority_cross_thread_task_delay_(
-          std::move(per_priority_cross_thread_task_delay)),
-      per_priority_same_thread_task_delay_(
-          std::move(per_priority_same_thread_task_delay)) {
-  CheckPriorities(priority_count, default_priority);
-  DCHECK_EQ(priority_count, per_priority_cross_thread_task_delay_.size());
-  DCHECK_EQ(priority_count, per_priority_same_thread_task_delay_.size());
-}
-#endif
 
 perfetto::protos::pbzero::SequenceManagerTask::Priority
 SequenceManager::PrioritySettings::TaskPriorityToProto(
@@ -163,26 +138,6 @@ SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetRandomTaskSelectionSeed(
     uint64_t random_task_selection_seed_val) {
   settings_.random_task_selection_seed = random_task_selection_seed_val;
-  return *this;
-}
-
-SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetTaskLogging(
-    TaskLogging task_execution_logging_val) {
-  settings_.task_execution_logging = task_execution_logging_val;
-  return *this;
-}
-
-SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetLogPostTask(bool log_post_task_val) {
-  settings_.log_post_task = log_post_task_val;
-  return *this;
-}
-
-SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetLogTaskDelayExpiry(
-    bool log_task_delay_expiry_val) {
-  settings_.log_task_delay_expiry = log_task_delay_expiry_val;
   return *this;
 }
 

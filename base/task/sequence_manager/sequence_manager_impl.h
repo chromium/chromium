@@ -471,10 +471,6 @@ class BASE_EXPORT SequenceManagerImpl
 
   void MaybeAddLeewayToTask(Task& task) const;
 
-#if DCHECK_IS_ON()
-  void LogTaskDebugInfo(const internal::WorkQueue* work_queue) const;
-#endif
-
   // Determines if wall time or thread time should be recorded for the next
   // task.
   TaskQueue::TaskTiming InitializeTaskTiming(

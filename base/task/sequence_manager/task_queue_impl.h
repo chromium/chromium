@@ -509,8 +509,6 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
   void UpdateCrossThreadQueueStateLocked()
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
-  TimeDelta GetTaskDelayAdjustment(CurrentThread current_thread);
-
   // Reports the task if it was due to IPC and was posted to a disabled queue.
   // This should be called after WillQueueTask has been called for the task.
   void MaybeReportIpcTaskQueuedFromMainThread(const Task& pending_task);

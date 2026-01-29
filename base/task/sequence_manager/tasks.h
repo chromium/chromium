@@ -127,10 +127,6 @@ struct BASE_EXPORT Task : public PendingTask {
   // support posting back to the "current sequence".
   scoped_refptr<SequencedTaskRunner> task_runner;
 
-#if DCHECK_IS_ON()
-  bool cross_thread_;
-#endif
-
   // Implement the intrusive heap contract.
   void SetHeapHandle(HeapHandle heap_handle);
   void ClearHeapHandle();
