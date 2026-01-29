@@ -448,6 +448,17 @@
       },
     },
   },
+  'gpu_win_gce_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'gpu': 'none',
+        'os': 'Windows-10-19045',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'has_native_resultdb_integration': {
     'resultdb': {
       'enable': True,

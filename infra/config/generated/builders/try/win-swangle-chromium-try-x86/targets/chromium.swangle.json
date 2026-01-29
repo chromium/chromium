@@ -28,7 +28,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gpu": "none",
-            "os": "Windows-10",
+            "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
