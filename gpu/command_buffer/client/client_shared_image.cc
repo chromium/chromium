@@ -54,7 +54,7 @@ namespace gpu {
 
 namespace {
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
   return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
 }
@@ -82,7 +82,7 @@ uint32_t ComputeTextureTargetForSharedImage(
     gfx::GpuMemoryBufferType client_gmb_type,
     scoped_refptr<SharedImageInterface> sii) {
   CHECK(sii);
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
   return GL_TEXTURE_2D;
 #elif BUILDFLAG(IS_MAC)
   // Check for IOSurfaces being used. We infer IOSurface based on scanout or
@@ -101,7 +101,7 @@ uint32_t ComputeTextureTargetForSharedImage(
   return uses_native_buffer
              ? sii->GetCapabilities().texture_target_for_io_surfaces
              : GL_TEXTURE_2D;
-#else  // Ozone
+#else  // Ozone or Android
   // Check for external sampling being used.
   if (!metadata.format.PrefersExternalSampler()) {
     return GL_TEXTURE_2D;
@@ -115,7 +115,7 @@ uint32_t ComputeTextureTargetForSharedImage(
 #else
   return GL_TEXTURE_EXTERNAL_OES;
 #endif  // BUILDFLAG(IS_FUCHSIA)
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
