@@ -32,7 +32,6 @@ extern NSErrorDomain const kCredentialProviderMigratorErrorDomain;
 // Possible error codes in case of migration failure.
 typedef enum : NSInteger {
   kCredentialProviderMigratorErrorAlreadyRunning,
-  kCredentialProviderMigratorErrorBackgroundedApp,
 } CredentialProviderMigratorErrors;
 
 @interface CredentialProviderMigrator : NSObject

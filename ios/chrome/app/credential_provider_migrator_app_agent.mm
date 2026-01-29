@@ -58,14 +58,6 @@ void MigrationCompleteForProfile(
     const std::string& profile_name,
     BOOL success,
     NSError* error) {
-  if (!success && error &&
-      [error.domain isEqualToString:kCredentialProviderMigratorErrorDomain] &&
-      error.code == kCredentialProviderMigratorErrorBackgroundedApp) {
-    // We can't attempt to migrate credentials while the app is backgrounded.
-    // Credentials will be imported when `appDidEnterForeground` is called.
-    return;
-  }
-
   DCHECK(success) << error.localizedDescription;
   [app_agent migrationCompleteForProfile:weak_profile.get()
                              profileName:profile_name];
@@ -86,23 +78,23 @@ void MigrationCompleteForProfile(
   std::map<std::string, CredentialProviderMigrator*, std::less<>> _migratorMap;
 }
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    __weak __typeof__(self) weakSelf = self;
-    _credentialProviderCreationNotifier =
-        [[CredentialProviderCreationNotifier alloc] initWithBlock:^() {
-          [weakSelf migrateCredentialForAllPasskeyModels];
-        }];
-  }
-  return self;
-}
-
 #pragma mark - SceneObservingAppAgent
 
-// Migrate the password when Chrome comes to foreground.
 - (void)appDidEnterForeground {
+  // Migrate credentials when Chrome enters foreground.
   [self migrateCredentialForAllPasskeyModels];
+  [self createCredentialProviderCreationNotifierIfNeeded];
+}
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  [super appState:appState didTransitionFromInitStage:previousInitStage];
+
+  // Check if the app is now fully initialized.
+  if (appState.initStage == AppInitStage::kFinal) {
+    [self migrateCredentialForAllPasskeyModels];
+    [self createCredentialProviderCreationNotifierIfNeeded];
+  }
 }
 
 #pragma mark - AppStateObserver
@@ -150,6 +142,23 @@ void MigrationCompleteForProfile(
 
 #pragma mark - Private
 
+// Returns whether the app is foregrounded and fully initialized.
+- (bool)canMigrate {
+  return self.appState.foregroundScenes.count > 0 &&
+         self.appState.initStage == AppInitStage::kFinal;
+}
+
+// Creates the CredentialProviderCreationNotifier if the app is ready.
+- (void)createCredentialProviderCreationNotifierIfNeeded {
+  if (!_credentialProviderCreationNotifier && [self canMigrate]) {
+    __weak __typeof__(self) weakSelf = self;
+    _credentialProviderCreationNotifier =
+        [[CredentialProviderCreationNotifier alloc] initWithBlock:^() {
+          [weakSelf migrateCredentialForAllPasskeyModels];
+        }];
+  }
+}
+
 // Returns whether multiple profiles have at least one scene connected.
 - (BOOL)isMultiProfile {
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
@@ -188,6 +197,12 @@ void MigrationCompleteForProfile(
 
 // Migrates the credential for all passkey models.
 - (void)migrateCredentialForAllPasskeyModels {
+  // Only attempt to start migrations while the app is foregrounded or fully
+  // initialized.
+  if (![self canMigrate]) {
+    return;
+  }
+
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
 
@@ -210,6 +225,12 @@ void MigrationCompleteForProfile(
                        passKeyModel:(webauthn::PasskeyModel*)passkeyModel
                                 key:(NSString*)key
                        userDefaults:(NSUserDefaults*)userDefaults {
+  // Only attempt to start migrations while the app is foregrounded or fully
+  // initialized.
+  if (![self canMigrate]) {
+    return;
+  }
+
   CHECK(profile);
   // Do nothing if the migration for the profile already started.
   if (_migratorMap.contains(profile->GetProfileName())) {
