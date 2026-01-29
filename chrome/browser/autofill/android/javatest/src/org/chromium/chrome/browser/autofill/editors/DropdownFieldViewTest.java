@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.autofill.editors;
 
 import static org.junit.Assert.assertFalse;
 
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
+import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.FOCUSED;
+import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.LABEL;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +79,7 @@ public class DropdownFieldViewTest {
         DropdownFieldView dropdown =
                 new DropdownFieldView(mActivityTestRule.getActivity(), mContentView, model);
         PropertyModelChangeProcessor.create(
-                model, dropdown, EditorDialogViewBinder::bindDropdownFieldView);
+                model, dropdown, EditorComponentsViewBinder::bindDropdownFieldView);
         model.set(FOCUSED, true);
 
         mOtherFocusableField.requestFocus();

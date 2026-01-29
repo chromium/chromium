@@ -45,7 +45,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
+import org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -512,7 +512,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                             PropertyModelChangeProcessor.create(
                                     editorItem.model,
                                     dropdownView,
-                                    EditorDialogViewBinder::bindDropdownFieldView));
+                                    EditorComponentsViewBinder::bindDropdownFieldView));
                     mFieldViews.add(dropdownView);
                     mDropdownFields.add(dropdownView.getDropdown());
                     childView = dropdownView.getLayout();
@@ -525,7 +525,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                             PropertyModelChangeProcessor.create(
                                     editorItem.model,
                                     inputLayout,
-                                    EditorDialogViewBinder::bindTextFieldView));
+                                    EditorComponentsViewBinder::bindTextFieldView));
                     mFieldViews.add(inputLayout);
                     mEditableTextFields.add(inputLayout.getEditText());
                     childView = inputLayout;
@@ -541,7 +541,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                     PropertyModelChangeProcessor.create(
                             editorItem.model,
                             textLayout,
-                            EditorDialogViewBinder::bindNonEditableTextView);
+                            EditorComponentsViewBinder::bindNonEditableTextView);
                     childView = textLayout;
                     break;
                 }
@@ -552,7 +552,9 @@ public class EditorDialogView extends AlwaysDismissedDialog
                                     .inflate(R.layout.autofill_editor_dialog_notice, null);
                     TextView textView = noticeLayout.findViewById(R.id.notice);
                     PropertyModelChangeProcessor.create(
-                            editorItem.model, textView, EditorDialogViewBinder::bindNoticeTextView);
+                            editorItem.model,
+                            textView,
+                            EditorComponentsViewBinder::bindNoticeTextView);
                     childView = noticeLayout;
                     break;
                 }
