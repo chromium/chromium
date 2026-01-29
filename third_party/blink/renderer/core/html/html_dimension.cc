@@ -102,47 +102,42 @@ static HTMLDimension ParseDimension(
   return HTMLDimension(value, type);
 }
 
-static HTMLDimension ParseDimension(const String& raw_token,
-                                    size_t last_parsed_index,
-                                    size_t end_of_current_token) {
-  return VisitCharacters(
-      raw_token, [last_parsed_index, end_of_current_token](auto chars) {
-        return ParseDimension(chars.subspan(
-            last_parsed_index, end_of_current_token - last_parsed_index));
-      });
+static HTMLDimension ParseDimension(const StringView& token) {
+  return VisitCharacters(token,
+                         [](auto chars) { return ParseDimension(chars); });
 }
 
 // This implements the "rules for parsing a list of dimensions" per HTML5.
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/common-microsyntaxes.html#rules-for-parsing-a-list-of-dimensions
-Vector<HTMLDimension> ParseListOfDimensions(const String& input) {
+Vector<HTMLDimension> ParseListOfDimensions(const StringView& input) {
   static const char kComma = ',';
 
   // Step 2. Remove the last character if it's a comma.
-  String trimmed_string = input;
-  if (trimmed_string.EndsWith(kComma))
-    trimmed_string.Truncate(trimmed_string.length() - 1);
+  StringView trimmed_input = input;
+  if (trimmed_input.ends_with(kComma)) {
+    trimmed_input.remove_suffix(1);
+  }
 
   // HTML5's split doesn't return a token for an empty string so
   // we need to match them here.
-  if (trimmed_string.empty())
+  if (trimmed_input.empty()) {
     return Vector<HTMLDimension>();
+  }
 
   // Step 3. To avoid String copies, we just look for commas instead of
   // splitting.
   Vector<HTMLDimension> parsed_dimensions;
-  wtf_size_t last_parsed_index = 0;
   while (true) {
-    wtf_size_t next_comma = trimmed_string.find(kComma, last_parsed_index);
+    const wtf_size_t next_comma = trimmed_input.find(kComma);
     if (next_comma == kNotFound)
       break;
 
     parsed_dimensions.push_back(
-        ParseDimension(trimmed_string, last_parsed_index, next_comma));
-    last_parsed_index = next_comma + 1;
+        ParseDimension(StringView(trimmed_input, 0, next_comma)));
+    trimmed_input.remove_prefix(next_comma + 1);
   }
 
-  parsed_dimensions.push_back(ParseDimension(trimmed_string, last_parsed_index,
-                                             trimmed_string.length()));
+  parsed_dimensions.push_back(ParseDimension(trimmed_input));
   return parsed_dimensions;
 }
 
