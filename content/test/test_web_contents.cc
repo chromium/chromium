@@ -653,4 +653,46 @@ bool TestWebContents::GetIgnoredUIEventCalled() const {
   return ignored_ui_event_called_;
 }
 
+void TestWebContents::GetRenderWidgetHostAtPointAsynchronously(
+    RenderWidgetHostViewBase* root_view,
+    const gfx::PointF& point,
+    base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
+                            std::optional<gfx::PointF>)> callback) {
+  // If defer flag is disabled, call base implementation synchronously.
+  if (!defer_get_render_widget_host_at_point_) {
+    WebContentsImpl::GetRenderWidgetHostAtPointAsynchronously(
+        root_view, point, std::move(callback));
+    return;
+  }
+
+  // Post as a deferred task to better test race conditions.
+  // This ensures the base implementation is only called after RunUntilIdle.
+  auto weak_this = GetWeakPtr();
+  auto weak_root_view = root_view->GetWeakPtr();
+
+  auto task = base::BindOnce(
+      [](base::WeakPtr<WebContents> web_contents,
+         base::WeakPtr<RenderWidgetHostViewBase> view, gfx::PointF pt,
+         base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
+                                 std::optional<gfx::PointF>)> cb) {
+        auto* impl = static_cast<WebContentsImpl*>(web_contents.get());
+        if (impl && view) {
+          impl->WebContentsImpl::GetRenderWidgetHostAtPointAsynchronously(
+              view.get(), pt, std::move(cb));
+        }
+      },
+      weak_this, weak_root_view, point, std::move(callback));
+
+  deferred_get_render_widget_host_at_point_callback_ = std::move(task);
+}
+
+void TestWebContents::
+    TriggerGetRenderWidgetHostAtPointAsynchronouslyCallback() {
+  if (deferred_get_render_widget_host_at_point_callback_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        std::move(deferred_get_render_widget_host_at_point_callback_));
+  }
+}
+
 }  // namespace content

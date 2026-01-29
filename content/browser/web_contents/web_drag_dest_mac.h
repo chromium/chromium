@@ -7,6 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/memory/weak_ptr.h"
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -17,6 +18,7 @@
 namespace content {
 class RenderViewHost;
 class RenderWidgetHostImpl;
+class RenderWidgetHostViewBase;
 class WebContentsImpl;
 class WebDragDestDelegate;
 }  // namespace content
@@ -33,7 +35,7 @@ class WebContentsViewDelegate;
 
 // A structure used to keep drop context for asynchronously finishing a drop
 // operation. This is required because some drop event data can change before
-// completeDropAsync is called.
+// finishDropWithData:context: is called.
 struct CONTENT_EXPORT DropContext {
   DropContext(const DropData drop_data,
               const gfx::PointF client_pt,
@@ -93,13 +95,8 @@ CONTENT_EXPORT
 - (BOOL)performDragOperation:(const remote_cocoa::mojom::DraggingInfo*)info
     withWebContentsViewDelegate:
         (content::WebContentsViewDelegate*)webContentsViewDelegate;
-- (void)completeDropAsync:(std::optional<content::DropData>)dropData
-              withContext:(const content::DropContext)context;
-
-// Helper to call WebWidgetHostInputEventRouter::GetRenderWidgetHostAtPoint().
-- (content::RenderWidgetHostImpl*)
-    GetRenderWidgetHostAtPoint:(const gfx::PointF&)viewPoint
-                 transformedPt:(gfx::PointF*)transformedPt;
+- (void)finishDropWithData:(std::optional<content::DropData>)dropData
+                   context:(const content::DropContext)context;
 
 // Called to indicate that the owning WebContents has initiated a drag.
 - (void)initiateDragWithRenderWidgetHost:(content::RenderWidgetHostImpl*)rwhi
@@ -111,24 +108,28 @@ CONTENT_EXPORT
 // since it should be fired first.
 - (void)endDrag:(base::OnceClosure)closure;
 
-// Resets internal members for a pending drop.
-- (void)resetDragDropState;
+// Async drag callbacks (called from async helpers).
+- (void)dragEnterHitTestDidCompleteForView:
+            (base::WeakPtr<content::RenderWidgetHostViewBase>)targetView
+                          transformedPoint:(const gfx::PointF&)transformedPoint
+                            sequenceNumber:(uint64_t)sequenceNumber;
+
+- (void)dragUpdateHitTestDidCompleteForView:
+            (base::WeakPtr<content::RenderWidgetHostViewBase>)targetView
+                           transformedPoint:(const gfx::PointF&)transformedPoint
+                             sequenceNumber:(uint64_t)sequenceNumber;
+
+- (void)dropHitTestDidCompleteForView:
+            (base::WeakPtr<content::RenderWidgetHostViewBase>)targetView
+                     transformedPoint:(const gfx::PointF&)transformedPoint
+                       sequenceNumber:(uint64_t)sequenceNumber;
+
+// Helper method to cleanup drag state consistently across error paths.
+- (void)cleanupDragState;
 
 - (bool)dropInProgressForTesting;
 - (void)setDropInProgressForTesting;
 
-@end
-
-// Public use only for unit tests.
-@interface WebDragDest (Testing)
-// Given a point in window coordinates and a view in that window, return a
-// flipped point in the coordinate system of |view|.
-- (NSPoint)flipWindowPointToView:(const NSPoint&)windowPoint
-                            view:(NSView*)view;
-// Given a point in window coordinates and a view in that window, return a
-// flipped point in screen coordinates.
-- (NSPoint)flipWindowPointToScreen:(const NSPoint&)windowPoint
-                              view:(NSView*)view;
 @end
 
 #endif  // CONTENT_BROWSER_WEB_CONTENTS_WEB_DRAG_DEST_MAC_H_
