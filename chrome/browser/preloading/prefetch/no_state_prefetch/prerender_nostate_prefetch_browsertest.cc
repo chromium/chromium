@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -1709,6 +1710,17 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
        !iter.IsAtEnd(); iter.Advance()) {
     // Don't count spare RenderProcessHosts.
     if (!iter.GetCurrentValue()->HostHasNotBeenUsed()) {
+      bool non_sw_process = false;
+      iter.GetCurrentValue()->ForEachRenderFrameHost(
+          [&non_sw_process](content::RenderFrameHost* rfh) {
+            if (IsTopChromeUntrustedWebUIURL(rfh->GetLastCommittedURL())) {
+              non_sw_process = true;
+            }
+          });
+
+      if (non_sw_process) {
+        continue;
+      }
       ++host_count;
     }
 
