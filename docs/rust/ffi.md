@@ -12,12 +12,20 @@ For introductory guidance, please see
 [the `cxx` chapter](https://google.github.io/comprehensive-rust/chromium/interoperability-with-cpp.html)
 in the Chromium day of the Comprehensive Rust course.
 
-Chromium also supports the following tools:
+Chromium also supports the
+[`bindgen`](https://rust-lang.github.io/rust-bindgen/)
+tool.
+See `//build/rust/rust_bindgen.gni` for usage instructions.
+Consider using `bindgen`
+if you want to generate Rust bindings based on a C/C++ header file,
+without having to manually redeclare the C/C++ APIs in a `#[cxx::bridge]`
+(e.g. if the number or complexity of the APIs would make it cumbersome
+to author and maintain `#[cxx::bridge]` declarations).
 
-* [`bindgen`](https://rust-lang.github.io/rust-bindgen/): see
-  `//build/rust/rust_bindgen.gni` for usage instructions.
-* [Crubit](https://github.com/google/crubit/) (experimental/unstable support):
-  see [`cpp_api_from_rust.md`](cpp_api_from_rust.md) for usage instructions.
+Adding Chromium support for [Crubit](https://github.com/google/crubit/)
+is tracked in https://crbug.com/470466915, but the current integration is
+incomplete at this point and not officially supported.
+See [`cpp_api_from_rust.md`](cpp_api_from_rust.md) for more details.
 
 At this point Chromium's `//build/rust/*.gni` templates do not support other FFI
 tools like:
