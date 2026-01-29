@@ -412,6 +412,9 @@ BASE_DECLARE_FEATURE(kShowProfilePickerToAllUsersExperiment);
 // crbug.com/475816843.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSigninLevelUpButton);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSigninManagerSeedingFix);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Feature to control the experiment for max count of showing contextual sign-in

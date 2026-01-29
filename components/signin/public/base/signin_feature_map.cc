@@ -38,6 +38,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kChromeAndroidIdentitySurveyNtpPromo,
     &switches::kChromeAndroidIdentitySurveyBookmarkPromo,
     &switches::kSigninLevelUpButton,
+    &switches::kSigninManagerSeedingFix,
 };
 
 // static

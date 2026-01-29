@@ -140,7 +140,11 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
         var accountsPromise = mAccountManagerFacade.getAccounts();
-        if (accountsPromise.isFulfilled()
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_MANAGER_SEEDING_FIX)) {
+            if (accountsPromise.isFulfilled()) {
+                onCoreAccountInfosChanged();
+            }
+        } else if (accountsPromise.isFulfilled()
                 && (mAccountManagerFacade.didAccountFetchSucceed()
                         || !accountsPromise.getResult().isEmpty())) {
             seedThenReloadAllAccountsFromSystem(
@@ -193,6 +197,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
             runAfterOperationInProgress(this::onCoreAccountInfosChanged);
         } else {
             // Sign out if the current primary account is no longer on the device.
+            // {@link #signOut} will trigger the re-seeding in this case.
             signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
         }
     }
@@ -531,6 +536,15 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         Log.i(TAG, "Signing out, dataWipeAction: %d", dataWipeAction);
 
         mIdentityMutator.removePrimaryAccountButKeepTokens(signoutSource);
+
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_MANAGER_SEEDING_FIX)) {
+            var accountsPromise = mAccountManagerFacade.getAccounts();
+            if (accountsPromise.isFulfilled()) {
+                // If accounts are already available - we might need to re-seed them. If the primary
+                // account disappears - we trigger a sign-out instead of re-seeding immediately.
+                seedThenReloadAllAccountsFromSystem(accountsPromise.getResult(), null);
+            }
+        }
 
         notifySignOutAllowedChanged();
         disableSyncAndWipeData(this::finishSignOut);
