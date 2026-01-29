@@ -27,7 +27,6 @@ class DraggingTabsSession final {
       DragSessionData drag_data,
       TabDragContext& attached_context,
       TabDragPositioningDelegate& drag_position_delegate,
-      float offset_to_width_ratio_,
       bool initial_move,
       gfx::Point point_in_screen);
   ~DraggingTabsSession();

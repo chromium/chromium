@@ -332,7 +332,6 @@ TabDragController::TabDragController()
       source_context_(nullptr),
       attached_context_(nullptr),
       can_release_capture_(true),
-      offset_to_width_ratio_(0),
       old_focused_view_tracker_(std::make_unique<views::ViewTracker>()),
       detach_behavior_(DetachBehavior::kDetachable),
       is_dragging_new_browser_(false),
@@ -479,14 +478,15 @@ TabDragController::Liveness TabDragController::Init(
       ref->source_context_->GetWidget()->GetNativeWindow());
 
   if (source_view->width() > 0) {
-    ref->offset_to_width_ratio_ =
+    ref->drag_data_.mouse_offset_to_size_ratios.set_x(
         static_cast<float>(
             source_view->GetMirroredXInView(offset_from_source_view.x())) /
-        source_view->width();
+        source_view->width());
   }
   if (source_view->height() > 0) {
-    ref->offset_to_height_ratio_ =
-        static_cast<float>(offset_from_source_view.y()) / source_view->height();
+    ref->drag_data_.mouse_offset_to_size_ratios.set_y(
+        static_cast<float>(offset_from_source_view.y()) /
+        source_view->height());
   }
   ref->initial_selection_model_ = std::move(initial_selection_model);
 
@@ -2577,10 +2577,10 @@ gfx::Vector2d TabDragController::CalculateWindowDragOffset() {
   const views::View* source_view =
       drag_data_.attached_views()[drag_data_.source_view_index_];
   const gfx::Rect source_tab_bounds = source_view->bounds();
-  const int cursor_x_offset_within_tab =
-      base::ClampRound(source_tab_bounds.width() * offset_to_width_ratio_);
-  const int cursor_y_offset_within_tab =
-      base::ClampRound(source_tab_bounds.height() * offset_to_height_ratio_);
+  const int cursor_x_offset_within_tab = base::ClampRound(
+      source_tab_bounds.width() * drag_data_.mouse_offset_to_size_ratios.x());
+  const int cursor_y_offset_within_tab = base::ClampRound(
+      source_tab_bounds.height() * drag_data_.mouse_offset_to_size_ratios.y());
   gfx::Point desired_cursor_pos_in_widget(
       attached_context_->GetMirroredXInView(source_tab_bounds.x() +
                                             cursor_x_offset_within_tab),
@@ -2834,8 +2834,8 @@ void TabDragController::StartDraggingTabsSession(
 
   dragging_tabs_session_ = std::make_unique<DraggingTabsSession>(
       drag_data_, *attached_context_,
-      *attached_context_->GetPositioningDelegate(), offset_to_width_ratio_,
-      initial_move, start_point_in_screen);
+      *attached_context_->GetPositioningDelegate(), initial_move,
+      start_point_in_screen);
 }
 
 #if defined(USE_AURA)

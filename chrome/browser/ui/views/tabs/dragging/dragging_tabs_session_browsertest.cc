@@ -67,6 +67,7 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
       drag_data.tab_drag_data_.back().attached_view = tab_view;
     }
     drag_data.source_view_index_ = source_index;
+    drag_data.mouse_offset_to_size_ratios.set_x(0.5);
 
     view_->GetDragContext()->StartedDragging(drag_data.attached_views());
 
@@ -96,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(DraggingTabsSessionBrowserTest, MAYBE_BasicTest) {
   ASSERT_NE(drag_position_delegate, nullptr);
   const gfx::Point start_point = tab_0_view->GetBoundsInScreen().CenterPoint();
   DraggingTabsSession session(drag_data, *drag_context, *drag_position_delegate,
-                              0.5, true, start_point);
+                              true, start_point);
 
   // Swap them.
   const gfx::Point target_point =
