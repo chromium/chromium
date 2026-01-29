@@ -19,6 +19,9 @@ source_set("actor") {
     "actor_task_metadata.h",
     "actor_util.h",
     "aggregated_journal.h",
+    "aggregated_journal_file_serializer.h",
+    "aggregated_journal_in_memory_serializer.h",
+    "aggregated_journal_serializer.h",
     "execution_engine.h",
     "origin_checker.h",
     "site_policy.h",
@@ -66,9 +69,6 @@ source_set("actor") {
     ]
     public += [
       "actor_util.h",
-      "aggregated_journal_file_serializer.h",
-      "aggregated_journal_in_memory_serializer.h",
-      "aggregated_journal_serializer.h",
       "tools/attempt_form_filling_tool_request.h",
       "tools/attempt_login_tool_request.h",
       "tools/history_tool_request.h",
@@ -104,6 +104,9 @@ source_set("impl") {
     "actor_task_metadata.cc",
     "actor_util.cc",
     "aggregated_journal.cc",
+    "aggregated_journal_file_serializer.cc",
+    "aggregated_journal_in_memory_serializer.cc",
+    "aggregated_journal_serializer.cc",
     "execution_engine.cc",
     "origin_checker.cc",
     "safety_list.cc",
@@ -170,7 +173,10 @@ source_set("impl") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/tracing:tracing_metrics",
     "//components/variations/service",
+    "//third_party/perfetto/protos/perfetto/config:zero_gen",
+    "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
     "//ui/base/metadata",
   ]
 
@@ -182,9 +188,6 @@ source_set("impl") {
 
   if (!skip_android_unmigrated_actor_files) {
     sources += [
-      "aggregated_journal_file_serializer.cc",
-      "aggregated_journal_in_memory_serializer.cc",
-      "aggregated_journal_serializer.cc",
       "tools/attempt_login_tool.cc",
       "tools/attempt_login_tool.h",
       "tools/attempt_login_tool_request.cc",
@@ -215,14 +218,11 @@ source_set("impl") {
       "//components/content_settings/core/common",
       "//components/favicon/core",
       "//components/lookalikes/core",
-      "//components/tracing:tracing_metrics",
       "//content/public/browser",
       "//net",
       "//pdf:features",
       "//third_party/abseil-cpp:absl",
       "//third_party/perfetto:libperfetto",
-      "//third_party/perfetto/protos/perfetto/config:zero_gen",
-      "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
       "//url",
     ]
   }
