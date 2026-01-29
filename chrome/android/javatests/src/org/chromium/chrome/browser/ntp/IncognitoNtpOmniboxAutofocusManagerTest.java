@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -575,13 +576,18 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
                 mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         verifyPhoneOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
 
-        // Disable scrollbar to avoid screenshot diffs due to fading animation.
+        // Disable scrollbar and cursor to avoid screenshot diffs due to fading animation.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View ntpScrollView =
                             mActivityTestRule.getActivity().findViewById(R.id.ntp_scrollview);
                     if (ntpScrollView != null) {
                         ntpScrollView.setVerticalScrollBarEnabled(false);
+                    }
+
+                    UrlBar urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
+                    if (urlBar != null) {
+                        urlBar.setCursorVisible(false);
                     }
                 });
 
