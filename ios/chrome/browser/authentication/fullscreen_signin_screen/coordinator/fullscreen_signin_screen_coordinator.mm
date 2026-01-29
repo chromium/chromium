@@ -235,7 +235,8 @@
            base::NotFatalUntil::M151);
   [self stopAddAccountCoordinator];
   if (signinResult == SigninCoordinatorResultSuccess &&
-      self.accountManagerService->IsValidIdentity(signinCompletionIdentity)) {
+      self.accountManagerService->IsValidIdentity(
+          signinCompletionIdentity.gaiaId)) {
     self.mediator.selectedIdentity = signinCompletionIdentity;
     self.mediator.addedAccount = YES;
   }

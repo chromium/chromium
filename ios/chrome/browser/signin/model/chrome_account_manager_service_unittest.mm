@@ -105,18 +105,22 @@ TEST_F(ChromeAccountManagerServiceTest,
   EXPECT_EQ(account_manager_->HasIdentities(), true);
 
   SetPattern("*gmail.com");
-  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), true);
-  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity.gaiaId), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity.gaiaId), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1.gaiaId),
+            false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2.gaiaId),
+            false);
   EXPECT_EQ(account_manager_->HasIdentities(), true);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 1);
 
   SetPattern("foo2@google.com");
-  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), true);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity.gaiaId), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity.gaiaId), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1.gaiaId),
+            false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2.gaiaId),
+            false);
   EXPECT_EQ(account_manager_->HasIdentities(), true);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 1);
 }
@@ -129,10 +133,10 @@ TEST_F(ChromeAccountManagerServiceTest,
   EXPECT_EQ(account_manager_->HasIdentities(), true);
 
   SetPattern("*chromium.com");
-  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), true);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity.gaiaId), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity.gaiaId), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1.gaiaId), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2.gaiaId), true);
   EXPECT_EQ(account_manager_->HasIdentities(), true);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 2);
 }
@@ -144,10 +148,12 @@ TEST_F(ChromeAccountManagerServiceTest,
   EXPECT_EQ(account_manager_->HasIdentities(), true);
 
   SetPattern("*none.com");
-  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), false);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity.gaiaId), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity.gaiaId), false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1.gaiaId),
+            false);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2.gaiaId),
+            false);
   EXPECT_EQ(account_manager_->HasIdentities(), false);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 0);
 }
@@ -159,10 +165,10 @@ TEST_F(ChromeAccountManagerServiceTest,
   EXPECT_EQ(account_manager_->HasIdentities(), true);
 
   SetPattern("*");
-  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), true);
-  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), true);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), true);
-  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity.gaiaId), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(google_identity.gaiaId), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1.gaiaId), true);
+  EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity2.gaiaId), true);
   EXPECT_EQ(account_manager_->HasIdentities(), true);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 4);
 }

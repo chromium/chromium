@@ -346,7 +346,7 @@ NSString* GetPromoLabelString(
 
 - (void)onAccountsOnDeviceChanged {
   if (_accountManagerService &&
-      !_accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+      !_accountManagerService->IsValidIdentity(self.selectedIdentity.gaiaId)) {
     // The currently selected identity is not valid anymore. Let’s select the
     // default identity instead.
     [self selectDefaultIdentity];

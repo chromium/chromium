@@ -455,7 +455,7 @@
                            signedIdentity:identity
                           userTappedClose:NO];
   } else if (_accountManagerService->IsValidIdentity(
-                 _primaryIdentityBeforeSignin)) {
+                 _primaryIdentityBeforeSignin.gaiaId)) {
     // If the sign-in failed, sign back in previous account if possible and
     // restart using the account menu.
     _authenticationService->SignIn(

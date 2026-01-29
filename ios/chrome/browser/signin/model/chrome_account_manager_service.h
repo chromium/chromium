@@ -93,9 +93,9 @@ class ChromeAccountManagerService : public KeyedService,
   // service.
   bool HasIdentities() const;
 
-  // Returns whether `identity` is valid and belongs to the profile of this
+  // Returns whether `gaia_id` is valid and belongs to the profile of this
   // service.
-  bool IsValidIdentity(id<SystemIdentity> identity) const;
+  bool IsValidIdentity(const GaiaId& gaia_id) const;
 
   // Returns whether `email` is restricted according to the
   // RestrictAccountsToPatterns policy.

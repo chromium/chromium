@@ -228,9 +228,8 @@ bool ChromeAccountManagerService::HasIdentities() const {
                                profile_name_) != nil;
 }
 
-bool ChromeAccountManagerService::IsValidIdentity(
-    id<SystemIdentity> identity) const {
-  return GetIdentityWithGaiaID(identity.gaiaId) != nil;
+bool ChromeAccountManagerService::IsValidIdentity(const GaiaId& gaia_id) const {
+  return GetIdentityWithGaiaID(gaia_id) != nil;
 }
 
 bool ChromeAccountManagerService::IsEmailRestricted(
@@ -333,7 +332,7 @@ void ChromeAccountManagerService::OnIdentitiesOnDeviceChanged() {
 
 void ChromeAccountManagerService::OnIdentityInProfileUpdated(
     id<SystemIdentity> identity) {
-  if (!this->IsValidIdentity(identity)) {
+  if (!this->IsValidIdentity(identity.gaiaId)) {
     return;
   }
   for (auto& observer : observer_list_) {
@@ -350,7 +349,7 @@ void ChromeAccountManagerService::OnIdentityOnDeviceUpdated(
 
 void ChromeAccountManagerService::OnIdentityRefreshTokenUpdated(
     id<SystemIdentity> identity) {
-  if (!this->IsValidIdentity(identity)) {
+  if (!this->IsValidIdentity(identity.gaiaId)) {
     return;
   }
   for (auto& observer : observer_list_) {
@@ -362,7 +361,7 @@ void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error,
     const std::set<std::string>& scopes) {
-  if (!this->IsValidIdentity(identity)) {
+  if (!this->IsValidIdentity(identity.gaiaId)) {
     return;
   }
   for (auto& observer : observer_list_) {

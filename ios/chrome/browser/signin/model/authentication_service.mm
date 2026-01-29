@@ -359,7 +359,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
                                    signin_metrics::AccessPoint access_point) {
   CHECK(SigninEnabled()) << "Service status "
                          << static_cast<int>(GetServiceStatus());
-  DCHECK(account_manager_service_->IsValidIdentity(identity));
+  DCHECK(account_manager_service_->IsValidIdentity(identity.gaiaId));
 
   primary_account_was_restricted_ = false;
 

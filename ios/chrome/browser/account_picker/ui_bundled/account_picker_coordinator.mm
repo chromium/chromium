@@ -288,7 +288,7 @@
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
     BOOL identityValid =
-        accountManagerService->IsValidIdentity(self.selectedIdentity);
+        accountManagerService->IsValidIdentity(self.selectedIdentity.gaiaId);
     BOOL identityEqual = self.selectedIdentity.gaiaId == *gaiaID;
     if (identityValid && identityEqual) {
       [self.delegate
