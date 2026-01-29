@@ -6092,9 +6092,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_QUICK_ACTION_SEARCH_WIDGET_START_DINO_GAME" desc="Content description for the Dino button on the Quick Action Search Widget.">
         Start Dino Game
       </message>
-      <message name="IDS_QUICK_ACTION_SEARCH_WIDGET_MESSAGE_NO_INCOGNITO" desc="Toast message shown when the user tries to open Incognito tab which is disabled on the device.">
-        Incognito is not available on this device
-      </message>
       <message name="IDS_QUICK_ACTION_SEARCH_WIDGET_MESSAGE_NO_VOICE_SEARCH" desc="Toast message shown when the user tries to use Voice Search which is disabled on the device.">
         Voice search is not available on this device
       </message>
@@ -6116,6 +6113,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <!-- Launcher Shortcuts -->
       <message name="IDS_DISABLED_INCOGNITO_LAUNCHER_SHORTCUT_MESSAGE" desc="Text for a toast displayed prompting the user to remove the disabled 'New Incognito tab' app shortcut and recreate it.">
         Remove and recreate this shortcut
+      </message>
+
+      <!-- Incognito Disabled -->
+      <message name="IDS_INCOGNITO_NOT_AVAILABLE_MESSAGE" desc="Toast message shown when the user tries to open Incognito tab or window which is disabled on the device.">
+        Incognito is not available on this device
       </message>
 
       <!-- SendTabToSelf -->

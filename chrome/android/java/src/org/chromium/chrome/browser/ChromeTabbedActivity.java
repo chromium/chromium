@@ -2733,7 +2733,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         // for both the widget and the launcher shortcut here.
                         Toast.makeText(
                                         ChromeTabbedActivity.this,
-                                        R.string.quick_action_search_widget_message_no_incognito,
+                                        R.string.incognito_not_available_message,
                                         Toast.LENGTH_LONG)
                                 .show();
                     } else {
@@ -4970,6 +4970,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 : null;
     }
 
+    @Override
     public @SupportedProfileType int getSupportedProfileType() {
         return mSupportedProfileType;
     }

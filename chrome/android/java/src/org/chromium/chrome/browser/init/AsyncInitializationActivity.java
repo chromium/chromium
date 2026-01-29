@@ -39,12 +39,15 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
@@ -55,6 +58,7 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.widget.Toast;
 
 /**
  * An activity that talks with application and activity level delegates for async initialization.
@@ -429,6 +433,20 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mWindowAndroid = createWindowAndroid();
         mIntentRequestTracker.restoreInstanceState(getSavedInstanceState());
         mProfileProviderSupplier = createProfileProvider();
+        if (getSupportedProfileType() == SupportedProfileType.OFF_THE_RECORD) {
+            mProfileProviderSupplier.runSyncOrOnAvailable(
+                    (profileProvider) -> {
+                        Profile profile = profileProvider.getOriginalProfile();
+                        if (profile != null && !IncognitoUtils.isIncognitoModeEnabled(profile)) {
+                            Toast.makeText(
+                                            AsyncInitializationActivity.this,
+                                            R.string.incognito_not_available_message,
+                                            Toast.LENGTH_LONG)
+                                    .show();
+                            finishAndRemoveTask();
+                        }
+                    });
+        }
 
         mStartupDelayed = shouldDelayBrowserStartup();
 
@@ -516,6 +534,13 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     /** Whether or not the Activity was started up via a valid Intent. */
     protected boolean isStartedUpCorrectly(Intent intent) {
         return true;
+    }
+
+    /**
+     * @return The supported profile type for this activity.
+     */
+    protected @SupportedProfileType int getSupportedProfileType() {
+        return SupportedProfileType.UNSET;
     }
 
     /**
