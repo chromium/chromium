@@ -7,13 +7,18 @@
 #import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
+#import "ios/chrome/browser/intents/model/intents_constants.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_configuration_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_view_finder_metrics_recorder.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_view_finder_transition_manager.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -29,9 +34,12 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -87,6 +95,7 @@ LensViewFinderTransition TransitionFromPresentationStyle(
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensCommands)];
   [self updateLensAvailabilityForWidgets];
+  [self updateQRCodeOrLensAppShortcutItem];
 }
 
 - (void)stop {
@@ -325,6 +334,50 @@ LensViewFinderTransition TransitionFromPresentationStyle(
       !base::FeatureList::IsEnabled(kDisableLensCamera) &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
   [sharedDefaults setBool:enableLensInWidget forKey:enableLensInWidgetKey];
+}
+
+// Returns whether Google is the default search engine.
+- (BOOL)isGoogleDefaultSearchEngine {
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForProfile(self.profile);
+  const TemplateURL* defaultURL =
+      templateURLService->GetDefaultSearchProvider();
+  BOOL isGoogleDefaultSearchProvider =
+      defaultURL &&
+      defaultURL->GetEngineType(templateURLService->search_terms_data()) ==
+          SEARCH_ENGINE_GOOGLE;
+  return isGoogleDefaultSearchProvider;
+}
+
+// Sets the app shortcut item for either the QR code scanner or Lens.
+- (void)updateQRCodeOrLensAppShortcutItem {
+  const bool useLens =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::AppIconLongPress, [self isGoogleDefaultSearchEngine]);
+
+  NSString* shortcutType;
+  NSString* shortcutTitle;
+  UIApplicationShortcutIcon* shortcutIcon;
+  if (useLens) {
+    shortcutType = kShortcutLensFromAppIconLongPress;
+    shortcutTitle = l10n_util::GetNSStringWithFixup(
+        IDS_IOS_APPLICATION_SHORTCUT_LENS_TITLE);
+    shortcutIcon =
+        [UIApplicationShortcutIcon iconWithTemplateImageName:kCameraLensSymbol];
+  } else {
+    shortcutType = kShortcutQRScanner;
+    shortcutTitle = l10n_util::GetNSStringWithFixup(
+        IDS_IOS_APPLICATION_SHORTCUT_QR_SCANNER_TITLE);
+    shortcutIcon =
+        [UIApplicationShortcutIcon iconWithSystemImageName:kQRCodeSymbol];
+  }
+  UIApplicationShortcutItem* item =
+      [[UIApplicationShortcutItem alloc] initWithType:shortcutType
+                                       localizedTitle:shortcutTitle
+                                    localizedSubtitle:nil
+                                                 icon:shortcutIcon
+                                             userInfo:nil];
+  [[UIApplication sharedApplication] setShortcutItems:@[ item ]];
 }
 
 @end

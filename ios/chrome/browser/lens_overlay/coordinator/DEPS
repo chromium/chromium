@@ -8,6 +8,8 @@ include_rules = [
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/https_upgrades/model",
+  "+ios/chrome/browser/intents/model/intents_constants.h",
+  "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h",
   "+ios/chrome/browser/omnibox/public",
