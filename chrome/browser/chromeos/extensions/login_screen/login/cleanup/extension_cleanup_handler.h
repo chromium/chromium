@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_EXTENSION_CLEANUP_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_EXTENSION_CLEANUP_HANDLER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 class Profile;
 
@@ -38,13 +40,13 @@ class ExtensionCleanupHandler : public CleanupHandler {
   // Reinstalls force-installed, component and external component extensions.
   void ReinstallExtensions();
 
-  std::unordered_set<std::string> GetCleanupExemptExtensions();
+  base::flat_set<std::string> GetCleanupExemptExtensions();
 
   raw_ptr<Profile> profile_ = nullptr;
   std::vector<std::string> errors_;
   raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
   CleanupHandlerCallback callback_;
-  std::unordered_set<std::string> extensions_to_be_uninstalled_;
+  absl::flat_hash_set<std::string> extensions_to_be_uninstalled_;
 };
 
 }  // namespace chromeos

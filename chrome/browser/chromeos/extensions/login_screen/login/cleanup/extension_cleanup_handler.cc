@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -22,6 +23,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 // Extensions that should not be attempted to be uninstalled and reinstalled.
 const char* const kExemptExtensions[] = {
@@ -57,7 +59,7 @@ void ExtensionCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
 }
 
 void ExtensionCleanupHandler::UninstallExtensions() {
-  std::unordered_set<std::string> policy_exempt_extensions =
+  base::flat_set<std::string> policy_exempt_extensions =
       GetCleanupExemptExtensions();
 
   auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
@@ -97,7 +99,7 @@ void ExtensionCleanupHandler::UninstallExtensions() {
 
     if (!error.empty()) {
       errors_.push_back(*it + ": " + base::UTF16ToUTF8(error));
-      it = extensions_to_be_uninstalled_.erase(it);
+      extensions_to_be_uninstalled_.erase(it++);
     } else {
       ++it;
     }
@@ -139,14 +141,15 @@ void ExtensionCleanupHandler::ReinstallExtensions() {
   std::move(callback_).Run(std::nullopt);
 }
 
-std::unordered_set<std::string>
+base::flat_set<std::string>
 ExtensionCleanupHandler::GetCleanupExemptExtensions() {
-  std::unordered_set<std::string> exempt_extensions;
   const base::ListValue& exempt_list = profile_->GetPrefs()->GetList(
       prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
 
+  std::vector<std::string> exempt_extensions;
+  exempt_extensions.reserve(exempt_list.size());
   for (const base::Value& value : exempt_list) {
-    exempt_extensions.insert(value.GetString());
+    exempt_extensions.push_back(value.GetString());
   }
   return exempt_extensions;
 }
