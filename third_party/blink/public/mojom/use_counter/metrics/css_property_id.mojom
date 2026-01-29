@@ -995,6 +995,7 @@ enum CSSSampleId {
     kViewTransitionScope = 925,
     kRuleVisibilityItems = 926,
     kFrameSizing = 927,
+    kImageAnimation = 928,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

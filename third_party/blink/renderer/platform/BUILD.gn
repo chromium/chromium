@@ -1085,6 +1085,7 @@ component("platform") {
     "graphics/image_decoding_store.h",
     "graphics/image_frame_generator.cc",
     "graphics/image_frame_generator.h",
+    "graphics/image_node_animation_info.h",
     "graphics/image_observer.cc",
     "graphics/image_observer.h",
     "graphics/image_orientation.cc",

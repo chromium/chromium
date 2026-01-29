@@ -3358,6 +3358,7 @@ void StyleResolver::PropagateStyleToViewport() {
                    TextDirection::kLtr);
   }
 
+  // TODO(crbug.com/429459566): Add propagation of image-animation property.
   // Background
   {
     const ComputedStyle* background_style = document_element_style;
