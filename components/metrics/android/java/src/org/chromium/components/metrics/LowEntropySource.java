@@ -31,11 +31,11 @@ public class LowEntropySource {
     public static final int MAX_LOW_ENTROPY_SIZE = 8000;
 
     private static final class LazyHolder {
-        private static final int LOW_ENTROPY_SOURCE_STATIC_CACHE = generateInternal();
+        private static final int LOW_ENTROPY_SOURCE_STATIC_CACHE = generateValue();
     }
 
     private static final class LazyHolderForPseudo {
-        private static final int PSEUDO_LOW_ENTROPY_SOURCE_STATIC_CACHE = generateInternal();
+        private static final int PSEUDO_LOW_ENTROPY_SOURCE_STATIC_CACHE = generateValue();
     }
 
     private static final String KEY_LOW_ENTROPY_SOURCE_FRE_COMPLETED =
@@ -90,7 +90,8 @@ public class LowEntropySource {
         return LazyHolderForPseudo.PSEUDO_LOW_ENTROPY_SOURCE_STATIC_CACHE;
     }
 
-    private static int generateInternal() {
+    /** Generates a new random low entropy value. */
+    public static int generateValue() {
         return new Random().nextInt(MAX_LOW_ENTROPY_SIZE);
     }
 }

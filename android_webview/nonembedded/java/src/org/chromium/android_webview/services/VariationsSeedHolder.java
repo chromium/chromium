@@ -138,6 +138,7 @@ public class VariationsSeedHolder {
 
     @VisibleForTesting
     protected VariationsSeedHolder() {
+        AwEntropyState.ensureLowEntropySourceInitialized();
         mSeedThread = new HandlerThread(/* name= */ "seed_holder");
         mSeedThread.start();
         mSeedHandler = new Handler(mSeedThread.getLooper());

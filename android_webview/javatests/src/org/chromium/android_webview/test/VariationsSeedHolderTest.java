@@ -12,6 +12,7 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PRO
 import android.os.ParcelFileDescriptor;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -21,9 +22,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.android_webview.services.AwEntropyState;
 import org.chromium.android_webview.services.VariationsSeedHolder;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 
 import java.io.File;
@@ -38,6 +41,7 @@ import java.util.concurrent.TimeoutException;
 /** Test VariationsSeedHolder. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
+@DoNotBatch(reason = "Requires process restart for each test.")
 public class VariationsSeedHolderTest {
     private static class TestHolder extends VariationsSeedHolder {
         private final CallbackHelper mWriteFinished; // notified after each writeSeedIfNewer
@@ -90,6 +94,18 @@ public class VariationsSeedHolderTest {
     @After
     public void tearDown() throws IOException {
         VariationsTestUtils.deleteSeeds();
+    }
+
+    @Test
+    @SmallTest
+    public void testConstructorInitializesEntropySource() {
+        new TestHolder();
+
+        // Verify the entropy source exist.
+        int source = AwEntropyState.getLowEntropySource();
+        Assert.assertTrue("Entropy source should be non-negative, but was " + source, source >= 0);
+        Assert.assertTrue(
+                "Entropy source should be less than 8000, but was " + source, source < 8000);
     }
 
     // Request that the seed holder write its current seed to a file when the holder has no seed. No

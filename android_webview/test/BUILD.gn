@@ -562,6 +562,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/payments/AwPaymentRequestSettingsTest.java",
     "../javatests/src/org/chromium/android_webview/test/sensitive_content/AwSensitiveContentTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/AwComponentUpdateServiceTest.java",
+    "../javatests/src/org/chromium/android_webview/test/services/AwEntropyStateTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/AwNetLogServiceTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/ComponentsProviderServiceTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/CrashLoggingUtilsTest.java",
