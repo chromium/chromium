@@ -1991,6 +1991,7 @@ chromium-metrics-reviews@google.com.
     units="units" expires_after="2026-05-31">
   <owner>fredmello@chromium.org</owner>
   <owner>huangs@chromium.org</owner>
+  <owner>ginnyhuang@chromium.org</owner>
   <summary>
     The number of Custom Tiles on the NTP the first time the NTP opens for a
     profile, assuming Custom Tiles are enabled.
@@ -2577,9 +2578,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileTitleClicked{NewTabPageProviders}"
-    enum="NTPTileTitleSource" expires_after="2024-02-04">
+    enum="NTPTileTitleSource" expires_after="2026-07-27">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
+  <owner>ginnyhuang@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Records the source for the name a most visited tile showed when the user

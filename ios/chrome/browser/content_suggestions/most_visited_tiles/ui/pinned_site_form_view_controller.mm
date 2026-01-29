@@ -7,6 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/metrics.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/pinned_site_action.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_pinned_site_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
@@ -91,7 +93,7 @@ BOOL IsInputValid(NSString* input) {
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
-                           action:@selector(dismissModal)];
+                           action:@selector(onCancel)];
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(doneButtonTextId)
               style:UIBarButtonItemStyleDone
@@ -102,6 +104,16 @@ BOOL IsInputValid(NSString* input) {
       self.tableView);
   [self loadModel];
   [self updateApplyButtonState];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  RecordPinnedSiteFormUserAction(
+      _action, _urlValidationFailed
+                   ? MostVisitedPinSiteFormUserAction::kDismissAfterFailure
+                   : MostVisitedPinSiteFormUserAction::kDismissImmediately);
 }
 
 #pragma mark - UITableViewDelegate
@@ -232,6 +244,10 @@ BOOL IsInputValid(NSString* input) {
       break;
   }
   if (success) {
+    RecordPinnedSiteFormUserAction(
+        _action, _urlValidationFailed
+                     ? MostVisitedPinSiteFormUserAction::kApplyAfterFailure
+                     : MostVisitedPinSiteFormUserAction::kApplyImmediately);
     [self dismissModal];
   } else {
     _urlValidationFailed = YES;
@@ -239,6 +255,15 @@ BOOL IsInputValid(NSString* input) {
     [snapshot reloadSectionsWithIdentifiers:@[ @(kSection) ]];
     [_dataSource applySnapshot:snapshot animatingDifferences:NO];
   }
+}
+
+/// Handles the tap on the "Cancel" button or swiping down.
+- (void)onCancel {
+  RecordPinnedSiteFormUserAction(
+      _action, _urlValidationFailed
+                   ? MostVisitedPinSiteFormUserAction::kDismissAfterFailure
+                   : MostVisitedPinSiteFormUserAction::kDismissImmediately);
+  [self dismissModal];
 }
 
 /// Enables or disables the top-right button that applies the changes. The

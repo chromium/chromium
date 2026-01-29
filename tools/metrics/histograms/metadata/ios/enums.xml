@@ -984,6 +984,18 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="User opened settings from disable confirmation"/>
 </enum>
 
+<!-- LINT.IfChange(IOSMostVisitedPinSiteFormUserAction) -->
+
+<enum name="IOSMostVisitedPinSiteFormUserAction">
+  <int value="0" label="User dismisses form"/>
+  <int value="1" label="User succesfully applies changes on the form"/>
+  <int value="2" label="User dismisses form after failing to apply"/>
+  <int value="3"
+      label="User tries and succeeds to apply changes after failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/content_suggestions/most_visited_tiles/public/metrics.h:MostVisitedPinSiteFormUserAction) -->
+
 <enum name="IOSMultiWindowConfiguration">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Fullscreen"/>

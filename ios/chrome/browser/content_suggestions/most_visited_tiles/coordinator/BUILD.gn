@@ -19,6 +19,7 @@ source_set("coordinator") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/coordinator:public",
     "//ios/chrome/browser/content_suggestions/model:metrics_recorder",
+    "//ios/chrome/browser/content_suggestions/most_visited_tiles/public",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/content_suggestions/ui",

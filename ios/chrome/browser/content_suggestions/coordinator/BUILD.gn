@@ -58,6 +58,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/model:metrics_constants",
     "//ios/chrome/browser/content_suggestions/model:metrics_recorder",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator",
+    "//ios/chrome/browser/content_suggestions/most_visited_tiles/public",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
     "//ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator",
     "//ios/chrome/browser/content_suggestions/public:constants",

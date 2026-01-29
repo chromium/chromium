@@ -47511,9 +47511,10 @@ should be able to be added at any place in this file.
 <action name="Suggestions.Button.AddItem">
   <owner>ckitagawa@chromium.org</owner>
   <owner>huangs@chromium.org</owner>
+  <owner>ginnyhuang@chromium.org</owner>
   <description>
-    Android: Recorded when user clicks the &quot;Add new&quot; button to open
-    the &quot;Add shortcut&quot; dialog (disregarding what happens thereafter).
+    Mobile: Recorded when user clicks the &quot;Add new&quot; button to open the
+    &quot;Add shortcut&quot; dialog (disregarding what happens thereafter).
   </description>
 </action>
 
@@ -47632,8 +47633,9 @@ should be able to be added at any place in this file.
 <action name="Suggestions.Drag.ReorderItem">
   <owner>ckitagawa@chromium.org</owner>
   <owner>huangs@chromium.org</owner>
+  <owner>ginnyhuang@chromium.org</owner>
   <description>
-    Android: Recorded user using drag-and-drop to rearrange Custom Tiles in the
+    Mobile: Recorded user using drag-and-drop to rearrange Custom Tiles in the
     Most Visited Tiles area on the NTP, disregarding cancelled actions
     (including dragging tile back to its original position).
   </description>

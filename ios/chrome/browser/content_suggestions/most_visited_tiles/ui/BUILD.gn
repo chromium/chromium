@@ -32,6 +32,7 @@ source_set("ui") {
     "//ios/chrome/browser/content_suggestions/magic_stack/public:utils",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",
+    "//ios/chrome/browser/content_suggestions/most_visited_tiles/public",
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/content_suggestions/ui:public",
     "//ios/chrome/browser/content_suggestions/ui/cells",

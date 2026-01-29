@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/pinned_site_action.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/pinned_site_form_view_controller.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_action_delegate.h"
@@ -690,6 +691,7 @@ using segmentation_platform::TipIdentifier;
   // TODO(crbug.com/473728173): The modal presentation style is set as a
   // placeholder only. Configure detent height.
   navController.modalPresentationStyle = UIModalPresentationFormSheet;
+  navController.presentationController.delegate = viewController;
   [self.contentSuggestionsViewController presentViewController:navController
                                                       animated:YES
                                                     completion:nil];

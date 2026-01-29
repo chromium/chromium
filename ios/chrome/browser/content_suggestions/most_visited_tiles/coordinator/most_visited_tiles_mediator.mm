@@ -29,6 +29,7 @@
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/metrics.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
@@ -310,10 +311,12 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 
 - (void)moveMostVisitedItem:(MostVisitedItem*)item toIndex:(NSUInteger)index {
   _mostVisitedSites->ReorderCustomLink(item.URL, index);
+  RecordReorderUserAction();
 }
 
 - (void)openModalToAddPinnedSite {
   [self.contentSuggestionsHandler showPinnedSiteCreator];
+  RecordAddSiteUserAction();
 }
 
 #pragma mark - ContentSuggestionsMenuProvider

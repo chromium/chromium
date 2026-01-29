@@ -4006,6 +4006,20 @@ chromium-metrics-reviews@google.com.
   <summary>Outcome of the MiniMap screen.</summary>
 </histogram>
 
+<histogram name="IOS.MostVisited.PinnedSiteForm.{FormType}"
+    enum="IOSMostVisitedPinSiteFormUserAction" expires_after="2026-07-28">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records the user action on the {FormType} form for pinned sites, once every
+    time the form is displayed.
+  </summary>
+  <token key="FormType">
+    <variant name="AddSite" summary="Add Site"/>
+    <variant name="EditSite" summary="Edit Site"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.MultiWindow.Configuration"
     enum="IOSMultiWindowConfiguration" expires_after="2022-12-11">
   <owner>marq@chromium.org</owner>

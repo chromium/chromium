@@ -10,11 +10,11 @@
 @class MostVisitedItem;
 @protocol MostVisitedTilesPinnedSiteMutator;
 
-/// Types of action that uses a pinned site form.
-enum class PinnedSiteAction { kCreate, kModify };
+enum class PinnedSiteAction;
 
 /// Modal for user to create or edit a pinned site in the most visited tiles.
-@interface PinnedSiteFormViewController : ChromeTableViewController
+@interface PinnedSiteFormViewController
+    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 
 /// Mutator object that handles pinned site creation and edits.
 @property(nonatomic, weak) id<MostVisitedTilesPinnedSiteMutator> mutator;
