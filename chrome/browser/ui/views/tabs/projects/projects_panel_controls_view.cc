@@ -36,6 +36,8 @@ ProjectsPanelControlsView::ProjectsPanelControlsView(
 
   projects_button_ = AddChildView(std::move(container_button));
   projects_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  projects_button_->SetProperty(views::kElementIdentifierKey,
+                                kProjectsPanelButtonElementId);
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelControlsViewElementId);
 }

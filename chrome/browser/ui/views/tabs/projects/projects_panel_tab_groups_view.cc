@@ -24,8 +24,7 @@ constexpr gfx::Insets kTitleInteriorMargins = gfx::Insets::VH(12, 8);
 
 ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
     actions::ActionItem* root_action_item,
-    views::ActionViewController* action_view_controller,
-    ProjectsPanelController* projects_panel_controller) {
+    views::ActionViewController* action_view_controller) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
@@ -34,7 +33,6 @@ ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
   SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
-  projects_panel_controller_observer_.Observe(projects_panel_controller);
 
   title_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_TAB_GROUPS_TITLE)));
@@ -47,28 +45,6 @@ ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
 }
 
 ProjectsPanelTabGroupsView::~ProjectsPanelTabGroupsView() = default;
-
-void ProjectsPanelTabGroupsView::OnTabGroupsInitialized(
-    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
-  for (const auto& group : tab_groups) {
-    item_views_.emplace_back(
-        AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(group)));
-  }
-}
-
-void ProjectsPanelTabGroupsView::OnTabGroupAdded(
-    const tab_groups::SavedTabGroup& group) {
-  NOTIMPLEMENTED();
-}
-
-void ProjectsPanelTabGroupsView::OnTabGroupUpdated(
-    const tab_groups::SavedTabGroup& group) {
-  NOTIMPLEMENTED();
-}
-
-void ProjectsPanelTabGroupsView::OnTabGroupRemoved(const base::Uuid& sync_id) {
-  NOTIMPLEMENTED();
-}
 
 BEGIN_METADATA(ProjectsPanelTabGroupsView)
 END_METADATA

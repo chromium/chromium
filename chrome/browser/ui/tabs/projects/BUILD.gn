@@ -60,6 +60,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/tabs/projects",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//ui/base",

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
+#include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/separator.h"
@@ -21,6 +22,7 @@ class Point;
 
 namespace views {
 class ActionViewController;
+class EventMonitor;
 }  // namespace views
 
 class Profile;
@@ -51,12 +53,31 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
 
   // views::View:
   void Layout(PassKey) override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
+  static void disable_animations_for_testing();
+
  private:
+  // Detects if mouse presses occur outside of the panel.
+  class MouseEventHandler : public ui::EventObserver {
+   public:
+    explicit MouseEventHandler(ProjectsPanelView* owning_view);
+    MouseEventHandler(const MouseEventHandler&) = delete;
+    MouseEventHandler& operator=(const MouseEventHandler&) = delete;
+    ~MouseEventHandler() override;
+
+    void OnEvent(const ui::Event& event) override;
+
+   private:
+    raw_ptr<ProjectsPanelView> owning_view_ = nullptr;
+  };
+
+  void ClosePanel();
+
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<views::View> content_container_ = nullptr;
   raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
@@ -72,6 +93,10 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
 
   // Animation when opening and closing the panel.
   gfx::SlideAnimation resize_animation_;
+
+  // Handle mouse presses outside the panel.
+  MouseEventHandler mouse_event_handler_{this};
+  std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_

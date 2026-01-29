@@ -29,6 +29,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -37,6 +38,7 @@ constexpr int kProjectPanelWidth = 240;
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
 // The padding around a list header.
 constexpr gfx::Insets kListHeaderPadding = gfx::Insets::VH(10, 20);
+static bool disable_animations_for_testing_ = false;
 }  // namespace
 
 ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
@@ -70,8 +72,7 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
 
   tab_groups_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelTabGroupsView>(
-          root_action_item_.get(), action_view_controller_.get(),
-          panel_controller_.get()));
+          root_action_item_.get(), action_view_controller_.get()));
 
   auto* threads_list_title =
       content_container_->AddChildView(std::make_unique<views::Label>());
@@ -103,6 +104,8 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
       gfx::Animation::RichAnimationDuration(base::Milliseconds(450)));
   resize_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
 
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+
   SetVisible(false);
   SetPreferredSize(gfx::Size(kProjectPanelWidth, 0));
   SetProperty(views::kElementIdentifierKey, kProjectsPanelViewElementId);
@@ -123,7 +126,26 @@ bool ProjectsPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
 void ProjectsPanelView::OnProjectsPanelStateChanged(
     ProjectsPanelStateController* state_controller) {
   TooltipTextChanged();
+
   const bool visible = state_controller->IsProjectsPanelVisible();
+
+  if (visible) {
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+        &mouse_event_handler_, GetWidget()->GetNativeWindow(),
+        {ui::EventType::kMousePressed, ui::EventType::kGestureTapDown});
+  } else {
+    event_monitor_.reset();
+  }
+
+  if (disable_animations_for_testing_) {
+    // Fast-forward the animation to its final state (1.0 = shown, 0.0 =
+    // hidden).
+    resize_animation_.SetSlideDuration(base::TimeDelta());
+    resize_animation_.Reset(/*value=*/visible ? 1.0 : 0.0);
+    SetVisible(visible);
+    return;
+  }
+
   if (visible) {
     SetVisible(true);
     resize_animation_.Show();
@@ -143,6 +165,14 @@ void ProjectsPanelView::Layout(PassKey) {
                                 target_width, height());
 }
 
+bool ProjectsPanelView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  if (accelerator.key_code() == ui::VKEY_ESCAPE) {
+    ClosePanel();
+    return true;
+  }
+  return false;
+}
+
 void ProjectsPanelView::AnimationProgressed(const gfx::Animation* animation) {
   InvalidateLayout();
 }
@@ -150,6 +180,44 @@ void ProjectsPanelView::AnimationProgressed(const gfx::Animation* animation) {
 void ProjectsPanelView::AnimationEnded(const gfx::Animation* animation) {
   if (animation->GetCurrentValue() == 0.0) {
     SetVisible(false);
+  }
+}
+
+// static
+void ProjectsPanelView::disable_animations_for_testing() {
+  disable_animations_for_testing_ = true;
+}
+
+void ProjectsPanelView::ClosePanel() {
+  // Ignore if the panel is already animating closed.
+  if (resize_animation_.IsClosing()) {
+    return;
+  }
+
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      kActionToggleProjectsPanel, root_action_item_);
+  action_item->InvokeAction();
+}
+
+ProjectsPanelView::MouseEventHandler::MouseEventHandler(
+    ProjectsPanelView* owning_view)
+    : owning_view_(owning_view) {}
+
+ProjectsPanelView::MouseEventHandler::~MouseEventHandler() = default;
+
+void ProjectsPanelView::MouseEventHandler::OnEvent(const ui::Event& event) {
+  // Ignore mouse events when the panel is closed.
+  if (!owning_view_->GetVisible()) {
+    return;
+  }
+
+  if (event.type() == ui::EventType::kMousePressed ||
+      event.type() == ui::EventType::kGestureTapDown) {
+    auto* mouse_event = event.AsMouseEvent();
+    gfx::Point click_point = mouse_event->root_location();
+    if (!owning_view_->GetBoundsInScreen().Contains(click_point)) {
+      owning_view_->ClosePanel();
+    }
   }
 }
 
