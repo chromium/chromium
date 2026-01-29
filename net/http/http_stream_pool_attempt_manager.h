@@ -197,9 +197,13 @@ class HttpStreamPool::AttemptManager
   void CancelJobs(int error, StreamSocketCloseReason cancel_reason);
 
   // Completes the QuicAttempt with `result` if not completed before.
+  // `overwrite_old_result` will cause the old QUIC attempt result to be
+  // unconditionally overwritten - intended for use when an existing QUIC
+  // session is found, which means any previous failure should be ignored.
   void CompleteQuicAttempt(
       int result,
-      base::optional_ref<NetErrorDetails> net_error_details = std::nullopt);
+      base::optional_ref<NetErrorDetails> net_error_details = std::nullopt,
+      bool overwrite_old_result = false);
 
   // Returns the current load state.
   LoadState GetLoadState() const;

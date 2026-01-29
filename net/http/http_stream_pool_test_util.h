@@ -25,6 +25,7 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/scheme_host_port.h"
 
@@ -201,6 +202,11 @@ class ServiceEndpointBuilder {
   ServiceEndpointBuilder& add_ip_endpoint(IPEndPoint ip_endpoint);
 
   ServiceEndpointBuilder& set_alpns(std::vector<std::string> alpns);
+
+  // Helper that looks up the alpn string for `quic_version`, and sets the list
+  // of alpns to contain only that value. Clears any other pre-existing ALPNs
+  // already set.
+  ServiceEndpointBuilder& set_alpn(quic::ParsedQuicVersion quic_version);
 
   ServiceEndpointBuilder& set_ech_config_list(
       std::vector<uint8_t> ech_config_list);

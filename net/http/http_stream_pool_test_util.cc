@@ -23,6 +23,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
@@ -295,6 +296,11 @@ ServiceEndpointBuilder& ServiceEndpointBuilder::set_alpns(
     std::vector<std::string> alpns) {
   endpoint_.metadata.supported_protocol_alpns = std::move(alpns);
   return *this;
+}
+
+ServiceEndpointBuilder& ServiceEndpointBuilder::set_alpn(
+    quic::ParsedQuicVersion quic_version) {
+  return set_alpns({quic::AlpnForVersion(quic_version)});
 }
 
 ServiceEndpointBuilder& ServiceEndpointBuilder::set_ech_config_list(
