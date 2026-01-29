@@ -3157,13 +3157,6 @@ ci.thin_tester(
                     },
                 ),
             ),
-            "services_webnn_unittests": targets.per_test_modification(
-                mixins = targets.mixin(
-                    args = [
-                        "--test-launcher-filter-file=../../testing/buildbot/filters/win.nvidia.gtx.1660.x86.services_webnn_unittests.filter",
-                    ],
-                ),
-            ),
         },
     ),
     targets_settings = targets.settings(
@@ -3621,6 +3614,13 @@ ci.thin_tester(
                         # now since we are manually applying the number of jobs above.
                         targets.magic_args.GPU_PARALLEL_JOBS: None,
                     },
+                ),
+            ),
+            "services_webnn_unittests": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        "--test-launcher-filter-file=../../testing/buildbot/filters/win.nvidia.gtx.1660.x86.services_webnn_unittests.filter",
+                    ],
                 ),
             ),
         },
