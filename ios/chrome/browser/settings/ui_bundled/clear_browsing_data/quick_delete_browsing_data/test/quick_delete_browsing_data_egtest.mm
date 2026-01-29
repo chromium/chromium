@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -130,6 +131,13 @@ void NoDeleteBrowsingDataDialogHistogram(
 
 @implementation QuickDeleteBrowsingDataTestCase
 
+// Returns whether the `kPasswordRemovalFromDeleteBrowsingData` feature should
+// be enabled for the current test. `NO` is returned to verify all tests pass
+// when the `kPasswordRemovalFromDeleteBrowsingData` feature is disabled.
+- (BOOL)shouldEnablePasswordRemovalFeature {
+  return NO;
+}
+
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey resetBrowsingDataPrefs];
@@ -153,6 +161,15 @@ void NoDeleteBrowsingDataDialogHistogram(
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
+
+  // Runs all the tests with the `kPasswordRemovalFromDeleteBrowsingData`
+  // feature enabled or disabled.
+  if ([self shouldEnablePasswordRemovalFeature]) {
+    config.features_enabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
+  } else {
+    config.features_disabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
+  }
+
   return config;
 }
 
@@ -314,7 +331,9 @@ void NoDeleteBrowsingDataDialogHistogram(
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      assertWithMatcher:elementIsSelectedMatcher(false)];
+      assertWithMatcher:[self shouldEnablePasswordRemovalFeature]
+                            ? grey_nil()
+                            : elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
 
@@ -327,8 +346,10 @@ void NoDeleteBrowsingDataDialogHistogram(
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      performAction:grey_tap()];
+  if (![self shouldEnablePasswordRemovalFeature]) {
+    [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
+        performAction:grey_tap()];
+  }
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       performAction:grey_tap()];
 
@@ -342,7 +363,9 @@ void NoDeleteBrowsingDataDialogHistogram(
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      assertWithMatcher:elementIsSelectedMatcher(true)];
+      assertWithMatcher:[self shouldEnablePasswordRemovalFeature]
+                            ? grey_nil()
+                            : elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
 
@@ -429,7 +452,9 @@ void NoDeleteBrowsingDataDialogHistogram(
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      assertWithMatcher:elementIsSelectedMatcher(false)];
+      assertWithMatcher:[self shouldEnablePasswordRemovalFeature]
+                            ? grey_nil()
+                            : elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
 
@@ -442,8 +467,10 @@ void NoDeleteBrowsingDataDialogHistogram(
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      performAction:grey_tap()];
+  if (![self shouldEnablePasswordRemovalFeature]) {
+    [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
+        performAction:grey_tap()];
+  }
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       performAction:grey_tap()];
 
@@ -457,7 +484,9 @@ void NoDeleteBrowsingDataDialogHistogram(
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      assertWithMatcher:elementIsSelectedMatcher(true)];
+      assertWithMatcher:[self shouldEnablePasswordRemovalFeature]
+                            ? grey_nil()
+                            : elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
 
@@ -486,9 +515,11 @@ void NoDeleteBrowsingDataDialogHistogram(
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCache], YES,
       @"Failed to save cache pref change on confirm.");
+  BOOL shouldPasswordPrefBeUpdated = ![self shouldEnablePasswordRemovalFeature];
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeletePasswords],
-      YES, @"Failed to save passwords pref change on confirm.");
+      shouldPasswordPrefBeUpdated,
+      @"Failed to save passwords pref change on confirm.");
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
       YES, @"Failed to save autofill pref change on confirm.");
@@ -502,8 +533,13 @@ void NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kSiteDataToggledOn);
   ExpectDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kCacheToggledOn);
-  ExpectDeleteBrowsingDataDialogHistogram(
-      DeleteBrowsingDataDialogAction::kPasswordsToggledOn);
+  if ([self shouldEnablePasswordRemovalFeature]) {
+    NoDeleteBrowsingDataDialogHistogram(
+        DeleteBrowsingDataDialogAction::kPasswordsToggledOn);
+  } else {
+    ExpectDeleteBrowsingDataDialogHistogram(
+        DeleteBrowsingDataDialogAction::kPasswordsToggledOn);
+  }
   ExpectDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kAutofillToggledOn);
 }
@@ -726,6 +762,34 @@ void NoDeleteBrowsingDataDialogHistogram(
                                            0)),
                                    nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+@end
+
+// Reruns all the tests in the file, but with the
+// `kPasswordRemovalFromDeleteBrowsingData` feature is enabled by default.
+@interface QuickDeleteBrowsingDataPasswordRemovalTestCase
+    : QuickDeleteBrowsingDataTestCase
+
+@end
+
+@implementation QuickDeleteBrowsingDataPasswordRemovalTestCase
+
+// Returns whether the `kPasswordRemovalFromDeleteBrowsingData` feature should
+// be enabled for the current test. It returns `YES` to rerun tests defined in
+// the QuickDeleteBrowsingDataTestCase.
+- (BOOL)shouldEnablePasswordRemovalFeature {
+  return YES;
+}
+
+// Tests that the password cell is not present when the
+// `kPasswordRemovalFromDeleteBrowsingData` feature is enabled.
+- (void)testPasswordCellIsNotPresentWhenThePasswordRemovalFeatureIsEnabled {
+  // Open quick delete browsing data page.
+  [self openQuickDeleteBrowsingDataPage];
+
+  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
