@@ -44,10 +44,10 @@ source_set("public") {
 
 source_set("ui") {
   sources = [
-    "skills_ui_controller.cc",
-    "skills_ui_controller.h",
     "skills_ui_tab_controller.cc",
     "skills_ui_tab_controller.h",
+    "skills_ui_window_controller.cc",
+    "skills_ui_window_controller.h",
     "skills_update_observer.cc",
     "skills_update_observer.h",
   ]
@@ -88,8 +88,8 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "skills_ui_controller_browsertest.cc",
     "skills_ui_tab_controller_browsertest.cc",
+    "skills_ui_window_controller_browsertest.cc",
   ]
   deps = [
     ":public",

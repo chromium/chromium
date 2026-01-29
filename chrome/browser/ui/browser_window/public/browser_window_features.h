@@ -213,7 +213,7 @@ class OmniboxPopupCloser;
 }  // namespace omnibox
 
 namespace skills {
-class SkillsUiController;
+class SkillsUiWindowController;
 }  // namespace skills
 
 // This class owns the core controllers for features that are scoped to a given
@@ -809,7 +809,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<omnibox::OmniboxPopupCloser> omnibox_popup_closer_;
 
-  std::unique_ptr<skills::SkillsUiController> skills_ui_controller_;
+  std::unique_ptr<skills::SkillsUiWindowController>
+      skills_ui_window_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::boca::OnTaskLockedController> on_task_locked_controller_;

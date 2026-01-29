@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SKILLS_SKILLS_UI_CONTROLLER_H_
-#define CHROME_BROWSER_SKILLS_SKILLS_UI_CONTROLLER_H_
+#ifndef CHROME_BROWSER_SKILLS_SKILLS_UI_WINDOW_CONTROLLER_H_
+#define CHROME_BROWSER_SKILLS_SKILLS_UI_WINDOW_CONTROLLER_H_
 
 #include <string>
 
@@ -16,13 +16,14 @@ class BrowserWindowInterface;
 namespace skills {
 
 // Manages Chrome UI for Skills.
-class SkillsUiController {
+class SkillsUiWindowController {
  public:
-  DECLARE_USER_DATA(SkillsUiController);
-  explicit SkillsUiController(BrowserWindowInterface* browser_window_interface);
-  ~SkillsUiController();
+  DECLARE_USER_DATA(SkillsUiWindowController);
+  explicit SkillsUiWindowController(
+      BrowserWindowInterface* browser_window_interface);
+  ~SkillsUiWindowController();
 
-  static SkillsUiController* From(
+  static SkillsUiWindowController* From(
       BrowserWindowInterface* browser_window_interface);
 
   // Called when we want to update UI after a skill has been saved.
@@ -40,10 +41,10 @@ class SkillsUiController {
   void ShowSkillToast(ToastId toast_id);
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
-  ::ui::ScopedUnownedUserData<SkillsUiController> scoped_data_holder_;
+  ::ui::ScopedUnownedUserData<SkillsUiWindowController> scoped_data_holder_;
   std::string last_saved_skill_id_;
 };
 
 }  // namespace skills
 
-#endif  // CHROME_BROWSER_SKILLS_SKILLS_UI_CONTROLLER_H_
+#endif  // CHROME_BROWSER_SKILLS_SKILLS_UI_WINDOW_CONTROLLER_H_

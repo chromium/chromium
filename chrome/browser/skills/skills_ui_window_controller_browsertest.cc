@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/skills/skills_ui_controller.h"
+#include "chrome/browser/skills/skills_ui_window_controller.h"
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -15,14 +15,15 @@
 
 namespace skills {
 
-class SkillsUiControllerBrowserTest : public InProcessBrowserTest {
+class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
  public:
-  SkillsUiController* controller() {
-    return SkillsUiController::From(browser());
+  SkillsUiWindowController* controller() {
+    return SkillsUiWindowController::From(browser());
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SkillsUiControllerBrowserTest, OnSkillSavedShowToast) {
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       OnSkillSavedShowToast) {
   // Ensure no toast is initially showing.
   const auto* toast_controller = browser()->GetFeatures().toast_controller();
   EXPECT_FALSE(toast_controller->IsShowingToast());
@@ -35,7 +36,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiControllerBrowserTest, OnSkillSavedShowToast) {
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kSkillSaved);
 }
 
-IN_PROC_BROWSER_TEST_F(SkillsUiControllerBrowserTest, OnSkillDeletedShowToast) {
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       OnSkillDeletedShowToast) {
   // Ensure no toast is initially showing.
   const auto* toast_controller = browser()->GetFeatures().toast_controller();
   EXPECT_FALSE(toast_controller->IsShowingToast());

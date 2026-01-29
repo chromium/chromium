@@ -5,7 +5,7 @@
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/skills/skills_ui_controller.h"
+#include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog.h"
@@ -115,7 +115,7 @@ void SkillsUiTabController::OnDialogClosed(const std::string& json_retval) {
 void SkillsUiTabController::OnSkillSaved(const std::string& skill_id) {
   if (auto* window_interface = tab_->GetBrowserWindowInterface()) {
     // Delegate the global toast action to the Window Controller.
-    auto* window_controller = SkillsUiController::From(window_interface);
+    auto* window_controller = SkillsUiWindowController::From(window_interface);
     if (window_controller) {
       window_controller->OnSkillSaved(skill_id);
     }
