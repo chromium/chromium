@@ -75,9 +75,15 @@ if (is_android) {
     ]
   }
 
+  android_library("supervised_user_enums_java") {
+    srcjar_deps = [ ":supervised_extension_approval_result_java_enum_srcjar" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
   android_library("parent_auth_delegate_java") {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegate.java" ]
     deps = [
+      ":supervised_user_enums_java",
       "//base:base_java",
       "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
@@ -161,6 +167,7 @@ if (is_android) {
       ":java_resources",
       ":parent_auth_delegate_java",
       ":parent_auth_delegate_provider_java",
+      ":supervised_user_enums_java",
       "//base:base_java",
       "//base:service_loader_java",
       "//build/android:build_java",
@@ -175,10 +182,7 @@ if (is_android) {
       "//ui/android:ui_no_recycler_view_java",
     ]
 
-    srcjar_deps = [
-      ":extension_parent_approval_jni_headers",
-      ":supervised_extension_approval_result_java_enum_srcjar",
-    ]
+    srcjar_deps = [ ":extension_parent_approval_jni_headers" ]
 
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ExtensionParentApproval.java" ]
     resources_package = "org.chromium.chrome.browser.supervised_user"

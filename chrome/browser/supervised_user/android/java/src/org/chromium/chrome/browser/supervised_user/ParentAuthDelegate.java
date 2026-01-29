@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.supervised_user;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.extensions.browser.SupervisedExtensionApprovalResult;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -46,10 +47,10 @@ public interface ParentAuthDelegate {
     // TODO(crbug.com/452271027): Remove this default implementation in the cleanup CL.
     default void requestExtensionAuthWithResult(
             @SuppressWarnings("unused") WindowAndroid windowAndroid,
-            Callback<Integer> onCompletionCallback) {
+            Callback<@SupervisedExtensionApprovalResult Integer> onCompletionCallback) {
         // SHIM: Default implementation to prevent breakage before Clank roll.
         if (onCompletionCallback != null) {
-            onCompletionCallback.onResult(0);
+            onCompletionCallback.onResult(SupervisedExtensionApprovalResult.FAILED);
         }
     }
 }

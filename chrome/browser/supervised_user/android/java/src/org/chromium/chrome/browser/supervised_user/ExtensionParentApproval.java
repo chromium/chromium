@@ -52,6 +52,6 @@ class ExtensionParentApproval {
 
     @NativeMethods
     interface Natives {
-        void onCompletion(int resultValue);
+        void onCompletion(@SupervisedExtensionApprovalResult int resultValue);
     }
 }
