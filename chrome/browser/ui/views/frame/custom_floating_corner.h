@@ -60,6 +60,7 @@ class CustomFloatingCorner : public views::View, public CustomCorners {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   CornerOrientation orientation_for_testing() const { return orientation_; }
 

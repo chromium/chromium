@@ -225,6 +225,11 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
+void CustomFloatingCorner::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  SchedulePaint();
+}
+
 const views::View& CustomFloatingCorner::GetView() const {
   return *this;
 }
