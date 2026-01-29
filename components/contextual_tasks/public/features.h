@@ -39,6 +39,10 @@ BASE_DECLARE_FEATURE(kContextualTasksForceCountryCodeUS);
 BASE_DECLARE_FEATURE(
     kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations);
 
+// Enables use of silk api to notify zero state rendered instead of the url
+// param.
+BASE_DECLARE_FEATURE(kEnableNotifyZeroStateRenderedCapability);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,

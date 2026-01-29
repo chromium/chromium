@@ -116,6 +116,11 @@ std::string GetEncodedHandshakeMessage() {
           contextual_tasks::kContextualTasksContextLibrary)) {
     ping->add_capabilities(lens::FeatureCapability::THREAD_CONTEXT_LIBRARY);
   }
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kEnableNotifyZeroStateRenderedCapability)) {
+    ping->add_capabilities(lens::FeatureCapability::NOTIFY_ZERO_STATE_RENDERED);
+  }
+
   const size_t size = message.ByteSizeLong();
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(&serialized_message[0], size);
@@ -832,7 +837,11 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   // Set whether this navigation is to a zero state so the UI can adjust
   // accordingly.
   const bool is_zero_state = ContextualTasksUI::IsZeroState(url, ui_service_);
-  task_info_delegate_->OnZeroStateChange(is_zero_state);
+
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kEnableNotifyZeroStateRenderedCapability)) {
+    task_info_delegate_->OnZeroStateChange(is_zero_state);
+  }
 
   bool is_url_changed = false;
   if (url != last_committed_url_) {
@@ -848,7 +857,10 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     return;
   }
 
-  if (is_zero_state) {
+  if (is_zero_state &&
+      (!base::FeatureList::IsEnabled(
+           contextual_tasks::kEnableNotifyZeroStateRenderedCapability) ||
+       navigation_handle->IsSameDocument())) {
     // Create a new task for zero state, since there's no thread to associate
     // this with yet.
     contextual_tasks::ContextualTask task =

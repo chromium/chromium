@@ -25,6 +25,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 
 namespace contextual_tasks {
 
@@ -384,6 +385,42 @@ TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_RestoreInput) {
   message.SerializeToArray(serialized.data(), size);
 
   EXPECT_CALL(page_, RestoreInput()).Times(1);
+
+  page_handler_->OnWebviewMessage(serialized);
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       OnWebviewMessage_NotifyZeroStateRendered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableNotifyZeroStateRenderedCapability);
+
+  lens::AimToClientMessage message;
+  message.mutable_notify_zero_state_rendered()->set_is_zero_state_rendered(
+      true);
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized(size);
+  message.SerializeToArray(serialized.data(), size);
+
+  EXPECT_CALL(page_, OnZeroStateChange(true)).Times(1);
+
+  page_handler_->OnWebviewMessage(serialized);
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       OnWebviewMessage_NotifyZeroStateRendered_False) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableNotifyZeroStateRenderedCapability);
+
+  lens::AimToClientMessage message;
+  message.mutable_notify_zero_state_rendered()->set_is_zero_state_rendered(
+      false);
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized(size);
+  message.SerializeToArray(serialized.data(), size);
+
+  EXPECT_CALL(page_, OnZeroStateChange(false)).Times(1);
 
   page_handler_->OnWebviewMessage(serialized);
 }
