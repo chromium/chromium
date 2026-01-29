@@ -22,8 +22,12 @@
       });
       break;
     case "initial":
-      window.onload = () =>
+      window.onload = () => {
+        // Changing the URL synchronously to avoid an infinite loop when going back in case there is
+        // no BFCache.
+        history.replaceState(null, "", "?phase=done");
         navigation.navigate("?phase=next", { history: "push" });
+      }
       break;
     case "next":
       window.onload = () => {
