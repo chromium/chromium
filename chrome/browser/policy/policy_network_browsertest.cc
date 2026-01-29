@@ -1068,11 +1068,13 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, TLS13EarlyDataPolicyDisable) {
   EXPECT_EQ(FetchResourceForEarlyDataCheck(), kEarlyDataNotAcceptedTitle);
 }
 
-IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, EnableWithRestart) {
-  if (kSuffersFromBug475587477) {
-    GTEST_SKIP()
-        << "Test is flaky on this platform due to https://crbug.com/475587477";
-  }
+// TODO(crbug.com/475587477, crbug.com/477510552): Flaky on Windows and Android.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_EnableWithRestart DISABLED_EnableWithRestart
+#else
+#define MAYBE_EnableWithRestart EnableWithRestart
+#endif
+IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, MAYBE_EnableWithRestart) {
   PolicyMap policies;
   SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(true));
   UpdateProviderPolicy(policies);
