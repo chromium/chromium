@@ -819,7 +819,7 @@ const CGFloat kDividerWidth = 1.0;
 // Creates a navigation chevron icon.
 - (UIImageView*)createNavigationChevron {
   UIImageView* chevronIcon = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kChevronRightSymbol,
+      initWithImage:DefaultSymbolWithPointSize(kChevronForwardSymbol,
                                                kSmallButtonIconSize)];
   chevronIcon.translatesAutoresizingMaskIntoConstraints = NO;
   chevronIcon.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
