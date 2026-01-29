@@ -9704,6 +9704,9 @@ crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsap
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.html [ Failure Pass ]
 crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.worker.html [ Failure Pass ]
 
+# Investigate flakiness of new deferred page swap bug
+crbug.com/469466893 external/wpt/navigation-api/navigate-event/defer/tentative/defer-back.html [ Failure Pass Timeout ]
+
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
 
