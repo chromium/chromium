@@ -11,6 +11,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/browser_process.h"
@@ -312,3 +314,117 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest,
     testing::Bool());
+
+// Test action chip functionality with frequency capping enabled.
+class LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest
+    : public LensSearchFeatureFlagsUtilsBrowserTestBase {
+ public:
+  LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlayEduActionChip,
+        {{"lens-action-chip-show-interval", "6h"},
+         {"lens-action-chip-show-debounce-interval", "1s"}});
+  }
+  ~LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
+  static base::Time GetMockTime() { return fake_time_; }
+  static void SetMockTime(base::Time time) { fake_time_ = time; }
+
+ private:
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
+  inline static base::Time fake_time_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest,
+    ShouldShowLensOverlayEduActionChip_ReturnsFalseAboveMaxShownCount) {
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+
+  // Expect false after max shown count exceeded.
+  EXPECT_FALSE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest,
+    ShouldShowLensOverlayEduActionChip_ReturnsTrueBelowDebounceInterval) {
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+
+  // Wait less than the 1 second debounce interval.
+  SetMockTime(GetMockTime() + base::Milliseconds(500));
+
+  // Expect true since the debounce interval has not passed.
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest,
+    ShouldShowLensOverlayEduActionChip_ReturnsFalseAboveDebounceInterval) {
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+
+  // Wait more than the 1 second debounce interval.
+  SetMockTime(GetMockTime() + base::Milliseconds(1500));
+
+  // Expect false since the debounce interval has passed.
+  EXPECT_FALSE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest,
+    ShouldShowLensOverlayEduActionChip_ReturnsFalseBelowInterval) {
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+
+  // Wait less than the 6 hour interval.
+  SetMockTime(GetMockTime() + base::Minutes(359));
+
+  // Expect false since the interval has not passed.
+  EXPECT_FALSE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest,
+    ShouldShowLensOverlayEduActionChip_ReturnsTrueAboveInterval) {
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+
+  // Wait more than the 6 hour interval.
+  SetMockTime(GetMockTime() + base::Minutes(361));
+
+  // Expect true since the interval has passed.
+  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+}

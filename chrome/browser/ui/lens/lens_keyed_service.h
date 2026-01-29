@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_LENS_LENS_KEYED_SERVICE_H_
 
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // This class counts how many times the Lens EDU action chip has been shown in
-// the current session. It is created on a per profile basis.
+// the current session and keeps a timestamp of the last time shown. It is
+// created on a per profile basis.
 class LensKeyedService : public KeyedService {
  public:
   LensKeyedService();
@@ -21,8 +23,16 @@ class LensKeyedService : public KeyedService {
   int GetActionChipShownCount();
   void SetActionChipShownCount(int value);
 
+  // Returns the last shown time, which may be base::Time::Min() if the last
+  // shown time has not been reset.
+  base::Time GetActionChipLastShownTime();
+
+  // Resets the last shown time to the current time.
+  void ResetActionChipLastShownTime();
+
  private:
   int action_chip_shown_count_ = 0;
+  base::Time action_chip_last_shown_time_ = base::Time::Min();
 };
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_KEYED_SERVICE_H_

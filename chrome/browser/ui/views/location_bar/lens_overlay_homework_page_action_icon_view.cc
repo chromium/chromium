@@ -68,7 +68,7 @@ void LensOverlayHomeworkPageActionIconView::UpdateImpl() {
     // ShowCallToAction() more than once while the chip is showing.
     if (!scoped_window_call_to_action_ptr_) {
       scoped_window_call_to_action_ptr_ = browser_->ShowCallToAction();
-      lens::IncrementLensOverlayEduActionChipShownCount(browser_->GetProfile());
+      lens::RecordLensOverlayEduActionChipShown(browser_->GetProfile());
     }
   } else {
     scoped_window_call_to_action_ptr_.reset();

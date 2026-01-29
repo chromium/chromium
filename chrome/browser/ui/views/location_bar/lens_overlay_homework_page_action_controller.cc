@@ -60,8 +60,7 @@ void LensOverlayHomeworkPageActionController::UpdatePageActionIcon() {
     if (!scoped_window_call_to_action_ptr_) {
       scoped_window_call_to_action_ptr_ =
           tab_->GetBrowserWindowInterface()->ShowCallToAction();
-      lens::IncrementLensOverlayEduActionChipShownCount(
-          base::to_address(profile_));
+      lens::RecordLensOverlayEduActionChipShown(base::to_address(profile_));
     }
     page_action_controller_->Show(kActionLensOverlayHomework);
     page_action_controller_->ShowSuggestionChip(kActionLensOverlayHomework);
