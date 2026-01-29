@@ -9965,6 +9965,24 @@
             ]
         }
     ],
+    "EnableCacheEncryption": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableCacheEncryption"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableChromeFatalCrashEventsObserver": [
         {
             "platforms": [
