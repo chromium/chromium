@@ -1006,6 +1006,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   static std::string GetKilledProcessOriginLock(
       const SecurityState* security_state);
 
+  // Creates the value to place in the "committed_origins" crash key
+  // based on the contents of |security_state|.
+  static std::string GetCommittedOriginsForCrashKey(
+      const SecurityState* security_state);
+
   // Helper for CanAccessMaybeOpaqueOrigin, to perform two security checks:
   //  - Jail check: a process locked to a particular site shouldn't access data
   //    belonging to other sites.
