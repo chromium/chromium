@@ -2334,20 +2334,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.NewTabButton.AccidentalClicks" enum="AccidentalClickType"
-    expires_after="2026-01-31">
-  <owner>emshack@chromium.org</owner>
-  <owner>shibalik@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the total number of new tab button clicks, and the number of
-    accidental clicks as measured by less than a second passing between clicking
-    the new tab button and clicking tab search. Percentage of accidental clicks
-    can be determined by accidental clicks / total clicks. This metric only logs
-    for clicks within the tab strip combo button.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="2026-08-24">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>sugoi@chromium.org</owner>
