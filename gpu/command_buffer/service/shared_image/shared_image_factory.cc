@@ -1022,7 +1022,7 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
   if (command_line->HasSwitch(ash::switches::kRevenBranding)) {
     return;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::string new_debug_label = debug_label;
   // Get the debug label with Process Id for filtering crash reports by label as
@@ -1039,7 +1039,17 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
   if (new_debug_label.find("CanvasResourceRasterGmb") != std::string::npos) {
     return;
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX)
+  // VizBufferQueue with Vulkan enabled over command-line for Linux does not
+  // work. Suppress dumps for these cases.
+  if (context_state_->GrContextIsVulkan() &&
+      new_debug_label.find("VizBufferQueue") != std::string::npos) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   SCOPED_CRASH_KEY_STRING64("SIFactory", "DebugLabel", new_debug_label);
   SCOPED_CRASH_KEY_STRING64("SIFactory", "Format", format.ToString());
   SCOPED_CRASH_KEY_NUMBER("SIFactory", "Usage", static_cast<uint32_t>(usage));
