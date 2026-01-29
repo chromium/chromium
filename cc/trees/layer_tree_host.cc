@@ -427,6 +427,7 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
   std::unique_ptr<CommitState> result;
   if (has_updates)
     result = ActivateCommitState();
+  thread_unsafe_commit_state().num_layers = layer_id_map_.size();
   swap_promise_manager_.WillCommit();
   mutator_host()->RemoveStaleTimelines();
   mutator_host()->RemoveStaleTriggers();

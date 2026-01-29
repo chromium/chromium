@@ -1074,6 +1074,30 @@ class LayerTreeHostTestInvisibleLayersSkipRenderPass
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestInvisibleLayersSkipRenderPass);
 
+class LayerTreeHostTestNumLayersInCommitState : public LayerTreeHostTest {
+ protected:
+  void SetupTree() override {
+    LayerTreeHostTest::SetupTree();
+    root_ = layer_tree_host()->root_layer();
+    child_ = Layer::Create();
+    root_->AddChild(child_);
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillCommit(const CommitState&) override {
+    EXPECT_EQ(2u, layer_tree_host()->GetUnsafeStateForCommit().num_layers);
+  }
+
+  void DidCommit() override { EndTest(); }
+
+ private:
+  scoped_refptr<Layer> root_;
+  scoped_refptr<Layer> child_;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestNumLayersInCommitState);
+
 class LayerTreeHostTestPushNodeOwnerToNodeIdMap : public LayerTreeHostTest {
  protected:
   void SetupTree() override {

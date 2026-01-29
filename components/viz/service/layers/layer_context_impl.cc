@@ -996,6 +996,7 @@ base::expected<void, std::string> CreateOrUpdateLayers(
     base::flat_map<int, size_t> layer_indices(base::sorted_unique,
                                               std::move(layer_indices_vector));
 
+    layers.ReserveLayers(layer_order->size());
     for (auto id : *layer_order) {
       auto it = layer_indices.find(id);
       if (it == layer_indices.end()) {

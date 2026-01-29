@@ -92,6 +92,7 @@ void PushLayerList(OwnedLayerImplList& old_layers,
                    const ThreadUnsafeCommitState& unsafe_state,
                    LayerTreeImpl* tree_impl) {
   DCHECK(tree_impl->LayerListIsEmpty());
+  tree_impl->ReserveLayers(unsafe_state.num_layers);
   for (const auto* layer : unsafe_state) {
     std::unique_ptr<LayerImpl> layer_impl(
         ReuseOrCreateLayerImpl(old_layers, layer_indices, layer, tree_impl));
@@ -118,6 +119,7 @@ void PushLayerList(OwnedLayerImplList& old_layers,
                    LayerTreeImpl* tree_impl,
                    const PropertyTrees& property_trees) {
   DCHECK(tree_impl->LayerListIsEmpty());
+  tree_impl->ReserveLayers(host->NumLayers());
   for (const auto* layer : *host) {
     std::unique_ptr<LayerImpl> layer_impl(
         ReuseOrCreateLayerImpl(old_layers, layer_indices, layer, tree_impl));

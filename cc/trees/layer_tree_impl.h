@@ -556,6 +556,11 @@ class CC_EXPORT LayerTreeImpl {
   void RegisterLayer(LayerImpl* layer);
   void UnregisterLayer(LayerImpl* layer);
 
+  // Reserve memory for the total number of layers that will be added
+  // with AddLayer(). This is only for performance reasons, and has no
+  // functional effect.
+  void ReserveLayers(size_t count);
+
   // Append a layer to the list.
   void AddLayer(std::unique_ptr<LayerImpl> layer);
 

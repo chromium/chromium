@@ -1966,6 +1966,10 @@ void LayerTreeImpl::UnregisterLayer(LayerImpl* layer) {
   layer_id_map_.erase(layer->id());
 }
 
+void LayerTreeImpl::ReserveLayers(size_t count) {
+  layer_list_.reserve(count);
+}
+
 void LayerTreeImpl::AddLayer(std::unique_ptr<LayerImpl> layer) {
   DCHECK(layer);
   DCHECK(!std::ranges::contains(layer_list_, layer));

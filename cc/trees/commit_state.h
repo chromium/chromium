@@ -202,6 +202,7 @@ struct CC_EXPORT ThreadUnsafeCommitState {
   raw_ptr<MutatorHost> mutator_host;
   PropertyTrees property_trees;
   scoped_refptr<Layer> root_layer;
+  size_t num_layers = 0;
 };
 
 struct CC_EXPORT CommitTimestamps {
