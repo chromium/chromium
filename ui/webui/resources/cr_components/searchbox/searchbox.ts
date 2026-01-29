@@ -481,13 +481,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   private accessor useWebkitSearchIcons_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor recentTabForChip_: TabInfo|null = null;
-  protected showVoiceSearchInExpandedRealbox: boolean =
-      loadTimeData.getBoolean('expandedSearchboxShowVoiceSearch') ?? false;
   protected accessor inputState_: InputState|null = null;
-
-  protected get shouldShowVoiceSearch_(): boolean {
-    return this.dropdownIsVisible && this.showVoiceSearchInExpandedRealbox;
-  }
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;

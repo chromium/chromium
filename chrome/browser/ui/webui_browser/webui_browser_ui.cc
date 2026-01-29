@@ -111,7 +111,6 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
 
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("composeboxContextDragAndDropEnabled", false);
-  source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
 
   // TODO(crbug.com/445510209): Uncomment after installing WebUIOmniboxHandler.
   // source->AddBoolean("reportMetrics", true);
