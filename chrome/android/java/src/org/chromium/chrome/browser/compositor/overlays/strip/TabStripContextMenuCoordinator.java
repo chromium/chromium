@@ -86,16 +86,6 @@ public class TabStripContextMenuCoordinator {
         touchTrackingListView.setAdapter(adapter);
 
         View decorView = activity.getWindow().getDecorView();
-        mMenuWindow =
-                new AnchoredPopupWindow(
-                        mContext, decorView, background, contentView, anchorViewRectProvider);
-        mMenuWindow.setFocusable(true);
-        mMenuWindow.setHorizontalOverlapAnchor(true);
-        mMenuWindow.setVerticalOverlapAnchor(true);
-        mMenuWindow.setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION);
-        mMenuWindow.setElevation(
-                contentView.getResources().getDimension(R.dimen.tab_overflow_menu_elevation));
-        mMenuWindow.setAnimateFromAnchor(true);
         var popupWidthPx =
                 MathUtils.clamp(
                         anchorViewRectProvider.getRect().width(),
@@ -103,7 +93,27 @@ public class TabStripContextMenuCoordinator {
                                 .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
                         mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
-        mMenuWindow.setMaxWidth(popupWidthPx);
+
+        AnchoredPopupWindow.Builder builder =
+                new AnchoredPopupWindow.Builder(
+                                mContext,
+                                decorView,
+                                background,
+                                () -> contentView,
+                                anchorViewRectProvider)
+                        .setFocusable(true)
+                        .setOutsideTouchable(true)
+                        .setHorizontalOverlapAnchor(true)
+                        .setVerticalOverlapAnchor(true)
+                        .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
+                        .setMaxWidth(popupWidthPx)
+                        .setAllowNonTouchableSize(true)
+                        .setElevation(
+                                contentView
+                                        .getResources()
+                                        .getDimension(R.dimen.tab_overflow_menu_elevation))
+                        .setAnimateFromAnchor(true);
+        mMenuWindow = builder.build();
         mMenuWindow.show();
     }
 
