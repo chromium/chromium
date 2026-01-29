@@ -3298,7 +3298,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
                     GetAmountExtractionManager()
                         .SeenUnsupportedCurrencyForPageLoad()},
             metrics_->credit_card_form_event_logger,
-            metrics_->signin_state_for_metrics);
+            metrics_->signin_state_for_metrics,
+            /*exclude_virtual_cards=*/false);
       }
       break;
     case FillingProduct::kLoyaltyCard:
@@ -3644,7 +3645,8 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
                     GetAmountExtractionManager()
                         .SeenUnsupportedCurrencyForPageLoad()},
             metrics_->credit_card_form_event_logger,
-            metrics_->signin_state_for_metrics));
+            metrics_->signin_state_for_metrics,
+            /*exclude_virtual_cards=*/false));
   }
 }
 

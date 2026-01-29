@@ -254,11 +254,13 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const payments::AmountExtractionStatus& amount_extraction_status,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
-    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
+    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+    bool exclude_virtual_cards) {
   std::vector<Suggestion> suggestions;
   CreditCardSuggestionGenerator credit_card_suggestion_generator(
       four_digit_combinations_in_dom, amount_extraction_status,
-      credit_card_form_event_logger, signin_state_for_metrics);
+      credit_card_form_event_logger, signin_state_for_metrics,
+      exclude_virtual_cards);
 
   auto on_suggestions_generated =
       [&suggestions](
@@ -288,12 +290,14 @@ CreditCardSuggestionGenerator::CreditCardSuggestionGenerator(
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const payments::AmountExtractionStatus& amount_extraction_status,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
-    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics)
+    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+    bool exclude_virtual_cards)
     : four_digit_combinations_in_dom_(four_digit_combinations_in_dom),
       summary_(CreditCardSuggestionSummary()),
       amount_extraction_status_(amount_extraction_status),
       credit_card_form_event_logger_(credit_card_form_event_logger),
-      signin_state_for_metrics_(signin_state_for_metrics) {}
+      signin_state_for_metrics_(signin_state_for_metrics),
+      exclude_virtual_cards_(exclude_virtual_cards) {}
 
 CreditCardSuggestionGenerator::~CreditCardSuggestionGenerator() = default;
 
@@ -402,7 +406,7 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
   // Non-empty virtual_card_guid_to_last_four_map indicates this is standalone
   // CVC form AND there is matched VCN (based on the VCN usages and last four
   // from the DOM).
-  if (!virtual_card_guid_to_last_four_map.empty()) {
+  if (!virtual_card_guid_to_last_four_map.empty() && !exclude_virtual_cards_) {
     // TODO(crbug.com/40916587): Refactor credit card suggestion code by moving
     // duplicate logic to helper functions.
     callback(FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(

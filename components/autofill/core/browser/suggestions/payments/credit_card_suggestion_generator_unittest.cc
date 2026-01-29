@@ -73,6 +73,7 @@ namespace {
 using ::gfx::test::AreImagesEqual;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -2609,7 +2610,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2655,7 +2657,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2689,7 +2692,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   ASSERT_GE(suggestions.size(), 0ul);
 }
@@ -2725,7 +2729,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_EQ(suggestions.size(), 3ul);
   EXPECT_THAT(suggestions[0],
@@ -2757,7 +2762,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2793,7 +2799,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2816,7 +2823,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2855,7 +2863,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2894,7 +2903,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_THAT(
       suggestions,
@@ -3845,7 +3855,8 @@ TEST_F(
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{"1234"},
       payments::AmountExtractionStatus(), credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_THAT(
       suggestions,
@@ -3853,6 +3864,50 @@ TEST_F(
           EqualsSuggestion(SuggestionType::kVirtualCreditCardEntry),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
+}
+
+// Tests that `exclude_virtual_cards` flag correctly blocks the
+// VirtualStandaloneCvc flow.
+TEST_F(
+    PaymentsSuggestionGeneratorTest,
+    GetCreditCardOrCvcFieldSuggestions_GetVirtualCreditCardsForStandaloneCvcField_ExcludeVCN) {
+  // Set up virtual card usage data and credit cards.
+  payments_data().ClearCreditCards();
+  CreditCard masked_server_card = test::GetVirtualCard();
+  masked_server_card.set_guid("1234");
+  VirtualCardUsageData virtual_card_usage_data =
+      test::GetVirtualCardUsageData1();
+  masked_server_card.set_instrument_id(
+      *virtual_card_usage_data.instrument_id());
+
+  // Add credit card and usage data to personal data manager.
+  payments_data().AddVirtualCardUsageData(virtual_card_usage_data);
+  payments_data().AddServerCreditCard(masked_server_card);
+
+  FormBundle form_bundle = GetFormWithTypes(
+      {.fields = {
+           {.role = FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+            .origin = virtual_card_usage_data.merchant_origin()},
+       }});
+
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{"1234"},
+      payments::AmountExtractionStatus(), credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+  ASSERT_FALSE(suggestions.empty());
+
+  suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{"1234"},
+      payments::AmountExtractionStatus(), credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/true);
+
+  EXPECT_TRUE(suggestions.empty());
 }
 
 // Params of SuggestionIphBubbleTest:
@@ -4243,7 +4298,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       autofill_client(),
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
       payments::AmountExtractionStatus(), credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   if (IsCvcStorageStandaloneFormEnhancementEnabled() &&
       IsCvcSavingSupported()) {
@@ -4288,7 +4344,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       autofill_client(),
       /*four_digit_combinations_in_dom=*/{"1113"},
       payments::AmountExtractionStatus(), credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
   if (!IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
     return;
@@ -4320,7 +4377,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       autofill_client(),
       /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
       credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4340,7 +4398,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       autofill_client(),
       /*four_digit_combinations_in_dom=*/{"0000", "9999"},
       payments::AmountExtractionStatus(), credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4366,7 +4425,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       autofill_client(),
       /*four_digit_combinations_in_dom=*/{"1234"},
       payments::AmountExtractionStatus(), credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
   EXPECT_EQ(suggestions.size(), 0U);
 }
 
@@ -4403,7 +4463,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       autofill_client(),
       /*four_digit_combinations_in_dom=*/{"1234"},
       payments::AmountExtractionStatus(), credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown);
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
 
   EXPECT_THAT(
       suggestions,

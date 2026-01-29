@@ -101,7 +101,8 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const payments::AmountExtractionStatus& amount_extraction_status,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
-    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
+    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+    bool exclude_virtual_cards);
 
 // A `SuggestionGenerator` for `FillingProduct::kCreditCard`.
 //
@@ -115,7 +116,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       const payments::AmountExtractionStatus& amount_extraction_status,
       autofill_metrics::CreditCardFormEventLogger&
           credit_card_form_event_logger,
-      const AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
+      const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+      bool exclude_virtual_cards);
   ~CreditCardSuggestionGenerator() override;
 
   void FetchSuggestionData(
@@ -171,6 +173,7 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   raw_ref<autofill_metrics::CreditCardFormEventLogger>
       credit_card_form_event_logger_;
   AutofillMetrics::PaymentsSigninState signin_state_for_metrics_;
+  bool exclude_virtual_cards_ = false;
   base::WeakPtrFactory<CreditCardSuggestionGenerator> weak_ptr_factory_{this};
 };
 
