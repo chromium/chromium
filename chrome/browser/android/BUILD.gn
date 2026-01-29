@@ -24,6 +24,7 @@ source_set("tabs_impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":tabs_public",
+    "//chrome/browser/actor",
     "//chrome/browser/contextual_search",
     "//chrome/browser/sync",
     "//chrome/browser/ui/contextual_search",

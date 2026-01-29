@@ -19,14 +19,11 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -43,13 +40,16 @@ namespace actor {
 
 namespace {
 
-class ActorKeyedServiceBrowserTest : public InProcessBrowserTest {
+class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
  public:
   ActorKeyedServiceBrowserTest() {
     // TODO(crbug.com/443783931): Add test coverage for
     // kGlicTabScreenshotPaintPreviewBackend.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlic, {}},
+#if BUILDFLAG(IS_ANDROID)
+                              {kActorEnableAndroid, {}},
+#endif
                               {features::kGlicActor,
                                {{features::kGlicActorPolicyControlExemption
                                      .name,
@@ -63,12 +63,12 @@ class ActorKeyedServiceBrowserTest : public InProcessBrowserTest {
   ~ActorKeyedServiceBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
+    PlatformBrowserTest::SetUpCommandLine(command_line);
     SetUpBlocklist(command_line, "blocked.example.com");
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    PlatformBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
@@ -89,7 +89,7 @@ class ActorKeyedServiceBrowserTest : public InProcessBrowserTest {
 
  protected:
   tabs::TabInterface* active_tab() {
-    return browser()->tab_strip_model()->GetActiveTab();
+    return chrome_test_utils::GetActiveTab(this);
   }
 
   content::WebContents* web_contents() { return active_tab()->GetContents(); }
@@ -99,7 +99,7 @@ class ActorKeyedServiceBrowserTest : public InProcessBrowserTest {
   }
 
   ActorKeyedService* actor_keyed_service() {
-    return ActorKeyedService::Get(browser()->profile());
+    return ActorKeyedService::Get(GetProfile());
   }
 
  private:
@@ -134,8 +134,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   PerformActionsFuture result_future;
   const GURL url = embedded_https_test_server().GetURL("/actor/blank.html");
   std::unique_ptr<ToolRequest> action_request =
-      std::make_unique<NavigateToolRequest>(
-          browser()->GetActiveTabInterface()->GetHandle(), url);
+      std::make_unique<NavigateToolRequest>(active_tab()->GetHandle(), url);
   actor_keyed_service()->PerformActions(
       first_task_id, ToRequestList(action_request), ActorTaskMetadata(),
       result_future.GetCallback());
@@ -160,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       "<meta name=\"sis\" content=\"ruth\">"
       "<meta name=\"sis\" content=\"val\">"
       "</head><body>Hello</body></html>");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   TaskId task_id = actor_keyed_service()->CreateTask();
 
@@ -219,13 +218,13 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                        RequestTabObservationSkipAsyncObservationInformation) {
   TaskId task_id = actor_keyed_service()->CreateTask();
   // Navigate the active tab to a new page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL("/actor/blank.html")));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("/actor/blank.html")));
 
   actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
   TestFuture<mojom::ActionResultPtr> add_tab_future;
-  task->AddTab(browser()->GetActiveTabInterface()->GetHandle(),
-               add_tab_future.GetCallback());
+  task->AddTab(active_tab()->GetHandle(), add_tab_future.GetCallback());
   auto add_tab_result = add_tab_future.Take();
   ASSERT_TRUE(add_tab_result);
 
@@ -237,10 +236,9 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
       future;
   actor::BuildActionsResultWithObservations(
-      *browser()->profile(), base::TimeTicks::Now(),
-      mojom::ActionResultCode::kOk, std::nullopt,
-      std::vector<actor::ActionResultWithLatencyInfo>(), *task, true,
-      future.GetCallback());
+      *GetProfile(), base::TimeTicks::Now(), mojom::ActionResultCode::kOk,
+      std::nullopt, std::vector<actor::ActionResultWithLatencyInfo>(), *task,
+      true, future.GetCallback());
   const std::unique_ptr<optimization_guide::proto::ActionsResult>&
       actions_result = future.Get<6>();
   ASSERT_TRUE(actions_result);
@@ -254,14 +252,14 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest, StopPausedTask) {
   TaskId task_id = actor_keyed_service()->CreateTask();
   // Navigate the active tab to a new page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL("/actor/blank.html")));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("/actor/blank.html")));
 
   {
     actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
     TestFuture<mojom::ActionResultPtr> add_tab_future;
-    task->AddTab(browser()->GetActiveTabInterface()->GetHandle(),
-                 add_tab_future.GetCallback());
+    task->AddTab(active_tab()->GetHandle(), add_tab_future.GetCallback());
     auto add_tab_result = add_tab_future.Take();
     ASSERT_TRUE(add_tab_result);
 

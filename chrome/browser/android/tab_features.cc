@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/tab_features.h"
 
+#include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
@@ -38,6 +40,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       std::make_unique<NewTabPagePreloadPipelineManager>(web_contents);
 
   TabInterface* const tab = TabInterface::GetFromContents(web_contents);
+  if (base::FeatureList::IsEnabled(actor::kActorEnableAndroid)) {
+    actor_tab_data_ =
+        GetUserDataFactory().CreateInstance<actor::ActorTabData>(*tab, tab);
+  }
   tab_contextualization_controller_ =
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
           *tab, tab);

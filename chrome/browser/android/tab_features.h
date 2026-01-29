@@ -14,6 +14,10 @@ class Profile;
 class QwacWebContentsObserver;
 class NewTabPagePreloadPipelineManager;
 
+namespace actor {
+class ActorTabData;
+}  // namespace actor
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -53,6 +57,8 @@ class TabFeatures {
  private:
   // Returns the factory used to create owned components.
   static ui::UserDataFactoryWithOwner<TabInterface>& GetUserDataFactory();
+
+  std::unique_ptr<actor::ActorTabData> actor_tab_data_;
 
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;

@@ -371,7 +371,10 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "tools/navigate_tool_browsertest.cc" ]
+  sources = [
+    "actor_keyed_service_browsertest.cc",
+    "tools/navigate_tool_browsertest.cc",
+  ]
   deps = [
     ":actor",
     ":impl",
@@ -406,7 +409,6 @@ source_set("browser_tests") {
   if (!skip_android_unmigrated_actor_files) {
     sources += [
       "actor_functional_browsertest.cc",
-      "actor_keyed_service_browsertest.cc",
       "actor_policy_checker_browsertest.cc",
       "execution_engine_browsertest.cc",
       "execution_engine_origin_gating_browsertest.cc",
