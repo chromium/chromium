@@ -560,15 +560,18 @@ TEST_F(ContextualTasksPageHandlerTest, OnContextUpdated_TabsImagesAndFiles) {
   EXPECT_CALL(page_, OnContextUpdated(_))
       .WillOnce([&](std::vector<mojom::ContextInfoPtr> context) {
         EXPECT_EQ(context.size(), 3u);
-        EXPECT_EQ(context[0]->title, tab_resource.title);
-        EXPECT_EQ(context[0]->url, GURL(kQueryUrl));
-        EXPECT_EQ(context[0]->tab_id, tab_resource.tab_id->id());
+        EXPECT_TRUE(context[0]->is_tab());
+        EXPECT_EQ(context[0]->get_tab()->title, tab_resource.title);
+        EXPECT_EQ(context[0]->get_tab()->url, GURL(kQueryUrl));
+        EXPECT_EQ(context[0]->get_tab()->tab_id, tab_resource.tab_id->id());
 
-        EXPECT_EQ(context[1]->title, image_resource.title);
-        EXPECT_EQ(context[1]->url, GURL(kExampleUrl));
+        EXPECT_TRUE(context[1]->is_image());
+        EXPECT_EQ(context[1]->get_image()->title, image_resource.title);
+        EXPECT_EQ(context[1]->get_image()->url, GURL(kExampleUrl));
 
-        EXPECT_EQ(context[2]->title, pdf_resource.title);
-        EXPECT_EQ(context[2]->url, GURL(kExamplePdfUrl));
+        EXPECT_TRUE(context[2]->is_file());
+        EXPECT_EQ(context[2]->get_file()->title, pdf_resource.title);
+        EXPECT_EQ(context[2]->get_file()->url, GURL(kExamplePdfUrl));
 
         run_loop.Quit();
       });
