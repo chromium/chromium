@@ -8,17 +8,6 @@ import "components/browser_apis/browser_controls/browser_controls_api_data_model
 import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// BrowserControlsFactory is used by the WebUI page to bootstrap communication
-// to/from the browser process.
-interface BrowserControlsFactory {
-  // The WebUI calls this method when the page is first initialized.
-  // It binds a pending_remote for the observer and a pending_receiver for the
-  // service.
-  CreateBrowserControls(
-      pending_remote<BrowserControlsObserver> observer,
-      pending_receiver<BrowserControlsService> service);
-};
-
 // Called from C++ side of chrome://webui-toolbar.top-chrome
 // (Browser -> Renderer)
 interface BrowserControlsObserver {
@@ -37,6 +26,10 @@ interface BrowserControlsObserver {
 // BrowserControlsService defines methods to be called from the WebUI to the
 // browser-side. This interface consolidates various browser control actions.
 interface BrowserControlsService {
+  // Registers an observer to receive status updates from the browser.
+  AddObserver(
+    pending_remote<BrowserControlsObserver> observer);
+
   // Stops the current page from loading. If the page is not in a loading
   // state, it is a no-op.
   StopLoad();

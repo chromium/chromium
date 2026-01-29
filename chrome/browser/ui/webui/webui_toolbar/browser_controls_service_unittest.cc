@@ -87,9 +87,9 @@ class BrowserControlsServiceTest : public testing::Test {
     handler_ = std::make_unique<BrowserControlsService>(
         mojo::PendingReceiver<
             browser_controls_api::mojom::BrowserControlsService>(),
-        page().BindAndGetRemote(), web_contents_.get(),
-        mock_command_updater_.get(),
+        web_contents_.get(), mock_command_updater_.get(),
         /*delegate=*/&delegate_);
+    handler_->AddObserver(page().BindAndGetRemote());
 
     page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&page_);
@@ -361,4 +361,34 @@ TEST_F(BrowserControlsServiceTest,
 
   page().FlushForTesting();
   // Expect no crash.
+}
+
+// Tests that adding a new observer resets the previous one.
+TEST_F(BrowserControlsServiceTest, AddObserverResetsPreviousObserver) {
+  testing::StrictMock<MockReloadButtonPage> page2;
+
+  // Add a new observer. This should unbind the previous observer (page_).
+  handler().AddObserver(page2.BindAndGetRemote());
+
+  // Trigger an event.
+  EXPECT_CALL(page2,
+              OnNavigationStatusChanged(
+                  browser_controls_api::mojom::NavigationState::kLoading))
+      .Times(1);
+
+  // The original page should NOT receive the event.
+  EXPECT_CALL(page(),
+              OnNavigationStatusChanged(
+                  browser_controls_api::mojom::NavigationState::kLoading))
+      .Times(0);
+
+  EXPECT_CALL(mock_metrics_reporter(),
+              Mark(kChangeVisibleModeToLoadingStartMark))
+      .Times(1);
+
+  handler().OnNavigationStatusChanged(
+      browser_controls_api::mojom::NavigationState::kLoading);
+
+  page2.FlushForTesting();
+  page().FlushForTesting();
 }

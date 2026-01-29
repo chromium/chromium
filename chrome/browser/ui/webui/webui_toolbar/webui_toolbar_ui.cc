@@ -78,10 +78,16 @@ bool WebUIToolbarConfig::IsWebUIEnabled(
 }
 
 void WebUIToolbarUI::BindInterface(
-    mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsFactory>
+    mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
         receiver) {
-  page_factory_receiver_.reset();
-  page_factory_receiver_.Bind(std::move(receiver));
+  auto* web_contents = web_ui()->GetWebContents();
+  auto* command_updater = GetCommandUpdater();
+  if (!command_updater) {
+    return;
+  }
+
+  browser_controls_service_ = std::make_unique<BrowserControlsService>(
+      std::move(receiver), web_contents, command_updater, delegate_);
 }
 
 void WebUIToolbarUI::BindInterface(
@@ -119,22 +125,6 @@ void WebUIToolbarUI::OnContextMenuStateChanged(
   if (browser_controls_service_) {
     browser_controls_service_->OnContextMenuStateChanged(menu_type, state);
   }
-}
-
-void WebUIToolbarUI::CreateBrowserControls(
-    mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
-        observer,
-    mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
-        service) {
-  CHECK(observer);
-  auto* web_contents = web_ui()->GetWebContents();
-  auto* command_updater = GetCommandUpdater();
-  if (!command_updater) {
-    return;
-  }
-  browser_controls_service_ = std::make_unique<BrowserControlsService>(
-      std::move(service), std::move(observer), web_contents, command_updater,
-      delegate_);
 }
 
 void WebUIToolbarUI::SetDelegate(

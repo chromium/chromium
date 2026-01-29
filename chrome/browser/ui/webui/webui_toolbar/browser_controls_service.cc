@@ -74,13 +74,10 @@ int ToUIEventFlags(
 BrowserControlsService::BrowserControlsService(
     mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
         service,
-    mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
-        observer,
     content::WebContents* web_contents,
     CommandUpdater* command_updater,
     BrowserControlsServiceDelegate* delegate)
     : service_(this, std::move(service)),
-      observer_(std::move(observer)),
       web_contents_(web_contents),
       command_updater_(command_updater),
       delegate_(delegate) {
@@ -94,6 +91,15 @@ MetricsReporter* BrowserControlsService::GetMetricsReporter() {
   MetricsReporterService* service =
       MetricsReporterService::GetFromWebContents(web_contents_);
   return service ? service->metrics_reporter() : nullptr;
+}
+
+void BrowserControlsService::AddObserver(
+    mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
+        observer) {
+  if (observer_.is_bound()) {
+    observer_.reset();
+  }
+  observer_.Bind(std::move(observer));
 }
 
 void BrowserControlsService::ReloadFromClick(

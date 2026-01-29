@@ -20,9 +20,7 @@
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
-class WebUIToolbarUI
-    : public TopChromeWebUIController,
-      public browser_controls_api::mojom::BrowserControlsFactory {
+class WebUIToolbarUI : public TopChromeWebUIController {
  public:
   explicit WebUIToolbarUI(content::WebUI* web_ui);
   WebUIToolbarUI(const WebUIToolbarUI&) = delete;
@@ -32,7 +30,7 @@ class WebUIToolbarUI
   static constexpr std::string_view GetWebUIName() { return "WebUIToolbar"; }
 
   void BindInterface(
-      mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsFactory>
+      mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
           receiver);
 
   void BindInterface(
@@ -73,13 +71,6 @@ class WebUIToolbarUI
   void SetCommandUpdaterForTesting(CommandUpdater* command_updater);
 
  private:
-  // browser_controls_api::mojom::BrowserControlsFactory:
-  void CreateBrowserControls(
-      mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
-          observer,
-      mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
-          service) override;
-
   CommandUpdater* GetCommandUpdater() const;
 
   // Returns the list of known element identifiers. These elements are HTML
@@ -88,8 +79,6 @@ class WebUIToolbarUI
   const std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers() const;
 
   std::unique_ptr<BrowserControlsService> browser_controls_service_;
-  mojo::Receiver<browser_controls_api::mojom::BrowserControlsFactory>
-      page_factory_receiver_{this};
   std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
   raw_ptr<BrowserControlsService::BrowserControlsServiceDelegate> delegate_ =
