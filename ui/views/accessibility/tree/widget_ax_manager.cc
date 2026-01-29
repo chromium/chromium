@@ -70,7 +70,6 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kAlert:
     case Event::kCheckedStateChanged:
     case Event::kControlsChanged:
-    case Event::kDocumentTitleChanged:
     case Event::kExpandedChanged:
     case Event::kFocusAfterMenuClose:
     case Event::kFocusContext:
