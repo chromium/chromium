@@ -541,7 +541,9 @@ class CC_EXPORT LayerImpl {
   enum : uint8_t {
     kChangedPropertyTreeIndex = 1 << 0,
     kChangedGeneralProperty = 1 << 1,
-    kChangedAllProperties = kChangedPropertyTreeIndex | kChangedGeneralProperty,
+    kChangedTile = 1 << 2,  // Only used by PictureLayerImpl.
+    kChangedAllProperties =
+        kChangedPropertyTreeIndex | kChangedGeneralProperty | kChangedTile,
   };
 
   bool GetChangeFlag(uint8_t mask) const { return changed_properties_ & mask; }

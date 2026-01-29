@@ -844,9 +844,7 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile,
         result.first->update_damage = true;
       }
     }
-    // TODO(zmo): Instead of kChangedGeneralProperty, we should have a
-    // kChangedTiles to avoid wiring layer properties to viz.
-    SetNeedsPushProperties(kChangedGeneralProperty);
+    SetNeedsPushProperties(kChangedTile);
   }
 }
 

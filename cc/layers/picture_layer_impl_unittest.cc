@@ -358,6 +358,50 @@ class PictureLayerImplTestTreesInViz : public PictureLayerImplTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+TEST_F(PictureLayerImplTestTreesInViz, ChangeFlag) {
+  gfx::Size layer_bounds(1000, 1000);
+  SetupDefaultTrees(layer_bounds);
+
+  auto* picture_layer = active_layer();
+
+  // Test kChangedGeneralProperty.
+  picture_layer->ResetChangeTracking();
+  EXPECT_FALSE(picture_layer->GetChangeFlag(LayerImpl::kChangedAllProperties));
+
+  gfx::Size new_layer_bounds(500, 500);
+  picture_layer->SetBounds(new_layer_bounds);
+  EXPECT_TRUE(picture_layer->GetChangeFlag(LayerImpl::kChangedAllProperties));
+  EXPECT_TRUE(picture_layer->GetChangeFlag(LayerImpl::kChangedGeneralProperty));
+  EXPECT_FALSE(
+      picture_layer->GetChangeFlag(LayerImpl::kChangedPropertyTreeIndex));
+  EXPECT_FALSE(picture_layer->GetChangeFlag(LayerImpl::kChangedTile));
+
+  // Test kChangedPropertyTreeIndex.
+  picture_layer->ResetChangeTracking();
+  EXPECT_FALSE(picture_layer->GetChangeFlag(LayerImpl::kChangedAllProperties));
+
+  picture_layer->SetScrollTreeIndex(1);
+  EXPECT_TRUE(picture_layer->GetChangeFlag(LayerImpl::kChangedAllProperties));
+  EXPECT_FALSE(
+      picture_layer->GetChangeFlag(LayerImpl::kChangedGeneralProperty));
+  EXPECT_TRUE(
+      picture_layer->GetChangeFlag(LayerImpl::kChangedPropertyTreeIndex));
+  EXPECT_FALSE(picture_layer->GetChangeFlag(LayerImpl::kChangedTile));
+
+  // Test kChangedTile.
+  picture_layer->ResetChangeTracking();
+  EXPECT_FALSE(picture_layer->GetChangeFlag(LayerImpl::kChangedAllProperties));
+
+  Tile* tile = active_layer()->tilings()->tiling_at(0)->AllTilesForTesting()[0];
+  picture_layer->NotifyTileStateChanged(tile, /*update_damage=*/false);
+  EXPECT_TRUE(picture_layer->GetChangeFlag(LayerImpl::kChangedAllProperties));
+  EXPECT_FALSE(
+      picture_layer->GetChangeFlag(LayerImpl::kChangedGeneralProperty));
+  EXPECT_FALSE(
+      picture_layer->GetChangeFlag(LayerImpl::kChangedPropertyTreeIndex));
+  EXPECT_TRUE(picture_layer->GetChangeFlag(LayerImpl::kChangedTile));
+}
+
 TEST_F(LegacySWPictureLayerImplTest, CloneNoInvalidation) {
   gfx::Size layer_bounds(400, 400);
   SetupDefaultTrees(layer_bounds);

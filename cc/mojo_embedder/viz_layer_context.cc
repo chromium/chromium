@@ -1003,9 +1003,6 @@ void SerializeLayer(LayerImpl& layer,
             picture_layer.TakeProposedTilingScalesForDeletion();
         general->layer_extra = viz::mojom::LayerExtra::NewTileDisplayLayerExtra(
             std::move(tile_display_extra));
-        SerializePictureLayerTileUpdates(picture_layer, resource_provider,
-                                         shared_image_interface, update.tilings,
-                                         needs_full_sync);
         break;
       }
       case mojom::LayerType::kTexture: {
@@ -1040,6 +1037,13 @@ void SerializeLayer(LayerImpl& layer,
         // TODO(zmo): handle other types of LayerImpl.
     }
     wire.general_properties = std::move(general);
+  }
+  if (layer.GetLayerType() == mojom::LayerType::kPicture &&
+      (needs_full_sync || layer.GetChangeFlag(LayerImpl::kChangedTile))) {
+    auto& picture_layer = static_cast<PictureLayerImpl&>(layer);
+    SerializePictureLayerTileUpdates(picture_layer, resource_provider,
+                                     shared_image_interface, update.tilings,
+                                     needs_full_sync);
   }
 }
 
