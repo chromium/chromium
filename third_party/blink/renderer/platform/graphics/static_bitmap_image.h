@@ -93,10 +93,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   bool OriginClean() const { return is_origin_clean_; }
   void SetOriginClean(bool flag) { is_origin_clean_ = flag; }
 
-  HighEntropyCanvasOpType HighEntropyCanvasOpTypes() const {
-    return HighEntropyCanvasOpType::kNone;
-  }
-
   // StaticBitmapImage needs to store the orientation of the image itself,
   // because the underlying representations do not. If the bitmap represents
   // a non-default orientation it must be explicitly given in the constructor.

@@ -2496,20 +2496,9 @@ CanvasPattern* Canvas2DRecorderContext::createPattern(
   }
 
   bool origin_clean = !WouldTaintCanvasOrigin(image_source);
-
-  HighEntropyCanvasOpType source_high_entropy_canvas_op_types =
-      HighEntropyCanvasOpType::kNone;
-  if ((image_source->IsCanvasElement() || image_source->IsOffscreenCanvas()) &&
-      image_for_rendering->IsStaticBitmapImage()) {
-    source_high_entropy_canvas_op_types =
-        static_cast<StaticBitmapImage*>(image_for_rendering.get())
-            ->HighEntropyCanvasOpTypes();
-  }
-
-  auto* pattern = MakeGarbageCollected<CanvasPattern>(
-      std::move(image_for_rendering), repeat_mode, origin_clean,
-      source_high_entropy_canvas_op_types);
-  return pattern;
+  return MakeGarbageCollected<CanvasPattern>(std::move(image_for_rendering),
+                                             repeat_mode, origin_clean,
+                                             HighEntropyCanvasOpType::kNone);
 }
 
 namespace {
