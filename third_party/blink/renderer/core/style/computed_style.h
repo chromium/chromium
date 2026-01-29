@@ -1342,6 +1342,9 @@ class ComputedStyle final : public ComputedStyleBase {
     return IsHorizontalWritingMode() ? ContainIntrinsicHeight()
                                      : ContainIntrinsicWidth();
   }
+  bool IsResponsivelySized() const {
+    return FrameSizing() != EFrameSizing::kAuto;
+  }
 
   // Margin utility functions.
   bool HasMarginBlockStartQuirk() const {

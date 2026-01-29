@@ -26,20 +26,19 @@
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
 
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 
 namespace blink {
 
 LayoutIFrame::LayoutIFrame(HTMLFrameOwnerElement* element)
     : LayoutEmbeddedContent(element) {}
 
-bool LayoutIFrame::IsResponsivelySized() const {
-  return StyleRef().ContainIntrinsicBlockSize().IsFromElement();
-}
-
 void LayoutIFrame::UpdateAfterLayout() {
   NOT_DESTROYED();
   LayoutEmbeddedContent::UpdateAfterLayout();
-  if (!IsResponsivelySized()) {
+
+  const ComputedStyle& style = StyleRef();
+  if (!style.IsResponsivelySized()) {
     return;
   }
   DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
@@ -50,7 +49,8 @@ void LayoutIFrame::UpdateAfterLayout() {
 
 PhysicalNaturalSizingInfo LayoutIFrame::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  if (IsResponsivelySized()) {
+  const ComputedStyle& style = StyleRef();
+  if (style.IsResponsivelySized()) {
     DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
     if (FrameView* frame_view = ChildFrameView()) {
       // Use the natural size received from the child frame if it exists.
@@ -62,17 +62,8 @@ PhysicalNaturalSizingInfo LayoutIFrame::GetNaturalDimensions() const {
 
         // Scale based on our zoom as the embedded document doesn't have that
         // info.
-        sizing_info->size.Scale(StyleRef().EffectiveZoom());
+        sizing_info->size.Scale(style.EffectiveZoom());
         return PhysicalNaturalSizingInfo::FromSizingInfo(*sizing_info);
-      }
-
-      // Otherwise, use the fallback size if it is specified.
-      const ComputedStyle& style = StyleRef();
-      const StyleIntrinsicLength& intrinsic = style.ContainIntrinsicBlockSize();
-      if (const std::optional<Length>& length = intrinsic.GetLength()) {
-        const float value = FloatValueForLength(*length, 0);
-        const NaturalSizingInfo info = NaturalSizingInfo::MakeHeight(value);
-        return PhysicalNaturalSizingInfo::FromSizingInfo(info);
       }
     }
   }

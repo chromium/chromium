@@ -41,7 +41,6 @@ class CORE_EXPORT LayoutIFrame : public LayoutEmbeddedContent {
   }
 
  private:
-  bool IsResponsivelySized() const;
   void UpdateAfterLayout() final;
 
   PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
