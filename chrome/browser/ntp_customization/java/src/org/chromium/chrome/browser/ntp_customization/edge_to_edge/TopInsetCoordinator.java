@@ -155,11 +155,6 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
                     public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
                         onNtpBackgroundReset(oldType);
                     }
-
-                    @Override
-                    public void refreshWindowInsets(boolean consumeTopInset) {
-                        TopInsetCoordinator.this.refreshWindowInsets(consumeTopInset);
-                    }
                 };
         NtpCustomizationConfigManager.getInstance()
                 .addListener(mHomepageStateListener, context, /* skipNotify= */ false);

@@ -126,11 +126,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sPostDelayedTaskFocusTab =
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
 
-    public static final CachedFlag sOmniboxMobileParityUpdateV2 =
-            newFlag(
-                    OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2,
-                    FeatureState.ENABLED_IN_TEST);
-
     public static final CachedFlag sOmniboxSiteSearch =
             newFlag(OmniboxFeatureList.OMNIBOX_SITE_SEARCH, FeatureState.ENABLED_IN_TEST);
 
@@ -178,10 +173,6 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sRemoveSroIncludingVerbatimMatch =
             newBooleanParam(
                     sRemoveSearchReadyOmnibox, "remove_sro_including_verbatim_match", false);
-
-    public static final BooleanCachedFeatureParam sOmniboxParityRetrieveBuiltInEngineIcon =
-            newBooleanParam(sOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", true);
-
     public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
             newIntParam(
                     sUseFusedLocationProvider,

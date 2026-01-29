@@ -169,11 +169,7 @@ public class AppLaunchDrawBlocker {
     /** Only block the draw if we believe the initial tab will be the NTP. */
     private void maybeBlockDraw() {
         @ActiveTabState int tabState = TabPersistentStoreImpl.readLastKnownActiveTabStatePref();
-        boolean searchEngineHasLogo =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
-        boolean singleUrlBarMode =
-                NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get(), searchEngineHasLogo);
+        boolean singleUrlBarMode = NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get());
 
         String url = IntentHandler.getUrlFromIntent(mIntentSupplier.get());
         boolean hasValidIntentUrl = !mShouldIgnoreIntentSupplier.get() && !TextUtils.isEmpty(url);

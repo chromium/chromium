@@ -37,7 +37,6 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -291,8 +290,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
 
     private void retrieveFaviconFromBrandedResources(TemplateUrl templateUrl) {
         // Branded resources are only available on Chrome branded builds.
-        if (BuildConfig.IS_CHROME_BRANDED
-                && OmniboxFeatures.sOmniboxParityRetrieveBuiltInEngineIcon.getValue()) {
+        if (BuildConfig.IS_CHROME_BRANDED) {
             @Nullable Bitmap bm = templateUrl.getBuiltInSearchEngineIcon();
             if (bm != null) {
                 onFaviconRetrieveCompleted(templateUrl.getFaviconURL(), bm);

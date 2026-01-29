@@ -614,13 +614,11 @@ public class SearchEngineAdapter extends BaseAdapter
             return;
         }
 
-        if (OmniboxFeatures.sOmniboxParityRetrieveBuiltInEngineIcon.getValue()) {
-            @Nullable Bitmap bitmap = templateUrl.getBuiltInSearchEngineIcon();
-            if (bitmap != null) {
-                mIconCache.put(faviconUrl, bitmap);
-                logoView.setImageBitmap(bitmap);
-                return;
-            }
+        @Nullable Bitmap bitmap = templateUrl.getBuiltInSearchEngineIcon();
+        if (bitmap != null) {
+            mIconCache.put(faviconUrl, bitmap);
+            logoView.setImageBitmap(bitmap);
+            return;
         }
 
         // Use a placeholder image while trying to fetch the logo.

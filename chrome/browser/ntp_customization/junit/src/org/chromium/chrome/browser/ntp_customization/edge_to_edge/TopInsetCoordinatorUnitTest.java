@@ -263,15 +263,6 @@ public class TopInsetCoordinatorUnitTest {
     }
 
     @Test
-    public void testObserveNotifyRefreshWindowInsets() {
-        mNtpCustomizationConfigManager.notifyRefreshWindowInsets(/* consumeTopInset= */ true);
-        verify(mInsetObserver).retriggerOnApplyWindowInsets();
-
-        mNtpCustomizationConfigManager.notifyRefreshWindowInsets(/* consumeTopInset= */ false);
-        verify(mInsetObserver, times(2)).retriggerOnApplyWindowInsets();
-    }
-
-    @Test
     public void testOnBackgroundChanged_addAndRemoveObservers() {
         mTabSupplier.set(mNtpTab);
         clearInvocations(mLayoutStateProvider);

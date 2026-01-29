@@ -2153,17 +2153,6 @@ constexpr FeatureEntry::FeatureVariation kOmniboxDiagnosticsAndroidVaiants[] = {
     {"- InputConnection", kOmniboxDiagInputConnection,
      std::size(kOmniboxDiagInputConnection), nullptr}};
 
-// Omnibox Mobile Parity Update V2 -->
-
-const FeatureEntry::FeatureParam
-    kOmniboxMobileParityV2RetrieveBuiltinFavicon[] = {
-        {OmniboxFieldTrial::kMobileParityRetrieveBuiltinFavicon.name, "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxMobileParityV2Variants[] = {
-    {"with Builtin Favicon", kOmniboxMobileParityV2RetrieveBuiltinFavicon,
-     std::size(kOmniboxMobileParityV2RetrieveBuiltinFavicon)}};
-// <-- Omnibox Mobile Parity Update V2
-
 #if !IS_OFFICIAL_BUILD
 const FeatureEntry::FeatureParam
     kOmniboxRemoveSearchReadyOmniboxNoMatchParam[] = {
@@ -7255,13 +7244,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDiagnostics,
                                     kOmniboxDiagnosticsAndroidVaiants,
                                     "Diagnostics")},
-
-    {"omnibox-mobile-parity-update-v2",
-     flag_descriptions::kOmniboxMobileParityUpdateV2Name,
-     flag_descriptions::kOmniboxMobileParityUpdateV2Description, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdateV2,
-                                    kOmniboxMobileParityV2Variants,
-                                    "OmniboxMobileParityUpdateV2")},
 
     {"omnibox-improvement-for-lff",
      flag_descriptions::kOmniboxImprovementForLFFName,

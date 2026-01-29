@@ -126,7 +126,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -914,14 +913,11 @@ public class NewTabPage
 
     /**
      * @param isTablet Whether the activity is running in tablet mode.
-     * @param searchProviderHasLogo Whether the default search engine has logo.
      * @return Whether the NTP is in single url bar mode, i.e. the url bar is shown in-line on the
      *     NTP.
      */
-    public static boolean isInSingleUrlBarMode(boolean isTablet, boolean searchProviderHasLogo) {
-        return !isTablet
-                && (searchProviderHasLogo
-                        || OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled());
+    public static boolean isInSingleUrlBarMode(boolean isTablet) {
+        return !isTablet;
     }
 
     /**
@@ -988,39 +984,23 @@ public class NewTabPage
     }
 
     private boolean isInSingleUrlBarMode() {
-        return isInSingleUrlBarMode(mIsTablet, mSearchProviderHasLogo);
+        return isInSingleUrlBarMode(mIsTablet);
     }
 
-    /**
-     * Updates the search provider params.
-     *
-     * @return Whether any of the search provider params changed.
-     */
-    private boolean updateSearchProvider() {
-        boolean searchProviderHasLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
-        boolean isDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
-        boolean isChanged =
-                mSearchProviderHasLogo != searchProviderHasLogo
-                        || mIsDefaultSearchEngineGoogle != isDefaultSearchEngineGoogle;
-
-        mSearchProviderHasLogo = searchProviderHasLogo;
-        mIsDefaultSearchEngineGoogle = isDefaultSearchEngineGoogle;
-        return isChanged;
+    /** Updates the search provider params. */
+    private void updateSearchProvider() {
+        mSearchProviderHasLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
+        mIsDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
     }
 
     private void onSearchEngineUpdated() {
-        boolean isChanged = updateSearchProvider();
+        updateSearchProvider();
 
         mNewTabPageLayout.setSearchProviderInfo(
                 mSearchProviderHasLogo, mIsDefaultSearchEngineGoogle);
         // TODO(crbug.com/40226731): Remove this call when the Feed position experiment is
         // cleaned up.
         updateMargins();
-
-        if (isChanged && !OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled()) {
-            NtpCustomizationConfigManager.getInstance()
-                    .notifyRefreshWindowInsets(isInSingleUrlBarMode());
-        }
     }
 
     /**

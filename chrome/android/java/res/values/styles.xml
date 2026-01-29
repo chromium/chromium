@@ -467,10 +467,6 @@ found in the LICENSE file.
         <item name="android:textColorHint">@macro/ntp_search_box_hint</item>
     </style>
 
-    <style name="TextAppearance.FakeSearchBoxTextDark" parent="TextAppearance.FakeSearchBoxText">
-        <item name="android:textColorHint">@color/default_text_color_dark</item>
-    </style>
-
     <!-- Similar to FakeSearchBoxText, but with text size 16sp, medium weight, Google Sans text font.
     -->
     <style name="TextAppearance.FakeSearchBoxTextMedium" parent="TextAppearance.MediumStyle">

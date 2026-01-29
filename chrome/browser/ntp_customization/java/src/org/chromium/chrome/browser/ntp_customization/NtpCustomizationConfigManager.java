@@ -100,13 +100,6 @@ public class NtpCustomizationConfigManager {
          * @param oldType The previously set background type for NTPs.
          */
         default void onBackgroundReset(@NtpBackgroundImageType int oldType) {}
-
-        /**
-         * Called to notify observers to get refreshed system's window insets.
-         *
-         * @param consumeTopInset Whether the observer should consume the new window insets.
-         */
-        default void refreshWindowInsets(boolean consumeTopInset) {}
     }
 
     private static @Nullable NtpCustomizationConfigManager sInstanceForTesting;
@@ -440,13 +433,6 @@ public class NtpCustomizationConfigManager {
     public void notifyBackgroundReset(@NtpBackgroundImageType int oldType) {
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundReset(oldType);
-        }
-    }
-
-    /** Notifies observers to refresh the system's WindowInsets. */
-    public void notifyRefreshWindowInsets(boolean consumeTopInset) {
-        for (HomepageStateListener listener : mHomepageStateListeners) {
-            listener.refreshWindowInsets(consumeTopInset);
         }
     }
 
