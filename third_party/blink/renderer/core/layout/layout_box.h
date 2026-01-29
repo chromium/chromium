@@ -196,6 +196,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   explicit LayoutBox(ContainerNode*);
   void Trace(Visitor*) const override;
 
+  // Just use `LayoutObject::IsInline` instead.
+  bool IsAtomicInline() const = delete;
+  bool IsNonAtomicInline() const = delete;
+
   PaintLayerType LayerTypeRequired() const override;
 
   bool BackgroundIsKnownToBeOpaqueInRect(

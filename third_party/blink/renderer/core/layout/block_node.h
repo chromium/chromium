@@ -131,7 +131,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       InlineNode* first_child_out = nullptr) const;
 
   bool IsInlineLevel() const;
-  bool IsAtomicInline() const;
   bool IsInTopOrViewTransitionLayer() const;
 
   // Returns the aspect ratio of a replaced element.
@@ -171,7 +170,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
     if (IsFloating()) {
       return false;
     }
-    if (IsAtomicInline()) {
+    if (IsInlineLevel()) {
       return false;
     }
     return (IsDocumentElement() || IsBody());

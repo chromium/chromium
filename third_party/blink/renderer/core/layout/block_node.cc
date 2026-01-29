@@ -1314,10 +1314,6 @@ bool BlockNode::IsInlineLevel() const {
   return GetLayoutBox()->IsInline();
 }
 
-bool BlockNode::IsAtomicInline() const {
-  return GetLayoutBox()->IsAtomicInline();
-}
-
 bool BlockNode::IsInTopOrViewTransitionLayer() const {
   return GetLayoutBox()->IsInTopOrViewTransitionLayer();
 }
