@@ -26,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
@@ -224,20 +225,35 @@ std::unique_ptr<views::FrameView> CreateToastFrameView(views::Widget* widget) {
 std::unique_ptr<ui::DialogModel> CreateOtpDetectedDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback) {
+  const int title_id =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUserInterventionForPasswordChange)
+          ? IDS_PASSWORD_MANAGER_UI_USER_INTERVENTION_NEEDED_TITLE
+          : IDS_PASSWORD_MANAGER_UI_OTP_DIALOG_TITLE;
+  const int description_id =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUserInterventionForPasswordChange)
+          ? IDS_PASSWORD_MANAGER_UI_USER_INTERVENTION_NEEDED_DIALOG_DETAILS
+          : IDS_PASSWORD_MANAGER_UI_OTP_DIALOG_DETAILS;
+  const int ok_button_id =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUserInterventionForPasswordChange)
+          ? IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TAKE_OVER_TASK_BUTTON
+          : IDS_CONTINUE;
+
   return ui::DialogModel::Builder()
       .SetBannerImage(
           ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
               IDR_PASSWORD_CHANGE_NEUTRAL_LOTTIE))
-      .SetTitle(
-          l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_OTP_DIALOG_TITLE))
-      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_OTP_DIALOG_DETAILS)))
+      .SetTitle(l10n_util::GetStringUTF16(title_id))
+      .AddParagraph(
+          ui::DialogModelLabel(l10n_util::GetStringUTF16(description_id)))
       .AddCancelButton(std::move(cancel_callback),
                        ui::DialogModel::Button::Params().SetLabel(
                            l10n_util::GetStringUTF16(IDS_CANCEL)))
       .AddOkButton(std::move(accept_callback),
                    ui::DialogModel::Button::Params().SetLabel(
-                       l10n_util::GetStringUTF16(IDS_CONTINUE)))
+                       l10n_util::GetStringUTF16(ok_button_id)))
       .Build();
 }
 
