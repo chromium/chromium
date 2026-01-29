@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_split.h"
 #include "build/android_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
@@ -98,6 +99,30 @@ void ConfigurationPolicyHandlerList::PrepareForDisplaying(
     handler->PrepareForDisplaying(policies);
 }
 
+bool ConfigurationPolicyHandlerList::IsBlockedDesktopAndroidPolicy(
+    const std::string& policy_name) const {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // The allowlist is not used if kDesktopAndroidPolicy is off. So that all
+  // policies are allowed by default without Finch config.
+  if (!base::FeatureList::IsEnabled(features::kDesktopAndroidPolicy)) {
+    return false;
+  }
+
+  auto allowlist_str =
+      features::kDesktopAndroidPolicyAllowlist.Get();
+  for (const auto& allowed_policy :
+       base::SplitStringPiece(allowlist_str, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    if (allowed_policy == policy_name) {
+      return false;
+    }
+  }
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+}
+
 bool ConfigurationPolicyHandlerList::IsPolicySupported(
     const base::flat_set<std::string>& future_policies_allowed,
     PoliciesSet* future_policies_blocked,
@@ -115,6 +140,10 @@ bool ConfigurationPolicyHandlerList::IsPolicySupported(
       DVLOG_POLICY(1, POLICY_PROCESSING) << "Unknown policy: " << entry.first;
     }
     return true;
+  }
+
+  if (IsBlockedDesktopAndroidPolicy(entry.first)) {
+    return false;
   }
 
   if (IsBlockedFuturePolicy(future_policies_allowed, *policy_details, entry)) {

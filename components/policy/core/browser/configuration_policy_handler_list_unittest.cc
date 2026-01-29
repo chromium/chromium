@@ -220,4 +220,63 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithDeprecatedPolicy) {
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true, /*in_deprecated=*/true);
 }
 
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+// Test that policy is applied when kDesktopAndroidPolicy is not enabled by
+// default.
+TEST_F(ConfigurationPolicyHandlerListTest,
+       DesktopAndroidAllowlist_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+
+  AddSimplePolicy();
+  ApplySettings();
+
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+}
+
+// Test that policy is not applied when kDesktopAndroidPolicy is enabled and
+// policy is not in allowlist.
+TEST_F(ConfigurationPolicyHandlerListTest, DesktopAndroidAllowlist_Blocked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDesktopAndroidPolicy,
+      {{features::kDesktopAndroidPolicyAllowlist.name, kPolicyName2}});
+
+  AddSimplePolicy();
+  ApplySettings();
+
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false);
+}
+
+// Test that policy is applied when kDesktopAndroidPolicy is enabled and policy
+// is in allowlist.
+TEST_F(ConfigurationPolicyHandlerListTest, DesktopAndroidAllowlist_Allowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDesktopAndroidPolicy,
+      {{features::kDesktopAndroidPolicyAllowlist.name, base::StrCat({kPolicyName, ", ", kPolicyName2})}});
+
+  AddSimplePolicy();
+  ApplySettings();
+
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+}
+
+// Test that other filters still works.
+TEST_F(ConfigurationPolicyHandlerListTest,
+       DesktopAndroidAllowlist_AllowedButBlockedByOtherFilter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDesktopAndroidPolicy,
+      {{features::kDesktopAndroidPolicyAllowlist.name, kPolicyName}});
+
+  AddSimplePolicy();
+  details()->is_future = true;
+
+  ApplySettings();
+
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false, /*in_deprecated=*/false,
+                      /*in_future=*/true);
+}
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+
 }  // namespace policy
