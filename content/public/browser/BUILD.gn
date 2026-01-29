@@ -381,6 +381,8 @@ source_set("browser_sources") {
     "restore_type.h",
     "runtime_feature_state/runtime_feature_state_document_data.cc",
     "runtime_feature_state/runtime_feature_state_document_data.h",
+    "sandboxed_process_launcher_delegate.cc",
+    "sandboxed_process_launcher_delegate.h",
     "save_page_type.h",
     "scoped_accessibility_mode.h",
     "scoped_authenticator_environment_for_testing.h",

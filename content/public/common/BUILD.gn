@@ -216,8 +216,6 @@ source_set("common_sources") {
     "resource_request_blocked_reason.h",
     "resource_usage_reporter_type_converters.cc",
     "resource_usage_reporter_type_converters.h",
-    "sandboxed_process_launcher_delegate.cc",
-    "sandboxed_process_launcher_delegate.h",
     "socket_permission_request.h",
     "startup_data.h",
     "stop_find_action.h",

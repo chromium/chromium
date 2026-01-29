@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "content/common/features.h"
-#include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "content/public/browser/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
