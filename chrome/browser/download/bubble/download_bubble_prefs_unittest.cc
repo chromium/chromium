@@ -31,8 +31,10 @@ class DownloadBubblePrefsTest : public ::testing::Test {
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
   }
 
+  void TearDown() override { profile_ = nullptr; }
+
  protected:
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
