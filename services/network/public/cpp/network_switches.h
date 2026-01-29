@@ -43,6 +43,8 @@ extern const char kUseRelatedWebsiteSet[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kIpAddressSpaceOverrides[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kLocalNetworkAccessPermissionsPolicyDefaultEnabled[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kDisableSharedDictionaryStorageCleanupForTesting[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kIgnoreBadMessageForTesting[];

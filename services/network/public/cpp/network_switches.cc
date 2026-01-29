@@ -139,6 +139,11 @@ const char kUseRelatedWebsiteSet[] = "use-related-website-set";
 // Network Access (PNA).
 const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 
+// If set, Local Network Access (LNA) permissions policy features will be
+// default enabled in all frames, rather than requiring explicit delegation.
+const char kLocalNetworkAccessPermissionsPolicyDefaultEnabled[] =
+    "local-network-access-permissions-policy-default-enabled";
+
 // The switch to disable the shared dictionary storage clean up task. Only for
 // testing.
 const char kDisableSharedDictionaryStorageCleanupForTesting[] =

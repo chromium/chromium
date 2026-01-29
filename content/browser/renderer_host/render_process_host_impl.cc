@@ -3797,6 +3797,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kRunAllCompositorStagesBeforeDraw,
 
       network::switches::kForcePermissionPolicyUnloadDefaultEnabled,
+      network::switches::kLocalNetworkAccessPermissionsPolicyDefaultEnabled,
 
       switches::kWebRtcMaxCaptureFramerate,
       switches::kEnableLowEndDeviceMode,

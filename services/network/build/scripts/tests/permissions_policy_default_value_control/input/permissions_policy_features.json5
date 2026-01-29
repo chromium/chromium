@@ -49,6 +49,24 @@
     default_value_behind_flag: {
       default: [],
       valid_type: "list",
+    },
+
+    // "default_value_behind_switch" specifies default_value override values
+    // based on different command-line switches set.
+    //
+    // When multiple switches are set, default_value correspond to the first
+    // switch in the list will be used, e.g.
+    //   default_value_behind_switch: [
+    //    ["A", "EnableForSelf"],
+    //    ["B", "EnableForAll"],
+    //   ]
+    // "EnableForSelf" will be used as default value when both switch A and B are set.
+    //
+    // Note: If a feature also has a default_value_behind_flag specified, that will
+    // take precedence, regardless of whether the flag is enabled.
+    default_value_behind_switch: {
+      default: [],
+      valid_type: "list",
     }
   },
 
@@ -59,6 +77,14 @@
       feature_default: "EnableForAll",
       default_value_behind_flag: [
         ["TestFlag", "EnableForSelf"],
+      ]
+    },
+    {
+      name: "Autofill",
+      permissions_policy_name: "autofill",
+      feature_default: "EnableForSelf",
+      default_value_behind_switch: [
+        ["TestSwitch", "EnableForAll"],
       ]
     }
   ],

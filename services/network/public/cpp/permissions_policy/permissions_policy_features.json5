@@ -58,6 +58,24 @@
       valid_type: "list",
     },
 
+    // "default_value_behind_switch" specifies default_value override values
+    // based on different command-line switches set.
+    //
+    // When multiple switches are set, default_value correspond to the first
+    // switch in the list will be used, e.g.
+    //   default_value_behind_switch: [
+    //    ["A", "EnableForSelf"],
+    //    ["B", "EnableForAll"],
+    //   ]
+    // "EnableForSelf" will be used as default value when both switch A and B are set.
+    //
+    // Note: If a feature also has a default_value_behind_flag specified, that will
+    // take precedence, regardless of whether the flag is enabled.
+    default_value_behind_switch: {
+      default: [],
+      valid_type: "list",
+    },
+
     // "visibility" specifies which contexts a feature should be visible to. If
     // a features is not visibile to a document, it cannot be granted, but also
     // will not be exposed in `document.featurePolicy.features()`.
@@ -418,16 +436,28 @@
       name: "LocalNetwork",
       permissions_policy_name: "local-network",
       depends_on: [ "LocalNetworkAccessSplitPermissions" ],
+      default_value_behind_switch: [
+        ["LocalNetworkAccessPermissionsPolicyDefaultEnabled",
+        "EnableForAll"]
+      ],
     },
     {
       name: "LocalNetworkAccess",
       permissions_policy_name: "local-network-access",
       depends_on: [ "LocalNetworkAccessPermissionPolicy" ],
+      default_value_behind_switch: [
+        ["LocalNetworkAccessPermissionsPolicyDefaultEnabled",
+         "EnableForAll"]
+      ],
     },
     {
       name: "LoopbackNetwork",
       permissions_policy_name: "loopback-network",
       depends_on: [ "LocalNetworkAccessSplitPermissions" ],
+      default_value_behind_switch: [
+        ["LocalNetworkAccessPermissionsPolicyDefaultEnabled",
+         "EnableForAll"]
+      ],
     },
     {
       name: "Magnetometer",
