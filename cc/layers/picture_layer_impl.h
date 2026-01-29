@@ -66,7 +66,6 @@ class CC_EXPORT PictureLayerImpl
   void ReleaseTileResources() override;
   void RecreateTileResources() override;
   Region GetInvalidationRegionForDebugging() override;
-  gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
   DamageReasonSet GetDamageReasons() const override;
   void DidDraw(viz::ClientResourceProvider* resource_provider) override;
@@ -404,7 +403,7 @@ class CC_EXPORT PictureLayerImpl
                                  const Occlusion& scaled_occlusion,
                                  const gfx::Vector2d& quad_offset,
                                  float max_contents_scale) override;
-  float GetMaximumContentsScaleForUseInAppendQuads() override;
+  float GetMaximumContentsScaleForUseInAppendQuads() const override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,
       viz::CompositorRenderPass* render_pass,

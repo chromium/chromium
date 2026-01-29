@@ -224,7 +224,7 @@ class CC_EXPORT TileDisplayLayerImpl
                                  const Occlusion& scaled_occlusion,
                                  const gfx::Vector2d& quad_offset,
                                  float max_contents_scale) override;
-  float GetMaximumContentsScaleForUseInAppendQuads() override;
+  float GetMaximumContentsScaleForUseInAppendQuads() const override;
   float GetIdealContentsScaleKey() const override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,

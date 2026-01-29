@@ -255,7 +255,7 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
   }
 }
 
-float TileDisplayLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() {
+float TileDisplayLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() const {
   return tilings_.empty() ? 1.0 : tilings_.front()->contents_scale_key();
 }
 

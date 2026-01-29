@@ -995,11 +995,6 @@ const GlobalStateThatImpactsTilePriority& PictureLayerImpl::global_tile_state()
   return layer_tree_impl()->global_tile_state();
 }
 
-gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
-  return GetScaledEnclosingVisibleRectInTargetSpace(
-      MaximumTilingContentsScale());
-}
-
 bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
   // If we are registered with the animation controller, which queries whether
   // the image should be animated, then we must have recordings with this image.
@@ -2198,7 +2193,7 @@ DamageReasonSet PictureLayerImpl::GetDamageReasons() const {
   return reasons;
 }
 
-float PictureLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() {
+float PictureLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() const {
   // If we don't have tilings, we're likely going to append a checkerboard quad
   // the size of the layer. In that case, use scale 1 for more stable
   // to-screen-space mapping.

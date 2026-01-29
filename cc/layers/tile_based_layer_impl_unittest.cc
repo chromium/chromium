@@ -78,7 +78,9 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
                                  const Occlusion& scaled_occlusion,
                                  const gfx::Vector2d& quad_offset,
                                  float max_contents_scale) override {}
-  float GetMaximumContentsScaleForUseInAppendQuads() override { return 1.f; }
+  float GetMaximumContentsScaleForUseInAppendQuads() const override {
+    return 1.f;
+  }
   bool IsDirectlyCompositedImage() const override { return false; }
   TilingResolution GetTilingResolutionForDebugBorders(
       const FakeTiling* tiling) const override {
@@ -409,7 +411,7 @@ class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
     quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
                  SkColors::kTransparent, false);
   }
-  float GetMaximumContentsScaleForUseInAppendQuads() override {
+  float GetMaximumContentsScaleForUseInAppendQuads() const override {
     return max_contents_scale_;
   }
   float GetIdealContentsScaleKey() const override { return 1.f; }
