@@ -92,6 +92,8 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
 
     private final ThumbnailDiskStorage mStorage;
 
+    private boolean mDestroyed;
+
     private int mCacheSizeMaxBytesUma;
 
     /** The maximum number of concurrent requests to allow. */
@@ -136,6 +138,7 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
     @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
+        mDestroyed = true;
         // Drop any references to any current requests.
         mRequestQueue.clear();
         mInProgressRequestMap.clear();
@@ -226,16 +229,14 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
 
     private void processNextRequest() {
         ThreadUtils.assertOnUiThread();
-
-        if (mRequestQueue.isEmpty()) return;
+        if (mDestroyed || mRequestQueue.isEmpty()) return;
 
         // peek first request in queue
         var firstEntry = mRequestQueue.entrySet().iterator().next();
         String contentId = firstEntry.getKey();
         ThumbnailRequest currentRequest = firstEntry.getValue();
 
-        // avoid nullable after destroy()
-        if (currentRequest == null) return;
+        assert currentRequest != null;
 
         String requestKey = getKey(contentId, currentRequest.getIconSize());
         Bitmap cachedBitmap = getBitmapFromCache(requestKey);
@@ -288,15 +289,17 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
      *
      * @param contentId Content ID for the thumbnail retrieved.
      * @param bitmap The thumbnail retrieved.
-     * @param iconSizePx Icon size for the thumbnail retrieved.
+     * @param requestedIconSizePx Icon size for the thumbnail retrieved.
      */
     @Override
-    public void onThumbnailRetrieved(String contentId, @Nullable Bitmap bitmap, int iconSizePx) {
+    public void onThumbnailRetrieved(
+            String contentId, @Nullable Bitmap bitmap, int requestedIconSizePx) {
         ThreadUtils.assertOnUiThread();
+        if (mDestroyed) return;
 
         ArraySet<ThumbnailRequest> currentRequestSet = new ArraySet<>();
 
-        String requestKey = getKey(contentId, iconSizePx);
+        String requestKey = getKey(contentId, requestedIconSizePx);
         var inProcessRequests = mInProgressRequestMap.remove(requestKey);
         if (inProcessRequests != null) {
             currentRequestSet.addAll(inProcessRequests);
@@ -312,21 +315,15 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
             return;
         }
 
-        ThumbnailRequest retrievedRequest = currentRequestSet.valueAt(0);
-        assert retrievedRequest != null;
         if (bitmap != null) {
             // The bitmap returned here is retrieved from the native side. The image decoder there
             // scales down the image (if it is too big) so that one of its sides is smaller than or
             // equal to the required size. We check here that the returned image satisfies this
             // criteria.
-            assert Math.min(bitmap.getWidth(), bitmap.getHeight())
-                    <= retrievedRequest.getIconSize();
+            assert Math.min(bitmap.getWidth(), bitmap.getHeight()) <= requestedIconSizePx;
 
-            // We set the key pair to contain the required size (maximum dimension (pixel) of the
-            // smaller side) instead of the minimal dimension of the thumbnail so that future
-            // fetches of this thumbnail can recognise the key in the cache.
-            String key = getKey(contentId, retrievedRequest.getIconSize());
-            mBitmapCache.putBitmap(key, bitmap);
+            // Cache under the same key used to check for in-progress requests.
+            mBitmapCache.putBitmap(requestKey, bitmap);
             mNoBitmapCache.remove(contentId);
             mCacheSizeMaxBytesUma = Math.max(mCacheSizeMaxBytesUma, mBitmapCache.size());
             for (ThumbnailRequest request : currentRequestSet) {

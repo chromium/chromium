@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.thumbnail.generator;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
@@ -17,7 +16,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -56,7 +57,7 @@ public class ThumbnailProviderImplTest {
                             new ThumbnailProviderImpl(
                                     sReferencePool,
                                     ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS,
-                                    false /* useMultipleRequests */);
+                                    /* useMultiRequests= */ false);
                 });
     }
 
@@ -233,7 +234,7 @@ public class ThumbnailProviderImplTest {
         }
 
         @Override
-        public void onThumbnailRetrieved(@NonNull String contentId, @Nullable Bitmap thumbnail) {
+        public void onThumbnailRetrieved(String contentId, @Nullable Bitmap thumbnail) {
             mRetrievedThumbnail = thumbnail;
             mThumbnailRetrievedCallbackHelper.notifyCalled();
         }
@@ -246,5 +247,89 @@ public class ThumbnailProviderImplTest {
         Bitmap getRetrievedThumbnail() {
             return mRetrievedThumbnail;
         }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Suggestions"})
+    public void testRequestLimitEnforcesQueueing() throws Exception {
+        // MAX_REQUEST_LIMIT is 8, so submit 10 requests to test queueing
+        final int numRequests = 10;
+        final int requiredSize = 10;
+        final String testFilePath =
+                UrlUtils.getIsolatedTestFilePath(TEST_DIRECTORY + "test_image_10x10.jpg");
+
+        CallbackHelper[] callbacks = new CallbackHelper[numRequests];
+        TestThumbnailRequest[] requests = new TestThumbnailRequest[numRequests];
+
+        for (int i = 0; i < numRequests; i++) {
+            callbacks[i] = new CallbackHelper();
+            requests[i] =
+                    new TestThumbnailRequest(
+                            testFilePath, requiredSize, callbacks[i], "limit_test_" + i);
+        }
+
+        ThumbnailProviderImpl provider =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ThumbnailProviderImpl p =
+                                    new ThumbnailProviderImpl(
+                                            sReferencePool,
+                                            ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS,
+                                            /* useMultiRequests= */ true);
+                            for (int i = 0; i < numRequests; i++) {
+                                p.getThumbnail(requests[i]);
+                            }
+                            return p;
+                        });
+
+        // All requests should eventually complete despite exceeding MAX_REQUEST_LIMIT
+        for (int i = 0; i < numRequests; i++) {
+            callbacks[i].waitForCallback("Timeout for request " + i, 0);
+            Assert.assertNotNull(
+                    "Request " + i + " should have received a thumbnail.",
+                    requests[i].getRetrievedThumbnail());
+        }
+
+        ThreadUtils.runOnUiThreadBlocking(provider::destroy);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Suggestions"})
+    public void testDestroyPreventsCallbackExecution() throws Exception {
+        final String testFilePath =
+                UrlUtils.getIsolatedTestFilePath(TEST_DIRECTORY + "test_image_10x10.jpg");
+        final int requiredSize = 10;
+
+        CallbackHelper callback = new CallbackHelper();
+        final TestThumbnailRequest request =
+                new TestThumbnailRequest(testFilePath, requiredSize, callback, "destroy_test");
+
+        ThumbnailProviderImpl provider =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new ThumbnailProviderImpl(
+                                        sReferencePool,
+                                        ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS,
+                                        /* useMultiRequests= */ true));
+
+        CallbackHelper destroyCallback = new CallbackHelper();
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    provider.getThumbnail(request);
+                    // Immediately destroy before async callback can be processed
+                    provider.destroy();
+                    destroyCallback.notifyCalled();
+                });
+
+        destroyCallback.waitForNext();
+        // Flush UI queue to ensure any pending callbacks would have fired.
+        ThreadUtils.runOnUiThreadBlocking(CallbackUtils.emptyRunnable());
+
+        // Verify callback was not called after destroy (count should be 0)
+        Assert.assertEquals(
+                "Callback should not be invoked after destroy.", 0, callback.getCallCount());
     }
 }
