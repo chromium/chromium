@@ -21,6 +21,7 @@ build_webui("build") {
     "reload_button.ts",
     "app.ts",
     "app.html.ts",
+    "toolbar_button.ts",
   ]
   css_files = [
     "reload_button.css",

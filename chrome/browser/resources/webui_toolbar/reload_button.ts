@@ -18,6 +18,7 @@ import type {BrowserProxy} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
 import {getHtml} from './reload_button.html.js';
+import {getContextMenuPosition} from './toolbar_button.js';
 
 // go/keep-sorted start
 const RELOAD_BUTTON_ACC_NAME_RELOAD = 'reloadButtonAccNameReload';
@@ -248,13 +249,7 @@ export class ReloadButtonAppElement extends CrLitElement {
   }
 
   protected contextMenuPosition() {
-    const bounds = this.getBoundingClientRect();
-    let x = bounds.x;
-    if (document.dir === 'rtl') {
-      x = bounds.x + bounds.width;
-    }
-    const y = bounds.y + bounds.height;
-    return {x, y};
+    return getContextMenuPosition(this);
   }
 }
 
