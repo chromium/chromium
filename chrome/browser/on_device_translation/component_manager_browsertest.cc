@@ -13,9 +13,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
+#include "components/on_device_translation/test/fake_installer.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -23,13 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace on_device_translation {
-
-namespace {
-
-// The fake path for the update check.
-constexpr std::string_view kFakeUpdateCheckPath = "/fake_update_check";
-
-}  // namespace
 
 // Tests for ComponentManager.
 class ComponentManagerUpdateCheckBrowserTest : public InProcessBrowserTest {
@@ -43,75 +38,63 @@ class ComponentManagerUpdateCheckBrowserTest : public InProcessBrowserTest {
   ComponentManagerUpdateCheckBrowserTest& operator=(
       const ComponentManagerUpdateCheckBrowserTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-
-    // Registers a fake component-updater check handler.
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &ComponentManagerUpdateCheckBrowserTest::RequestHandler,
-        base::Unretained(this)));
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    // Set the component-updater check URL to the fake one.
-    command_line->AppendSwitchASCII(
-        "component-updater",
-        base::StrCat(
-            {"url-source=",
-             embedded_test_server()->GetURL(kFakeUpdateCheckPath).spec()}));
+  void InitFakeInstaller() {
+    installer_ = std::make_unique<FakeOnDeviceTranslationInstaller>();
   }
 
- protected:
-  // Sets the callback to be called when an update check is requested.
-  void SetOnUpdateCheckRequestedCallback(
-      base::OnceClosure on_update_check_requested_callback) {
-    on_update_check_requested_callback_ =
-        std::move(on_update_check_requested_callback);
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
  private:
-  // A fake update check handler that calls the callback when an update check is
-  // requested.
-  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
-      const net::test_server::HttpRequest& request) {
-    if (request.relative_url.starts_with(kFakeUpdateCheckPath) &&
-        on_update_check_requested_callback_) {
-      std::move(on_update_check_requested_callback_).Run();
-    }
-    return nullptr;
-  }
-
-  base::OnceClosure on_update_check_requested_callback_;
+  std::unique_ptr<FakeOnDeviceTranslationInstaller> installer_;
 };
 
 // Tests that the translate kit component can be registered only once.
 IN_PROC_BROWSER_TEST_F(ComponentManagerUpdateCheckBrowserTest,
                        RegisterTranslateKitComponent) {
-  base::RunLoop run_loop;
-  SetOnUpdateCheckRequestedCallback(run_loop.QuitClosure());
+  InitFakeInstaller();
   EXPECT_TRUE(ComponentManager::GetInstance().RegisterTranslateKitComponent());
   // Wait for the update check is requested.
-  run_loop.Run();
   EXPECT_FALSE(ComponentManager::GetInstance().RegisterTranslateKitComponent());
 }
+
+class TestObserver : public OnDeviceTranslationInstaller::Observer {
+ public:
+  // We pass a callback (the QuitClosure) to the observer.
+  explicit TestObserver(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
+  void OnLanguagePackInstalled(const LanguagePackKey lang_pack) override {
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+};
 
 // Tests that the translate kit language pack component can be registered and
 // unregistered.
 IN_PROC_BROWSER_TEST_F(ComponentManagerUpdateCheckBrowserTest,
                        RegisterAndUnregisterTranslateKitLanguagePackComponent) {
-  base::RunLoop run_loop;
-  SetOnUpdateCheckRequestedCallback(run_loop.QuitClosure());
+  InitFakeInstaller();
+  ComponentManager::GetInstance().RegisterTranslateKitComponent();
+  base::RunLoop lpack_run_loop;
+  TestObserver observer(lpack_run_loop.QuitClosure());
+  OnDeviceTranslationInstaller::GetInstance()->AddOserver(&observer);
   ComponentManager::GetInstance().RegisterTranslateKitLanguagePackComponent(
       LanguagePackKey::kEn_Ja);
-  // Wait for the update check is requested.
-  run_loop.Run();
-  EXPECT_TRUE(
-      g_browser_process->local_state()->GetBoolean(GetRegisteredFlagPrefName(
-          *kLanguagePackComponentConfigMap.at(LanguagePackKey::kEn_Ja))));
+  lpack_run_loop.Run();
+
+  EXPECT_THAT(ComponentManager::GetInstance().GetRegisteredLanguagePacks(),
+              ::testing::UnorderedElementsAre(LanguagePackKey::kEn_Ja));
+
   ComponentManager::GetInstance().UninstallTranslateKitLanguagePackComponent(
       LanguagePackKey::kEn_Ja);
-  EXPECT_FALSE(
-      g_browser_process->local_state()->GetBoolean(GetRegisteredFlagPrefName(
-          *kLanguagePackComponentConfigMap.at(LanguagePackKey::kEn_Ja))));
+  EXPECT_THAT(ComponentManager::GetInstance().GetRegisteredLanguagePacks(),
+              ::testing::IsEmpty());
 }
 
 using ComponentManagerBrowserTest = InProcessBrowserTest;
