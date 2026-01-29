@@ -180,6 +180,7 @@ class UserPolicyOidcSigninServiceTest
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_gaia_id(kExampleGaiaId.ToString());
     policy_data->set_command_invalidation_topic("fake-topic");
+    policy_data->set_cec_enabled(true);
     if (profile->GetProfileCloudPolicyManager()) {
       static_cast<MockProfileCloudPolicyStore*>(
           profile->GetProfileCloudPolicyManager()->core()->store())
