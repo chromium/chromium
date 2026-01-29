@@ -76,9 +76,6 @@ include_rules = [
   # have explicit rules to allow services/*/public rather than adding a blanket
   # dependency.
   "+services",
-  "-services/content",
-  "+services/content/service.h",
-  "+services/content/service_delegate.h",
   "+services/device/public/cpp/compute_pressure",
   "-services/network",
   "+services/network/public/cpp",
