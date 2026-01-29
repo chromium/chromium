@@ -9,12 +9,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 namespace {
 
@@ -84,13 +84,21 @@ void ZipExtractor::ExtractImpl() {
       properties_.temp_dir_path.Append(entry->path.BaseName());
   std::move(properties_.open_callback).Run(out_image_path);
 
+  // Avoid division by zero in the progress callback handler by not reporting
+  // progress for 0-byte files.
+  auto progress_callback =
+      entry->original_size > 0
+          ? base::BindRepeating(properties_.progress_callback,
+                                entry->original_size)
+          : base::DoNothing();
+
   // |this| will be deleted when OnComplete or OnError is called.
   zip_reader_.ExtractCurrentEntryToFilePathAsync(
       out_image_path,
       base::BindOnce(&ZipExtractor::OnComplete, weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ZipExtractor::OnError, weak_ptr_factory_.GetWeakPtr(),
                      error::kUnzipGenericError),
-      base::BindRepeating(properties_.progress_callback, entry->original_size));
+      std::move(progress_callback));
 }
 
 void ZipExtractor::OnError(const std::string& error) {
@@ -103,5 +111,4 @@ void ZipExtractor::OnComplete() {
   delete this;
 }
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer

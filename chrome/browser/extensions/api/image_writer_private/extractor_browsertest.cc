@@ -15,11 +15,12 @@
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
+#include "chrome/browser/extensions/api/image_writer_private/zip_extractor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/zlib/google/zip.h"
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -109,6 +110,9 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractNonExistentTarXz) {
   run_loop.Run();
 }
 
+// Tests that an archive containing a single 0-byte file is successfully
+// extracted. This validates that the utility process correctly handles empty
+// files and without sending invalid progress events.
 IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ZeroByteTarXzFile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -135,6 +139,35 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ZeroByteTarXzFile) {
   EXPECT_TRUE(contents.empty());
 }
 
+// Tests that a zip archive containing a 0-byte file is successfully extracted.
+// This verifies that the browser-process ZipExtractor handles empty entries
+// without sending invalid progress events.
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ZeroByteZipFile) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::FilePath temp_dir_path;
+  base::CreateTemporaryDirInDir(temp_dir_.GetPath(),
+                                FILE_PATH_LITERAL("source"), &temp_dir_path);
+  base::FilePath empty_data_file = temp_dir_path.AppendASCII("empty");
+  ASSERT_TRUE(base::WriteFile(empty_data_file, /*data=*/""));
+
+  base::FilePath zip_file = temp_dir_.GetPath().AppendASCII("empty_file.zip");
+  ASSERT_TRUE(
+      zip::Zip(temp_dir_path, zip_file, /*include_hidden_files=*/false));
+
+  properties_.image_path = zip_file;
+
+  base::FilePath out_path;
+  base::RunLoop run_loop;
+  EXPECT_CALL(open_callback_, Run(_)).WillOnce(SaveArg<0>(&out_path));
+  EXPECT_CALL(complete_callback_, Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(progress_callback_, Run(_, _)).Times(0);
+
+  ZipExtractor::Extract(std::move(properties_));
+  run_loop.Run();
+}
+
 IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractBigTarXzFile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -155,5 +188,4 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractBigTarXzFile) {
   EXPECT_EQ(contents, std::string(2097152, '\0'));
 }
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer

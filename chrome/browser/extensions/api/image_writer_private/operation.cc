@@ -335,6 +335,7 @@ void Operation::OnExtractFailure(const std::string& error) {
 
 void Operation::OnExtractProgress(int64_t total_bytes, int64_t progress_bytes) {
   DCHECK(IsRunningInCorrectSequence());
+  CHECK(total_bytes > 0);
 
   int progress_percent = kProgressComplete * progress_bytes / total_bytes;
   SetProgress(progress_percent);

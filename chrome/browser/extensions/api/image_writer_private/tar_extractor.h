@@ -14,8 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 class TarExtractor : public chrome::mojom::SingleFileExtractorListener {
  public:
@@ -24,6 +23,8 @@ class TarExtractor : public chrome::mojom::SingleFileExtractorListener {
   // Start extracting the archive at `image_path` to `temp_dir_path` in
   // `properties`.
   static void Extract(ExtractionProperties properties);
+
+  static TarExtractor* CreateForTesting(ExtractionProperties properties);
 
   TarExtractor(const TarExtractor&) = delete;
   TarExtractor& operator=(const TarExtractor&) = delete;
@@ -56,7 +57,6 @@ class TarExtractor : public chrome::mojom::SingleFileExtractorListener {
   ExtractionProperties properties_;
 };
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_TAR_EXTRACTOR_H_

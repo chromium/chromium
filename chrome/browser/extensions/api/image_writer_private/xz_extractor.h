@@ -33,6 +33,8 @@ class XzExtractor : public chrome::mojom::SingleFileExtractorListener {
   // call.
   static void Extract(ExtractionProperties properties);
 
+  static XzExtractor* CreateForTesting(ExtractionProperties properties);
+
   XzExtractor(const XzExtractor&) = delete;
   XzExtractor& operator=(const XzExtractor&) = delete;
 

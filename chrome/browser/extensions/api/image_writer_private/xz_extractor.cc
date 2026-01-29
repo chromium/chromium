@@ -14,8 +14,7 @@
 // XzExtractor extracts a .tar.xz file. Xz extraction uses third party
 // libraries, so actual .tar.xz extraction is performed in a utility process.
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 namespace {
 
@@ -50,12 +49,22 @@ void XzExtractor::Extract(ExtractionProperties properties) {
   extractor->ExtractImpl();
 }
 
+// static
+XzExtractor* XzExtractor::CreateForTesting(ExtractionProperties properties) {
+  return new XzExtractor(std::move(properties));
+}
+
 XzExtractor::XzExtractor(ExtractionProperties properties)
     : properties_(std::move(properties)) {}
 
 XzExtractor::~XzExtractor() = default;
 
 void XzExtractor::OnProgress(uint64_t total_bytes, uint64_t progress_bytes) {
+  // Avoid division by zero in the progress callback handler by not reporting
+  // progress for 0-byte files.
+  if (total_bytes == 0) {
+    return;
+  }
   properties_.progress_callback.Run(total_bytes, progress_bytes);
 }
 
@@ -129,5 +138,4 @@ void XzExtractor::RunFailureCallbackAndDeleteThis(const std::string& error_id) {
   std::move(failure_callback).Run(error_id);
 }
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer

@@ -56,12 +56,22 @@ void TarExtractor::Extract(ExtractionProperties properties) {
   extractor->ExtractImpl();
 }
 
+// static
+TarExtractor* TarExtractor::CreateForTesting(ExtractionProperties properties) {
+  return new TarExtractor(std::move(properties));
+}
+
 TarExtractor::TarExtractor(ExtractionProperties properties)
     : properties_(std::move(properties)) {}
 
 TarExtractor::~TarExtractor() = default;
 
 void TarExtractor::OnProgress(uint64_t total_bytes, uint64_t progress_bytes) {
+  // Avoid division by zero in the progress callback handler by not reporting
+  // progress for 0-byte files.
+  if (total_bytes == 0) {
+    return;
+  }
   properties_.progress_callback.Run(total_bytes, progress_bytes);
 }
 
