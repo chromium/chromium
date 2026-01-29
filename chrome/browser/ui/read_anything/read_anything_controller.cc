@@ -157,15 +157,14 @@ void ReadAnythingController::RemoveObserver(Observer* observer) {
 void ReadAnythingController::OnEntryShown(
     std::optional<ReadAnythingOpenTrigger> trigger) {
   observers_.Notify(&Observer::Activate, true, trigger);
-
-  auto* service =
+  active_service_ =
       ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
   // At the moment, services are created for normal, guest, and incognito
   // profiles but not unusual profile types. On the other hand,
   // ReadAnythingController is created for all tabs. Thus we need a
   // nullptr check.
-  if (service) {
-    service->OnReadAnythingShown();
+  if (active_service_) {
+    active_service_->OnReadAnythingShown();
   }
 }
 
@@ -173,14 +172,9 @@ void ReadAnythingController::OnEntryHidden() {
   observers_.Notify(&Observer::Activate, false,
                     std::optional<ReadAnythingOpenTrigger>());
 
-  auto* service =
-      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
-  // At the moment, services are created for normal, guest, and incognito
-  // profiles but not unusual profile types. On the other hand,
-  // ReadAnythingController is created for all tabs. Thus we need a
-  // nullptr check.
-  if (service) {
-    service->OnReadAnythingHidden();
+  if (active_service_) {
+    active_service_->OnReadAnythingHidden();
+    active_service_ = nullptr;
   }
 }
 

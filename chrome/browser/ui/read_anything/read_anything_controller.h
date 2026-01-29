@@ -29,6 +29,7 @@
 
 class ReadAnythingController;
 class ReadAnythingImmersiveOverlayView;
+class ReadAnythingService;
 
 // A helper class to observe a specific WebContents, so the ReadAnything
 // Controller can observe multiple WebContents. Event callbacks are configured
@@ -256,6 +257,8 @@ class ReadAnythingController {
   base::ScopedClosureRunner main_contents_capturer_handle_;
 
   raw_ptr<ReadAnythingImmersiveOverlayView> active_overlay_view_ = nullptr;
+
+  raw_ptr<ReadAnythingService> active_service_ = nullptr;
 
   base::WeakPtrFactory<ReadAnythingController> weak_factory_{this};
 };
