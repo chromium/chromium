@@ -14,7 +14,7 @@ namespace enterprise_reporting {
 // These functions are used to aggregate domain reporting data. They store the
 // aggregated data using PrefService.
 
-void RecordNavigation(PrefService* pref_service,
+void RecordNavigation(PrefService& pref_service,
                       std::string_view domain,
                       std::string_view encryption_protocol);
 

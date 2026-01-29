@@ -56,7 +56,7 @@ TEST_P(SaasUsageAggregationUtilsParameterizedTest, Run) {
   const TestCase& test_case = GetParam();
 
   for (const auto& navigation : test_case.navigations) {
-    enterprise_reporting::RecordNavigation(&pref_service_, navigation.domain,
+    enterprise_reporting::RecordNavigation(pref_service_, navigation.domain,
                                            navigation.protocol);
   }
 

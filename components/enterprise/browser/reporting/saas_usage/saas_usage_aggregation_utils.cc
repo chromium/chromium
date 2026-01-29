@@ -30,11 +30,10 @@ base::DictValue& GetOrCreateEntry(base::DictValue& report_dict,
 
 namespace enterprise_reporting {
 
-void RecordNavigation(PrefService* pref_service,
+void RecordNavigation(PrefService& pref_service,
                       std::string_view domain,
                       std::string_view encryption_protocol) {
-  CHECK(pref_service);
-  ScopedDictPrefUpdate update(pref_service, kSaasUsageReport);
+  ScopedDictPrefUpdate update(&pref_service, kSaasUsageReport);
   base::DictValue& entry = GetOrCreateEntry(*update, domain);
 
   int count = entry.FindInt(kNavigationCount).value_or(0);

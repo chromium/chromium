@@ -37,7 +37,7 @@ void SaasUsageReportingController::RecordNavigation(
   std::optional<std::string> profile_matched_domain =
       profile_matcher_->GetMatchedURL(url);
   if (profile_matched_domain) {
-    enterprise_reporting::RecordNavigation(&profile_pref_service_.get(),
+    enterprise_reporting::RecordNavigation(profile_pref_service_.get(),
                                            profile_matched_domain.value(),
                                            encryption_protocol);
   }
@@ -45,7 +45,7 @@ void SaasUsageReportingController::RecordNavigation(
   std::optional<std::string> browser_matched_domain =
       browser_matcher_->GetMatchedURL(url);
   if (browser_matched_domain) {
-    enterprise_reporting::RecordNavigation(&local_state_pref_service_.get(),
+    enterprise_reporting::RecordNavigation(local_state_pref_service_.get(),
                                            browser_matched_domain.value(),
                                            encryption_protocol);
   }
