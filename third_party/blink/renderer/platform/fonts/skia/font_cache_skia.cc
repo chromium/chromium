@@ -257,7 +257,6 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
       last_resort_fallback_attempt, kMaxAttempts);
   base::UmaHistogramBoolean("Blink.Fonts.LastResortFallbackFound",
                             font_platform_data != nullptr);
-  DCHECK(font_platform_data);
   return FontDataFromFontPlatformData(font_platform_data);
 }
 
