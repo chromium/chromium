@@ -56,18 +56,19 @@ ALWAYS_INLINE void AtomicReadMemcpyAligned(void* to, const void* from) {
   if constexpr (bytes % kAlignment == 0 && bytes >= kAlignment &&
                 bytes <= 3 * kAlignment) {
     AlignmentType* aligned_to = reinterpret_cast<AlignmentType*>(to);
-    const AlignmentType* aligned_from =
-        reinterpret_cast<const AlignmentType*>(from);
+    const auto* aligned_from = reinterpret_cast<const AlignmentType*>(from);
     *aligned_to = AsAtomicPtr(aligned_from)->load(std::memory_order_relaxed);
     if constexpr (bytes >= 2 * kAlignment) {
-      UNSAFE_TODO(
-          *(aligned_to + 1) =
-              AsAtomicPtr(aligned_from + 1)->load(std::memory_order_relaxed));
+      // SAFETY: This a low-level operation, and call sites should ensure `to`
+      // and `from` have `bytes` size.
+      UNSAFE_BUFFERS(++aligned_to; ++aligned_from);
+      *aligned_to = AsAtomicPtr(aligned_from)->load(std::memory_order_relaxed);
     }
     if constexpr (bytes == 3 * kAlignment) {
-      UNSAFE_TODO(
-          *(aligned_to + 2) =
-              AsAtomicPtr(aligned_from + 2)->load(std::memory_order_relaxed));
+      // SAFETY: This a low-level operation, and call sites should ensure `to`
+      // and `from` have `bytes` size.
+      UNSAFE_BUFFERS(++aligned_to; ++aligned_from);
+      *aligned_to = AsAtomicPtr(aligned_from)->load(std::memory_order_relaxed);
     }
   } else {
     AtomicReadMemcpy(to, from, bytes);
@@ -117,16 +118,19 @@ ALWAYS_INLINE void AtomicWriteMemcpyAligned(void* to, const void* from) {
   if constexpr (bytes % kAlignment == 0 && bytes >= kAlignment &&
                 bytes <= 3 * kAlignment) {
     AlignmentType* aligned_to = reinterpret_cast<AlignmentType*>(to);
-    const AlignmentType* aligned_from =
-        reinterpret_cast<const AlignmentType*>(from);
+    const auto* aligned_from = reinterpret_cast<const AlignmentType*>(from);
     AsAtomicPtr(aligned_to)->store(*aligned_from, std::memory_order_relaxed);
     if constexpr (bytes >= 2 * kAlignment) {
-      UNSAFE_TODO(AsAtomicPtr(aligned_to + 1)
-                      ->store(*(aligned_from + 1), std::memory_order_relaxed));
+      // SAFETY: This a low-level operation, and call sites should ensure `to`
+      // and `from` have `bytes` size.
+      UNSAFE_BUFFERS(++aligned_to; ++aligned_from);
+      AsAtomicPtr(aligned_to)->store(*aligned_from, std::memory_order_relaxed);
     }
     if constexpr (bytes == 3 * kAlignment) {
-      UNSAFE_TODO(AsAtomicPtr(aligned_to + 2)
-                      ->store(*(aligned_from + 2), std::memory_order_relaxed));
+      // SAFETY: This a low-level operation, and call sites should ensure `to`
+      // and `from` have `bytes` size.
+      UNSAFE_BUFFERS(++aligned_to; ++aligned_from);
+      AsAtomicPtr(aligned_to)->store(*aligned_from, std::memory_order_relaxed);
     }
   } else {
     AtomicWriteMemcpy(to, from, bytes);
@@ -174,12 +178,16 @@ ALWAYS_INLINE void AtomicMemzeroAligned(void* buf) {
     AlignmentType* aligned_buf = reinterpret_cast<AlignmentType*>(buf);
     AsAtomicPtr(aligned_buf)->store(0, std::memory_order_relaxed);
     if constexpr (bytes >= 2 * kAlignment) {
-      AsAtomicPtr(UNSAFE_TODO(aligned_buf + 1))
-          ->store(0, std::memory_order_relaxed);
+      // SAFETY: This a low-level operation, and call sites should ensure `buf`
+      // has `bytes` size.
+      UNSAFE_BUFFERS(++aligned_buf);
+      AsAtomicPtr(aligned_buf)->store(0, std::memory_order_relaxed);
     }
     if constexpr (bytes == 3 * kAlignment) {
-      AsAtomicPtr(UNSAFE_TODO(aligned_buf + 2))
-          ->store(0, std::memory_order_relaxed);
+      // SAFETY: This a low-level operation, and call sites should ensure `buf`
+      // has `bytes` size.
+      UNSAFE_BUFFERS(++aligned_buf);
+      AsAtomicPtr(aligned_buf)->store(0, std::memory_order_relaxed);
     }
   } else {
     AtomicMemzero(buf, bytes);
