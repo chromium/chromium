@@ -65,37 +65,71 @@ jobs:
           npm link
           npm link chromium-bidi
       - name: Run JS performance benchmark
+        env:
+          METRICS_JSON_FILE: puppeteer_perf_metrics.json
+          OS: ${{ matrix.os }}
+          RUNS: 100
+          ITERATIONS: 1000
         run: |
-          DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
-      - name: Extract and store performance metrics
-        id: extract_metrics
-        # Publish 2 metrics: mean and median relative difference. Group them together by
-        # providing the same `extra` field.
-        run: |
-          echo "" > pup_perf_metrics.json
-
-          mean_value=$(grep 'PERF_METRIC:DIFF_MEAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:VALUE://')
-          mean_range=$(grep 'PERF_METRIC:DIFF_MEAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_mean_rel\", \"value\": $mean_value, \"range\": $mean_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_rel\"}" >> pup_perf_metrics.json
-          echo "," >> pup_perf_metrics.json
-          median_value=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:VALUE://')
-          median_range=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_median_rel\", \"value\": $median_value, \"range\": $median_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_rel\"}" >> pup_perf_metrics.json
-          echo "," >> pup_perf_metrics.json
-          p10_value=$(grep 'PERF_METRIC:DIFF_P10_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_P10_REL:VALUE://')
-          p10_range=$(grep 'PERF_METRIC:DIFF_P10_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_P10_REL:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_p10_rel\", \"value\": $p10_value, \"range\": $p10_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_rel\"}" >> pup_perf_metrics.json
-
-          echo "Extracted performance metrics:"
-          cat pup_perf_metrics.json
+          DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs
+          cat puppeteer_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: pup-perf-metrics-${{ matrix.os }}
           path: |
-            pup_perf_metrics.json
+            puppeteer_perf_metrics.json
             debug.cdp.log
             debug.bidi.log
+          # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
+          retention-days: 1
+  selenium-perf-metric:
+    name: Selenium ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(#876): Add Windows CI.
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - name: Disable AppArmor
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Install and build npm dependencies
+        run: npm ci
+      # Install chrome, chromedriver and headless shell is required to keep them cached.
+      - name: Install all chrome binaries if needed
+        uses: ./.github/actions/setup-chrome-binaries
+      - name: Build chromium-bidi
+        run: npm run build
+      - name: Run JS performance benchmark
+        env:
+          METRICS_JSON_FILE: selenium_perf_metrics.json
+          HEAD: ${{ matrix.head }}
+          RUNNER: ${{ matrix.kind }}
+          OS: ${{ matrix.os }}
+          # Reduce runs on macOS to balance execution time and flakiness,
+          # while maintaining sufficient signal for performance monitoring.
+          RUNS: ${{ matrix.os == 'macos-latest' && 50 || 100 }}
+          ITERATIONS: 100
+        run: |
+          node tools/benchmark-selenium.mjs
+          cat selenium_perf_metrics.json
+      - name: Upload performance result as artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: selenium-perf-metrics-${{ matrix.os }}
+          path: |
+            selenium_perf_metrics.json
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   e2e-perf-metric:
@@ -139,51 +173,28 @@ jobs:
       - name: Run E2E performance tests with xvfb-run
         if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
         timeout-minutes: 20
-        run: >
-          xvfb-run --auto-servernum
-          npm run e2e:${{ matrix.head }}
-          --
-          tests/performance/
-          -s
-          | tee tests_output.txt
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
+          METRICS_JSON_FILE: e2e_perf_metrics.json
+          OS: ${{ matrix.os }}
+          RUNS: ${{ matrix.os == 'macos-latest' && 5 || 100 }}
+        run: |
+          xvfb-run --auto-servernum npm run e2e:${{ matrix.head }} -- tests/performance/ -s
+          cat e2e_perf_metrics.json
       - name: Run E2E performance tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
-        run: >
-          npm run e2e:${{ matrix.head }}
-          --
-          tests/performance/
-          -s
-          | tee tests_output.txt
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
-      - name: Extract and store performance metrics
-        id: extract_metrics
-        env:
-          PREFIX: ${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
+          METRICS_JSON_FILE: e2e_perf_metrics.json
+          # Reduce runs on macOS to balance execution time and flakiness,
+          # while maintaining sufficient signal for performance monitoring.
+          RUNS: ${{ matrix.os == 'macos-latest' && 5 || 100 }}
         run: |
-          if [ -f tests_output.txt ] && grep -q 'PERF_METRIC:' tests_output.txt; then
-            echo "" > e2e_perf_metrics.json
-            grep 'PERF_METRIC:' tests_output.txt | awk -F'PERF_METRIC:' -v prefix="$PREFIX" '
-              BEGIN { count=0 }
-              {
-                split($2, parts, ":");
-                if (length(parts) >= 2) {
-                  if (count > 0) printf ",";
-                  printf "{\"name\": \"%s:%s\", \"value\": %s, \"unit\": \"ms\", \"extra\": \"${{ matrix.os }}-${{ matrix.head }}:e2e-perf-metric\"}", prefix, parts[1], parts[2];
-                  count++;
-                }
-              }
-            ' >> e2e_perf_metrics.json
-            echo "Extracted performance metrics:"
-            cat e2e_perf_metrics.json
-          else
-            echo "No performance metrics found or output file missing."
-          fi
+          npm run e2e:${{ matrix.head }} -- tests/performance/ -s
+          cat e2e_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
@@ -203,7 +214,7 @@ jobs:
       pull-requests: write
       contents: write
     runs-on: ubuntu-latest
-    needs: [pup-perf-metric, e2e-perf-metric]
+    needs: [pup-perf-metric, selenium-perf-metric, e2e-perf-metric]
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -217,15 +228,11 @@ jobs:
         run: |
           echo "[" > performance-metrics-all.json
 
-          find artifacts -name "*metrics.json" -print0 | while IFS= read -r -d '' file; do
-            if grep -q '[^[:space:]]' "$file"; then
-              if [ "$first_metric" = false ]; then
-                echo "," >> performance-metrics-all.json
-              fi
-              cat "$file" >> performance-metrics-all.json
-              first_metric=false
-            fi
-          done
+          find artifacts -name "*metrics.json" -exec cat {} + >> performance-metrics-all.json
+
+          # The metrics files have a trailing comma, but JSON does not allow it in the list.
+          # Remove the last comma when combining metrics together.
+          sed -i '$ s/,$//' performance-metrics-all.json
 
           echo "]" >> performance-metrics-all.json
           echo "Combined performance metrics in JSON format:"

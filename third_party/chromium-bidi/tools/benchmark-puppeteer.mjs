@@ -21,173 +21,20 @@ import fs from 'fs';
 
 import puppeteer from 'puppeteer';
 
-import {installAndGetChromePath} from './path-getter/path-getter.mjs';
-
-const RUNS = 100;
-const ITERATIONS_PER_RUN = 100;
-const WARMUP_ITERATIONS = Math.max(2, 0.1 * ITERATIONS_PER_RUN);
-
-// For large sample sizes (N > 1000), the t-distribution converges to the normal distribution.
-// 1.96 is the approximate critical value for a 95% Confidence Interval (Z-score).
-const T_CRIT_95_LARGE_N = 1.96;
-
-const BENCHMARK_HTML = `
-<div style='font-family:Segoe UI, sans-serif; padding:20px; background:#f4f7f6;'>
-  <h2>Protocol Benchmark</h2>
-  <div style='display:flex; gap:15px;'>
-    <div id='some-box' style='flex:1; padding:15px; background:white; border-left:5px solid #3498db;'>
-      Some counter<div id='some-counter' style='font-size:24px;'>0</div><div id='some-res'>-</div>
-    </div>
-  </div>
-</div>`;
-
-/**
- * Calculates the Standard Error for a specific percentile using rank-based confidence intervals.
- * @param {number[]} sortedLatencies
- * @param {number} percentile (between 0 and 1, e.g., 0.1 for P10, 0.5 for Median)
- * @returns {number} The estimated Standard Error.
- */
-function calculateRankBasedStandardError(sortedLatencies, percentile) {
-  const count = sortedLatencies.length;
-  // Standard Error of the Index
-  const seIndex = Math.sqrt(count * percentile * (1 - percentile));
-
-  // 95% Confidence Interval Indices
-  let lowerIndex = Math.floor(count * percentile - T_CRIT_95_LARGE_N * seIndex);
-  let upperIndex = Math.ceil(count * percentile + T_CRIT_95_LARGE_N * seIndex);
-
-  // Clamp indices to valid range.
-  lowerIndex = Math.max(0, lowerIndex);
-  upperIndex = Math.min(count - 1, upperIndex);
-
-  const lowerValue = sortedLatencies[lowerIndex];
-  const upperValue = sortedLatencies[upperIndex];
-
-  // Approximate Standard Error: (Upper - Lower) / (2 * Z)
-  return (upperValue - lowerValue) / (2 * T_CRIT_95_LARGE_N);
-}
-
-/**
- * Calculates statistical metrics for a set of benchmark run means.
- *
- * This function processes an array of latencies to compute central tendency (mean),
- * dispersion (variance, stdDev), and reliability estimates (confidence intervals).
- */
-function calculateStats(latencies) {
-  latencies.sort((a, b) => a - b);
-  const count = latencies.length;
-  const totalSum = latencies.reduce((sum, val) => sum + val, 0);
-
-  // Arithmetic Mean (x̄): The sum of all measurements divided by the count.
-  // x̄ = (Σx) / n
-  const mean = totalSum / count;
-  const min = latencies[0];
-  const max = latencies[count - 1];
-
-  // Median: The value separating the higher half from the lower half of the data samples.
-  const median = latencies[Math.floor(count * 0.5)];
-
-  // 10th Percentile (P10):
-  // The value below which 10% of the data falls.
-  // We use the nearest rank method.
-  const p10 = latencies[Math.floor(count * 0.1)];
-
-  // 90th Percentile (P90):
-  const p90 = latencies[Math.floor(count * 0.9)];
-
-  // Sample Variance (s²): Unbiased estimator of the population variance.
-  // Uses Bessel's correction (n - 1) because we are estimating the true variance
-  // from a sample, not the entire population.
-  // s² = Σ(x - x̄)² / (n - 1)
-  const variance =
-    latencies.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
-    (count - 1);
-
-  // Sample Standard Deviation (s): The square root of the sample variance.
-  // Represents the dispersion of the data in the same units as the data itself.
-  // s = √s²
-  const stdDev = Math.sqrt(variance);
-
-  // Coefficient of Variation (CV) / Relative Standard Deviation (RSD):
-  // The ratio of the standard deviation to the mean, expressed as a percentage.
-  // Useful for comparing the degree of variation from one data series to another,
-  // even if the means are drastically different.
-  // RSD = (s / x̄) * 100
-  const rsd = (stdDev / mean) * 100;
-
-  // Standard Error of the Mean (SE_mean): The standard deviation of the sampling
-  // distribution of the sample mean. Estimates the precision of the sample mean
-  // as an estimate of the population mean.
-  // SE_mean = s / √n
-  const standardErrorMean = stdDev / Math.sqrt(count);
-
-  // Critical Value (z*) for 95% Confidence Interval:
-  // For a large sample size (n >= 30), the sampling distribution of the mean is
-  // approximately normal (Central Limit Theorem). We use the Z-score 1.96 for 95% confidence.
-  const tCrit = T_CRIT_95_LARGE_N;
-
-  // Margin of Error (MOE) for the Mean:
-  // The radius of the confidence interval. We can be 95% confident that the true
-  // population mean lies within x̄ ± MOE.
-  // MOE_mean = z* * SE_mean
-  const marginOfErrorMean = tCrit * standardErrorMean;
-
-  // CI Relative Standard Deviation (CI RSD) for Mean:
-  // The Margin of Error expressed as a percentage of the mean.
-  const ciRsdMean = (marginOfErrorMean / mean) * 100;
-
-  // Standard Error of the Median (SE_med) using Rank-Based Consistency Interval:
-  const standardErrorMedian = calculateRankBasedStandardError(latencies, 0.5);
-
-  // Margin of Error (MOE) for the Median:
-  // MOE_med = z* * SE_med
-  const marginOfErrorMedian = tCrit * standardErrorMedian;
-
-  // CI Relative Standard Deviation (CI RSD) for Median:
-  // The Margin of Error expressed as a percentage of the median.
-  const ciRsdMedian = (marginOfErrorMedian / median) * 100;
-
-  // Standard Error of P10 (SE_p10) using Rank-Based Consistency Interval:
-  const standardErrorP10 = calculateRankBasedStandardError(latencies, 0.1);
-
-  // Margin of Error (MOE) for P10:
-  const marginOfErrorP10 = tCrit * standardErrorP10;
-
-  // CI Relative Standard Deviation (CI RSD) for P10:
-  const ciRsdP10 = (marginOfErrorP10 / p10) * 100;
-
-  // Standard Error of P90 (SE_p90) using Rank-Based Consistency Interval:
-  const standardErrorP90 = calculateRankBasedStandardError(latencies, 0.9);
-
-  // Margin of Error (MOE) for P90:
-  const marginOfErrorP90 = tCrit * standardErrorP90;
-
-  // CI Relative Standard Deviation (CI RSD) for P90:
-  const ciRsdP90 = (marginOfErrorP90 / p90) * 100;
-
-  return {
-    mean,
-    median,
-    min,
-    max,
-    stdDev,
-    rsd,
-    standardErrorMean,
-    marginOfErrorMean,
-    ciRsdMean,
-    standardErrorMedian,
-    marginOfErrorMedian,
-    ciRsdMedian,
-    p10,
-    standardErrorP10,
-    marginOfErrorP10,
-    ciRsdP10,
-    p90,
-    standardErrorP90,
-    marginOfErrorP90,
-    ciRsdP90,
-  };
-}
+import {
+  calculateStats,
+  printStats,
+  printComparison,
+  printCiComparison,
+  RUNS,
+  ITERATIONS_PER_RUN,
+  WARMUP_ITERATIONS,
+  BENCHMARK_HTML,
+} from './benchmark-utils.mjs';
+import {
+  installAndGetChromePath,
+  getBidiMapperPath,
+} from './path-getter/path-getter.mjs';
 
 async function runBenchmarkRun(launchOptions, chromePath) {
   const browser = await puppeteer.launch({
@@ -248,8 +95,23 @@ async function runBenchmarkRun(launchOptions, chromePath) {
 }
 
 async function main() {
+  // Verify if we are using the linked version of chromium-bidi.
+  // Puppeteer installs chromium-bidi as a dependency in its own node_modules,
+  // which prevents the linked version (in the root node_modules) from being used.
+  // We remove the nested dependency to force Puppeteer to use the one in the root.
+  const nestedChromiumBidiPath =
+    'node_modules/puppeteer-core/node_modules/chromium-bidi';
+  if (fs.existsSync(nestedChromiumBidiPath)) {
+    console.log(
+      'Removing nested chromium-bidi dependency to use linked version...',
+    );
+    fs.rmSync(nestedChromiumBidiPath, {recursive: true, force: true});
+  }
+
   const chromePath = installAndGetChromePath(true);
+  const bidiMapperPath = getBidiMapperPath();
   console.log(`Using Chrome: ${chromePath}`);
+  console.log(`Using BiDi Mapper: ${bidiMapperPath}`);
   console.log(
     `Starting Benchmark: ${RUNS} runs x ${ITERATIONS_PER_RUN} iterations...`,
   );
@@ -281,150 +143,15 @@ async function main() {
   const bidiFinal = calculateStats(stats.bidi);
 
   console.log('\n=== Results (Mean of Runs) ===');
-  console.log('Puppeteer CDP:');
-  console.log(
-    `  Mean: ${cdpFinal.mean.toFixed(4)}ms ±${cdpFinal.marginOfErrorMean.toFixed(4)}ms (±${cdpFinal.ciRsdMean.toFixed(2)}%)`,
-  );
-  console.log(
-    `  Median: ${cdpFinal.median.toFixed(4)}ms ±${cdpFinal.marginOfErrorMedian.toFixed(4)}ms (±${cdpFinal.ciRsdMedian.toFixed(2)}%)`,
-  );
+  printStats('Puppeteer CDP', cdpFinal);
+  printStats('Puppeteer BiDi', bidiFinal);
 
-  console.log('Puppeteer BiDi:');
-  console.log(
-    `  Mean: ${bidiFinal.mean.toFixed(4)}ms ±${bidiFinal.marginOfErrorMean.toFixed(4)}ms (±${bidiFinal.ciRsdMean.toFixed(2)}%)`,
-  );
-  console.log(
-    `  Median: ${bidiFinal.median.toFixed(4)}ms ±${bidiFinal.marginOfErrorMedian.toFixed(4)}ms (±${bidiFinal.ciRsdMedian.toFixed(2)}%)`,
-  );
-
+  // Comparisons
   console.log('\n=== Comparison (BiDi vs CDP) ===');
-  const meanDiffAbs = bidiFinal.mean - cdpFinal.mean;
-  const meanDiffRel = (meanDiffAbs / cdpFinal.mean) * 100;
+  printComparison(bidiFinal, cdpFinal);
 
-  // Standard Error of the Difference (SE_diff).
-  // Formula: SE_diff = sqrt(SE_cdp^2 + SE_bidi^2)
-  // Assumes independent samples and unequal variances (unpooled SE).
-  const meanDiffStandardError = Math.sqrt(
-    Math.pow(cdpFinal.standardErrorMean, 2) +
-      Math.pow(bidiFinal.standardErrorMean, 2),
-  );
-
-  // Margin of Error for the Difference (ME_diff).
-  // Formula: ME_diff = t_crit * SE_diff
-  const meanDiffAbsMoe = meanDiffStandardError * T_CRIT_95_LARGE_N;
-  // Margin of Error as a percentage of the baseline (CDP) mean time.
-  const meanDiffRelMoe = (meanDiffAbsMoe / cdpFinal.mean) * 100;
-
-  const medianDiffAbs = bidiFinal.median - cdpFinal.median;
-  const medianDiffRel = (medianDiffAbs / cdpFinal.median) * 100;
-
-  // Standard Error of the Difference (SE_diff).
-  // Formula: SE_diff = sqrt(SE_cdp^2 + SE_bidi^2)
-  // Assumes independent samples and unequal variances (unpooled SE).
-  const medianDiffStandardError = Math.sqrt(
-    Math.pow(cdpFinal.standardErrorMedian, 2) +
-      Math.pow(bidiFinal.standardErrorMedian, 2),
-  );
-
-  // Margin of Error for the Difference (ME_diff).
-  // Formula: ME_diff = t_crit * SE_diff
-  const medianDiffAbsMoe = medianDiffStandardError * T_CRIT_95_LARGE_N;
-  // Margin of Error as a percentage of the baseline (CDP) Median time.
-  const medianDiffRelMoe = (medianDiffAbsMoe / cdpFinal.median) * 100;
-
-  console.log(
-    `  Mean:   ${meanDiffRel.toFixed(2)}% ±${meanDiffRelMoe.toFixed(2)}% / ${meanDiffAbs.toFixed(4)}ms ±${meanDiffAbsMoe.toFixed(4)}ms`,
-  );
-  console.log(
-    `  Median: ${medianDiffRel.toFixed(2)}% ±${medianDiffRelMoe.toFixed(2)}% / ${medianDiffAbs.toFixed(4)}ms ±${medianDiffAbsMoe.toFixed(4)}ms`,
-  );
-
-  const p10DiffAbs = bidiFinal.p10 - cdpFinal.p10;
-  const p10DiffRel = (p10DiffAbs / cdpFinal.p10) * 100;
-
-  // Standard Error of the Difference (SE_diff) for P10.
-  const p10DiffStandardError = Math.sqrt(
-    Math.pow(cdpFinal.standardErrorP10, 2) +
-      Math.pow(bidiFinal.standardErrorP10, 2),
-  );
-
-  const p10DiffAbsMoe = p10DiffStandardError * T_CRIT_95_LARGE_N;
-  const p10DiffRelMoe = (p10DiffAbsMoe / cdpFinal.p10) * 100;
-
-  console.log(
-    `  P10:    ${p10DiffRel.toFixed(2)}% ±${p10DiffRelMoe.toFixed(2)}% / ${p10DiffAbs.toFixed(4)}ms ±${p10DiffAbsMoe.toFixed(4)}ms`,
-  );
-
-  const p90DiffAbs = bidiFinal.p90 - cdpFinal.p90;
-  const p90DiffRel = (p90DiffAbs / cdpFinal.p90) * 100;
-
-  // Standard Error of the Difference (SE_diff) for P90.
-  const p90DiffStandardError = Math.sqrt(
-    Math.pow(cdpFinal.standardErrorP90, 2) +
-      Math.pow(bidiFinal.standardErrorP90, 2),
-  );
-
-  const p90DiffAbsMoe = p90DiffStandardError * T_CRIT_95_LARGE_N;
-  const p90DiffRelMoe = (p90DiffAbsMoe / cdpFinal.p90) * 100;
-
-  console.log(
-    `  P90:    ${p90DiffRel.toFixed(2)}% ±${p90DiffRelMoe.toFixed(2)}% / ${p90DiffAbs.toFixed(4)}ms ±${p90DiffAbsMoe.toFixed(4)}ms`,
-  );
-
-  console.log('\n=== CI output ===');
-
-  console.log(`PERF_METRIC:CDP_MEAN_ABS:VALUE:${cdpFinal.mean.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:CDP_MEAN_ABS:RANGE:${cdpFinal.marginOfErrorMean.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:CDP_MEDIAN_ABS:VALUE:${cdpFinal.median.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:CDP_MEDIAN_ABS:RANGE:${cdpFinal.marginOfErrorMedian.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:CDP_P90_ABS:VALUE:${cdpFinal.p90.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:CDP_P90_ABS:RANGE:${cdpFinal.marginOfErrorP90.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:BIDI_MEAN_ABS:VALUE:${bidiFinal.mean.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:BIDI_MEAN_ABS:RANGE:${bidiFinal.marginOfErrorMean.toFixed(4)}`,
-  );
-
-  console.log(
-    `PERF_METRIC:BIDI_MEDIAN_ABS:VALUE:${bidiFinal.median.toFixed(4)}`,
-  );
-  console.log(
-    `PERF_METRIC:BIDI_MEDIAN_ABS:RANGE:${bidiFinal.marginOfErrorMedian.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:BIDI_P90_ABS:VALUE:${bidiFinal.p90.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:BIDI_P90_ABS:RANGE:${bidiFinal.marginOfErrorP90.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:DIFF_MEAN_REL:VALUE:${meanDiffRel.toFixed(4)}`);
-  console.log(`PERF_METRIC:DIFF_MEAN_REL:RANGE:${meanDiffRelMoe.toFixed(4)}`);
-
-  console.log(`PERF_METRIC:DIFF_MEDIAN_REL:VALUE:${medianDiffRel.toFixed(4)}`);
-  console.log(
-    `PERF_METRIC:DIFF_MEDIAN_REL:RANGE:${medianDiffRelMoe.toFixed(4)}`,
-  );
-
-  console.log(`PERF_METRIC:DIFF_P10_REL:VALUE:${p10DiffRel.toFixed(4)}`);
-  console.log(`PERF_METRIC:DIFF_P10_REL:RANGE:${p10DiffRelMoe.toFixed(4)}`);
-
-  console.log(`PERF_METRIC:DIFF_P90_REL:VALUE:${p90DiffRel.toFixed(4)}`);
-  console.log(`PERF_METRIC:DIFF_P90_REL:RANGE:${p90DiffRelMoe.toFixed(4)}`);
-
-  if (process.env.DEBUG_CDP_DATA) {
-    fs.writeFileSync(process.env.DEBUG_CDP_DATA, stats.cdp.join('\n'));
-  }
-  if (process.env.DEBUG_BIDI_DATA) {
-    fs.writeFileSync(process.env.DEBUG_BIDI_DATA, stats.bidi.join('\n'));
-  }
+  // Print metrics to the file for CI.
+  printCiComparison('diff', bidiFinal, cdpFinal, 'puppeteer');
 }
 
 await main();
