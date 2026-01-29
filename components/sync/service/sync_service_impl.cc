@@ -988,14 +988,13 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
 
   // This error should ideally be the last one to be checked. Any new identity
   // errors should be handled before this.
-  if (base::FeatureList::IsEnabled(kSyncShowBookmarksLimitExceededError)) {
-    const DataTypeStatusTable::TypeErrorMap data_type_errors =
-        data_type_manager_->GetDataTypeErrors();
-    auto it = data_type_errors.find(BOOKMARKS);
-    if (it != data_type_errors.end() &&
-        bookmark_sync_error_state_.IsActionableError(it->second)) {
-      return UserActionableError::kBookmarksLimitExceeded;
-    }
+  const DataTypeStatusTable::TypeErrorMap data_type_errors =
+      data_type_manager_->GetDataTypeErrors();
+  auto it = data_type_errors.find(BOOKMARKS);
+  if (it != data_type_errors.end() &&
+      bookmark_sync_error_state_.IsActionableError(it->second) &&
+      base::FeatureList::IsEnabled(kSyncShowBookmarksLimitExceededError)) {
+    return UserActionableError::kBookmarksLimitExceeded;
   }
 
   return UserActionableError::kNone;
