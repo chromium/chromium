@@ -429,6 +429,7 @@ set_defaults("rust_library") {
 
 # Compute the set of configs common to all linked targets (shared libraries,
 # loadable modules, executables) to avoid duplication below.
+import("//build/config/cast.gni")
 if (is_win) {
   # Many targets remove these configs, so they are not contained within
   # //build/config:executable_config for easy removal.
@@ -445,6 +446,13 @@ if (is_win) {
   # Warn whenever linking code that could unintentionally switch off
   # branch target identification (BTI) on Arm systems.
   _linker_configs = [ "//build/config/android:lld_branch_target_hardening" ]
+} else if (is_linux && !enable_cast_receiver) {
+  # Warn whenever linking code that could unintentionally switch off
+  # branch target identification (BTI) on Arm systems.
+  #
+  # Note: BTI is disabled on cast builds, since cast is unlikely to have any
+  # PAC/BTI hardware.
+  _linker_configs = [ "//build/config/linux:lld_branch_target_hardening" ]
 } else {
   _linker_configs = []
 }
