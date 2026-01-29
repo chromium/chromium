@@ -89,6 +89,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_launcher.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/fake_oauth2_token_response.h"
@@ -866,18 +867,23 @@ void SyncTest::TearDownOnMainThread() {
       profiles_[index]->RemoveObserver(this);
 
 #if BUILDFLAG(IS_ANDROID)
-      if (server_type_ == EXTERNAL_LIVE_SERVER) {
-        // A profile could have backend tasks from the associate sync engine.
-        // In browser tests, on non-Android platforms, these tasks are cancelled
-        // during the browser process shutdown.
-        // On Android, however, browser process is not shutdown after test run.
-        // As a result, these backend tasks could keep running and cause timeout
-        // error during test shutdown.
-        // To fix this issue, we explicitly mimic a dashboard reset to cancel
-        // any ongoing sync engine's backend tasks.
-        GetSyncService(index)->OnActionableProtocolError(
-            {.error_type = syncer::NOT_MY_BIRTHDAY,
-             .action = syncer::DISABLE_SYNC_ON_CLIENT});
+      // A profile could have backend tasks from the associate sync engine.
+      // In browser tests, on non-Android platforms, these tasks are cancelled
+      // during the browser process shutdown.
+      // On Android, however, browser process is not shutdown after test run.
+      // As a result, these backend tasks could keep running and cause timeout
+      // error during test shutdown.
+      // To fix this issue, we explicitly mimic a dashboard reset to cancel
+      // any ongoing sync engine's backend tasks.
+      // Skip cleanup for PRE_ tests to allow data persistence.
+      // TODO(crbug.com/479828012): Find a better solution that doesn't require
+      // explicitly disabling sync.
+      if (!content::IsPreTest()) {
+        if (auto* service = GetSyncService(index)) {
+          service->OnActionableProtocolError(
+              {.error_type = syncer::NOT_MY_BIRTHDAY,
+               .action = syncer::DISABLE_SYNC_ON_CLIENT});
+        }
       }
 #endif  // BUILDFLAG(IS_ANDROID)
     }
