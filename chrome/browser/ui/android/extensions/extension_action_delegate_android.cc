@@ -15,8 +15,10 @@ using extensions::ActionInfo;
 ExtensionActionDelegateAndroid::ExtensionActionDelegateAndroid(
     BrowserWindowInterface* browser,
     const ToolbarActionsModel::ActionId& action_id,
-    extensions::ExtensionsToolbarBridge* bridge)
-    : browser_(browser), action_id_(action_id), toolbar_bridge_(bridge) {}
+    extensions::ExtensionsToolbarAndroid* toolbar_android)
+    : browser_(browser),
+      action_id_(action_id),
+      toolbar_android_(toolbar_android) {}
 
 ExtensionActionDelegateAndroid::~ExtensionActionDelegateAndroid() = default;
 
@@ -59,14 +61,14 @@ void ExtensionActionDelegateAndroid::TriggerPopup(
     PopupShowAction show_action,
     bool by_user,
     ShowPopupCallback callback) {
-  if (!toolbar_bridge_) {
+  if (!toolbar_android_) {
     // TODO(crbug.com/461981075): Remove this check once
-    // `ExtensionsMenuDelegateAndroid` passes a correct `bridge` instead of
-    // `nullptr`.
+    // `ExtensionsMenuDelegateAndroid` passes a correct `toolbar_android_`
+    // instead of `nullptr`.
     return;
   }
 
-  toolbar_bridge_->TriggerPopup(action_id_, std::move(host));
+  toolbar_android_->TriggerPopup(action_id_, std::move(host));
 }
 
 void ExtensionActionDelegateAndroid::ShowContextMenuAsFallback() {

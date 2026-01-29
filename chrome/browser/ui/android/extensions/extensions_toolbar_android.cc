@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/extensions/extensions_toolbar_bridge.h"
+#include "chrome/browser/ui/android/extensions/extensions_toolbar_android.h"
 
 #include "base/android/jni_string.h"
 #include "base/notimplemented.h"
@@ -26,7 +26,7 @@ using content::WebContents;
 
 namespace extensions {
 
-ExtensionsToolbarBridge::ExtensionsToolbarBridge(
+ExtensionsToolbarAndroid::ExtensionsToolbarAndroid(
     BrowserWindowInterface* browser,
     const base::android::JavaRef<jobject>& java_object)
     : browser_(browser),
@@ -40,9 +40,9 @@ ExtensionsToolbarBridge::ExtensionsToolbarBridge(
   toolbar_view_model_observation_.Observe(toolbar_view_model_.get());
 }
 
-ExtensionsToolbarBridge::~ExtensionsToolbarBridge() = default;
+ExtensionsToolbarAndroid::~ExtensionsToolbarAndroid() = default;
 
-void ExtensionsToolbarBridge::TriggerPopup(
+void ExtensionsToolbarAndroid::TriggerPopup(
     const ToolbarActionsModel::ActionId& action_id,
     std::unique_ptr<ExtensionViewHost> host) {
   Java_ExtensionsToolbarBridge_triggerPopup(
@@ -51,7 +51,7 @@ void ExtensionsToolbarBridge::TriggerPopup(
 }
 
 std::unique_ptr<ExtensionActionViewModel>
-ExtensionsToolbarBridge::CreateActionViewModel(
+ExtensionsToolbarAndroid::CreateActionViewModel(
     const ToolbarActionsModel::ActionId& action_id,
     ExtensionsContainer* extensions_container) {
   return ExtensionActionViewModel::Create(
@@ -60,30 +60,30 @@ ExtensionsToolbarBridge::CreateActionViewModel(
                                                        action_id, this));
 }
 
-void ExtensionsToolbarBridge::HideActivePopup() {
+void ExtensionsToolbarAndroid::HideActivePopup() {
   // TODO(crbug.com/461981075)
   NOTIMPLEMENTED();
 }
 
-bool ExtensionsToolbarBridge::CloseOverflowMenuIfOpen() {
+bool ExtensionsToolbarAndroid::CloseOverflowMenuIfOpen() {
   // TODO(crbug.com/461981075)
   NOTIMPLEMENTED();
   return false;
 }
 
-bool ExtensionsToolbarBridge::CanShowToolbarActionPopupForAPICall(
+bool ExtensionsToolbarAndroid::CanShowToolbarActionPopupForAPICall(
     const std::string& action_id) {
   // TODO(crbug.com/461981075)
   NOTIMPLEMENTED();
   return false;
 }
 
-void ExtensionsToolbarBridge::ToggleExtensionsMenu() {
+void ExtensionsToolbarAndroid::ToggleExtensionsMenu() {
   // TODO(crbug.com/461981075)
   NOTIMPLEMENTED();
 }
 
-void ExtensionsToolbarBridge::OnActionsInitialized() {
+void ExtensionsToolbarAndroid::OnActionsInitialized() {
   for (const auto& action_id : toolbar_view_model_->GetAllActionIds()) {
     RegisterIconObserverForAction(action_id);
   }
@@ -91,41 +91,41 @@ void ExtensionsToolbarBridge::OnActionsInitialized() {
                                                     java_object_);
 }
 
-void ExtensionsToolbarBridge::OnActionAdded(
+void ExtensionsToolbarAndroid::OnActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   RegisterIconObserverForAction(action_id);
   Java_ExtensionsToolbarBridge_onActionAdded(AttachCurrentThread(),
                                              java_object_, action_id);
 }
 
-void ExtensionsToolbarBridge::OnActionRemoved(
+void ExtensionsToolbarAndroid::OnActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
   icon_subscriptions_.erase(action_id);
   Java_ExtensionsToolbarBridge_onActionRemoved(AttachCurrentThread(),
                                                java_object_, action_id);
 }
 
-void ExtensionsToolbarBridge::OnActionUpdated(
+void ExtensionsToolbarAndroid::OnActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
   Java_ExtensionsToolbarBridge_onActionUpdated(AttachCurrentThread(),
                                                java_object_, action_id);
 }
 
-void ExtensionsToolbarBridge::OnPinnedActionsChanged() {
+void ExtensionsToolbarAndroid::OnPinnedActionsChanged() {
   Java_ExtensionsToolbarBridge_onPinnedActionsChanged(AttachCurrentThread(),
                                                       java_object_);
 }
 
-void ExtensionsToolbarBridge::OnActiveWebContentsChanged() {
+void ExtensionsToolbarAndroid::OnActiveWebContentsChanged() {
   Java_ExtensionsToolbarBridge_onActiveWebContentsChanged(AttachCurrentThread(),
                                                           java_object_);
 }
 
-void ExtensionsToolbarBridge::Destroy(JNIEnv* env) {
+void ExtensionsToolbarAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarBridge::GetAction(
+base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetAction(
     JNIEnv* env,
     const ToolbarActionsModel::ActionId& action_id) {
   ToolbarActionViewModel* action =
@@ -134,7 +134,7 @@ base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarBridge::GetAction(
       env, action_id, base::UTF16ToUTF8(action->GetActionName()));
 }
 
-base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarBridge::GetIcon(
+base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetIcon(
     JNIEnv* env,
     const ToolbarActionsModel::ActionId& action_id,
     content::WebContents* web_contents,
@@ -165,24 +165,24 @@ base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarBridge::GetIcon(
 }
 
 std::vector<ToolbarActionsModel::ActionId>
-ExtensionsToolbarBridge::GetAllActionIds(JNIEnv* env) {
+ExtensionsToolbarAndroid::GetAllActionIds(JNIEnv* env) {
   const auto& ids = toolbar_view_model_->GetAllActionIds();
   return std::vector(ids.begin(), ids.end());
 }
 
 std::vector<ToolbarActionsModel::ActionId>
-ExtensionsToolbarBridge::GetPinnedActionIds(JNIEnv* env) {
+ExtensionsToolbarAndroid::GetPinnedActionIds(JNIEnv* env) {
   const auto& ids = toolbar_view_model_->GetPinnedActionIds();
   return std::vector(ids.begin(), ids.end());
 }
 
-void ExtensionsToolbarBridge::ExecuteUserAction(
+void ExtensionsToolbarAndroid::ExecuteUserAction(
     const ToolbarActionsModel::ActionId& action_id,
     ToolbarActionViewModel::InvocationSource source) {
   toolbar_view_model_->ExecuteUserAction(action_id, source);
 }
 
-void ExtensionsToolbarBridge::RegisterIconObserverForAction(
+void ExtensionsToolbarAndroid::RegisterIconObserverForAction(
     const ToolbarActionsModel::ActionId& action_id) {
   ToolbarActionViewModel* action_model =
       toolbar_view_model_->GetActionModelForId(action_id);
@@ -190,17 +190,17 @@ void ExtensionsToolbarBridge::RegisterIconObserverForAction(
 
   icon_subscriptions_.insert_or_assign(
       action_id, action_model->RegisterIconUpdateObserver(base::BindRepeating(
-                     &ExtensionsToolbarBridge::OnActionIconUpdated,
+                     &ExtensionsToolbarAndroid::OnActionIconUpdated,
                      base::Unretained(this), action_id)));
 }
 
-void ExtensionsToolbarBridge::OnActionIconUpdated(
+void ExtensionsToolbarAndroid::OnActionIconUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
   Java_ExtensionsToolbarBridge_onActionUpdated(AttachCurrentThread(),
                                                java_object_, action_id);
 }
 
-void ExtensionsToolbarBridge::MovePinnedAction(
+void ExtensionsToolbarAndroid::MovePinnedAction(
     const ToolbarActionsModel::ActionId& action_id,
     int target_index) {
   toolbar_view_model_->MovePinnedAction(action_id, target_index);
@@ -213,7 +213,7 @@ static int64_t JNI_ExtensionsToolbarBridge_Init(
   BrowserWindowInterface* browser =
       reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
   return reinterpret_cast<int64_t>(
-      new ExtensionsToolbarBridge(browser, java_object));
+      new ExtensionsToolbarAndroid(browser, java_object));
 }
 
 }  // namespace extensions

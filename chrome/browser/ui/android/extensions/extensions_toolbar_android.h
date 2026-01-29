@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_TOOLBAR_BRIDGE_H_
-#define CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_TOOLBAR_BRIDGE_H_
+#ifndef CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_TOOLBAR_ANDROID_H_
+#define CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_TOOLBAR_ANDROID_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -18,14 +18,14 @@ namespace extensions {
 
 // The JNI bridge for the extensions UI.
 // This bridge is created and owned by Java UI code.
-class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
-                                public ExtensionsToolbarViewModel::Observer {
+class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
+                                 public ExtensionsToolbarViewModel::Observer {
  public:
-  ExtensionsToolbarBridge(BrowserWindowInterface* browser,
-                          const base::android::JavaRef<jobject>& java_object);
-  ExtensionsToolbarBridge(const ExtensionsToolbarBridge&) = delete;
-  ExtensionsToolbarBridge& operator=(const ExtensionsToolbarBridge&) = delete;
-  ~ExtensionsToolbarBridge() override;
+  ExtensionsToolbarAndroid(BrowserWindowInterface* browser,
+                           const base::android::JavaRef<jobject>& java_object);
+  ExtensionsToolbarAndroid(const ExtensionsToolbarAndroid&) = delete;
+  ExtensionsToolbarAndroid& operator=(const ExtensionsToolbarAndroid&) = delete;
+  ~ExtensionsToolbarAndroid() override;
 
   // Triggers the display of an extension popup in the Java UI.
   void TriggerPopup(const ToolbarActionsModel::ActionId& action_id,
@@ -99,4 +99,4 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_TOOLBAR_BRIDGE_H_
+#endif  // CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_TOOLBAR_ANDROID_H_
