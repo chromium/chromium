@@ -75,6 +75,7 @@ class ServiceWorkerMainResourceHandle;
 class SharedWorkerContentSettingsProxyImpl;
 class SharedWorkerServiceImpl;
 class SiteInstanceImpl;
+class StoragePartitionImpl;
 struct WorkerScriptFetcherResult;
 
 // SharedWorkerHost is the browser-side host of a single shared worker running
@@ -312,6 +313,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   // network factory is meant to be passed to the renderer.
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
   CreateNetworkFactoryForSubresources(bool* bypass_redirect_checks);
+
+  StoragePartitionImpl* GetStoragePartitionImpl();
 
   mojo::Receiver<blink::mojom::SharedWorkerHost> receiver_{this};
 

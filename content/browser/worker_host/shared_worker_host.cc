@@ -339,8 +339,7 @@ void SharedWorkerHost::Start(
         break;
     }
 
-    auto* storage_partition = static_cast<StoragePartitionImpl*>(
-        GetProcessHost()->GetStoragePartition());
+    auto* storage_partition = GetStoragePartitionImpl();
     // Create a COEP reporter with worker's policy.
     coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
         storage_partition->GetWeakPtr(), result.final_response_url,
@@ -525,8 +524,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
           std::move(coep_reporter), std::move(dip_reporter),
-          static_cast<StoragePartitionImpl*>(
-              GetProcessHost()->GetStoragePartition())
+          GetStoragePartitionImpl()
               ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
                   ToOriginatingProcess(GetProcessHost()->GetID()), origin),
           /*devtools_observer=*/mojo::NullRemote(),
@@ -583,8 +581,8 @@ void SharedWorkerHost::BindCacheStorageInternal(
 
 void SharedWorkerHost::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
-  static_cast<StoragePartitionImpl*>(GetProcessHost()->GetStoragePartition())
-      ->BindLockManager(GetStorageKey(), token().value(), std::move(receiver));
+  GetStoragePartitionImpl()->BindLockManager(GetStorageKey(), token().value(),
+                                             std::move(receiver));
 }
 
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(
@@ -668,8 +666,7 @@ void SharedWorkerHost::CreateBroadcastChannelProvider(
     mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      GetProcessHost()->GetStoragePartition());
+  auto* storage_partition_impl = GetStoragePartitionImpl();
 
   auto* broadcast_channel_service =
       storage_partition_impl->GetBroadcastChannelService();
@@ -683,8 +680,7 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      GetProcessHost()->GetStoragePartition());
+  auto* storage_partition_impl = GetStoragePartitionImpl();
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), instance().renderer_origin(),
@@ -870,6 +866,11 @@ void SharedWorkerHost::RenderProcessHostDestroyed(RenderProcessHost* host) {
   RecordDestructionSource(
       SharedWorkerHostDestructionSource::kRenderProcessHostDestroyed);
   Destruct();
+}
+
+StoragePartitionImpl* SharedWorkerHost::GetStoragePartitionImpl() {
+  return static_cast<StoragePartitionImpl*>(
+      GetProcessHost()->GetStoragePartition());
 }
 
 std::vector<GlobalRenderFrameHostId>

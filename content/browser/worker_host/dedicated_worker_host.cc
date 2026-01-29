@@ -202,9 +202,8 @@ void DedicatedWorkerHost::CreateContentSecurityNotifier(
 
 void DedicatedWorkerHost::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
-  static_cast<StoragePartitionImpl*>(GetProcessHost()->GetStoragePartition())
-      ->BindLockManager(GetStorageKey(), GetToken().value(),
-                        std::move(receiver));
+  GetStoragePartitionImpl()->BindLockManager(
+      GetStorageKey(), GetToken().value(), std::move(receiver));
 }
 
 void DedicatedWorkerHost::OnMojoDisconnect() {
@@ -266,8 +265,7 @@ void DedicatedWorkerHost::StartScriptLoad(
   DCHECK(client);
   client_ = std::move(client);
 
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      worker_process_host_->GetStoragePartition());
+  auto* storage_partition_impl = GetStoragePartitionImpl();
 
   // Get nearest ancestor RenderFrameHost in order to determine the
   // top-frame origin to use for the network isolation key.
@@ -481,8 +479,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   worker_client_security_state_->document_isolation_policy =
       creator_client_security_state_->document_isolation_policy;
 
-  auto* storage_partition = static_cast<StoragePartitionImpl*>(
-      worker_process_host_->GetStoragePartition());
+  auto* storage_partition = GetStoragePartitionImpl();
 
   // Create a COEP reporter with worker's policy.
   const network::CrossOriginEmbedderPolicy& coep =
@@ -523,8 +520,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 
   // Start observing Network Service crash when it's running out-of-process.
   if (IsOutOfProcessNetworkService()) {
-    ObserveNetworkServiceCrash(static_cast<StoragePartitionImpl*>(
-        worker_process_host_->GetStoragePartition()));
+    ObserveNetworkServiceCrash(GetStoragePartitionImpl());
   }
 
   // Set up the default network loader factory.
@@ -588,6 +584,11 @@ void DedicatedWorkerHost::ScriptLoadStartFailed(
   }
 
   client_->OnScriptLoadStartFailed();
+}
+
+StoragePartitionImpl* DedicatedWorkerHost::GetStoragePartitionImpl() {
+  return static_cast<StoragePartitionImpl*>(
+      GetProcessHost()->GetStoragePartition());
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -828,8 +829,7 @@ void DedicatedWorkerHost::CreateBroadcastChannelProvider(
     mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      GetProcessHost()->GetStoragePartition());
+  auto* storage_partition_impl = GetStoragePartitionImpl();
 
   auto* broadcast_channel_service =
       storage_partition_impl->GetBroadcastChannelService();
@@ -851,8 +851,7 @@ bool DedicatedWorkerHost::WasStorageAccessGranted() {
 void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      GetProcessHost()->GetStoragePartition());
+  auto* storage_partition_impl = GetStoragePartitionImpl();
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), renderer_origin_, GetProcessHost()->GetDeprecatedID(),
@@ -927,8 +926,7 @@ void DedicatedWorkerHost::CreateBucketManagerHost(
 void DedicatedWorkerHost::GetFileSystemAccessManager(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      worker_process_host_->GetStoragePartition());
+  auto* storage_partition_impl = GetStoragePartitionImpl();
   auto* manager = storage_partition_impl->GetFileSystemAccessManager();
   manager->BindReceiver(
       FileSystemAccessManagerImpl::BindingContext(
@@ -999,8 +997,7 @@ void DedicatedWorkerHost::OnNetworkServiceCrash() {
   DCHECK(network_service_connection_error_handler_holder_);
   DCHECK(!network_service_connection_error_handler_holder_.is_connected());
 
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      worker_process_host_->GetStoragePartition());
+  auto* storage_partition_impl = GetStoragePartitionImpl();
   // Start observing Network Service crash again.
   ObserveNetworkServiceCrash(storage_partition_impl);
 
@@ -1014,8 +1011,7 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
     return;
   }
 
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      worker_process_host_->GetStoragePartition());
+  auto* storage_partition_impl = GetStoragePartitionImpl();
 
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
