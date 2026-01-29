@@ -161,6 +161,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, RemovingTabWhilePartOfGroup) {
       << message_;
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 // TODO(crbug.com/40925613): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Muted DISABLED_Muted
@@ -170,8 +172,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, RemovingTabWhilePartOfGroup) {
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, MAYBE_Muted) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/muted")) << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/471405507): Disabled on Android.
 #if BUILDFLAG(IS_ANDROID)

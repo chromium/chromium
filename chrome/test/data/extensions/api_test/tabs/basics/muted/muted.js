@@ -7,19 +7,48 @@ var testTabId_;
 const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
+// The set of tabs that have completed loading as of their last update.
+const loadedTabs = new Set();
+// A map of tabId -> Promise for any tabs we're waiting to finish loading.
+const waitingForTabs = new Map();
+
+// Waits for the given `tabId` to be done loading.
+async function waitForTabLoaded(tabId) {
+  if (loadedTabs.has(tabId)) {
+    return;
+  }
+
+  const tabLoadedPromise = new Promise(resolve => {
+    waitingForTabs.set(tabId, resolve);
+  });
+
+  await tabLoadedPromise;
+}
+
+// A top-level listener for tabs being updated, to listen for loaded state. This
+// has to be here, since adding it after the tab is created might be too late if
+// tabs load very quickly.
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (tab.status == 'complete') {
+    loadedTabs.add(tabId);
+    if (waitingForTabs.has(tabId)) {
+      const resolve = waitingForTabs.get(tabId);
+      waitingForTabs.delete(tabId);
+      resolve();
+    }
+  } else {
+    loadedTabs.delete(tabId);
+  }
+});
+
 loadScript.then(async function() {
 chrome.test.runTests([
-  function createTab() {
-    chrome.tabs.create({}, function(tab) {
+  async function createTab() {
+    chrome.tabs.create({}, async (tab) => {
       testTabId_ = tab.id;
       // Wait for tab loading complete.
-      chrome.tabs.onUpdated.addListener(function local(tabId, changeInfo, tab) {
-        if (tabId != testTabId_ || changeInfo.status != 'complete') {
-          return;
-        }
-        chrome.tabs.onUpdated.removeListener(local);
-        chrome.test.succeed();
-      })
+      await waitForTabLoaded(testTabId_);
+      chrome.test.succeed();
     });
   },
 
