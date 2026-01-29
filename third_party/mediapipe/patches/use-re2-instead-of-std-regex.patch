@@ -4,20 +4,22 @@ Date: Wed, 26 Jul 2023 11:24:47 -0700
 Subject: [PATCH] use re2 instead of std regex
 
 ---
- .../src/mediapipe/framework/deps/re2.h        | 42 ++-----------------
- 1 file changed, 3 insertions(+), 39 deletions(-)
+ .../mediapipe/src/mediapipe/framework/deps/re2.h   | 44 ++--------------------
+ 1 file changed, 3 insertions(+), 41 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/framework/deps/re2.h b/third_party/mediapipe/src/mediapipe/framework/deps/re2.h
-index 61f7985ee62fe..4079d9c0d1916 100644
+index b1b5532eb0380..4079d9c0d1916 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/deps/re2.h
 +++ b/third_party/mediapipe/src/mediapipe/framework/deps/re2.h
-@@ -15,45 +15,9 @@
+@@ -15,47 +15,9 @@
  #ifndef MEDIAPIPE_FRAMEWORK_DEPS_RE2_H_
  #define MEDIAPIPE_FRAMEWORK_DEPS_RE2_H_
  
 -#include <regex>  // NOLINT
 +#include "re2/re2.h"
  
+-#include "absl/base/call_once.h"
+-
 -namespace mediapipe {
 -
 -// Implements a subset of RE2 using std::regex_match.
@@ -42,17 +44,17 @@ index 61f7985ee62fe..4079d9c0d1916 100644
 -  std::regex std_regex_;
 -};
 -
--// Implements LazyRE2 using std::call_once.
+-// Implements LazyRE2 using absl::call_once.
 -class LazyRE2 {
 - public:
 -  RE2& operator*() const {
--    std::call_once(once_, [&]() { ptr_ = new RE2(pattern_); });
+-    absl::call_once(once_, [&]() { ptr_ = new RE2(pattern_); });
 -    return *ptr_;
 -  }
 -  RE2* operator->() const { return &**this; }
 -  const char* pattern_;
 -  mutable RE2* ptr_;
--  mutable std::once_flag once_;
+-  mutable absl::once_flag once_;
 -};
 -
 -}  // namespace mediapipe
@@ -60,6 +62,3 @@ index 61f7985ee62fe..4079d9c0d1916 100644
 +using re2::RE2;
  
  #endif  // MEDIAPIPE_FRAMEWORK_DEPS_RE2_H_
--- 
-2.41.0.487.g6d72f3e995-goog
-

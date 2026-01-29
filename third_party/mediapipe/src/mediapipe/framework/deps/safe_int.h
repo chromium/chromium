@@ -99,7 +99,7 @@ class SafeIntStrongIntValidator {
       // value is negative, it can't be larger than the max value for type T.
       if ((static_cast<U>(static_cast<T>(arg)) != arg) ||
           (!std::numeric_limits<T>::is_signed && arg < 0) ||
-          (arg > 0 && arg > std::numeric_limits<T>::max())) {
+          (arg > 0 && arg > static_cast<U>(std::numeric_limits<T>::max()))) {
         ErrorType::Error("SafeInt: init from out of bounds value", arg, "=");
       }
     }

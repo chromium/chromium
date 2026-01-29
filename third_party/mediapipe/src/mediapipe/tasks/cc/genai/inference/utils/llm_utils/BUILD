@@ -14,6 +14,11 @@
 
 # Utilities to help optimize Large Language Models (LLM).
 
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
+# Placeholder for internal Python strict binary compatibility macro.
+
 package(default_visibility = [
     "//mediapipe/tasks/cc:__subpackages__",
     "//third_party/odml/infra/genai/inference:__subpackages__",
@@ -148,5 +153,6 @@ cc_library(
         "//mediapipe/tasks/cc/genai/inference/proto:prompt_template_cc_proto",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
     ],
 )

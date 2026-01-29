@@ -482,8 +482,7 @@ CreateTfliteLlmCpuEngine(const LlmModelSettings* model_settings) {
   MP_RETURN_IF_ERROR(tokenizer->LoadFromSerializedProto(tokenizer_buffer));
 
   auto llm_parameters = odml::infra::proto::LlmParameters();
-  RET_CHECK(llm_parameters.ParseFromArray(params_buffer.data(),
-                                          params_buffer.size()));
+  RET_CHECK(llm_parameters.ParseFromString(params_buffer));
 
   auto start_token_id = tokenizer->PieceToId(llm_parameters.start_token());
 
@@ -591,6 +590,13 @@ int LlmInferenceEngine_Session_AddQueryChunk(
 ODML_EXPORT int LlmInferenceEngine_Session_AddImage(
     LlmInferenceEngine_Session* session, const void* sk_bitmap,
     char** error_msg) {
+  *error_msg = strdup("Not implemented");
+  return 12;
+}
+
+ODML_EXPORT int LlmInferenceEngine_Session_AddAudio(
+    LlmInferenceEngine_Session* session, const char* audio_bytes,
+    int audio_bytes_size, char** error_msg) {
   *error_msg = strdup("Not implemented");
   return 12;
 }

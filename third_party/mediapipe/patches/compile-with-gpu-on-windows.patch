@@ -7,14 +7,13 @@ Major changes:
 - Allow mediapipe to be built with pthreads disabled.
 - Turn off LeakCheckDisabler, Chromium cannot depend on it.
 ---
- .../mediapipe/src/mediapipe/gpu/gl_base.h     |  3 ++
- .../src/mediapipe/gpu/gl_calculator_helper.h  |  6 ++--
- .../mediapipe/src/mediapipe/gpu/gl_context.cc | 29 +++++++++++++++----
- .../mediapipe/src/mediapipe/gpu/gl_context.h  |  7 ++---
- .../src/mediapipe/gpu/gl_context_egl.cc       |  6 ++++
- .../src/mediapipe/gpu/gl_context_internal.h   | 12 +++++++-
- .../src/mediapipe/gpu/gpu_service.cc          |  5 ++--
- 7 files changed, 54 insertions(+), 14 deletions(-)
+ third_party/mediapipe/src/mediapipe/gpu/gl_base.h  |  3 +++
+ .../mediapipe/src/mediapipe/gpu/gl_context.cc      | 28 ++++++++++++++++++----
+ .../mediapipe/src/mediapipe/gpu/gl_context.h       |  2 --
+ .../mediapipe/src/mediapipe/gpu/gl_context_egl.cc  |  6 +++++
+ .../src/mediapipe/gpu/gl_context_internal.h        | 11 +++++++++
+ .../mediapipe/src/mediapipe/gpu/gpu_service.cc     |  2 +-
+ 6 files changed, 45 insertions(+), 7 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_base.h b/third_party/mediapipe/src/mediapipe/gpu/gl_base.h
 index a16bcffa3b27b..64e288d5aca75 100644
@@ -30,32 +29,8 @@ index a16bcffa3b27b..64e288d5aca75 100644
  #endif  // defined(__APPLE__)
  
  namespace mediapipe {
-diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h b/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
-index 467defe4cae70..6b45031c6f7ff 100644
---- a/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
-+++ b/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
-@@ -16,6 +16,7 @@
- #define MEDIAPIPE_GPU_GL_CALCULATOR_HELPER_H_
- 
- #include <memory>
-+#include <type_traits>
- 
- #include "absl/base/attributes.h"
- #include "absl/memory/memory.h"
-@@ -98,8 +99,9 @@ class GlCalculatorHelper {
-   //
-   // Therefore, instead of using std::function<void(void)>, we use a template
-   // that only accepts arguments with a void result type.
--  template <typename T, typename = typename std::enable_if<std::is_void<
--                            typename std::result_of<T()>::type>::value>::type>
-+  template <typename T,
-+            typename = typename std::enable_if<std::is_void<
-+                typename std::invoke_result<T>::type>::value>::type>
-   void RunInGlContext(T f) {
-     RunInGlContext([f] {
-       f();
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc b/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
-index 0be605db552c6..302bfb8466f31 100644
+index e747b1908cd4c..7d0c5d5d38258 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
 @@ -14,6 +14,10 @@
@@ -69,7 +44,7 @@ index 0be605db552c6..302bfb8466f31 100644
  #include <sys/types.h>
  
  #include <algorithm>
-@@ -95,17 +99,29 @@ static void SetThreadName(const char* name) {
+@@ -94,17 +98,29 @@ static void SetThreadName(const char* name) {
  }
  
  GlContext::DedicatedThread::DedicatedThread() {
@@ -99,7 +74,7 @@ index 0be605db552c6..302bfb8466f31 100644
    }
  }
  
-@@ -131,11 +147,14 @@ void GlContext::DedicatedThread::PutJob(Job job) {
+@@ -130,11 +146,14 @@ void GlContext::DedicatedThread::PutJob(Job job) {
    has_jobs_cv_.SignalAll();
  }
  
@@ -114,7 +89,7 @@ index 0be605db552c6..302bfb8466f31 100644
  
  #ifdef __APPLE__
  #define AUTORELEASEPOOL @autoreleasepool
-@@ -199,7 +218,11 @@ void GlContext::DedicatedThread::RunWithoutWaiting(GlVoidFunction gl_func) {
+@@ -209,7 +228,11 @@ void GlContext::DedicatedThread::RunWithoutWaiting(GlVoidFunction gl_func) {
  }
  
  bool GlContext::DedicatedThread::IsCurrentThread() {
@@ -126,18 +101,17 @@ index 0be605db552c6..302bfb8466f31 100644
  }
  
  bool GlContext::ParseGlVersion(absl::string_view version_string, GLint* major,
-@@ -499,10 +522,6 @@ void GlContext::RunWithoutWaiting(GlVoidFunction gl_func) {
- }
+@@ -540,9 +563,6 @@ void GlContext::RunWithoutWaiting(GlVoidFunction gl_func) {
  
  std::weak_ptr<GlContext>& GlContext::CurrentContext() {
--  // Workaround for b/67878799.
+   // Workaround for b/67878799.
 -#ifndef __EMSCRIPTEN__
 -  absl::LeakCheckDisabler disable_leak_check;
 -#endif
    ABSL_CONST_INIT thread_local std::weak_ptr<GlContext> current_context;
    return current_context;
  }
-@@ -1126,7 +1145,7 @@ void GlContext::SetStandardTextureParams(GLenum target, GLint internal_format) {
+@@ -1166,7 +1186,7 @@ void GlContext::SetStandardTextureParams(GLenum target, GLint internal_format) {
    glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
  }
  
@@ -147,7 +121,7 @@ index 0be605db552c6..302bfb8466f31 100644
        GLuint framebuffer;
        glGenFramebuffers(1, &framebuffer);
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context.h b/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
-index e491bb9b06ce1..35c93064960ba 100644
+index 077942b64f192..b05b88bd9f337 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
 @@ -15,8 +15,6 @@
@@ -159,18 +133,6 @@ index e491bb9b06ce1..35c93064960ba 100644
  #include <atomic>
  #include <cstdint>
  #include <functional>
-@@ -285,8 +283,9 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
-   //
-   // Therefore, instead of using std::function<void(void)>, we use a template
-   // that only accepts arguments with a void result type.
--  template <typename T, typename = typename std::enable_if<std::is_void<
--                            typename std::result_of<T()>::type>::value>::type>
-+  template <typename T,
-+            typename = typename std::enable_if<std::is_void<
-+                typename std::invoke_result<T>::type>::value>::type>
-   void Run(T f) {
-     Run([f] {
-       f();
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc b/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc
 index 48b6192b29c18..ea3582961956a 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc
@@ -204,7 +166,7 @@ index 48b6192b29c18..ea3582961956a 100644
    if (display == EGL_NO_DISPLAY) {
      display = eglGetCurrentDisplay();
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context_internal.h b/third_party/mediapipe/src/mediapipe/gpu/gl_context_internal.h
-index d683d4447d768..52ad42a0fa8bd 100644
+index d683d4447d768..de4f3ced5a3bd 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_context_internal.h
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context_internal.h
 @@ -24,6 +24,10 @@
@@ -218,15 +180,7 @@ index d683d4447d768..52ad42a0fa8bd 100644
  #include "mediapipe/gpu/gl_context.h"
  
  namespace mediapipe {
-@@ -43,7 +47,6 @@ class GlContext::DedicatedThread {
-   void SelfDestruct();
- 
-  private:
--  static void* ThreadBody(void* instance);
-   void ThreadBody();
- 
-   using Job = std::function<void(void)>;
-@@ -53,7 +56,14 @@ class GlContext::DedicatedThread {
+@@ -53,7 +57,14 @@ class GlContext::DedicatedThread {
    absl::Mutex mutex_;
    // Used to wait for a job's completion.
    absl::CondVar gl_job_done_cv_ ABSL_GUARDED_BY(mutex_);
@@ -242,20 +196,15 @@ index d683d4447d768..52ad42a0fa8bd 100644
    std::deque<Job> jobs_ ABSL_GUARDED_BY(mutex_);
    absl::CondVar has_jobs_cv_ ABSL_GUARDED_BY(mutex_);
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc b/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
-index 53a0e0f479052..ef77952dff8c7 100644
+index 53a0e0f479052..a18604ab83062 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
-@@ -16,7 +16,8 @@
+@@ -16,7 +16,7 @@
  
  namespace mediapipe {
  
 -const GraphService<GpuResources> kGpuService(
--    "kGpuService", GraphServiceBase::kAllowDefaultInitialization);
 +ABSL_CONST_INIT const GraphService<GpuResources> kGpuService(
-+    "kGpuService",
-+    GraphServiceBase::kAllowDefaultInitialization);
+     "kGpuService", GraphServiceBase::kAllowDefaultInitialization);
  
  }  // namespace mediapipe
--- 
-2.48.0.rc2.279.g1de40edade-goog
-

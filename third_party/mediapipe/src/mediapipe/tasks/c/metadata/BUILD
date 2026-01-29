@@ -1,4 +1,4 @@
-# Copyright 2022 The MediaPipe Authors.
+# Copyright 2025 The MediaPipe Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//mediapipe/framework/port:build_config.bzl", "mediapipe_proto_library")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 package(default_visibility = ["//mediapipe/tasks:internal"])
 
 licenses(["notice"])
 
-mediapipe_proto_library(
-    name = "audio_embedder_graph_options_proto",
-    srcs = ["audio_embedder_graph_options.proto"],
+cc_library(
+    name = "flatbuffer_api_c_lib",
+    srcs = ["flatbuffer_api.cc"],
+    hdrs = ["flatbuffer_api.h"],
     deps = [
-        "//mediapipe/framework:calculator_options_proto",
-        "//mediapipe/framework:calculator_proto",
-        "//mediapipe/tasks/cc/components/processors/proto:embedder_options_proto",
-        "//mediapipe/tasks/cc/core/proto:base_options_proto",
+        "//mediapipe/tasks/c/core:mp_status",
+        "//mediapipe/tasks/c/core:mp_status_converter",
+        "@com_google_absl//absl/status",
+        "@flatbuffers",
     ],
+    alwayslink = 1,
 )

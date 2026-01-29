@@ -1,0 +1,87 @@
+From b205399853867069841ca4e7c28035667a0218bc Mon Sep 17 00:00:00 2001
+From: Jaewon Lee <jaeone@google.com>
+Date: Wed, 28 Jan 2026 02:34:47 +0000
+Subject: [PATCH] Fix Clang compilation errors (RTTI, tags, assignment)
+
+This patch fixes four compilation errors encountered when building Mediapipe
+as part of Chrome with strict Clang warnings enabled.
+
+1. api2/builder.h: Explicitly delete the move assignment operator for
+   NodeBase. The compiler flagged the defaulted operator as implicitly
+   deleted because NodeBase contains a reference member (`node_builder_`),
+   which cannot be reassigned.
+
+2. api3/contract.h: Change the forward declaration of `Options` from
+   `struct` to `class` to match its definition. This resolves
+   -Wmismatched-tags errors.
+
+3. api3/internal/contract_validator.h: Replace usage of `typeid(...).name()`
+   with a string literal. The build configuration uses `-fno-rtti`, making
+   `typeid` unavailable.
+
+4. deps/safe_int.h: Add a static_cast<U> to the bounds check. This fixes
+   -Wimplicit-const-int-float-conversion errors where large integer values
+   were implicitly converting to double during comparison.
+
+---
+ third_party/mediapipe/src/mediapipe/framework/api2/builder.h    | 2 +-
+ third_party/mediapipe/src/mediapipe/framework/api3/contract.h   | 2 +-
+ .../src/mediapipe/framework/api3/internal/contract_validator.h  | 2 +-
+ third_party/mediapipe/src/mediapipe/framework/deps/safe_int.h   | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/framework/api2/builder.h b/third_party/mediapipe/src/mediapipe/framework/api2/builder.h
+index b845f79570135..e8ae164732b58 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/api2/builder.h
++++ b/third_party/mediapipe/src/mediapipe/framework/api2/builder.h
+@@ -348,7 +348,7 @@ class NodeBase {
+ 
+   ~NodeBase() = default;
+   NodeBase(NodeBase&&) = default;
+-  NodeBase& operator=(NodeBase&&) = default;
++  NodeBase& operator=(NodeBase&&) = delete;
+   // Explicitly delete copies to improve error messages.
+   NodeBase(const NodeBase&) = delete;
+   NodeBase& operator=(const NodeBase&) = delete;
+diff --git a/third_party/mediapipe/src/mediapipe/framework/api3/contract.h b/third_party/mediapipe/src/mediapipe/framework/api3/contract.h
+index f6709fa8d7780..e56d3b21227dc 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/api3/contract.h
++++ b/third_party/mediapipe/src/mediapipe/framework/api3/contract.h
+@@ -247,7 +247,7 @@ class Optional;
+ //   }
+ // ```
+ template <typename S, typename ProtoT>
+-struct Options;
++class Options;
+ 
+ // Used in cases when inputs/outputs are provided in alternative ways.
+ // (E.g. `Build(Graph<>& graph, Stream<..> input) -> Stream<...>)`)
+diff --git a/third_party/mediapipe/src/mediapipe/framework/api3/internal/contract_validator.h b/third_party/mediapipe/src/mediapipe/framework/api3/internal/contract_validator.h
+index 75f6eb48c4913..dd09d0815fd6a 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/api3/internal/contract_validator.h
++++ b/third_party/mediapipe/src/mediapipe/framework/api3/internal/contract_validator.h
+@@ -140,7 +140,7 @@ absl::Status ValidateContract() {
+   if (errors.empty()) return absl::OkStatus();
+   return tool::CombinedStatus(
+       absl::StrCat("Contract ",
+-                   typeid(ContractT<ContractSpecializer, Ts...>).name(),
++                   "ContractT", // typeid is not available with -fno-rtti
+                    " is invalid."),
+       errors);
+ }
+diff --git a/third_party/mediapipe/src/mediapipe/framework/deps/safe_int.h b/third_party/mediapipe/src/mediapipe/framework/deps/safe_int.h
+index e4a1faf38328e..3baef02a5a6e0 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/deps/safe_int.h
++++ b/third_party/mediapipe/src/mediapipe/framework/deps/safe_int.h
+@@ -99,7 +99,7 @@ class SafeIntStrongIntValidator {
+       // value is negative, it can't be larger than the max value for type T.
+       if ((static_cast<U>(static_cast<T>(arg)) != arg) ||
+           (!std::numeric_limits<T>::is_signed && arg < 0) ||
+-          (arg > 0 && arg > std::numeric_limits<T>::max())) {
++          (arg > 0 && arg > static_cast<U>(std::numeric_limits<T>::max()))) {
+         ErrorType::Error("SafeInt: init from out of bounds value", arg, "=");
+       }
+     }
+-- 
+2.52.0.457.g6b5491de43-goog
+

@@ -14,11 +14,14 @@
 
 #include "mediapipe/framework/deps/platform_strings.h"
 
-#include <string>
-
 #ifdef _WIN32
 #include <Windows.h>
-#endif
+#else
+#include <errno.h>
+#include <string.h>
+#endif  // _WIN32
+
+#include <string>
 
 namespace mediapipe {
 #ifdef _WIN32
@@ -53,9 +56,6 @@ std::string FormatLastError() {
   return NativeToUtf8(message);
 }
 #else
-#include <errno.h>
-#include <string.h>
-
 std::string FormatLastError() { return strerror(errno); }
 #endif  // _WIN32
 }  // namespace mediapipe

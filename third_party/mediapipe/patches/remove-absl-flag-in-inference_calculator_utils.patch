@@ -6,23 +6,23 @@ Subject: [PATCH] Remove ABSL_FLAG in inference_calculator_utils
 This is disallowed in Chromium builds. Use the default flag value instead.
 
 ---
- .../calculators/tensor/inference_calculator_utils.cc       | 7 +------
- .../calculators/tensor/inference_calculator_utils.h        | 3 ---
+ .../src/mediapipe/calculators/tensor/inference_calculator_utils.cc | 7 +------
+ .../src/mediapipe/calculators/tensor/inference_calculator_utils.h  | 3 ---
  2 files changed, 1 insertion(+), 9 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.cc b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.cc
-index 52c6c8be2206c..d5ee27ba149de 100644
+index 0ad860c5480ec..c4d1dea48f354 100644
 --- a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.cc
 +++ b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.cc
-@@ -20,7 +20,6 @@
+@@ -19,7 +19,6 @@
  #include <string>
  #include <vector>
  
 -#include "absl/flags/flag.h"
- #include "absl/log/absl_log.h"
  #include "absl/status/status.h"
  #include "absl/status/statusor.h"
-@@ -39,10 +38,6 @@
+ #include "absl/strings/str_cat.h"
+@@ -37,10 +36,6 @@
  #include "tensorflow/lite/portable_type_to_tflitetype.h"
  #include "tensorflow/lite/string_util.h"
  
@@ -33,8 +33,8 @@ index 52c6c8be2206c..d5ee27ba149de 100644
  #if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
  #include "mediapipe/util/cpu_util.h"
  #endif  // !__EMSCRIPTEN__ || __EMSCRIPTEN_PTHREADS__
-@@ -51,7 +46,7 @@ namespace mediapipe {
- namespace {
+@@ -234,7 +229,7 @@ int GetCpuDefaultNumThreads() {
+ }
  
  int GetXnnpackDefaultNumThreads() {
 -  int default_from_flag = absl::GetFlag(FLAGS_xnnpack_default_num_threads);
@@ -43,7 +43,7 @@ index 52c6c8be2206c..d5ee27ba149de 100644
      return default_from_flag;
    }
 diff --git a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.h b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.h
-index 93454ed9f7d94..0eff2b854801d 100644
+index 481f9baf6b101..25a1b5214fb1e 100644
 --- a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.h
 +++ b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.h
 @@ -19,7 +19,6 @@
@@ -62,4 +62,4 @@ index 93454ed9f7d94..0eff2b854801d 100644
 -
  namespace mediapipe {
  
- // Returns number of threads to configure XNNPACK delegate with.
+ // Returns number of threads to configure CPU inference based on the platform.

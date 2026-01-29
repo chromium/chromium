@@ -47,6 +47,7 @@ class GlContext::DedicatedThread {
   void SelfDestruct();
 
  private:
+  static void* ThreadBody(void* instance);
   void ThreadBody();
 
   using Job = std::function<void(void)>;

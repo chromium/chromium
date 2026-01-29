@@ -52,6 +52,7 @@
 #include "mediapipe/gpu/gpu_buffer_format.h"
 
 #ifndef __EMSCRIPTEN__
+#include "absl/debugging/leak_check.h"
 #include "mediapipe/gpu/gl_thread_collector.h"
 #endif
 
@@ -562,6 +563,7 @@ void GlContext::RunWithoutWaiting(GlVoidFunction gl_func) {
 }
 
 std::weak_ptr<GlContext>& GlContext::CurrentContext() {
+  // Workaround for b/67878799.
   ABSL_CONST_INIT thread_local std::weak_ptr<GlContext> current_context;
   return current_context;
 }

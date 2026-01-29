@@ -20,7 +20,7 @@ option java_package = "com.google.odml.infra.proto";
 option java_outer_classname = "TransformerParametersProto";
 
 // The parameters of transformer (https://arxiv.org/pdf/1706.03762.pdf)
-// Next ID: 41
+// Next ID: 47
 message TransformerParameters {
   // Batch size of tensors.
   int32 batch_size = 1;
@@ -167,6 +167,11 @@ message TransformerParameters {
     // If set, enables separate q and k weighted norms in the attention layer
     // (used for Gemma3).
     optional bool qk_norm = 7;
+
+    // For architectures which support qk norms being either weighted or
+    // unweighted, (like Gemma 3n), setting this determines which of those is
+    // the case.
+    optional bool qk_norm_has_scale = 8;
   }
 
   SelfAttentionParameters self_attention_parameters = 16;
@@ -235,6 +240,10 @@ message TransformerParameters {
   int32 audio_vocab_extra_dim = 30;
   // Dimension which we embed audio hard tokens to.
   int32 audio_input_embedding_dim = 31;
+  // Whether to apply dual normalization (before and after projection) to audio
+  // soft and hard tokens. This is used in Nano V3 models. If not defined, it
+  // will default to True for backward compatibility.
+  optional bool audio_dual_norm_soft_and_hard_tokens = 46;
 
   // Laurel configs.
   message LaurelConfig {
@@ -272,4 +281,20 @@ message TransformerParameters {
   // where cdf is the cumulative distribution function of the Gaussian
   // distribution.
   optional float activation_sparsity_stddev_multiplier = 38;
+
+  // Whether to apply SRQ. If true, depending on the model setup, static
+  // range quantization will be applied to the corresponding layers, e.g.,
+  // attn_vec_einsum, kv_einsum, q_einsum, mlp/gating_einsum and mlp/linear.
+  optional bool apply_srq = 41;
+
+  // Params for skipping layers, used by the submodel.
+  optional int32 layer_skip_start = 42;
+  optional int32 num_layers_skipped = 43;
+
+  // The factor to use when scaling for matformer. A factor of 2 means the layer
+  // will be cut in half.
+  optional int32 matform_factor = 44;
+
+  // Whether to scale all LoRA weights by their inverse rank.
+  optional bool scale_lora = 45;
 }

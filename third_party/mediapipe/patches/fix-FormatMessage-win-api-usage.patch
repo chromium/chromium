@@ -15,30 +15,17 @@ Date: Thu, 23 Jan 2025 00:03:31 +0000
 Subject: [PATCH] commit
 
 ---
- .../framework/deps/platform_strings.cc         | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ .../src/mediapipe/framework/deps/platform_strings.cc         | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/framework/deps/platform_strings.cc b/third_party/mediapipe/src/mediapipe/framework/deps/platform_strings.cc
-index fa8f3c791f21c..be0b3979e86f9 100644
+index 8739ee92581b0..a31b6941b1cc6 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/deps/platform_strings.cc
 +++ b/third_party/mediapipe/src/mediapipe/framework/deps/platform_strings.cc
-@@ -16,31 +16,39 @@
-
- #include <string>
-
--namespace mediapipe {
- #ifdef _WIN32
- #include <Windows.h>
-+#endif
-
-+namespace mediapipe {
-+#ifdef _WIN32
- std::string FormatLastError() {
-   DWORD message_id = GetLastError();
-   if (message_id == 0) {
+@@ -31,21 +31,27 @@ std::string FormatLastError() {
      return std::string("(no error reported)");
    }
-
+ 
 -  LPSTR message_buffer = nullptr;
 +  using WinStringType =
 +#ifdef UNICODE
@@ -60,12 +47,9 @@ index fa8f3c791f21c..be0b3979e86f9 100644
    if (size == 0) {
      return "(error while trying to format the error message)";
    }
-
+ 
 -  std::string message(message_buffer, size);
 +  PlatformString message(message_buffer, size);
    LocalFree(message_buffer);
    return NativeToUtf8(message);
  }
---
-2.48.1.262.g85cc9f2d1e-goog
-

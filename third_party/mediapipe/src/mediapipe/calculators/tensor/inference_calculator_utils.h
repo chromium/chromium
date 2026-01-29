@@ -30,6 +30,9 @@
 
 namespace mediapipe {
 
+// Returns number of threads to configure CPU inference based on the platform.
+int GetCpuDefaultNumThreads();
+
 // Returns number of threads to configure XNNPACK delegate with.
 // Returns user provided value if specified. Otherwise, tries to choose optimal
 // number of threads depending on the device. The default can be overridden by
