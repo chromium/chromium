@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.search_engines.settings;
 import android.os.Bundle;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
@@ -21,14 +22,17 @@ import org.chromium.components.browser_ui.settings.SettingsFragment;
 @NullMarked
 public class SiteSearchSettings extends ChromeBaseSettingsFragment {
     // TODO(crbug.com/478726836): See if this needs to be added to the search index
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
+
     @Override
-    public void onCreatePreferences(
-            @Nullable Bundle savedInstanceState, @Nullable String rootKey) {}
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+        mPageTitle.set(getString(R.string.manage_search_engines_and_site_search));
+    }
 
     @Override
     public MonotonicObservableSupplier<String> getPageTitle() {
-        String title = getString(R.string.manage_search_engines_and_site_search);
-        return new ObservableSupplierImpl<>(title);
+        return mPageTitle;
     }
 
     @Override

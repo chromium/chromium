@@ -98,7 +98,10 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.search_engines"
-  sources = [ "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinatorUnitTest.java" ]
+  sources = [
+    "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/settings/SiteSearchSettingsUnitTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",
@@ -117,6 +120,7 @@ robolectric_library("junit") {
     "//components/search_engines/android:test_utils_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
