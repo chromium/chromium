@@ -596,6 +596,11 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, NestedBlob) {
   SimpleTest(GetTestUrl("indexeddb", "nested_blob.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed,
+                       DbRestoresFromZygoticState) {
+  SimpleTest(GetTestUrl("indexeddb", "db_restores_from_zygotic_state.html"));
+}
+
 struct BlobModificationTime {
   base::FilePath relative_blob_path;
   base::Time time;

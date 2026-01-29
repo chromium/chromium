@@ -7762,6 +7762,8 @@ data/indexeddb/database_callbacks_second.html
 data/indexeddb/database_outlives_connection.html
 data/indexeddb/database_test.html
 data/indexeddb/database_test.js
+data/indexeddb/db_restores_from_zygotic_state.html
+data/indexeddb/db_restores_from_zygotic_state.js
 data/indexeddb/delete_compact.html
 data/indexeddb/delete_open_use.html
 data/indexeddb/delete_open_use.js

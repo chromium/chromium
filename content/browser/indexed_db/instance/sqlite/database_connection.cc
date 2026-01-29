@@ -870,6 +870,7 @@ void DatabaseConnection::Release(base::WeakPtr<DatabaseConnection> db) {
   // in case the page reopens the same database soon.
   DatabaseConnection* db_ptr = db.get();
   db.reset();
+
   if (db_ptr->CanSelfDestruct()) {
     db_ptr->backing_store_->DestroyConnection(db_ptr->metadata_.name);
   }
@@ -1098,6 +1099,10 @@ uint64_t DatabaseConnection::GetSize() const {
 
 std::unique_ptr<BackingStoreDatabaseImpl>
 DatabaseConnection::CreateDatabaseWrapper() {
+  // If `this` was marked for deletion, and entered a zygotic state, but then
+  // a page reopened a database with the same name, then don't delete the new
+  // DB.
+  marked_for_permanent_deletion_ = false;
   return std::make_unique<BackingStoreDatabaseImpl>(
       interface_wrapper_weak_factory_.GetWeakPtr());
 }
