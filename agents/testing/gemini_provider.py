@@ -10,6 +10,7 @@ import logging
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -32,6 +33,7 @@ DEFAULT_EXTENSIONS = [
     'landmines',
     'test-landmines',
 ]
+DEFAULT_SKILLS = []
 
 
 @dataclasses.dataclass
@@ -161,6 +163,36 @@ def _install_extensions(extensions: Collection[str] | None = None,
     result.check_returncode()
     logging.debug('Installed extensions:\n%s',
                   _get_installed_extensions(home_dir))
+
+
+def _install_skills(skills: Collection[str] | None = None,
+                    home_dir: pathlib.Path | None = None) -> None:
+    """Installs skills into the home directory.
+
+    Args:
+        skills: A collection of skill names to install.
+        home_dir: The path to the directory being used as the home directory.
+    """
+    if not skills or not home_dir:
+        return
+
+    logging.info('Installing skills: %s', skills)
+    skills_dir = home_dir / '.gemini' / 'skills'
+    os.makedirs(skills_dir, exist_ok=True)
+
+    for skill in skills:
+        src = pathlib.Path('agents', 'skills', skill)
+        dest = skills_dir / skill
+        if not src.exists():
+            raise FileNotFoundError(f'Skill {skill} not found at {src}')
+
+        if dest.exists():
+            shutil.rmtree(dest)
+
+        # We copy rather than link so that the test environment is truly
+        # isolated and not affected by changes to the source tree while the
+        # test is running.
+        shutil.copytree(src, dest)
 
 
 def _load_templates(templates: list[str]) -> str:
@@ -410,7 +442,8 @@ def _run_gemini_cli_with_output_streaming(
                 logging.warning('Output thread did not cleanly terminate.')
 
 
-def _parse_telemetry_data(telemetry_file: pathlib.Path) -> list[dict[str, Any]]:
+def _parse_telemetry_data(
+        telemetry_file: pathlib.Path) -> list[dict[str, Any]]:
     """Parses gemini-cli telemetry into a list of JSON objects.
 
     Args:
@@ -573,6 +606,8 @@ def _run_gemini_cli_with_telemetry_output(
         _install_extensions(provider_config.get('extensions',
                                                 DEFAULT_EXTENSIONS),
                             home_dir=gcli_arguments.home_dir)
+        _install_skills(provider_config.get('skills', DEFAULT_SKILLS),
+                        home_dir=gcli_arguments.home_dir)
         _apply_changes(provider_config.get('changes', []))
 
     process = None

@@ -1,0 +1,53 @@
+description: Add a FUZZ_TEST for services/network/public/cpp/schemeful_site_mojom_traits.cc
+owner: jtoohill@google.com
+prompts:
+  - >
+    Please write a fuzz test for services/network/public/cpp/schemeful_site_mojom_traits.cc
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 1800
+      skills:
+        - fuzzing
+tests:
+  - assert:
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_files_changed
+      config:
+        files:
+        - services/BUILD.gn
+        - services/network/public/cpp/BUILD.gn
+        - services/network/public/cpp/schemeful_site_mojom_traits_unittest.cc
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_file_content
+      config:
+        files:
+          - path: 'services/network/public/cpp/schemeful_site_mojom_traits_unittest.cc'
+            present:
+              - 'third_party/fuzztest/src/fuzztest/fuzztest.h'
+              - 'FUZZ_TEST'
+              - 'SchemefulSite'
+            absent:
+              - 'LLVMFuzzerTestOneInput'
+          - path: 'services/network/public/cpp/BUILD.gn'
+            present:
+              - '//third_party/fuzztest:fuzztest'
+          - path: 'services/BUILD.gn'
+            present:
+              - 'fuzztests = ['
+              - 'SchemefulSite'
+    - type: python
+      value: file://../../../testing/asserts/check_tool_calls.py:check_tool_used_with_args_match
+      config:
+        tool_names: [run_shell_command]
+        args_regexes: ['autoninja', 'out/fuzz']
+    - type: python
+      value: file://../../../testing/asserts/check_tool_calls.py:check_tool_used_with_args_match
+      config:
+        tool_names: [run_shell_command]
+        args_regexes: ['--gtest_filter', 'SchemefulSite']
+    - type: python
+      value: file://../../../testing/asserts/check_tool_calls.py:check_tool_used_with_args_match
+      config:
+        tool_names: [run_shell_command]
+        args_regexes: ['--fuzz=']
