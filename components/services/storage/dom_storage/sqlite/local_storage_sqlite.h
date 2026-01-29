@@ -72,6 +72,16 @@ class LocalStorageSqlite : public DomStorageDatabase {
   DbStatus PutVersionForTesting(int64_t version) override;
 
  private:
+  // Inserts or updates the metadata for the map identified by `storage_key` in
+  // the `maps` table. If a row for `storage_key` already exists, only non-null
+  // parameters are updated (existing values are preserved for null parameters).
+  // If no row exists, a new row is inserted with all provided values.  The
+  // caller must begin a database transaction before calling this function.
+  DbStatus PutMapMetadata(const blink::StorageKey& storage_key,
+                          std::optional<base::Time> last_accessed,
+                          std::optional<base::Time> last_modified,
+                          std::optional<base::ByteSize> total_size);
+
   // `Open()` creates `database_`, `meta_table_` and `map_entries_table_`.
   std::unique_ptr<sql::Database> database_;
   std::unique_ptr<sql::MetaTable> meta_table_;

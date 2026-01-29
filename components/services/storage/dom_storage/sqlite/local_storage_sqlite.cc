@@ -4,17 +4,16 @@
 
 #include "components/services/storage/dom_storage/sqlite/local_storage_sqlite.h"
 
+#include "base/byte_size.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/expected_macros.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/sqlite/map_entries_table.h"
+#include "components/services/storage/dom_storage/sqlite/sqlite_database_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 #include "sql/transaction.h"
-
-// Returns a `Status` if the passed expression evaluates to false.
-#define RETURN_STATUS_ON_ERROR(expr)            \
-  if (!expr) {                                  \
-    return storage::FromSqliteCode(*database_); \
-  }
 
 namespace storage {
 namespace {
@@ -48,6 +47,51 @@ DbStatus CreateSchema(sql::Database& database) {
     return storage::FromSqliteCode(database);
   }
   return MapEntriesTable::CreateSchema(database);
+}
+
+std::optional<base::Time> ColumnOptionalTime(sql::Statement& statement,
+                                             int column_index) {
+  if (statement.GetColumnType(column_index) == sql::ColumnType::kNull) {
+    return std::nullopt;
+  }
+  return statement.ColumnTime(column_index);
+}
+
+void BindOptionalTime(sql::Statement& statement,
+                      int column_index,
+                      std::optional<base::Time> time) {
+  if (time) {
+    statement.BindTime(column_index, *time);
+  } else {
+    statement.BindNull(column_index);
+  }
+}
+
+// Reads an optional `base::ByteSize` from the specified column in `statement`.
+// Returns `std::nullopt` if the column contains `NULL`. Returns a corruption
+// error if the value is negative.
+StatusOr<std::optional<base::ByteSize>> ColumnOptionalByteSize(
+    sql::Statement& statement,
+    int column_index) {
+  if (statement.GetColumnType(column_index) == sql::ColumnType::kNull) {
+    return std::nullopt;
+  }
+  int64_t total_size = statement.ColumnInt64(column_index);
+  if (!base::IsValueInRangeForNumericType<uint64_t>(total_size)) {
+    return base::unexpected(DbStatus::Corruption("invalid total size"));
+  }
+  return base::ByteSize(static_cast<uint64_t>(total_size));
+}
+
+void BindOptionalByteSize(sql::Statement& statement,
+                          int column_index,
+                          std::optional<base::ByteSize> byte_size) {
+  if (byte_size) {
+    statement.BindInt64(column_index,
+                        base::checked_cast<int64_t>(byte_size->InBytes()));
+  } else {
+    statement.BindNull(column_index);
+  }
 }
 
 }  // namespace
@@ -98,15 +142,51 @@ DbStatus LocalStorageSqlite::CloneMap(MapLocator source_map,
 }
 
 StatusOr<DomStorageDatabase::Metadata> LocalStorageSqlite::ReadAllMetadata() {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return base::unexpected(DbStatus::NotSupported(""));
+  constexpr const char kSelectAllMaps[] =
+      "SELECT storage_key, row_id, last_accessed, last_modified, total_size "
+      "FROM maps";
+
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kSelectAllMaps));
+
+  std::vector<MapMetadata> map_metadata;
+  while (statement.Step()) {
+    ASSIGN_OR_RETURN(
+        blink::StorageKey storage_key,
+        blink::StorageKey::Deserialize(statement.ColumnBlobAsString(0)),
+        []() { return DbStatus::Corruption("invalid storage key"); });
+
+    ASSIGN_OR_RETURN(std::optional<base::ByteSize> total_size,
+                     ColumnOptionalByteSize(statement, 4));
+
+    map_metadata.push_back({
+        .map_locator{
+            kLocalStorageSessionId,
+            std::move(storage_key),
+            /*map_id=*/statement.ColumnInt64(1),
+        },
+        .last_accessed = ColumnOptionalTime(statement, 2),
+        .last_modified = ColumnOptionalTime(statement, 3),
+        .total_size = total_size,
+    });
+  }
+
+  RETURN_UNEXPECTED_ON_ERROR(statement.Succeeded());
+  return Metadata(std::move(map_metadata));
 }
 
 DbStatus LocalStorageSqlite::PutMetadata(Metadata metadata) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  sql::Transaction transaction(database_.get());
+  RETURN_STATUS_ON_ERROR(transaction.Begin());
+
+  for (const MapMetadata& map_metadata : metadata.map_metadata) {
+    DB_RETURN_IF_ERROR(PutMapMetadata(
+        map_metadata.map_locator.storage_key(), map_metadata.last_accessed,
+        map_metadata.last_modified, map_metadata.total_size));
+  }
+
+  RETURN_STATUS_ON_ERROR(transaction.Commit());
+  return DbStatus::OK();
 }
 
 DbStatus LocalStorageSqlite::DeleteStorageKeysFromSession(
@@ -155,6 +235,56 @@ DbStatus LocalStorageSqlite::PutVersionForTesting(int64_t version) {
   RETURN_STATUS_ON_ERROR(transaction.Begin());
   RETURN_STATUS_ON_ERROR(meta_table_->SetCompatibleVersionNumber(version));
   RETURN_STATUS_ON_ERROR(transaction.Commit());
+  return DbStatus::OK();
+}
+
+DbStatus LocalStorageSqlite::PutMapMetadata(
+    const blink::StorageKey& storage_key,
+    std::optional<base::Time> last_accessed,
+    std::optional<base::Time> last_modified,
+    std::optional<base::ByteSize> total_size) {
+  CHECK(database_->HasActiveTransactions());
+  std::string serialized_storage_key = storage_key.Serialize();
+
+  // First, try to update an existing row. Use `COALESCE` to preserve existing
+  // values when the new value is `NULL`, allowing partial updates.
+  constexpr const char kUpdateMap[] =
+      // clang-format off
+      "UPDATE maps "
+      "SET "
+        "last_accessed = COALESCE(?, last_accessed),"
+        "last_modified = COALESCE(?, last_modified),"
+        "total_size = COALESCE(?, total_size) "
+      "WHERE storage_key = ?";
+  // clang-format on
+
+  sql::Statement update_statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kUpdateMap));
+
+  BindOptionalTime(update_statement, 0, last_accessed);
+  BindOptionalTime(update_statement, 1, last_modified);
+  BindOptionalByteSize(update_statement, 2, total_size);
+  update_statement.BindBlob(3, serialized_storage_key);
+
+  RETURN_STATUS_ON_ERROR(update_statement.Run());
+
+  // If no row was updated, insert a new row.
+  if (database_->GetLastChangeCount() == 0) {
+    constexpr const char kInsertMap[] =
+        "INSERT INTO maps"
+        "(storage_key, last_accessed, last_modified, total_size) "
+        "VALUES(?, ?, ?, ?)";
+
+    sql::Statement insert_statement(
+        database_->GetCachedStatement(SQL_FROM_HERE, kInsertMap));
+
+    insert_statement.BindBlob(0, serialized_storage_key);
+    BindOptionalTime(insert_statement, 1, last_accessed);
+    BindOptionalTime(insert_statement, 2, last_modified);
+    BindOptionalByteSize(insert_statement, 3, total_size);
+
+    RETURN_STATUS_ON_ERROR(insert_statement.Run());
+  }
   return DbStatus::OK();
 }
 

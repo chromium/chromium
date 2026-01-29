@@ -40,6 +40,7 @@ source_set("storage") {
     "dom_storage/sqlite/map_entries_table.h",
     "dom_storage/sqlite/session_storage_sqlite.cc",
     "dom_storage/sqlite/session_storage_sqlite.h",
+    "dom_storage/sqlite/sqlite_database_macros.h",
     "dom_storage/sqlite/sqlite_database_utils.cc",
     "dom_storage/sqlite/sqlite_database_utils.h",
     "dom_storage/storage_area_impl.cc",

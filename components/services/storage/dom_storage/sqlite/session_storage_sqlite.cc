@@ -6,24 +6,12 @@
 
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/sqlite/map_entries_table.h"
+#include "components/services/storage/dom_storage/sqlite/sqlite_database_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-
-// Returns a `DbStatus` if the passed expression evaluates to false.
-#define RETURN_STATUS_ON_ERROR(expr)            \
-  if (!expr) {                                  \
-    return storage::FromSqliteCode(*database_); \
-  }
-
-// Returns a `base::unexpected<DbStatus>` if the passed expression evaluates to
-// false.
-#define RETURN_UNEXPECTED_ON_ERROR(expr)                          \
-  if (!expr) {                                                    \
-    return base::unexpected(storage::FromSqliteCode(*database_)); \
-  }
 
 namespace storage {
 namespace {
@@ -59,15 +47,15 @@ DbStatus CreateSchema(sql::Database& database) {
 // `storage_key` cannot be deserialized.
 StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
     sql::Statement& statement) {
-  std::optional<blink::StorageKey> storage_key =
-      blink::StorageKey::Deserialize(statement.ColumnBlobAsString(1));
-  if (!storage_key) {
-    return base::unexpected(DbStatus::Corruption("invalid storage key"));
-  }
+  ASSIGN_OR_RETURN(
+      blink::StorageKey storage_key,
+      blink::StorageKey::Deserialize(statement.ColumnBlobAsString(1)),
+      []() { return DbStatus::Corruption("invalid storage key"); });
+
   return DomStorageDatabase::MapMetadata{
       .map_locator{
           /*session_id=*/statement.ColumnString(0),
-          *std::move(storage_key),
+          std::move(storage_key),
           /*map_id=*/statement.ColumnInt(2),
       },
   };
@@ -144,7 +132,7 @@ DbStatus SessionStorageSqlite::PutMetadata(Metadata metadata) {
 
   const char kPutMapMetadata[] =
       "INSERT OR REPLACE INTO session_metadata "
-      "(storage_key,map_id,session_id) VALUES (?,?,?)";
+      "(storage_key, map_id, session_id) VALUES (?, ?, ?)";
 
   sql::Statement statement(
       database_->GetCachedStatement(SQL_FROM_HERE, kPutMapMetadata));
@@ -236,7 +224,7 @@ SessionStorageSqlite::ReadAllMapMetadata() const {
   absl::flat_hash_map</*map_id=*/int64_t, MapMetadata> all_metadata;
 
   const char kSelectAllMetadata[] =
-      "SELECT session_id,storage_key,map_id FROM session_metadata";
+      "SELECT session_id, storage_key, map_id FROM session_metadata";
 
   sql::Statement statement(
       database_->GetCachedStatement(SQL_FROM_HERE, kSelectAllMetadata));
