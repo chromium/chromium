@@ -35,6 +35,8 @@ class BwgServiceTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    scoped_feature_list_.InitWithFeatures({kGeminiCopresence}, {});
+
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -55,7 +57,7 @@ class BwgServiceTest : public PlatformTest {
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAIHubEligibilityTriggered, false);
 
-    bwg_service_ = std::make_unique<BwgService>(
+    gemini_service_ = std::make_unique<BwgService>(
         profile_.get(), auth_service_, identity_test_env_.identity_manager(),
         pref_service_.get(), optimization_guide_service_);
   }
@@ -63,8 +65,8 @@ class BwgServiceTest : public PlatformTest {
   void TearDown() override {
     // Shutdown the service to ensure it unregisters itself as an observer
     // from IdentityManager before IdentityManager is destroyed.
-    if (bwg_service_) {
-      bwg_service_->Shutdown();
+    if (gemini_service_) {
+      gemini_service_->Shutdown();
     }
     PlatformTest::TearDown();
   }
@@ -86,10 +88,11 @@ class BwgServiceTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Profile and services that depend on the environment are declared next.
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<BwgService> bwg_service_;
+  std::unique_ptr<BwgService> gemini_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
@@ -99,10 +102,10 @@ class BwgServiceTest : public PlatformTest {
 
 // Tests that a user is considered eligible if they are signed in and their
 // account has the `can_use_model_execution_features` capability.
-TEST_F(BwgServiceTest, IsProfileEligibleForBWG_WhenUserIsEligible) {
+TEST_F(BwgServiceTest, IsProfileEligibleForGemini_WhenUserIsEligible) {
   SignInAndSetCapability(true);
 
-  EXPECT_TRUE(bwg_service_->IsProfileEligibleForBwg());
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
@@ -110,33 +113,33 @@ TEST_F(BwgServiceTest, IsProfileEligibleForBWG_WhenUserIsEligible) {
 
 // Tests that a user is ineligible if they are signed in but their account
 // capability is explicitly false.
-TEST_F(BwgServiceTest, IsProfileEligibleForBWG_IneligibleByCapability) {
+TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByCapability) {
   SignInAndSetCapability(false);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
 
-  EXPECT_FALSE(bwg_service_->IsProfileEligibleForBwg());
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);
 }
 
 // Tests that a user is ineligible if the Gemini policy is disabled.
-TEST_F(BwgServiceTest, IsProfileEligibleForBWG_IneligibleByPolicy) {
+TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByPolicy) {
   SignInAndSetCapability(true);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 1);
 
-  EXPECT_FALSE(bwg_service_->IsProfileEligibleForBwg());
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);
 }
 
 // Tests that a user is eligible if the Gemini policy is enabled.
-TEST_F(BwgServiceTest, IsProfileEligibleForBWG_EligibleByPolicy) {
+TEST_F(BwgServiceTest, IsProfileEligibleForGemini_EligibleByPolicy) {
   SignInAndSetCapability(true);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
 
-  EXPECT_TRUE(bwg_service_->IsProfileEligibleForBwg());
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
@@ -144,12 +147,12 @@ TEST_F(BwgServiceTest, IsProfileEligibleForBWG_EligibleByPolicy) {
 
 // Tests that a user is ineligible if they are not signed in to a primary
 // account.
-TEST_F(BwgServiceTest, IsProfileEligibleForBWG_IneligibleWhenSignedOut) {
+TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleWhenSignedOut) {
   // The default state is signed out.
   EXPECT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 
-  EXPECT_FALSE(bwg_service_->IsProfileEligibleForBwg());
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);
@@ -163,13 +166,13 @@ TEST_F(BwgServiceTest,
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
-  EXPECT_FALSE(bwg_service_->IsProfileEligibleForBwg());
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);
 }
 
-// Tests that BWG is available for a web state when the user is eligible and
+// Tests that Gemini is available for a web state when the user is eligible and
 // the web state is not off the record.
 TEST_F(BwgServiceTest, IsBwgAvailableForWebState_WhenUserIsEligible) {
   SignInAndSetCapability(true);
@@ -178,32 +181,71 @@ TEST_F(BwgServiceTest, IsBwgAvailableForWebState_WhenUserIsEligible) {
   web_state->SetCurrentURL(GURL("https://www.google.com"));
   web_state->SetContentsMimeType("text/html");
 
-  EXPECT_TRUE(bwg_service_->IsBwgAvailableForWebState(web_state.get()));
+  EXPECT_TRUE(gemini_service_->IsBwgAvailableForWebState(web_state.get()));
 }
 
-// Tests that BWG is not available for a web state when the user is not
+// Tests that Gemini is not available for a web state when the user is not
 // eligible.
 TEST_F(BwgServiceTest, IsBwgAvailableForWebState_WhenUserIsNotEligible) {
   SignInAndSetCapability(false);
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
 
-  EXPECT_FALSE(bwg_service_->IsBwgAvailableForWebState(web_state.get()));
+  EXPECT_FALSE(gemini_service_->IsBwgAvailableForWebState(web_state.get()));
 }
 
-// Tests that BWG is not available for a web state when the web state is off
+// Tests that Gemini is not available for a web state when the web state is off
 // the record.
 TEST_F(BwgServiceTest, IsBwgAvailableForWebState_WhenWebStateIsOffTheRecord) {
   SignInAndSetCapability(true);
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_->GetOffTheRecordProfile());
 
-  EXPECT_FALSE(bwg_service_->IsBwgAvailableForWebState(web_state.get()));
+  EXPECT_FALSE(gemini_service_->IsBwgAvailableForWebState(web_state.get()));
 }
 
-// Tests that BWG is not available for a web state when the web state is null.
+// Tests that Gemini is not available for a web state when the web state is
+// null.
 TEST_F(BwgServiceTest, IsBwgAvailableForWebState_WhenWebStateIsNull) {
   SignInAndSetCapability(true);
 
-  EXPECT_FALSE(bwg_service_->IsBwgAvailableForWebState(nullptr));
+  EXPECT_FALSE(gemini_service_->IsBwgAvailableForWebState(nullptr));
+}
+
+// Tests that Gemini is not available for a web state when the URL is an AIM
+// URL.
+TEST_F(BwgServiceTest, IsBwgAvailableForWebState_WhenUrlIsAimUrl) {
+  SignInAndSetCapability(true);
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  web_state->SetCurrentURL(GURL("https://www.google.com/search?q=test&udm=50"));
+  web_state->SetContentsMimeType("text/html");
+
+  EXPECT_FALSE(gemini_service_->IsBwgAvailableForWebState(web_state.get()));
+}
+
+// Tests that Gemini is available for a web state when the URL is a Google
+// Search URL but not an AIM URL.
+TEST_F(BwgServiceTest,
+       IsBwgAvailableForWebState_WhenUrlIsNotAimUrlButIsGoogleSearch) {
+  SignInAndSetCapability(true);
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  web_state->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
+  web_state->SetContentsMimeType("text/html");
+
+  EXPECT_TRUE(gemini_service_->IsBwgAvailableForWebState(web_state.get()));
+}
+
+// Tests that Gemini is available for a web state when the URL is not a Google
+// Search URL and thus not an AIM URL.
+TEST_F(BwgServiceTest,
+       IsBwgAvailableForWebState_WhenUrlIsNotAimUrlAndNotGoogleSearch) {
+  SignInAndSetCapability(true);
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  web_state->SetCurrentURL(GURL("https://www.example.com"));
+  web_state->SetContentsMimeType("text/html");
+
+  EXPECT_TRUE(gemini_service_->IsBwgAvailableForWebState(web_state.get()));
 }
