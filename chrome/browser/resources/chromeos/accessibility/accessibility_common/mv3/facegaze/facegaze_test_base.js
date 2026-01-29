@@ -282,11 +282,6 @@ FaceGazeTestBase = class extends E2ETestBase {
             base::Unretained(ash::AccessibilityManager::Get()), true);`);
   }
 
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kAccessibilityManifestV3AccessibilityCommon']};
-  }
-
   /** @return {!FaceGaze} */
   getFaceGaze() {
     return accessibilityCommon.getFaceGazeForTest();

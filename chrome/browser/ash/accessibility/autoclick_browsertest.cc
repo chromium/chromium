@@ -9,7 +9,6 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -52,12 +51,6 @@ class AutoclickBrowserTest : public AccessibilityFeatureBrowserTest {
   AutoclickBrowserTest() = default;
   ~AutoclickBrowserTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{::features::kAccessibilityManifestV3AccessibilityCommon, true}});
-    AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
-  }
-
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
@@ -84,7 +77,6 @@ class AutoclickBrowserTest : public AccessibilityFeatureBrowserTest {
  private:
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<AutoclickTestUtils> autoclick_test_utils_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LeftClickButtonOnHover) {

@@ -55,11 +55,6 @@ AutoclickE2ETest = class extends E2ETestBase {
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
   }
 
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kAccessibilityManifestV3AccessibilityCommon']};
-  }
-
   /**
    * Asserts that two rects are the same.
    * @param {!chrome.accessibilityPrivate.ScreenRect} first

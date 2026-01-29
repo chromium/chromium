@@ -9,7 +9,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -67,8 +66,6 @@ class FullscreenMagnifierControllerTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Make screens sufficiently wide to host 2 browsers side by side.
     command_line->AppendSwitchASCII("ash-host-window-bounds", "1200x800");
-    scoped_feature_list_.InitWithFeatureStates(
-        {{::features::kAccessibilityManifestV3AccessibilityCommon, true}});
     AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -92,7 +89,6 @@ class FullscreenMagnifierControllerTest
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<FullscreenMagnifierTestHelper> helper_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,

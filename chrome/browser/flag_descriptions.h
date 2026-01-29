@@ -7120,12 +7120,6 @@ inline constexpr char kExperimentalAccessibilityManifestV3Description[] =
     "Experimental migration of accessibility features from extension manifest "
     "v2 to v3. Likely to break accessibility access while experimental.";
 
-inline constexpr char kAccessibilityManifestV3AccessibilityCommonName[] =
-    "Changes accessibility common extension manifest v2 to v3.";
-inline constexpr char kAccessibilityManifestV3AccessibilityCommonDescription[] =
-    "Experimental migration of accessibility common extension from manifest v2 "
-    "to v3.";
-
 inline constexpr char kAccessibilityManifestV3ChromeVoxName[] =
     "Changes accessibility extension ChromeVox manifest v2 to v3.";
 inline constexpr char kAccessibilityManifestV3ChromeVoxDescription[] =

@@ -13,7 +13,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
@@ -126,11 +125,6 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
 
  protected:
   // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{::features::kAccessibilityManifestV3AccessibilityCommon, true}});
-    AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
-  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -162,7 +156,6 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
   std::unique_ptr<FaceGazeTestUtils> utils_;
   std::unique_ptr<FaceGazeBubbleTestHelper> bubble_helper_;
   MockEventHandler event_handler_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
