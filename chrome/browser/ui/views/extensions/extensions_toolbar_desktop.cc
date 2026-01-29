@@ -737,6 +737,10 @@ void ExtensionsToolbarDesktop::OnRequestAccessButtonParamsChanged(
   UpdateRequestAccessButton(web_contents);
 }
 
+void ExtensionsToolbarDesktop::OnToolbarControlStateUpdated() {
+  UpdateControlsVisibility();
+}
+
 bool ExtensionsToolbarDesktop::CloseOverflowMenuIfOpen() {
   if (IsExtensionsMenuShowing()) {
     HideExtensionsMenu();

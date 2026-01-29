@@ -49,15 +49,12 @@ ExtensionsToolbarDesktopViewController::ExtensionsToolbarDesktopViewController(
     Browser* browser,
     ExtensionsToolbarDesktop* extensions_container)
     : browser_(browser), extensions_container_(extensions_container) {
-  permissions_manager_observation_.Observe(
-      extensions::PermissionsManager::Get(browser_->profile()));
   browser_->tab_strip_model()->AddObserver(this);
 }
 
 ExtensionsToolbarDesktopViewController::
     ~ExtensionsToolbarDesktopViewController() {
   extensions_container_ = nullptr;
-  permissions_manager_observation_.Reset();
 }
 
 void ExtensionsToolbarDesktopViewController::
@@ -194,25 +191,4 @@ void ExtensionsToolbarDesktopViewController::OnTabChangedAt(
   }
 
   MaybeShowIPH();
-}
-
-void ExtensionsToolbarDesktopViewController::OnUserPermissionsSettingsChanged(
-    const extensions::PermissionsManager::UserPermissionsSettings& settings) {
-  CHECK(extensions_container_);
-  extensions_container_->UpdateControlsVisibility();
-  // TODO(crbug.com/40857356): Update request access button hover card. This
-  // will be slightly different than 'OnToolbarActionUpdated' since site
-  // settings update are not tied to a specific action.
-}
-
-void ExtensionsToolbarDesktopViewController::
-    OnShowAccessRequestsInToolbarChanged(
-        const extensions::ExtensionId& extension_id,
-        bool can_show_requests) {
-  CHECK(extensions_container_);
-  extensions_container_->UpdateControlsVisibility();
-  // TODO(crbug.com/40857356): Update requests access button hover card. This is
-  // tricky because it would need to change the items in the dialog. Another
-  // option is to close the hover card if its shown whenever request access
-  // button is updated.
 }

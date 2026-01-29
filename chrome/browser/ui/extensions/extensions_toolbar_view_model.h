@@ -90,6 +90,10 @@ class ExtensionsToolbarViewModel
     // access button to be recomputed.
     virtual void OnRequestAccessButtonParamsChanged(
         content::WebContents* web_contents) {}
+
+    // Called when both the extensions button and the request access button
+    // should be updated.
+    virtual void OnToolbarControlStateUpdated() {}
   };
 
   enum class ExtensionsToolbarButtonState {
@@ -191,8 +195,12 @@ class ExtensionsToolbarViewModel
   void OnHostAccessRequestsCleared(int tab_id) override;
   void OnHostAccessRequestDismissedByUser(const extensions::ExtensionId& id,
                                           const url::Origin& origin) override;
-  // TODO(crbug.com/461983701): Add OnUserPermissionsSettingsChanged and
-  // OnShowAccessRequestsInToolbarChanged
+  void OnUserPermissionsSettingsChanged(
+      const extensions::PermissionsManager::UserPermissionsSettings& settings)
+      override;
+  void OnShowAccessRequestsInToolbarChanged(
+      const extensions::ExtensionId& extension_id,
+      bool can_show_requests) override;
 
  private:
   // Returns whether any of `actions` given have access to the `web_contents`.

@@ -242,6 +242,7 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   void OnActiveWebContentsChanged() override;
   void OnRequestAccessButtonParamsChanged(
       content::WebContents* web_contents) override;
+  void OnToolbarControlStateUpdated() override;
 
  private:
   friend class ToolbarActionHoverCardBubbleViewUITest;
