@@ -268,13 +268,23 @@ void AutofillExternalDelegate::OnQuery(
   }
 }
 
-const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
+const AutofillField* AutofillExternalDelegate::GetQueriedField() const {
+  return GetQueriedFormAndField().second;
+}
+
+std::pair<const FormStructure*, const AutofillField*>
+AutofillExternalDelegate::GetQueriedFormAndField() const {
   const FormStructure* form_structure =
       manager_->FindCachedFormById(query_form_.global_id());
   if (!form_structure) {
-    return nullptr;
+    return {nullptr, nullptr};
   }
-  return form_structure->GetFieldById(query_field_.global_id());
+  return {form_structure,
+          form_structure->GetFieldById(query_field_.global_id())};
+}
+
+AutofillTriggerSource AutofillExternalDelegate::GetTriggerSource() const {
+  return TriggerSourceFromSuggestionTriggerSource(trigger_source_);
 }
 
 void AutofillExternalDelegate::OnSuggestionsReturned(
@@ -532,8 +542,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kDevtoolsTestAddressEntry:
       AutofillForm(suggestion.type, suggestion.payload,
                    /*metadata=*/std::nullopt,
-                   /*is_preview=*/true,
-                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+                   /*is_preview=*/true, GetTriggerSource());
       break;
     case SuggestionType::kAutocompleteEntry:
       manager_->FillOrPreviewField(mojom::ActionPersistence::kPreview,
@@ -573,8 +582,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kVirtualCreditCardEntry:
       AutofillForm(suggestion.type, suggestion.payload,
                    /*metadata=*/std::nullopt,
-                   /*is_preview=*/true,
-                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+                   /*is_preview=*/true, GetTriggerSource());
       break;
     case SuggestionType::kFillAutofillAi:
       if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
@@ -582,10 +590,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
             suggestion.GetPayload<Suggestion::AutofillAiPayload>();
         if (base::optional_ref<const EntityInstance> entity =
                 edm->GetEntityInstance(payload.guid)) {
-          manager_->FillOrPreviewForm(
-              mojom::ActionPersistence::kPreview, query_form_,
-              query_field_.global_id(), entity.as_ptr(),
-              TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+          manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
+                                      query_form_, query_field_.global_id(),
+                                      entity.as_ptr(), GetTriggerSource());
         }
       }
       break;
@@ -600,10 +607,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       VerifiedProfile profile =
           suggestion.GetPayload<Suggestion::IdentityCredentialPayload>().fields;
 
-      manager_->FillOrPreviewForm(
-          mojom::ActionPersistence::kPreview, query_form_,
-          query_field_.global_id(), &profile,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
+                                  query_form_, query_field_.global_id(),
+                                  &profile, GetTriggerSource());
       break;
     }
     case SuggestionType::kLoyaltyCardEntry:
@@ -783,7 +789,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                                  metadata);
         autofill_metrics::LogAddressAutofillOnTypingSuggestionAccepted(
             suggestion.field_by_field_filling_type_used.value(),
-            GetQueriedAutofillField());
+            GetQueriedField());
       }
       break;
     case SuggestionType::kIdentityCredential: {
@@ -834,22 +840,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case SuggestionType::kOneTimePasswordEntry: {
-      const FormStructure* form_structure =
-          manager_->FindCachedFormById(query_form_.global_id());
-      if (!form_structure) {
-        break;
-      }
-      const AutofillField* autofill_field =
-          form_structure->GetFieldById(query_field_.global_id());
-      if (!autofill_field) {
+      auto [form_structure, autofill_field] = GetQueriedFormAndField();
+      if (!form_structure || !autofill_field) {
         break;
       }
       OtpFillData otp_fill_data = CreateFillDataForOtpSuggestion(
           *form_structure, *autofill_field, suggestion.main_text.value);
-      manager_->FillOrPreviewForm(
-          mojom::ActionPersistence::kFill, query_form_,
-          query_field_.global_id(), &otp_fill_data,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
+                                  query_field_.global_id(), &otp_fill_data,
+                                  GetTriggerSource());
       break;
     }
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
@@ -1051,7 +1050,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
       // yet) affect key metrics.
       manager_->OnDidFillAddressFormFillingSuggestion(
           profile, query_form_.global_id(), query_field_.global_id(),
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+          GetTriggerSource());
     } else if (suggestion.type == SuggestionType::kAddressEntryOnTyping) {
       manager_->OnDidFillAddressOnTypingSuggestion(
           query_field_.global_id(), filling_value,
@@ -1150,7 +1149,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       manager_->client().IsOffTheRecord());
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry: {
-      const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
+      const AutofillField* autofill_trigger_field = GetQueriedField();
       const ValuablesDataManager* vdm =
           manager_->client().GetValuablesDataManager();
 
@@ -1180,8 +1179,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       }
 
       AutofillForm(suggestion.type, suggestion.payload, metadata,
-                   /*is_preview=*/false,
-                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+                   /*is_preview=*/false, GetTriggerSource());
       break;
     }
     case SuggestionType::kAddressFieldByFieldFilling:
@@ -1201,8 +1199,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       autofill_metrics::OnDevtoolsTestAddressesAccepted(
           profile->GetInfo(ADDRESS_HOME_COUNTRY, "en-US"));
       AutofillForm(suggestion.type, suggestion.payload, metadata,
-                   /*is_preview=*/false,
-                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+                   /*is_preview=*/false, GetTriggerSource());
       break;
     }
     default:
@@ -1233,8 +1230,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           metadata.row, FillingProduct::kCreditCard,
           manager_->client().IsOffTheRecord());
       AutofillForm(suggestion.type, suggestion.payload, metadata,
-                   /*is_preview=*/false,
-                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+                   /*is_preview=*/false, GetTriggerSource());
       break;
     case SuggestionType::kVirtualCreditCardEntry:
       // There can be multiple virtual credit cards that all rely on
@@ -1242,8 +1238,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       // In this case, the payload contains the backend id, which is a GUID
       // that identifies the actually chosen credit card.
       AutofillForm(suggestion.type, suggestion.payload, metadata,
-                   /*is_preview=*/false,
-                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+                   /*is_preview=*/false, GetTriggerSource());
       break;
     case SuggestionType::kIbanEntry:
       // User chooses an IBAN suggestion and if it is a local IBAN, full IBAN
@@ -1392,16 +1387,8 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
     return;
   }
 
-  const FormStructure* form_structure =
-      manager_->FindCachedFormById(query_form_.global_id());
-  if (!form_structure) {
-    return;
-  }
-  const AutofillField* autofill_field =
-      form_structure->GetFieldById(query_field_.global_id());
-  const AutofillTriggerSource trigger_source =
-      TriggerSourceFromSuggestionTriggerSource(trigger_source_);
-
+  auto [form_structure, autofill_field] = GetQueriedFormAndField();
+  const AutofillTriggerSource trigger_source = GetTriggerSource();
   if (!autofill_field ||
       !ShouldReauthBeforeFilling(*entity,
                                  RationalizeAndDetermineAttributeTypes(

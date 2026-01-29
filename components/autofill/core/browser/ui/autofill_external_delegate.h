@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_EXTERNAL_DELEGATE_H_
 
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -39,6 +40,7 @@ class AddressDataManager;
 class AutofillDriver;
 class BrowserAutofillManager;
 class CreditCard;
+class FormStructure;
 
 // Retrieves a copy of the profile that the `payload` refers to.
 std::optional<AutofillProfile> GetProfileFromPayload(
@@ -189,7 +191,13 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Returns the last Autofill triggering field. Derived from the `form` and
   // `field` parameters of `OnQuery(). Returns nullptr if called before
   // `OnQuery()` or if the `form` becomes outdated, see crbug.com/1117028.
-  const AutofillField* GetQueriedAutofillField() const;
+  const AutofillField* GetQueriedField() const;
+
+  // Returns the last Autofill triggering field and its form.
+  std::pair<const FormStructure*, const AutofillField*> GetQueriedFormAndField()
+      const;
+
+  AutofillTriggerSource GetTriggerSource() const;
 
   // Fills the form with the Autofill data corresponding to `guid`.
   // If `is_preview` is true then this is just a preview to show the user what
