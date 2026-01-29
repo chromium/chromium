@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/services/storage/test_api/test_api.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/pseudonymization_util.h"
@@ -136,6 +137,16 @@ class TestUtilityServiceImpl : public mojom::TestService {
                           PseudonymizeStringCallback callback) override {
     std::move(callback).Run(
         PseudonymizationUtil::PseudonymizeStringForTesting(value));
+  }
+
+  void GetPseudonymizationSalt(
+      GetPseudonymizationSaltCallback callback) override {
+    std::move(callback).Run(content::GetPseudonymizationSalt());
+  }
+
+  void IsPseudonymizationSaltInitialized(
+      IsPseudonymizationSaltInitializedCallback callback) override {
+    std::move(callback).Run(content::IsSaltInitialized());
   }
 
   void PassWriteableFile(base::File file,

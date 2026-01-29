@@ -57,6 +57,12 @@ interface TestService {
   // Returns the value of PseudonymizeString for the given string.
   PseudonymizeString(string value) => (uint32 result);
 
+  // Returns the pseudonymization salt value directly.
+  GetPseudonymizationSalt() => (uint32 salt);
+
+  // Returns whether the pseudonymization salt has been initialized.
+  IsPseudonymizationSaltInitialized() => (bool is_initialized);
+
   // Pass a writeable file handle. This is used to test that the file cannot be
   // passed if it can be opened with EXECUTE. See https://crbug.com/1335974.
   PassWriteableFile(mojo_base.mojom.File file) => ();

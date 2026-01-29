@@ -36,6 +36,7 @@
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -2110,6 +2111,60 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
 
     ASSERT_TRUE(renderer_result.has_value());
     EXPECT_EQ(*renderer_result, browser_result);
+  }
+}
+
+// This test verifies that the pseudonymization salt passed via shared memory
+// at process launch time is correctly initialized and matches the browser
+// process salt. This is a more direct test than
+// SetPseudonymizationSaltSynchronized which tests via pseudonymization output.
+// See https://crbug.com/40850085.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
+                       PseudonymizationSaltSharedMemoryConsistency) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Ensure all sites get dedicated processes during the test.
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  // Get the browser's salt value.
+  uint32_t browser_salt = GetPseudonymizationSalt();
+  ASSERT_NE(0u, browser_salt) << "Browser salt should be initialized";
+
+  // Create two renderer processes on different sites.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
+  RenderProcessHost* rph1 =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  Shell* second_shell = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(second_shell, embedded_test_server()->GetURL(
+                                              "b.com", "/simple_page.html")));
+  RenderProcessHost* rph2 =
+      second_shell->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  // Verify we have two distinct processes.
+  EXPECT_NE(rph1->GetProcess().Pid(), rph2->GetProcess().Pid());
+
+  for (RenderProcessHost* rph : {rph1, rph2}) {
+    mojo::Remote<mojom::TestService> service;
+    rph->BindReceiver(service.BindNewPipeAndPassReceiver());
+
+    // Verify salt is initialized in the renderer (should be true because
+    // salt is passed via shared memory at launch, before mojo IPC).
+    {
+      base::test::TestFuture<bool> future;
+      service->IsPseudonymizationSaltInitialized(future.GetCallback());
+      EXPECT_TRUE(future.Get())
+          << "Salt should be initialized in renderer via shared memory";
+    }
+
+    // Verify the renderer's salt value matches the browser's.
+    {
+      base::test::TestFuture<uint32_t> future;
+      service->GetPseudonymizationSalt(future.GetCallback());
+      EXPECT_EQ(future.Get(), browser_salt)
+          << "Renderer salt should match browser salt";
+    }
   }
 }
 

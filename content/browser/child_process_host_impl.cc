@@ -24,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/common/content_constants_internal.h"
-#include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_host_delegate.h"
@@ -265,18 +264,6 @@ void ChildProcessHostImpl::BindHostReceiver(
 }
 
 void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
-  // Propagate the pseudonymization salt to all the child processes.
-  //
-  // Doing this as the first step in this method helps to minimize scenarios
-  // where child process runs code that depends on the pseudonymization salt
-  // before it has been set.  See also https://crbug.com/1479308#c5
-  //
-  // TODO(dullweber, lukasza): Figure out if it is possible to reset the salt
-  // at a regular interval (on the order of hours?).  The browser would need
-  // to be responsible for 1) deciding when the refresh happens and 2) pushing
-  // the updated salt to all the child processes.
-  child_process_->SetPseudonymizationSalt(GetPseudonymizationSalt());
-
   // We ignore the `peer_pid` argument, which ultimately comes over IPC from the
   // remote process, in favor of the PID already known by the browser after
   // launching the process. This is partly because IPC Channel is being phased

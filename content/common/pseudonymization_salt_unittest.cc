@@ -6,7 +6,9 @@
 
 #include <tuple>
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/test/gtest_util.h"
+#include "build/blink_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -50,5 +52,41 @@ TEST_F(PseudonymizationSaltTest, SetTwoSaltsAllowed) {
   uint32_t salt = GetPseudonymizationSalt();
   EXPECT_EQ(salt, 0xDEADBEEF);
 }
+
+TEST_F(PseudonymizationSaltTest, IsSaltInitialized) {
+  EXPECT_FALSE(IsSaltInitialized());
+  SetPseudonymizationSalt(0xDEADBEEF);
+  EXPECT_TRUE(IsSaltInitialized());
+}
+
+#if BUILDFLAG(USE_BLINK)
+// Verifies shared memory round-trip for passing salt to child processes.
+// See https://crbug.com/40850085.
+TEST_F(PseudonymizationSaltTest, SharedMemoryRoundTrip) {
+  SetPseudonymizationSalt(0xDEADBEEF);
+
+  const base::ReadOnlySharedMemoryRegion& region =
+      GetPseudonymizationSaltSharedMemoryRegion();
+  ASSERT_TRUE(region.IsValid());
+
+  // Duplicate the region to simulate passing to child process.
+  base::ReadOnlySharedMemoryRegion region_copy = region.Duplicate();
+  ASSERT_TRUE(region_copy.IsValid());
+
+  // Simulate child process: reset and initialize from shared memory.
+  ResetSaltForTesting();
+  EXPECT_FALSE(IsSaltInitialized());
+  EXPECT_TRUE(internal::InitializeSaltFromSharedMemory(std::move(region_copy)));
+  EXPECT_TRUE(IsSaltInitialized());
+  EXPECT_EQ(GetPseudonymizationSalt(), 0xDEADBEEFu);
+}
+
+TEST_F(PseudonymizationSaltTest, SharedMemoryInvalidRegion) {
+  base::ReadOnlySharedMemoryRegion invalid_region;
+  EXPECT_FALSE(
+      internal::InitializeSaltFromSharedMemory(std::move(invalid_region)));
+  EXPECT_FALSE(IsSaltInitialized());
+}
+#endif  // BUILDFLAG(USE_BLINK)
 
 }  // namespace content

@@ -23,6 +23,7 @@ enum {
   kHistogramSharedMemoryDescriptor,
   kTraceConfigSharedMemoryDescriptor,
   kTraceOutputSharedMemoryDescriptor,
+  kPseudonymizationSaltDescriptor,
 
   // Reserves 100 to 199 for dynamically generated IDs.
   kContentDynamicDescriptorStart = 100,

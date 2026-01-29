@@ -184,7 +184,7 @@ class BASE_EXPORT MachPortRendezvousClient {
 namespace internal {
 
 // This limit is arbitrary and can be safely increased in the future.
-inline constexpr size_t kMaximumRendezvousPorts = 6;
+inline constexpr size_t kMaximumRendezvousPorts = 8;
 
 enum MachRendezvousMsgId : mach_msg_id_t {
   kMachRendezvousMsgIdRequest = 'mrzv',
