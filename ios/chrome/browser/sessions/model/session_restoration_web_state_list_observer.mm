@@ -7,7 +7,6 @@
 #import "base/check.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -174,11 +173,9 @@ void SessionRestorationWebStateListObserver::DetachWebState(
 
 void SessionRestorationWebStateListObserver::DetachObserver(
     web::WebState* web_state) {
-  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
-    if (!web_state->IsRealized()) {
-      web_state_observations_.RemoveObservation(web_state);
-      return;
-    }
+  if (!web_state->IsRealized()) {
+    web_state_observations_.RemoveObservation(web_state);
+    return;
   }
 
   // Stop observing the detached WebState. If it is inserted in another
@@ -210,11 +207,9 @@ void SessionRestorationWebStateListObserver::AttachWebState(
 
 void SessionRestorationWebStateListObserver::AttachObserver(
     web::WebState* web_state) {
-  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
-    if (!web_state->IsRealized()) {
-      web_state_observations_.AddObservation(web_state);
-      return;
-    }
+  if (!web_state->IsRealized()) {
+    web_state_observations_.AddObservation(web_state);
+    return;
   }
 
   SessionRestorationWebStateObserver::CreateForWebState(
