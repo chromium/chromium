@@ -2819,7 +2819,9 @@ class TabImpl implements Tab {
 
     private void switchUserAgentIfNeeded() {
         if (calculateUserAgentOverrideOption(null) == UserAgentOverrideOption.INHERIT
-                || getWebContents() == null) {
+                || getWebContents() == null
+                || isClosing()
+                || isDestroyed()) {
             return;
         }
         boolean usingDesktopUserAgent =
