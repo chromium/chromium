@@ -2560,6 +2560,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Input.TouchEvent.Action" enum="MotionEventAction"
+    expires_after="2026-07-26">
+  <owner>lizeb@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    When a touch event is processed, what is the action associated with it. This
+    is recorded only on Android (including WebView), at a subsampled rate.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputDevice.Keyboard.Active" enum="Boolean"
     expires_after="2026-06-28">
   <owner>aishwaryarj@google.com</owner>
