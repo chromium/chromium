@@ -1019,8 +1019,19 @@ bool IsComposeboxAIMDisabled() {
   return base::FeatureList::IsEnabled(kComposeboxAIMDisabled);
 }
 
+NSString* const kNewStartupFlowKey = @"IsEnableNewStartupFlowEnabled";
+
 BASE_FEATURE(kEnableNewStartupFlow, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsEnableNewStartupFlowEnabled() {
-  return base::FeatureList::IsEnabled(kEnableNewStartupFlow);
+  // Save the value to ensure this is constant during the session.
+  static const bool is_new_startup_flow_available =
+      [[NSUserDefaults standardUserDefaults] boolForKey:kNewStartupFlowKey];
+  return is_new_startup_flow_available;
+}
+
+void SaveEnableNewStartupFlowForNextStart() {
+  const bool enabled = base::FeatureList::IsEnabled(kEnableNewStartupFlow);
+  [[NSUserDefaults standardUserDefaults] setBool:enabled
+                                          forKey:kNewStartupFlowKey];
 }

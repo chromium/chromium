@@ -923,4 +923,7 @@ BASE_DECLARE_FEATURE(kEnableNewStartupFlow);
 // Returns true if the EnableNewStartupFlow feature is enabled.
 bool IsEnableNewStartupFlowEnabled();
 
+// Updates EnableNewStartupFlow NSUserDefaults key if the value was changed.
+void SaveEnableNewStartupFlowForNextStart();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

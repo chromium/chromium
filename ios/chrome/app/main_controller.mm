@@ -645,6 +645,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
         didDiscardSceneSessions:std::exchange(_sceneSessionsToDiscard, nil)];
   }
 
+  // Update IsEnableNewStartupFlowEnabled flag if needed.
+  // TODO(crbug.com/462018636): Remove once the feature is fully launched.
+  SaveEnableNewStartupFlowForNextStart();
+
   [self.appState queueTransitionToNextInitStage];
 }
 
