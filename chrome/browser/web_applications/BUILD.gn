@@ -708,6 +708,35 @@ source_set("web_applications") {
   ]
 }
 
+source_set("sub_apps_service") {
+  sources = [
+    "sub_apps_service_impl.cc",
+    "sub_apps_service_impl.h",
+  ]
+
+  deps = [
+    ":web_applications",
+    "//base",
+    "//chrome/browser/notifications",
+    "//chrome/browser/permissions",
+    "//chrome/browser/policy:policy_util",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:non_code_constants",
+    "//components/content_settings/core/common",
+    "//components/permissions",
+    "//components/webapps/browser",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
+}
+
 source_set("features") {
   sources = [
     "link_capturing_features.cc",
@@ -1207,6 +1236,8 @@ source_set("web_applications_browser_tests") {
     "preinstalled_web_apps_browsertest.cc",
     "replace_migration_suggested_app_browsertest.cc",
     "sampling_metrics_provider_browsertest.cc",
+    "sub_apps_permissions_policy_browsertest.cc",
+    "sub_apps_service_impl_browsertest.cc",
     "user_uninstalled_preinstalled_web_app_prefs_browsertest.cc",
     "web_app_audio_focus_browsertest.cc",
     "web_app_automation_browsertest.cc",
@@ -1234,6 +1265,7 @@ source_set("web_applications_browser_tests") {
       "isolated_web_apps/isolated_web_app_device_attributes_browsertest.cc",
       "isolated_web_apps/isolated_web_app_managed_configuration_api_browsertest.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_browsertest.cc",
+      "sub_apps_admin_policy_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
     ]
   }
@@ -1251,6 +1283,7 @@ source_set("web_applications_browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":sub_apps_service",
     ":web_applications",
     ":web_applications_metrics",
     ":web_applications_test_support",
@@ -1266,6 +1299,8 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/gcm",
     "//chrome/browser/notifications:system_notification_helper",
+    "//chrome/browser/permissions",
+    "//chrome/browser/policy:policy_util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/views/location_bar",

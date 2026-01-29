@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
+#include "chrome/browser/web_applications/sub_apps_service_impl.h"
 
 #include <memory>
 #include <string>
@@ -247,8 +247,9 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
     // Unpack the mojo results before returning them.
     AddResults add_results;
     for (const auto& result : future.Take()) {
-      add_results.emplace_back(webapps::ManifestId(GetURLFromPath(result->manifest_id_path)),
-                               result->result_code);
+      add_results.emplace_back(
+          webapps::ManifestId(GetURLFromPath(result->manifest_id_path)),
+          result->result_code);
     }
     return add_results;
   }
@@ -293,8 +294,9 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
   RemoveResultsToList(RemoveResultsMojo results) {
     std::vector<std::pair<webapps::ManifestId, SubAppsServiceResultCode>> list;
     for (auto& result : results) {
-      list.emplace_back(webapps::ManifestId(GetURLFromPath(result->manifest_id_path)),
-                        result->result_code);
+      list.emplace_back(
+          webapps::ManifestId(GetURLFromPath(result->manifest_id_path)),
+          result->result_code);
     }
     return list;
   }
@@ -361,7 +363,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
   BindRemote(iwa_frame);
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
-  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSub1)), SubAppsServiceResultCode::kSuccess}},
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSub1)),
+                  SubAppsServiceResultCode::kSuccess}},
                 {{kSub1, kSub1}});
 
   // Verify a bunch of things for the newly installed sub-app.
@@ -391,9 +394,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddStandaloneWindow) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
 }
 
 // Verify that adding the same app as standalone and as subapp results in two
@@ -403,9 +406,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
 
   webapps::AppId standalone_app_id = InstallPwaFromPath(kSubAppPath);
   webapps::AppId sub_app_id =
@@ -439,9 +442,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   webapps::AppId standalone_app_id2 = InstallPwaFromPath(kSubAppPath2);
   webapps::AppId sub_app_id2 =
       GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame, parent_manifest_id());
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath2, kSubAppPath2}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath2, kSubAppPath2}});
 
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id2, WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -483,9 +486,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
     update->DeleteApp(parent_app_id_);
   }
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kFailure}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kFailure}},
+                {{kSubAppPath, kSubAppPath}});
 }
 
 // Add call should fail if the call wasn't made from the context of parent app.
@@ -522,9 +525,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailIncorrectId) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppIdInvalid)), SubAppsServiceResultCode::kFailure}},
-      {{kSubAppIdInvalid, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppIdInvalid)),
+                  SubAppsServiceResultCode::kFailure}},
+                {{kSubAppIdInvalid, kSubAppPath}});
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
@@ -534,7 +537,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailForParentApp) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath("/")), SubAppsServiceResultCode::kFailure}},
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath("/")),
+                  SubAppsServiceResultCode::kFailure}},
                 {{"", ""}});
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
@@ -544,9 +548,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailNonExistent) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppIdInvalid)), SubAppsServiceResultCode::kFailure}},
-      {{kSubAppIdInvalid, kSubAppPathInvalid}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppIdInvalid)),
+                  SubAppsServiceResultCode::kFailure}},
+                {{kSubAppIdInvalid, kSubAppPathInvalid}});
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
@@ -580,17 +584,17 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
   webapps::AppId sub_app_id =
       GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id, WebAppFilter::OpensInDedicatedWindow()));
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPathMinimalUi}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPathMinimalUi}});
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id, WebAppFilter::OpensInDedicatedWindow()));
 }
@@ -604,9 +608,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   auto* original_provider = WebAppProvider::GetForTest(profile());
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 
   CloseAllBrowsers();
@@ -653,21 +657,21 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddTwo) {
 
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 
   // Try to add first sub app again.
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 
   // Add second sub app.
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath2, kSubAppPath2}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath2, kSubAppPath2}});
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
@@ -676,13 +680,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddMultiple) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath3)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath},
-       {kSubAppPath2, kSubAppPath2},
-       {kSubAppPath3, kSubAppPath3}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath},
+                 {kSubAppPath2, kSubAppPath2},
+                 {kSubAppPath3, kSubAppPath3}});
 
   EXPECT_EQ(3ul, GetAllSubAppIds(parent_app_id_).size());
 }
@@ -693,13 +699,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPathInvalid)), SubAppsServiceResultCode::kFailure},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath3)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath},
-       {kSubAppPathInvalid, kSubAppPathInvalid},
-       {kSubAppPath3, kSubAppPath3}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPathInvalid)),
+                  SubAppsServiceResultCode::kFailure},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath},
+                 {kSubAppPathInvalid, kSubAppPathInvalid},
+                 {kSubAppPath3, kSubAppPath3}});
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
@@ -725,13 +733,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
       SubAppsInstallDialogController::SetAutomaticActionForTesting(
           SubAppsInstallDialogController::DialogActionForTesting::kCancel);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kFailure},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kFailure},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath3)), SubAppsServiceResultCode::kFailure}},
-      {{kSubAppPath, kSubAppPath},
-       {kSubAppPath2, kSubAppPath2},
-       {kSubAppPath3, kSubAppPath3}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kFailure},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kFailure},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+                  SubAppsServiceResultCode::kFailure}},
+                {{kSubAppPath, kSubAppPath},
+                 {kSubAppPath2, kSubAppPath2},
+                 {kSubAppPath3, kSubAppPath3}});
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
@@ -750,10 +760,12 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
       {kSubAppPath3, kSubAppPath3},
   };
   base::flat_set<std::pair<webapps::ManifestId, SubAppsServiceResultCode>>
-      expected_result = {
-          {webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kFailure},
-          {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kFailure},
-          {webapps::ManifestId(GetURLFromPath(kSubAppPath3)), SubAppsServiceResultCode::kFailure}};
+      expected_result = {{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                          SubAppsServiceResultCode::kFailure},
+                         {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                          SubAppsServiceResultCode::kFailure},
+                         {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+                          SubAppsServiceResultCode::kFailure}};
 
   // Dismiss dialog three times.
   for (int i = 0; i < 3; i++) {
@@ -795,10 +807,12 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, DialogEmbargoTiming) {
       {kSubAppPath2, kSubAppPath2},
       {kSubAppPath3, kSubAppPath3}};
   base::flat_set<std::pair<webapps::ManifestId, SubAppsServiceResultCode>>
-      expected_result = {
-          {webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kFailure},
-          {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kFailure},
-          {webapps::ManifestId(GetURLFromPath(kSubAppPath3)), SubAppsServiceResultCode::kFailure}};
+      expected_result = {{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                          SubAppsServiceResultCode::kFailure},
+                         {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                          SubAppsServiceResultCode::kFailure},
+                         {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+                          SubAppsServiceResultCode::kFailure}};
 
   // Dismiss dialog three times.
   for (int i = 0; i < 3; i++) {
@@ -849,13 +863,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath3)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath},
-       {kSubAppPath2, kSubAppPath2},
-       {kSubAppPath3, kSubAppPath3}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath},
+                 {kSubAppPath2, kSubAppPath2},
+                 {kSubAppPath3, kSubAppPath3}});
 
   // Verify that sub-apps are installed.
   webapps::AppId sub_app_id_1 =
@@ -903,10 +919,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
     web_app->AddSource(WebAppManagement::kDefault);
   }
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
 
   // Verify that 2 sub-apps are installed.
   webapps::AppId sub_app_id_1 =
@@ -949,9 +966,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Add another sub-app to verify standalone app install/uninstall does not
   // affect normal sub-app uninstalls.
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
 
   webapps::AppId sub_app_id =
       GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
@@ -959,9 +976,9 @@ IN_PROC_BROWSER_TEST_F(
       sub_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   // Add standalone app as sub-app.
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath2, kSubAppPath2}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath2, kSubAppPath2}});
 
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 
@@ -1009,13 +1026,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, ListSuccess) {
   EXPECT_EQ(std::vector<SubAppsServiceListResultEntryPtr>{},
             result->sub_apps_list);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath3)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath},
-       {kSubAppPath2, kSubAppPath2},
-       {kSubAppPath3, kSubAppPath3}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath},
+                 {kSubAppPath2, kSubAppPath2},
+                 {kSubAppPath3, kSubAppPath3}});
 
   result = CallList();
 
@@ -1048,9 +1067,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   BindRemote(iwa_frame);
 
   // Sub-app install.
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath2, kSubAppPath2}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath2, kSubAppPath2}});
 
   std::vector<SubAppsServiceListResultEntryPtr> expected_result;
   expected_result.emplace_back(
@@ -1136,9 +1155,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
 
   webapps::AppId app_id =
       GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
@@ -1160,10 +1179,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveListOfApps) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
 
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 
@@ -1171,10 +1191,12 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveListOfApps) {
       expected_result;
   expected_result.emplace_back(webapps::ManifestId(GetURLFromPath(kSubAppPath)),
                                SubAppsServiceResultCode::kSuccess);
-  expected_result.emplace_back(webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
-                               SubAppsServiceResultCode::kSuccess);
-  expected_result.emplace_back(webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
-                               SubAppsServiceResultCode::kFailure);
+  expected_result.emplace_back(
+      webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+      SubAppsServiceResultCode::kSuccess);
+  expected_result.emplace_back(
+      webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+      SubAppsServiceResultCode::kFailure);
 
   EXPECT_THAT(RemoveResultsToList(
                   CallRemove({kSubAppPath, kSubAppPath2, kSubAppPath3})),
@@ -1182,8 +1204,10 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveListOfApps) {
 
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
-  webapps::ManifestId sub_app_id_1 = webapps::ManifestId(GetURLFromPath(kSubAppPath));
-  webapps::ManifestId sub_app_id_2 = webapps::ManifestId(GetURLFromPath(kSubAppPath2));
+  webapps::ManifestId sub_app_id_1 =
+      webapps::ManifestId(GetURLFromPath(kSubAppPath));
+  webapps::ManifestId sub_app_id_2 =
+      webapps::ManifestId(GetURLFromPath(kSubAppPath2));
   EXPECT_FALSE(provider()
                    .registrar_unsafe()
                    .GetInstallState(GenerateAppIdFromManifestId(
@@ -1214,9 +1238,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveEmptyList) {
   webapps::AppId sub_app_id =
       GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -1247,9 +1271,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongParent) {
   content::RenderFrameHost* iwa_frame_1 = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame_1);
 
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kSuccess}},
-      {{kSubAppPath, kSubAppPath}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
 
   // Install a second IWA.
   ASSERT_OK_AND_ASSIGN(
@@ -1360,10 +1384,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplPolicyDisabledBrowserTest,
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
   // Attempt to add sub-apps should fail due to policy
-  ExpectCallAdd(
-      {{webapps::ManifestId(GetURLFromPath(kSubAppPath)), SubAppsServiceResultCode::kFailure},
-       {webapps::ManifestId(GetURLFromPath(kSubAppPath2)), SubAppsServiceResultCode::kFailure}},
-      {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kFailure},
+                 {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kFailure}},
+                {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
 
   // Verify no sub-apps were actually installed
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());

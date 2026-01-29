@@ -8,10 +8,10 @@
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
-#include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -179,7 +179,6 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, FailsNoGestureNoPolicy) {
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  // TODO
   EXPECT_THAT(ret, content::EvalJsResult::ErrorIs(
                        HasSubstr("This API can only be called shortly "
                                  "after a user activation.")));
@@ -249,7 +248,6 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  // TODO
   EXPECT_THAT(ret, content::EvalJsResult::ErrorIs(
                        HasSubstr("This API can only be called shortly "
                                  "after a user activation.")));

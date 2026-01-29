@@ -86,7 +86,7 @@
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
-#include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
+#include "chrome/browser/web_applications/sub_apps_service_impl.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
