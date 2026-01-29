@@ -1795,6 +1795,7 @@ test("content_browsertests") {
     "../browser/web_package/signed_exchange_request_handler_browsertest.cc",
     "../browser/web_package/signed_exchange_subresource_prefetch_browsertest.cc",
     "../browser/webid/delegation/jwt_signer_browsertest.cc",
+    "../browser/webid/document_metadata_browsertest.cc",
     "../browser/webid/test/mock_digital_identity_provider.cc",
     "../browser/webid/test/mock_digital_identity_provider.h",
     "../browser/webid/test/mock_identity_request_dialog_controller.cc",

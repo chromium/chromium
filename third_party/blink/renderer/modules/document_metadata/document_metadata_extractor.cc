@@ -66,7 +66,7 @@ bool IsSupportedType(AtomicString type) {
         AtomicString("SingleFamilyResidence"),
         // Common types including phone numbers
         AtomicString("Store"), AtomicString("ContactPoint"),
-        AtomicString("LodgingBusiness")}));
+        AtomicString("LodgingBusiness"), AtomicString("LoginAction")}));
   return type && elements.Contains(type);
 }
 
