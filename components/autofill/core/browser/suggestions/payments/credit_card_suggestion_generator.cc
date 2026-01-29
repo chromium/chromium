@@ -259,7 +259,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   std::vector<Suggestion> suggestions;
   CreditCardSuggestionGenerator credit_card_suggestion_generator(
       four_digit_combinations_in_dom, amount_extraction_status,
-      credit_card_form_event_logger, signin_state_for_metrics,
+      &credit_card_form_event_logger, signin_state_for_metrics,
       exclude_virtual_cards);
 
   auto on_suggestions_generated =
@@ -289,7 +289,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
 CreditCardSuggestionGenerator::CreditCardSuggestionGenerator(
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const payments::AmountExtractionStatus& amount_extraction_status,
-    autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
+    autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger,
     const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     bool exclude_virtual_cards)
     : four_digit_combinations_in_dom_(four_digit_combinations_in_dom),
@@ -347,8 +347,10 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
         void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  credit_card_form_event_logger_->set_signin_state_for_metrics(
-      signin_state_for_metrics_);
+  if (credit_card_form_event_logger_) {
+    credit_card_form_event_logger_->set_signin_state_for_metrics(
+        signin_state_for_metrics_);
+  }
   std::u16string card_number_field_value = u"";
   bool is_card_number_autofilled = false;
 
@@ -492,11 +494,13 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         return suggestion.type == SuggestionType::kVirtualCreditCardEntry;
       });
 
-  credit_card_form_event_logger_->OnDidFetchSuggestion(
-      suggestions, summary_.with_cvc,
-      summary_.with_card_info_retrieval_enrolled,
-      is_virtual_card_standalone_cvc_field,
-      std::move(summary_.metadata_logging_context));
+  if (credit_card_form_event_logger_) {
+    credit_card_form_event_logger_->OnDidFetchSuggestion(
+        suggestions, summary_.with_cvc,
+        summary_.with_card_info_retrieval_enrolled,
+        is_virtual_card_standalone_cvc_field,
+        std::move(summary_.metadata_logging_context));
+  }
 
   callback({FillingProduct::kCreditCard, suggestions});
 }

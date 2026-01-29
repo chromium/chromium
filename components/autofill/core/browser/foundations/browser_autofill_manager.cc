@@ -3644,7 +3644,7 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
                 .seen_unsupported_currency_for_page_load =
                     GetAmountExtractionManager()
                         .SeenUnsupportedCurrencyForPageLoad()},
-            metrics_->credit_card_form_event_logger,
+            &metrics_->credit_card_form_event_logger,
             metrics_->signin_state_for_metrics,
             /*exclude_virtual_cards=*/false));
   }
