@@ -248,6 +248,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     }
 
     @Override
+    // TODO(crbug.com/479846098): Use updateButtonColor() instead.
     public void onIncognitoStateChanged(boolean isIncognito) {
         if (mToggleTabStackButton == null) return;
         mToggleTabStackButton.setIncognitoState(isIncognito);
@@ -258,6 +259,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     }
 
     @Override
+    // TODO(crbug.com/479846098): Use updateButtonColor() instead.
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
@@ -276,8 +278,21 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     }
 
     /** Update button with branded color scheme. */
+    // TODO(crbug.com/479846098): Use updateButtonColor() instead.
     public void setBrandedColorScheme(int brandedColorScheme) {
         mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
+    }
+
+    private void updateButtonColor() {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            ColorStateList activityFocusTint = mTopUiThemeColorProvider.getActivityFocusTint();
+            if (activityFocusTint != null) {
+                ImageViewCompat.setImageTintList(mToggleTabStackButton, activityFocusTint);
+            }
+        } else {
+            mToggleTabStackButton.setBrandedColorScheme(
+                    mTopUiThemeColorProvider.getBrandedColorScheme());
+        }
     }
 
     private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
@@ -414,8 +429,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         mToggleTabStackButton.setEnabled(tabCount >= 1);
         mToggleTabStackButton.updateTabCount(
                 tabCount, mIncognitoStateProvider.isIncognitoSelected());
-        mToggleTabStackButton.setBrandedColorScheme(
-                mTopUiThemeColorProvider.getBrandedColorScheme());
+        updateButtonColor();
         maybeShowXrIph(tabCount);
     }
 
