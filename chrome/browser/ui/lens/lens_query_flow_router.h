@@ -70,6 +70,12 @@ class LensQueryFlowRouter
   // Returns the current gen204 id.
   uint64_t gen204_id() const { return gen204_id_; }
 
+  // Returns the file token for the tab and full image viewport uploaded when
+  // the overlay first opens.
+  std::optional<base::UnguessableToken> overlay_tab_context_file_token() const {
+    return overlay_tab_context_file_token_;
+  }
+
   // Sets the callback for when the suggest inputs are ready.
   void SetSuggestInputsReadyCallback(base::RepeatingClosure callback);
 

@@ -959,6 +959,12 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // created.
   void ReshowOverlayPart3(const SkBitmap& rgb_bitmap);
 
+  // Starts the query flow.
+  void StartQueryFlow();
+
+  // Fetches the partial PDF text if the page is a PDF.
+  void FetchPdfTextIfEligible();
+
   // Sets the opacity of the overlay web view. No-op if the web view does not
   // exist.
   void SetOverlayWebViewOpacity(float opacity);

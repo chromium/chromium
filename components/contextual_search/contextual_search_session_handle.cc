@@ -279,8 +279,11 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
                                    search_url_request_info->file_tokens.begin(),
                                    search_url_request_info->file_tokens.end());
 
-  // Set the invocation source on the search URL request info.
-  search_url_request_info->invocation_source = invocation_source_;
+  // Set the invocation source on the search URL request info, if it is not
+  // already set.
+  if (!search_url_request_info->invocation_source.has_value()) {
+    search_url_request_info->invocation_source = invocation_source_;
+  }
 
   context_controller->CreateSearchUrl(std::move(search_url_request_info),
                                       std::move(callback));
@@ -296,9 +299,14 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
     return lens::ClientToAimMessage();
   }
 
-  // Move the uploaded tokens to the request's file_tokens.
+  // Move the uploaded tokens to the request's file_tokens. Make sure to dedupe
+  // the tokens with those already in the ClientToAimRequestInfo.
+  base::flat_set<base::UnguessableToken> file_tokens_set(
+      std::move(create_client_to_aim_request_info->file_tokens));
+  auto uploaded_tokens = std::exchange(uploaded_context_tokens_, {});
+  file_tokens_set.insert(uploaded_tokens.begin(), uploaded_tokens.end());
   create_client_to_aim_request_info->file_tokens =
-      std::exchange(uploaded_context_tokens_, {});
+      std::move(file_tokens_set).extract();
 
   // Copy the tokens from this request to the list of all submitted tokens.
   submitted_context_tokens_.insert(
