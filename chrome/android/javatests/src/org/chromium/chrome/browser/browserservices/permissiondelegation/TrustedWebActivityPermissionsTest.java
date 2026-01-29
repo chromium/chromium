@@ -23,6 +23,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -31,7 +36,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -39,13 +44,16 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Tests that cached permissions for Trusted Web Activities have an effect on the actual permission
  * state.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // See: https://crbug.com/1120707
 @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
@@ -137,32 +145,50 @@ public class TrustedWebActivityPermissionsTest {
         assertFalse(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
     }
 
+    public static class GeolocationContentSettingsParams implements ParameterProvider {
+        private static final List<ParameterSet> sGeolocationContentSettingsParams =
+                Arrays.asList(
+                        new ParameterSet()
+                                .value(ContentSettingsType.GEOLOCATION)
+                                .name("LegacyGeolocation"),
+                        new ParameterSet()
+                                .value(ContentSettingsType.GEOLOCATION_WITH_OPTIONS)
+                                .name("GeolocationWithOptions"));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sGeolocationContentSettingsParams;
+        }
+    }
+
+    @UseMethodParameter(GeolocationContentSettingsParams.class)
     @Test
     @SmallTest
-    public void allowGeolocation() {
+    public void allowGeolocation(@ContentSettingsType.EnumType int geolocation) {
         runOnUiThreadBlocking(
                 () ->
                         InstalledWebappPermissionManager.updatePermission(
-                                mOrigin, mPackage, GEOLOCATION, ContentSetting.ALLOW));
+                                mOrigin, mPackage, geolocation, ContentSetting.ALLOW));
         assertEquals(
                 Integer.valueOf(ContentSetting.ALLOW),
                 WebappRegistry.getInstance()
                         .getPermissionStore()
-                        .getPermission(GEOLOCATION, mOrigin));
+                        .getPermission(geolocation, mOrigin));
     }
 
+    @UseMethodParameter(GeolocationContentSettingsParams.class)
     @Test
     @SmallTest
-    public void blockGeolocation() {
+    public void blockGeolocation(@ContentSettingsType.EnumType int geolocation) {
         runOnUiThreadBlocking(
                 () ->
                         InstalledWebappPermissionManager.updatePermission(
-                                mOrigin, mPackage, GEOLOCATION, ContentSetting.BLOCK));
+                                mOrigin, mPackage, geolocation, ContentSetting.BLOCK));
         assertEquals(
                 Integer.valueOf(ContentSetting.BLOCK),
                 WebappRegistry.getInstance()
                         .getPermissionStore()
-                        .getPermission(GEOLOCATION, mOrigin));
+                        .getPermission(geolocation, mOrigin));
     }
 
     private String getNotificationPermission() throws TimeoutException {
