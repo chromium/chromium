@@ -2069,9 +2069,10 @@ DatabaseConnection::CreateAllExternalObjects(
     auto it = active_blobs_.find(object.blob_number());
     if (it == active_blobs_.end()) {
       std::unique_ptr<BlobEndpoint> endpoint;
-      // TODO(crbug.com/436887363): add metrics for number of blobs served from
-      // SQLite DB vs legacy files.
-      if (object.indexed_db_file_path().empty()) {
+      const bool is_legacy_blob = !object.indexed_db_file_path().empty();
+      base::UmaHistogramBoolean("IndexedDB.SQLite.BlobServedFromLegacyFile",
+                                is_legacy_blob);
+      if (!is_legacy_blob) {
         endpoint = std::make_unique<ActiveBlobStreamer>(
             object,
             // Unretained is safe because `this` owns `endpoint`.

@@ -733,6 +733,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.SQLite.BlobServedFromLegacyFile" enum="Boolean"
+    expires_after="2027-01-22">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records whether a blob served from IndexedDB's SQLite backing store was read
+    from a legacy file (true) or from the SQLite database itself (false). This
+    helps track the migration progress from legacy file-based blob storage to
+    inline SQLite blob storage.
+
+    Logged once for each blob that's in a row (IndexedDBValue) that is read from
+    the DB.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.SQLite.OpenRetryResult" enum="IndexedDbStatusType"
     expires_after="2026-10-01">
   <owner>leimy@chromium.org</owner>

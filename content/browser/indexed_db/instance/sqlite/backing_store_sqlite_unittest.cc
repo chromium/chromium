@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
@@ -184,6 +185,8 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
 };
 
 TEST_F(BackingStoreSqliteTest, BlobBasics) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
                        backing_store()->CreateOrOpenDatabase(u"name"));
 
@@ -193,9 +196,16 @@ TEST_F(BackingStoreSqliteTest, BlobBasics) {
   IndexedDBValue value("non_blob_payload", {CreateBlobInfo(u"type", payload)});
   PutRecord(*db, object_store_id, key, value);
   EXPECT_EQ(ReadBlobContents(*db, object_store_id, key), payload);
+
+  // Verify that the blob was served from the SQLite database (not a legacy
+  // file).
+  histogram_tester.ExpectUniqueSample(
+      "IndexedDB.SQLite.BlobServedFromLegacyFile", false, 1);
 }
 
 TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
+  base::HistogramTester histogram_tester;
+
   const int64_t object_store_id = 1;
   const std::string payload("payload");
   const IndexedDBKey key1(u"key1");
@@ -243,6 +253,9 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
                          backing_store()->CreateOrOpenDatabase(u"name"));
     // Verify that one of these blobs can be read correctly.
     EXPECT_EQ(ReadBlobContents(*db, object_store_id, key2), payload);
+    // Verify that the blob was served from a legacy file.
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.SQLite.BlobServedFromLegacyFile", true, 1);
 
     // Now overwrite two of the rows, such that they don't contain blobs. The
     // blobs should be removed from the backing store.
