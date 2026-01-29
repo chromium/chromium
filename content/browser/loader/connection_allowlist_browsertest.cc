@@ -123,6 +123,36 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPrefetch) {
             static_cast<int>(blink::mojom::ResourceType::kPrefetch));
 }
 
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkHeaderPrefetch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL main_url =
+      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_test_server()->GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_test_server()->GetURL("b.test", "/deny.js");
+
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry(
+          "<html><body>Hello</body></html>",
+          {{"Connection-Allowlist", "(response-origin)"},
+           {"Link", absl::StrFormat("<%s>; rel=prefetch, <%s>; rel=prefetch",
+                                    allowed_url.spec(), denied_url.spec())}}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  monitor.WaitForUrls({allowed_url, denied_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(denied_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+  std::optional<network::ResourceRequest> request =
+      monitor.GetRequestInfo(allowed_url);
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->resource_type,
+            static_cast<int>(blink::mojom::ResourceType::kPrefetch));
+}
+
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreload) {
   RegisterResponse(
       kSameOriginAllowlistedPage,
