@@ -45,6 +45,12 @@ BASE_FEATURE(kIgnorePS5GamepadsInWgi, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAllowlistHidrawGamepads, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_APPLE)
+// Enable Xbox gamepad support in GameControllerDataFetcherMac
+BASE_FEATURE(kXboxUseGameControllerDataFetcherMac,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_APPLE)
+
 bool IsGamepadMultitouchEnabled() {
   if (base::FeatureList::IsEnabled(kEnableGamepadMultitouch)) {
     return true;

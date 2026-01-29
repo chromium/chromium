@@ -14,10 +14,12 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 
 namespace device {
 
@@ -39,7 +41,6 @@ bool IsSupported(GCController* controller) {
   // avoid double-enumeration.
   NSString* product_category = controller.productCategory;
   if ([product_category isEqualToString:@"HID"] ||
-      [product_category isEqualToString:@"Xbox One"] ||
       [product_category isEqualToString:@"DualShock 4"] ||
       [product_category isEqualToString:@"DualSense"] ||
       [product_category isEqualToString:@"Switch Pro Controller"] ||
@@ -47,7 +48,25 @@ bool IsSupported(GCController* controller) {
     return false;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          features::kXboxUseGameControllerDataFetcherMac) &&
+      [product_category isEqualToString:@"Xbox One"]) {
+    return false;
+  }
+
   return true;
+}
+
+void SetOptionalButton(Gamepad& pad,
+                       int button_index,
+                       GCControllerButtonInput* button) {
+  if (button) {
+    pad.buttons[button_index].pressed = button.isPressed;
+    pad.buttons[button_index].value = button.value;
+  } else {
+    pad.buttons[button_index].pressed = false;
+    pad.buttons[button_index].value = 0.0f;
+  }
 }
 
 }  // namespace
@@ -146,12 +165,38 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
     BUTTON(BUTTON_INDEX_LEFT_TRIGGER, extended_gamepad.leftTrigger);
     BUTTON(BUTTON_INDEX_RIGHT_TRIGGER, extended_gamepad.rightTrigger);
 
-    // No start, select, or thumbstick buttons
-
     BUTTON(BUTTON_INDEX_DPAD_UP, extended_gamepad.dpad.up);
     BUTTON(BUTTON_INDEX_DPAD_DOWN, extended_gamepad.dpad.down);
     BUTTON(BUTTON_INDEX_DPAD_LEFT, extended_gamepad.dpad.left);
     BUTTON(BUTTON_INDEX_DPAD_RIGHT, extended_gamepad.dpad.right);
+
+    if (base::FeatureList::IsEnabled(
+            features::kXboxUseGameControllerDataFetcherMac)) {
+      pad.buttons_length = BUTTON_INDEX_COUNT;
+      BUTTON(BUTTON_INDEX_START, extended_gamepad.buttonMenu);
+
+      SetOptionalButton(pad, BUTTON_INDEX_META, extended_gamepad.buttonHome);
+      SetOptionalButton(pad, BUTTON_INDEX_BACK_SELECT,
+                        extended_gamepad.buttonOptions);
+      SetOptionalButton(pad, BUTTON_INDEX_LEFT_THUMBSTICK,
+                        extended_gamepad.leftThumbstickButton);
+      SetOptionalButton(pad, BUTTON_INDEX_RIGHT_THUMBSTICK,
+                        extended_gamepad.rightThumbstickButton);
+
+      if ([extended_gamepad isKindOfClass:[GCXboxGamepad class]]) {
+        GCXboxGamepad* xbox_gamepad = (GCXboxGamepad*)extended_gamepad;
+
+        // Game controller framework detection of the share button over USB
+        // depends on the device firmware. In our investigation, a controller
+        // with bcdDevice=1281 (v5.1) worked, while one with bcdDevice=1289
+        // (v5.9) did not. Bug filed: FB21568043.
+        SetOptionalButton(pad, XBOX_SERIES_X_BUTTON_SHARE,
+                          xbox_gamepad.buttonShare);
+        if (xbox_gamepad.buttonShare) {
+          pad.buttons_length = XBOX_SERIES_X_BUTTON_COUNT;
+        }
+      }
+    }
 
 #undef BUTTON
   }
