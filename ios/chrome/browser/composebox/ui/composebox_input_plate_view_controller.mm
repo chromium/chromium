@@ -1113,17 +1113,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 /// Creates the AI Mode button.
 - (UIButton*)createAIMButton {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  button.configurationUpdateHandler = ^(UIButton* updatedButton) {
-    BOOL isHighlighted = updatedButton.state == UIControlStateHighlighted;
-    CGFloat scale = isHighlighted ? 0.95 : 1.0;
-    CGFloat alpha = isHighlighted ? 0.85 : 1.0;
-    [UIView animateWithDuration:0.1
-                     animations:^{
-                       updatedButton.alpha = alpha;
-                       updatedButton.transform =
-                           CGAffineTransformMakeScale(scale, scale);
-                     }];
-  };
+  button.configurationUpdateHandler =
+      [self configurationUpdateHandlerForModeIndicator];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   [button addTarget:self
                 action:@selector(aimButtonTapped)
@@ -1781,6 +1772,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (UIButton*)createImageGenerationButton {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.configurationUpdateHandler =
+      [self configurationUpdateHandlerForModeIndicator];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.accessibilityIdentifier =
       kComposeboxImageGenerationButtonAccessibilityIdentifier;
@@ -1830,6 +1823,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 // Creates a new canvas button to be displayed in the input plate.
 - (UIButton*)createCanvasButton {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.configurationUpdateHandler =
+      [self configurationUpdateHandlerForModeIndicator];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   [button addTarget:self
                 action:@selector(canvasButtonTapped)
@@ -1861,6 +1856,22 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self setupXMarkInButton:button];
 
   return button;
+}
+
+// Returns the configuration update handler animating the button on tap.
+- (UIButtonConfigurationUpdateHandler)
+    configurationUpdateHandlerForModeIndicator {
+  return ^(UIButton* updatedButton) {
+    BOOL isHighlighted = updatedButton.state == UIControlStateHighlighted;
+    CGFloat scale = isHighlighted ? 0.95 : 1.0;
+    CGFloat alpha = isHighlighted ? 0.85 : 1.0;
+    [UIView animateWithDuration:0.1
+                     animations:^{
+                       updatedButton.alpha = alpha;
+                       updatedButton.transform =
+                           CGAffineTransformMakeScale(scale, scale);
+                     }];
+  };
 }
 
 - (void)dropSessionDidEnd:(id<UIDropSession>)session {
