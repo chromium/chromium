@@ -27,6 +27,7 @@ ${this.showContextEntrypoint_ ? html`
   <contextual-entrypoint-and-carousel id="context"
       part="contextual-entrypoint-and-carousel"
       exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
+      .showMenuOnClick="${false}"
       entrypoint-name="Omnibox"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
       .tabSuggestions="${this.tabSuggestions_}"

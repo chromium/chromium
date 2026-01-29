@@ -195,6 +195,7 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      showMenuOnClick: {type: Boolean},
       entrypointName: {type: String},
       transcript_: {type: String},
       receivedSpeech_: {type: Boolean},
@@ -225,6 +226,7 @@ export class ComposeboxElement extends I18nMixinLit
   accessor carouselOnTop_: boolean = false;
   accessor isDraggingFile: boolean = false;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
+  accessor showMenuOnClick: boolean = true;
   accessor entrypointName: string = '';
   accessor disableVoiceSearchAnimation: boolean = false;
   accessor tabSuggestions: TabInfo[] = [];
