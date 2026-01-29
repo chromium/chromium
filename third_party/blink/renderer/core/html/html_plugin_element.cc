@@ -910,9 +910,11 @@ bool HTMLPlugInElement::UseFallbackContent() const {
   return false;
 }
 
-void HTMLPlugInElement::ReattachOnPluginChangeIfNeeded() {
-  if (UseFallbackContent() || !NeedsPluginUpdate() || !GetLayoutObject())
+void HTMLPlugInElement::ReattachOnPluginChangeIfNeeded(bool require_layout) {
+  if (UseFallbackContent() || !NeedsPluginUpdate() ||
+      (require_layout && !GetLayoutObject())) {
     return;
+  }
 
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,

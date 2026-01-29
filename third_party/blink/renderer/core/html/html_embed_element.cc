@@ -123,13 +123,18 @@ void HTMLEmbedElement::ParseAttribute(
       if (!image_loader_)
         image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
       image_loader_->UpdateFromElement(ImageLoader::kUpdateIgnorePreviousError);
-    } else if (GetLayoutObject()) {
+    } else if (GetLayoutObject() ||
+               RuntimeEnabledFeatures::
+                   HTMLEmbedElementRepresentsNothingToActiveEnabled()) {
       if (!FastHasAttribute(html_names::kTypeAttr)) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kEmbedElementWithoutTypeSrcChanged);
       }
       SetNeedsPluginUpdate(true);
-      ReattachOnPluginChangeIfNeeded();
+      const bool require_layout =
+          !RuntimeEnabledFeatures::
+              HTMLEmbedElementRepresentsNothingToActiveEnabled();
+      ReattachOnPluginChangeIfNeeded(require_layout);
     }
   } else {
     HTMLPlugInElement::ParseAttribute(params);

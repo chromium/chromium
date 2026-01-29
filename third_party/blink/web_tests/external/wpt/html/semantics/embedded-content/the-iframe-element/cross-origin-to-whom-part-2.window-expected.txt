@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test embed/frame/iframe/object nested document APIs for same origin-domain and cross origin-domain embedder document
-  assert_not_equals: embed.getSVGDocument got disallowed value null
-Harness: the test ran to completion.
-

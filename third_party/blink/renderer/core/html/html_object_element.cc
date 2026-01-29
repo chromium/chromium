@@ -183,7 +183,7 @@ void HTMLObjectElement::ReloadPluginOnAttributeChange(
   }
   SetNeedsPluginUpdate(true);
   if (needs_invalidation)
-    ReattachOnPluginChangeIfNeeded();
+    ReattachOnPluginChangeIfNeeded(/*require_layout=*/true);
 }
 
 // TODO(crbug.com/572908): This should be unified with
@@ -258,7 +258,7 @@ void HTMLObjectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLPlugInElement::ChildrenChanged(change);
   if (isConnected() && !UseFallbackContent()) {
     SetNeedsPluginUpdate(true);
-    ReattachOnPluginChangeIfNeeded();
+    ReattachOnPluginChangeIfNeeded(/*require_layout=*/true);
   }
 }
 
