@@ -2550,6 +2550,11 @@
       status: "experimental",
     },
     {
+      // Fix for https://crbug.com/41153707
+      name: "FilterContainerLevelStyles",
+      status: "stable"
+    },
+    {
       // crbug.com/438220615
       name: "FindAcrossParagraphsInTextarea",
       status: "stable",

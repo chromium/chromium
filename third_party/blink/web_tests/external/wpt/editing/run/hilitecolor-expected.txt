@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 203 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 196 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["hilitecolor","#00FFFF"]] "foo[]bar" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "foo[]bar" queryCommandValue("hilitecolor") after
@@ -139,33 +139,29 @@ Found 203 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "{<table><tr><td>foo<td>bar<td>baz</table>}" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: rgb(0, 255, 255)\\">foo[bar]baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foobarbaz</p>" but got "<p style=\\"\\"><span style=\\"background-color:rgb(0, 255, 255)\\">foobarbaz</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foobarbaz</p>" but got "<p style=\\"background-color:rgb(0, 255, 255)\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">bar</span>baz</p>"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: rgb(0, 255, 255)\\">foo[bar]baz</p>" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: rgb(0, 255, 255)\\">foo[bar]baz</p>" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: #00ffff\\">foo[bar]baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foobarbaz</p>" but got "<p style=\\"\\"><span style=\\"background-color:rgb(0, 255, 255)\\">foobarbaz</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foobarbaz</p>" but got "<p style=\\"background-color:rgb(0, 255, 255)\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">bar</span>baz</p>"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: #00ffff\\">foo[bar]baz</p>" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: #00ffff\\">foo[bar]baz</p>" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: aqua\\">foo[bar]baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foobarbaz</p>" but got "<p style=\\"\\"><span style=\\"background-color:rgb(0, 255, 255)\\">foo</span><span style=\\"background-color:rgb(0, 255, 255)\\">bar</span><span style=\\"background-color:rgb(0, 255, 255)\\">baz</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foobarbaz</p>" but got "<p style=\\"background-color:rgb(0, 255, 255)\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">bar</span>baz</p>"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: aqua\\">foo[bar]baz</p>" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: aqua\\">foo[bar]baz</p>" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "{<p style=\\"background-color: aqua\\">foo</p><p>bar</p>}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foo</p><p><span style=\\"background-color:rgb(0, 255, 255)\\">bar</span></p>" but got "<p style=\\"\\"><span style=\\"background-color:rgb(0, 255, 255)\\">foo</span></p><p><span style=\\"background-color:rgb(0, 255, 255)\\">bar</span></p>"
 [FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "{<p style=\\"background-color: aqua\\">foo</p><p>bar</p>}" queryCommandIndeterm("hilitecolor") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "{<p style=\\"background-color: aqua\\">foo</p><p>bar</p>}" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "{<p style=\\"background-color: aqua\\">foo</p><p>bar</p>}" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "{<p style=\\"background-color: aqua\\">foo</p><p>bar</p>}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foo</p><p><span style=\\"background-color:rgb(0, 255, 255)\\">bar</span></p>" but got "<p style=\\"\\"><span style=\\"background-color:rgb(0, 255, 255)\\">foo</span></p><p><span style=\\"background-color:rgb(0, 255, 255)\\">bar</span></p>"
 [FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "{<p style=\\"background-color: aqua\\">foo</p><p>bar</p>}" queryCommandIndeterm("hilitecolor") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "{<p style=\\"background-color: aqua\\">foo</p><p>bar</p>}" queryCommandValue("hilitecolor") before
@@ -214,32 +210,22 @@ Found 203 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned (after color normalization) expected "rgb(210, 180, 140)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "<span style=\\"background-color: aqua\\">foo<span style=\\"background-color: tan\\">b[ar]</span>baz</span>" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: aqua\\">foo<span style=\\"background-color: tan\\">b[ar]</span>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"background-color:rgb(0, 255, 255)\\">foo<span style=\\"background-color:rgb(210, 180, 140)\\">b</span>arbaz</p>" but got "<p style=\\"\\"><span style=\\"background-color:rgb(0, 255, 255)\\">foo</span><span style=\\"background-color:rgb(210, 180, 140)\\">b</span><span style=\\"background-color:rgb(0, 255, 255)\\">ar</span><span style=\\"background-color:rgb(0, 255, 255)\\">baz</span></p>"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: aqua\\">foo<span style=\\"background-color: tan\\">b[ar]</span>baz</p>" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(210, 180, 140)" but got "rgb(0, 0, 0)"
 [FAIL] [["hilitecolor","#00FFFF"]] "<p style=\\"background-color: aqua\\">foo<span style=\\"background-color: tan\\">b[ar]</span>baz</p>" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<div style=\\"background-color: aqua\\"><p style=\\"background-color: tan\\">b[ar]</p></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"background-color:rgb(0, 255, 255)\\"><p style=\\"background-color:rgb(210, 180, 140)\\">b<span style=\\"background-color:rgb(0, 255, 255)\\">ar</span></p></div>" but got "<div style=\\"\\"><p style=\\"\\"><span style=\\"background-color:rgb(210, 180, 140)\\">b</span><span style=\\"background-color:rgb(0, 255, 255)\\">ar</span></p></div>"
 [FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<div style=\\"background-color: aqua\\"><p style=\\"background-color: tan\\">b[ar]</p></div>" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(210, 180, 140)" but got "rgb(0, 0, 0)"
 [FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<div style=\\"background-color: aqua\\"><p style=\\"background-color: tan\\">b[ar]</p></div>" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<div style=\\"background-color: aqua\\"><p style=\\"background-color: tan\\">b[ar]</p></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"background-color:rgb(0, 255, 255)\\"><p style=\\"background-color:rgb(210, 180, 140)\\">b<span style=\\"background-color:rgb(0, 255, 255)\\">ar</span></p></div>" but got "<div style=\\"\\"><p style=\\"\\"><span style=\\"background-color:rgb(210, 180, 140)\\">b</span><span style=\\"background-color:rgb(0, 255, 255)\\">ar</span></p></div>"
 [FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<div style=\\"background-color: aqua\\"><p style=\\"background-color: tan\\">b[ar]</p></div>" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(210, 180, 140)" but got "rgb(0, 0, 0)"
 [FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<div style=\\"background-color: aqua\\"><p style=\\"background-color: tan\\">b[ar]</p></div>" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=\\"display: block; background-color: aqua\\"><span style=\\"display: block; background-color: tan\\">b[ar]</span></span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"display:block; background-color:rgb(0, 255, 255)\\"><span style=\\"display:block; background-color:rgb(210, 180, 140)\\">b<span style=\\"background-color:rgb(0, 255, 255)\\">ar</span></span></span>" but got "<span style=\\"display:block\\"><span style=\\"display:block\\"><span style=\\"background-color:rgb(210, 180, 140)\\">b</span><span style=\\"background-color:rgb(0, 255, 255)\\">ar</span></span></span>"
 [FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=\\"display: block; background-color: aqua\\"><span style=\\"display: block; background-color: tan\\">b[ar]</span></span>" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(210, 180, 140)" but got "rgb(0, 0, 0)"
 [FAIL] [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=\\"display: block; background-color: aqua\\"><span style=\\"display: block; background-color: tan\\">b[ar]</span></span>" queryCommandValue("hilitecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 255, 255)" but got "rgb(0, 0, 0)"
-[FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=\\"display: block; background-color: aqua\\"><span style=\\"display: block; background-color: tan\\">b[ar]</span></span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"display:block; background-color:rgb(0, 255, 255)\\"><span style=\\"display:block; background-color:rgb(210, 180, 140)\\">b<span style=\\"background-color:rgb(0, 255, 255)\\">ar</span></span></span>" but got "<span style=\\"display:block\\"><span style=\\"display:block\\"><span style=\\"background-color:rgb(210, 180, 140)\\">b</span><span style=\\"background-color:rgb(0, 255, 255)\\">ar</span></span></span>"
 [FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=\\"display: block; background-color: aqua\\"><span style=\\"display: block; background-color: tan\\">b[ar]</span></span>" queryCommandValue("hilitecolor") before
   assert_equals: Wrong result returned (after color normalization) expected "rgb(210, 180, 140)" but got "rgb(0, 0, 0)"
 [FAIL] [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=\\"display: block; background-color: aqua\\"><span style=\\"display: block; background-color: tan\\">b[ar]</span></span>" queryCommandValue("hilitecolor") after

@@ -100,6 +100,7 @@ class CORE_EXPORT ApplyStyleCommand final : public CompositeEditCommand {
                       EditingStyle* extracted_style = nullptr);
   HTMLElement* HighestAncestorWithConflictingInlineStyle(EditingStyle*, Node*);
   void ApplyInlineStyleToPushDown(Node*, EditingStyle*, EditingState*);
+  void FilterContainerLevelStyles(EditingStyle*);
   void PushDownInlineStyleAroundNode(EditingStyle*, Node*, EditingState*);
   void RemoveInlineStyle(EditingStyle*,
                          const EphemeralRange& range,
