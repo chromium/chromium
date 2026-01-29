@@ -164,16 +164,19 @@ def _gen_extras_bp(import_channel: str):
           GN2BP_MODULE_PREFIX=f'{import_channel}_cronet_'))
 
 
-def _gen_androidtest_xml():
+def _gen_androidtest_xml(import_channel: str):
   """Generate AndroidTest.xml, required to run test in Android."""
+  module_prefix = f'{import_channel}_cronet_'
   androidtest_xml_template_path = os.path.join(REPOSITORY_ROOT, 'components',
                                                'cronet', 'gn2bp', 'templates',
                                                'AndroidTest.xml.template')
   androidtest_xml_template_contents = cronet_utils.read_file(
       androidtest_xml_template_path)
   androidtest_xml_path = os.path.join(REPOSITORY_ROOT, 'AndroidTest.xml')
-  cronet_utils.write_file(androidtest_xml_path,
-                          androidtest_xml_template_contents)
+  cronet_utils.write_file(
+      androidtest_xml_path,
+      string.Template(androidtest_xml_template_contents).substitute(
+          GN2BP_MODULE_PREFIX=module_prefix))
 
 def _gen_boringssl(import_channel: str):
   """Generate boringssl Android build files."""
@@ -627,7 +630,7 @@ def main():
                channel=args.channel)
     _gen_boringssl(args.channel)
     _gen_extras_bp(args.channel)
-    _gen_androidtest_xml()
+    _gen_androidtest_xml(args.channel)
 
     if not args.skip_copybara:
       _run_copybara_to_aosp(
