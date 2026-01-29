@@ -22,7 +22,7 @@ from pathlib import Path
 import pytest
 from test_helpers import execute_command, goto_url
 
-REPEAT_TIMES = int(os.environ.get('RUNS', 10))
+ITERATIONS = int(os.environ.get('ITERATIONS', 10))
 
 
 def log_metric(test_name, name, value, unit='ms'):
@@ -31,16 +31,16 @@ def log_metric(test_name, name, value, unit='ms'):
     runner = os.environ.get('RUNNER', 'unknownRunner')
     metrics_json_file = os.environ.get('METRICS_JSON_FILE')
     metric = {
-        'name': f'{test_name}_{name}',
+        'name': f'{os_name}-{head}-{runner}:{test_name}_{name}',
         'value': value,
         'unit': unit,
+        'extra': f'{os_name}-{head}:e2e-perf-metric'
     }
-    prefix = f"{os_name}-{head}-{runner}"
     if metrics_json_file:
         with open(metrics_json_file, 'a') as f:
             f.write(json.dumps(metric) + ',\n')
     else:
-        print(f"PERF_METRIC:{prefix}:{test_name}_{name}:{value:.4f}")
+        print(f"PERF_METRIC:{json.dumps(metric)}")
 
 
 async def capture_screenshot(websocket, context_id):
@@ -83,7 +83,7 @@ async def test_performance_screenshot(websocket, context_id,
     await capture_screenshot(websocket, context_id)
 
     samples = []
-    for i in range(REPEAT_TIMES):
+    for i in range(ITERATIONS):
         start_time = time.perf_counter()
         await capture_screenshot(websocket, context_id)
         samples.append(time.perf_counter() - start_time)

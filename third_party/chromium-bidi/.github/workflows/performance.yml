@@ -16,20 +16,13 @@ on:
   pull_request:
   push:
     branches: 'main'
-  workflow_dispatch:
-    inputs:
-      verbose:
-        description: Verbose logging
-        default: false
-        required: false
-        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  pup-perf-metric:
+  puppeteer-perf-metric:
     name: Puppeteer ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -68,15 +61,17 @@ jobs:
         env:
           METRICS_JSON_FILE: puppeteer_perf_metrics.json
           OS: ${{ matrix.os }}
-          RUNS: 100
-          ITERATIONS: 1000
+          # Reduce runs on macOS to balance execution time and flakiness,
+          # while maintaining sufficient signal for performance monitoring.
+          RUNS: ${{ matrix.os == 'macos-latest' && 10 || 100 }}
+          ITERATIONS: 100
         run: |
           DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs
           cat puppeteer_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: pup-perf-metrics-${{ matrix.os }}
+          name: puppeteer-perf-metrics-${{ matrix.os }}
           path: |
             puppeteer_perf_metrics.json
             debug.cdp.log
@@ -117,9 +112,8 @@ jobs:
           HEAD: ${{ matrix.head }}
           RUNNER: ${{ matrix.kind }}
           OS: ${{ matrix.os }}
-          # Reduce runs on macOS to balance execution time and flakiness,
-          # while maintaining sufficient signal for performance monitoring.
-          RUNS: ${{ matrix.os == 'macos-latest' && 50 || 100 }}
+          # Precise metrics are not required; a general impression is sufficient.
+          RUNS: 10
           ITERATIONS: 100
         run: |
           node tools/benchmark-selenium.mjs
@@ -142,6 +136,9 @@ jobs:
         head: [headful, 'new-headless', 'old-headless']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
         kind: [cd, node]
+        exclude:
+          - os: ubuntu-latest
+            head: headful
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -170,28 +167,17 @@ jobs:
         run: pip install pipenv
       - name: Install python dependencies
         run: pipenv install
-      - name: Run E2E performance tests with xvfb-run
-        if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
-        timeout-minutes: 20
-        env:
-          VERBOSE: ${{ github.event.inputs.verbose }}
-          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
-          METRICS_JSON_FILE: e2e_perf_metrics.json
-          OS: ${{ matrix.os }}
-          RUNS: ${{ matrix.os == 'macos-latest' && 5 || 100 }}
-        run: |
-          xvfb-run --auto-servernum npm run e2e:${{ matrix.head }} -- tests/performance/ -s
-          cat e2e_perf_metrics.json
       - name: Run E2E performance tests
-        if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
         env:
-          VERBOSE: ${{ github.event.inputs.verbose }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           METRICS_JSON_FILE: e2e_perf_metrics.json
           # Reduce runs on macOS to balance execution time and flakiness,
           # while maintaining sufficient signal for performance monitoring.
-          RUNS: ${{ matrix.os == 'macos-latest' && 5 || 100 }}
+          ITERATIONS: ${{ matrix.os == 'macos-latest' && 5 || 15 }}
+          OS: ${{ matrix.os }}
+          HEAD: ${{ matrix.head }}
+          RUNNER: ${{ matrix.kind }}
         run: |
           npm run e2e:${{ matrix.head }} -- tests/performance/ -s
           cat e2e_perf_metrics.json
@@ -214,7 +200,7 @@ jobs:
       pull-requests: write
       contents: write
     runs-on: ubuntu-latest
-    needs: [pup-perf-metric, selenium-perf-metric, e2e-perf-metric]
+    needs: [puppeteer-perf-metric, selenium-perf-metric, e2e-perf-metric]
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
