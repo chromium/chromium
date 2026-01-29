@@ -34,6 +34,7 @@
 #define HAVE_DSPR2 0
 #define HAVE_MSA 0
 #define HAVE_MIPS64 1
+#define HAVE_X86_ASM 0
 #define HAVE_MMX 0
 #define HAVE_SSE 0
 #define HAVE_SSE2 0

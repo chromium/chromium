@@ -25,6 +25,7 @@
 .equ HAVE_DSPR2 ,  0
 .equ HAVE_MSA ,  0
 .equ HAVE_MIPS64 ,  0
+.equ HAVE_X86_ASM ,  0
 .equ HAVE_MMX ,  0
 .equ HAVE_SSE ,  0
 .equ HAVE_SSE2 ,  0

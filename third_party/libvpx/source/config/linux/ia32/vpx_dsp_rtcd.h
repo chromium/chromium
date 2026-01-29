@@ -944,6 +944,7 @@ RTCD_EXTERN void (*vpx_highbd_d153_predictor_8x8)(uint16_t *dst, ptrdiff_t strid
 
 void vpx_highbd_d207_predictor_16x16_c(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
 void vpx_highbd_d207_predictor_16x16_ssse3(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
+void vpx_highbd_d207_predictor_16x16_avx2(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
 RTCD_EXTERN void (*vpx_highbd_d207_predictor_16x16)(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
 
 void vpx_highbd_d207_predictor_32x32_c(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
@@ -977,6 +978,7 @@ RTCD_EXTERN void (*vpx_highbd_d45_predictor_8x8)(uint16_t *dst, ptrdiff_t stride
 
 void vpx_highbd_d63_predictor_16x16_c(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
 void vpx_highbd_d63_predictor_16x16_ssse3(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
+void vpx_highbd_d63_predictor_16x16_avx2(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
 RTCD_EXTERN void (*vpx_highbd_d63_predictor_16x16)(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
 
 void vpx_highbd_d63_predictor_32x32_c(uint16_t *dst, ptrdiff_t stride, const uint16_t *above, const uint16_t *left, int bd);
@@ -2401,6 +2403,7 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_SSSE3) vpx_highbd_d153_predictor_8x8 = vpx_highbd_d153_predictor_8x8_ssse3;
     vpx_highbd_d207_predictor_16x16 = vpx_highbd_d207_predictor_16x16_c;
     if (flags & HAS_SSSE3) vpx_highbd_d207_predictor_16x16 = vpx_highbd_d207_predictor_16x16_ssse3;
+    if (flags & HAS_AVX2) vpx_highbd_d207_predictor_16x16 = vpx_highbd_d207_predictor_16x16_avx2;
     vpx_highbd_d207_predictor_32x32 = vpx_highbd_d207_predictor_32x32_c;
     if (flags & HAS_SSSE3) vpx_highbd_d207_predictor_32x32 = vpx_highbd_d207_predictor_32x32_ssse3;
     if (flags & HAS_AVX2) vpx_highbd_d207_predictor_32x32 = vpx_highbd_d207_predictor_32x32_avx2;
@@ -2416,6 +2419,7 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_SSSE3) vpx_highbd_d45_predictor_8x8 = vpx_highbd_d45_predictor_8x8_ssse3;
     vpx_highbd_d63_predictor_16x16 = vpx_highbd_d63_predictor_16x16_c;
     if (flags & HAS_SSSE3) vpx_highbd_d63_predictor_16x16 = vpx_highbd_d63_predictor_16x16_ssse3;
+    if (flags & HAS_AVX2) vpx_highbd_d63_predictor_16x16 = vpx_highbd_d63_predictor_16x16_avx2;
     vpx_highbd_d63_predictor_32x32 = vpx_highbd_d63_predictor_32x32_c;
     if (flags & HAS_SSSE3) vpx_highbd_d63_predictor_32x32 = vpx_highbd_d63_predictor_32x32_ssse3;
     if (flags & HAS_AVX2) vpx_highbd_d63_predictor_32x32 = vpx_highbd_d63_predictor_32x32_avx2;
