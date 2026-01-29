@@ -313,17 +313,6 @@ BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
     AdjustRectAndParamsForParentFrame(*current_box, next_box,
                                       absolute_rect_to_scroll, params);
 
-    // Once we've taken the scroll-margin into account, don't apply it to
-    // ancestor scrollers.
-    // TODO(crbug.com/1325839): Instead of just nullifying the scroll-margin,
-    // maybe we should be applying the scroll-margin of the containing
-    // scrollers themselves? This will probably need to be spec'd as the current
-    // scroll-into-view spec[1] only refers to the bounding border box.
-    // [1] https://drafts.csswg.org/cssom-view-1/#scroll-a-target-into-view
-    if (any_actual_scroll) {
-      active_scroll_margin = PhysicalBoxStrut();
-    }
-
     current_box = next_box;
   }
 
@@ -348,7 +337,7 @@ ScrollableArea* GetScrollableAreaForLayoutBox(
 }
 
 bool ScrollRectToVisible(const LayoutObject& layout_object,
-                         const PhysicalRect& absolute_rect,
+                         const PhysicalRect& absolute_rect_to_scroll,
                          mojom::blink::ScrollIntoViewParamsPtr params,
                          const LayoutObject* container,
                          bool from_remote_frame,
@@ -370,8 +359,6 @@ bool ScrollRectToVisible(const LayoutObject& layout_object,
   PhysicalBoxStrut scroll_margin =
       layout_object.Style() ? layout_object.Style()->ScrollMarginStrut()
                             : PhysicalBoxStrut();
-  PhysicalRect absolute_rect_to_scroll = absolute_rect;
-  absolute_rect_to_scroll.Expand(scroll_margin);
   BubblingScrollResult result = PerformBubblingScrollIntoViewWithResult(
       *enclosing_box, absolute_rect_to_scroll, params, scroll_margin, container,
       from_remote_frame, include_self);
@@ -593,8 +580,10 @@ ScrollOffset GetScrollOffsetToExpose(
     const mojom::blink::ScrollAlignment& align_x,
     const mojom::blink::ScrollAlignment& align_y) {
   // Represent the rect in the container's scroll-origin coordinate.
-  PhysicalRect scroll_origin_to_expose_rect = local_expose_rect;
-  scroll_origin_to_expose_rect.Move(scroll_area.LocalToScrollOriginOffset());
+  PhysicalRect expose_rect_no_margin = local_expose_rect;
+  expose_rect_no_margin.Move(scroll_area.LocalToScrollOriginOffset());
+  PhysicalRect scroll_origin_to_expose_rect = expose_rect_no_margin;
+  scroll_origin_to_expose_rect.Expand(expose_scroll_margin);
   // Prevent degenerate cases by giving the visible rect a minimum non-0 size.
   PhysicalRect non_zero_visible_rect = scroll_area.VisibleScrollSnapportRect();
   ScrollOffset current_scroll_offset = scroll_area.GetScrollOffset();
@@ -607,13 +596,9 @@ ScrollOffset GetScrollOffsetToExpose(
     non_zero_visible_rect.SetHeight(minimum_layout_unit);
   }
 
-  // The scroll_origin_to_expose_rect includes the scroll-margin of the element
-  // that is being exposed. We want to exclude the margin for deciding whether
+  // We want to exclude the margin for deciding whether
   // it's already visible, but include it when calculating the scroll offset
   // that we need to scroll to in order to achieve the desired alignment.
-  PhysicalRect expose_rect_no_margin = scroll_origin_to_expose_rect;
-  expose_rect_no_margin.Contract(expose_scroll_margin);
-
   // Determine the appropriate X behavior.
   mojom::blink::ScrollAlignment::Behavior scroll_x;
   PhysicalRect expose_rect_x(

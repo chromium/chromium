@@ -2597,12 +2597,14 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
       -PhysicalOffset::FromVector2dFRound(scroll_offset_difference));
 
   // Represent the rects in the container's border-box coordinate.
-  PhysicalRect scroll_snapport_rect =
-      VisibleScrollSnapportRect() - LocalToScrollOriginOffset();
-  PhysicalRect intersect =
-      Intersection(scroll_snapport_rect, local_expose_rect);
+  // The adjusted expose rect includes everything that hasn't been clipped
+  // even if it may be in the scroll padding region of the scroller.
+  PhysicalRect scrollport_rect(LayoutContentRect());
+  scrollport_rect.Move(PhysicalOffset(-ScrollOrigin().OffsetFromOrigin()));
+  scrollport_rect.Move(-LocalToScrollOriginOffset());
+  PhysicalRect intersect = Intersection(scrollport_rect, local_expose_rect);
 
-  if (intersect.IsEmpty() && !scroll_snapport_rect.IsEmpty() &&
+  if (intersect.IsEmpty() && !scrollport_rect.IsEmpty() &&
       !local_expose_rect.IsEmpty()) {
     return GetLayoutBox()->LocalToAbsoluteRect(local_expose_rect, flag);
   }
