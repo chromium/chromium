@@ -96,16 +96,22 @@ async function runBenchmarkRun(launchOptions, chromePath) {
 
 async function main() {
   // Verify if we are using the linked version of chromium-bidi.
-  // Puppeteer installs chromium-bidi as a dependency in its own node_modules,
-  // which prevents the linked version (in the root node_modules) from being used.
-  // We remove the nested dependency to force Puppeteer to use the one in the root.
-  const nestedChromiumBidiPath =
-    'node_modules/puppeteer-core/node_modules/chromium-bidi';
-  if (fs.existsSync(nestedChromiumBidiPath)) {
-    console.log(
-      'Removing nested chromium-bidi dependency to use linked version...',
-    );
-    fs.rmSync(nestedChromiumBidiPath, {recursive: true, force: true});
+  // Puppeteer installs chromium-bidi as a dependency in its own node_modules.
+  // Node.js module resolution looks for the closest node_modules first, so it
+  // will pick up the nested version instead of our `npm link`ed version in the root.
+  // We remove the nested dependency to force Puppeteer to look up the tree
+  // and discover the linked version in the root.
+  const nestedChromiumBidiPaths = [
+    'node_modules/puppeteer-core/node_modules/chromium-bidi',
+    'node_modules/puppeteer/node_modules/chromium-bidi',
+  ];
+  for (const nestedChromiumBidiPath of nestedChromiumBidiPaths) {
+    if (fs.existsSync(nestedChromiumBidiPath)) {
+      console.log(
+        `Removing nested chromium-bidi dependency at ${nestedChromiumBidiPath} to use linked version...`,
+      );
+      fs.rmSync(nestedChromiumBidiPath, {recursive: true, force: true});
+    }
   }
 
   const chromePath = installAndGetChromePath(true);
