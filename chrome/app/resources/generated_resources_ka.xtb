@@ -2574,6 +2574,7 @@
 <translation id="2724841811573117416">WebRTC ჟურნალი</translation>
 <translation id="272488616838512378">საზომი ერთეულების გადაყვანა</translation>
 <translation id="2725200716980197196">ქსელური კავშირი აღდგენილია</translation>
+<translation id="2725312032345042618">მოვლენათა ისტორია</translation>
 <translation id="2726776862643824793">ეკრანის სიკაშკაშის დაკლება</translation>
 <translation id="272741954544380994">სურათის ძიება <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
 <translation id="2727633948226935816">აღარ მოხდეს შეხსენება</translation>
@@ -2915,6 +2916,7 @@
 <translation id="2950666755714083615">დამარეგისტრირე</translation>
 <translation id="2953210795988451570">უსაფრთხოების განახლებებს აღარ მიიღებთ. გამოცვალეთ თქვენი Chromebook.</translation>
 <translation id="2953218713108551165">შეტყობინებები არ არის დაშვებული <ph name="SITE" />-ისთვის. მომდევნო ვიზიტისას ხელახლა გაკითხავთ.</translation>
+<translation id="2954777802959138493">განმაახლებლის სტატუსის მოთხოვნა ვერ მოხერხდა.</translation>
 <translation id="2955048943983973430">დაკავშირებული Google სერვისები</translation>
 <translation id="2956070239128776395">სექცია ჩადგმულია ჯგუფში: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">ჩართეთ შემმუშავებლის რეჟიმი, რომ გამოიყენოთ ეს გაფართოება, რომელიც ვერ მიმოიხილა Chrome Web Store-მა.</translation>
@@ -3649,6 +3651,7 @@
 <translation id="3468298837301810372">ლეიბლი</translation>
 <translation id="3468999815377931311">Android ტელეფონი</translation>
 <translation id="3469583217479686109">ამომრჩევი ხელსაწყო</translation>
+<translation id="3471687177769494956">ნავიგაციის მალსახმობის რედაქტირება</translation>
 <translation id="3471876058939596279">ვიდეოსთვის HDMI და USB Type-C პორტების ერთდროულად გამოყენება ვერ მოხერხდება. გამოიყენეთ განსხვავებული ვიდეოპორტი.</translation>
 <translation id="3472469028191701821">გაიხსნება ახალ ჩანართში</translation>
 <translation id="3473241910002674503">ნავიგაცია მთავარზე/უკან და აპებს შორის გადართვა ღილაკების მეშვეობით ტაბლეტის რეჟიმში.</translation>
@@ -7084,6 +7087,7 @@
 <translation id="5828181959764767444">დაისი</translation>
 <translation id="5828545842856466741">პროფილის დამატება…</translation>
 <translation id="5828633471261496623">ბეჭდვა…</translation>
+<translation id="5829544019044013776">თქვენი გადახდის მეთოდები Google საფულეში</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> არ იხსნება</translation>
 <translation id="5830512293931520102">თქვენი პაროლი დაშიფრულია და მას ვერავინ ნახავს</translation>
 <translation id="5830720307094128296">&amp;შეინახეთ გვერდი როგორც…</translation>
@@ -7649,6 +7653,7 @@
 <translation id="6212168817037875041">ეკრანის გამორთვა</translation>
 <translation id="6212752530110374741">ბმულის ელფოსტით გაგზავნა</translation>
 <translation id="6214106213498203737">აკვარელი</translation>
+<translation id="6214157047210274853">Google საფულეში რედაქტირება</translation>
 <translation id="621470880408090483">საიტებისთვის Bluetooth მოწყობილობებთან დაკავშირების აკრძალვა</translation>
 <translation id="6215039389782910006">{1,plural, =1{თქვენი პაროლების უსაფრთხოების შენარჩუნების მიზნით, <ph name="BRAND" /> იკეტება 1-წუთიანი უმოქმედობის შემდეგ}other{თქვენი პაროლების უსაფრთხოების შენარჩუნების მიზნით, <ph name="BRAND" /> იკეტება #-წუთიანი უმოქმედობის შემდეგ}}</translation>
 <translation id="6216154119179790291">პირველ ჩანართზე გადასვლა</translation>
@@ -9118,6 +9123,7 @@
 <translation id="7243092385765551741">გსურთ წვდომის გასაღების წაშლა?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (საუკეთესო)</translation>
 <translation id="7246230585855757313">ხელახლა მიაერთეთ უსაფრთხოების გასაღები და ცადეთ ხელახლა</translation>
+<translation id="7248671827512403053">პროგრამა</translation>
 <translation id="7249197363678284330">ამ პარამეტრის შეცვლა შეგიძლიათ მისამართთა ზოლიდან.</translation>
 <translation id="7249764475759804559">ამ აპის დართვა ვარიანტის სახით ფაილების გახსნისას</translation>
 <translation id="7249885578105575587">ჰკითხეთ Google-ს ამ ჩანართის შესახებ: <ph name="TAB_TITLE" /></translation>
@@ -11291,6 +11297,7 @@
 <translation id="8703346390800944767">რეკლამის გამოტოვება</translation>
 <translation id="8703372953981978786">ეს ბმული არ მუშაობს</translation>
 <translation id="8703766890819308134">ძიების მალსახმობების ჩვენება</translation>
+<translation id="8704248383043944131">კლავიატურის მალსახმობის რედაქტირება</translation>
 <translation id="8704662571571150811">დომენები</translation>
 <translation id="8705331520020532516">სერიული ნომერი</translation>
 <translation id="870536819717176711">როდესაც მიმდინარე ჩანართის Gemini-სთან გაზიარებას ირჩევთ, ჩანართის სრული კონტენტი, მედია და URL Google-ს ეგზავნება.</translation>
@@ -11611,6 +11618,7 @@
 <translation id="8911914282056933784">პროექტების დამალვა</translation>
 <translation id="8912362522468806198">Google ანგარიში</translation>
 <translation id="8912810933860534797">ავტომატური სკანირების ჩართვა</translation>
+<translation id="8913485523736543337">განმაახლებელი</translation>
 <translation id="8914030287343429787">იხილეთ თქვენი პაროლები მაშინაც კი, როცა Chrome-სა თუ Android-ს არ იყენებთ — უბრალოდ, გახსენით <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Chrome-ის ხელახლა გაშვება</translation>
 <translation id="8915307125957890427">მარჯვენა ღილაკით დააწკაპუნეთ ჩანართზე, აირჩიეთ „ჩანართის დამატება ჯგუფში“, შემდეგ კი — „ახალი ჯგუფი“</translation>
@@ -11751,6 +11759,7 @@
 <translation id="8999560016882908256">სექციის სინტაქსის შეცდომა: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">ეკრანზე შემცირებული მოძრაობა</translation>
 <translation id="9000185763019430629">შეეხეთ თითის ანაბეჭდის სენსორს, რომელიც მდებარეობს თქვენი <ph name="DEVICE_TYPE" />-ის მარჯვენა მხარეს. თქვენი თითის ანაბეჭდის მონაცემები უსაფრთხოდ შეინახება მხოლოდ და მხოლოდ თქვენს <ph name="DEVICE_TYPE" />-ზე.</translation>
+<translation id="9000529821022336229">განმაახლებლის ინსტალაციები ვერ მოიძებნა.</translation>
 <translation id="900267527532832868">წვდომის ეს გასაღები აღარ მუშაობს. ის მალე წაიშლება <ph name="GOOGLE_PASSWORD_MANAGER" />-დან.</translation>
 <translation id="9003031149571024583">შეიყვანეთ 6-ნიშნა PIN-კოდის ციფრი ნომერი <ph name="NUM_DIGIT" />. ბოლო ციფრის ამოსაშლელად გამოიყენეთ backspace ან წაშლის კლავიში.</translation>
 <translation id="9003185744423389627">მოწყობილობათა მართვის სერვერთან კავშირი ვერ შედგა სტატუსით „<ph name="STATUS_TEXT" />“, <ph name="FAILURE_TIME" />-ზე</translation>

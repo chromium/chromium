@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS কীচেইনৰ জৰিয়তে Password Manager ব্যৱহাৰ কৰিবলৈ, Chromium পুনৰ লঞ্চ কৰক আৰু কীচেইন এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="1652887625750064647">AIৰ উত্তম মিল</translation>
 <translation id="1653465303147789530">এপ্‌ সলনি নকৰাকৈ <ph name="PAYMENT_METHOD" />ৰ জৰিয়তে পৰিশোধ কৰক</translation>
+<translation id="1655159794885649984">এই ছাইটটোত সমল টানি আনি এৰাৰ অনুমতি নাই</translation>
 <translation id="1656024727720460136">Chromeএ এই পৃষ্ঠাখন সৰলীকৃত কৰিছে যাতে এইখন সহজে পঢ়িব পাৰি। এটা সুৰক্ষিত সংযোগৰ জৰিয়তে Chromeএ মূল পৃষ্ঠাখন পুনৰুদ্ধাৰ কৰিছে।</translation>
 <translation id="1656489000284462475">পিকআপ কৰাৰ ঠাই</translation>
 <translation id="1658111267661135323">টিভি আৰু ভিডিঅ’</translation>
@@ -1675,6 +1676,7 @@
 <translation id="365641980390710834">অনানুষ্ঠানিক পোছাক</translation>
 <translation id="3658742229777143148">পুনৰীক্ষণ</translation>
 <translation id="3659521826520353662">প্ৰশাসক-নিৰ্ধাৰিত কোনবোৰ ৱেবছাইটলৈ কেতিয়া যোৱা হয়: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">এই IBANটো Google Walletত ছেভ কৰা হৈছে যাতে আপুনি সেইটো Googleৰ সমগ্ৰ সেৱাত ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="3664479564786885722">এই প্ৰ’ডাক্টটো বিক্ৰী কৰা অন্য ষ্ট’ৰৰ পৰা ক্ৰয় কৰাৰ অধিক বিকল্প সন্ধান কৰক।</translation>
 <translation id="3664782872746246217">মূল শব্দ:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />অধিক জানক<ph name="LINK_END1" /></translation>
@@ -3194,6 +3196,7 @@
 <translation id="6085149458302186532">লেবেল (ৰঙীন)</translation>
 <translation id="6087312102907839798">সম্বন্ধীয় সন্ধানসমুহ</translation>
 <translation id="6089505343295765444">আপোনাৰ Chromeৰ ইতিহাসৰ পৰা আপুনি মচা টেবসমূহ তথাপি আপোনাৰ তুলনাৰ তালিকাত দেখা যাব</translation>
+<translation id="6091115085465716987">Google Walletৰ ল’গ’</translation>
 <translation id="6091691259076781835">দ্ৰুতভাৱে চেকআউট কৰিবলৈ, আপোনাৰ ডিভাইচত এইটো CVC ছেভ কৰক</translation>
 <translation id="6093599771645355227">হালধীয়া ১</translation>
 <translation id="6093795393556121384">আপোনাৰ কাৰ্ডখন সত্যাপন কৰা হৈছে</translation>
@@ -3809,6 +3812,7 @@
 <translation id="7057567173736333354">আপোনাৰ প্ৰতিচ্ছবি বৰ্ণনা কৰক</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />এ সত্যাপন কৰিছে যে <ph name="ISSUER" />এ এই ৱেবছাইটটোৰ প্ৰমাণপত্ৰ জাৰি কৰিছে।</translation>
 <translation id="7058774143982824355">CSV পাছৱৰ্ড পাৰ্ছাৰ সেৱা</translation>
+<translation id="7062344833049251424">পৰৱৰ্তী সময়ত দ্ৰুততাৰে পৰিশোধ কৰিবলৈ, Google Walletত আপোনাৰ কাৰ্ড আৰু বিলিঙৰ ঠিকনা ছেভ কৰক</translation>
 <translation id="706295145388601875">Chromeৰ ছেটিঙত ঠিকনা যোগ দিয়ক আৰু পৰিচালনা কৰক</translation>
 <translation id="7063157783216323487">সেউজীয়া ২</translation>
 <translation id="7064443976734085921">কমপেক্ট গাড়ী</translation>
@@ -4278,6 +4282,7 @@
 <translation id="7754587126786572336">আপডে’ট আৰম্ভ হ’লে আপোনাৰ Chromeৰ টেব আৰু এপ্‌সমূহ বন্ধ হ’ব</translation>
 <translation id="7755287808199759310">আপোনাৰ অভিভাৱকে এই ছাইটটো আপোনাৰ বাবে অৱৰোধৰ পৰা আঁতৰাব পাৰে</translation>
 <translation id="7755624218968747854">প্ৰাথমিক ৰোল</translation>
+<translation id="7756441544371887150">এই কাৰ্ডখন Google Walletত ছেভ কৰা থাকিলে এইখন Chromeত কৰা ক্ৰয়ৰ বাবে স্বয়ংক্রিয়ভাৱে পূৰ কৰক</translation>
 <translation id="7758069387465995638">ফায়াৰৱাল বা এণ্টিভাইৰাছ ছফটৱেৰে সংযোগটো অৱৰোধ কৰিব পাৰে।</translation>
 <translation id="7759147511335618829">MIDI ডিভাইচৰ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম</translation>
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
@@ -5201,6 +5206,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{এটাও নহয়}=1{১টা বস্তু}one{#টা বস্তু}other{#টা বস্তু}}</translation>
 <translation id="976522784004777030">৫ x ৮ ইঞ্চি</translation>
 <translation id="977502174772294970">বিবাহ উদ্‌যাপন</translation>
+<translation id="978750072783101994">এই কাৰ্ডখন Google Walletত ছেভ কৰা থাকিলে এইখন Chromiumত কৰা ক্ৰয়ৰ বাবে স্বয়ংক্রিয়ভাৱে পূৰ কৰক</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" />এ আপোনাৰ ব্ৰাউজাৰ আৰু প্ৰ’ফাইল পৰিচালনা কৰে</translation>
 <translation id="979189555234810423">এক্সপ’ আৰু কনভেনশ্বন</translation>
 <translation id="979503328401807348">অধিক উপযোগী বিজ্ঞাপন</translation>

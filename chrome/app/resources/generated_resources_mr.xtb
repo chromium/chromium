@@ -2587,6 +2587,7 @@
 <translation id="2724841811573117416">WebRTC लॉग</translation>
 <translation id="272488616838512378">युनिट कन्व्हर्जन</translation>
 <translation id="2725200716980197196">नेटवर्क कनेक्टिव्हिटी पुनर्संचयित</translation>
+<translation id="2725312032345042618">इव्‍हेंट इतिहास</translation>
 <translation id="2726776862643824793">डिस्प्लेचा ब्राइटनेस कमी करा</translation>
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधा</translation>
 <translation id="2727633948226935816">मला पुन्‍हा स्‍मरण करून देऊ नका</translation>
@@ -2928,6 +2929,7 @@
 <translation id="2950666755714083615">मला साइन अप करा</translation>
 <translation id="2953210795988451570">सुरक्षा अपडेट संपल्या आहेत. नवीन Chromebook वर अपग्रेड करा.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> साठी सूचनांना अनुमती नाही. तुमच्या पुढील भेटीच्या वेळी पुन्हा विचारले जाईल.</translation>
+<translation id="2954777802959138493">अपडेटरच्या स्थितीसंबंधित क्वेरी करता आली नाही.</translation>
 <translation id="2955048943983973430">संबंधित Google सेवा</translation>
 <translation id="2956070239128776395">गटामध्ये विभाग नेस्ट केले: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">हे एक्स्टेंशन वापरण्यासाठी विकसक मोड सुरू करा, ज्याचे Chrome वेब स्टोअर द्वारे पुनरावलोकन केले जाऊ शकत नाही.</translation>
@@ -3662,6 +3664,7 @@
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फोन</translation>
 <translation id="3469583217479686109">निवड टूल</translation>
+<translation id="3471687177769494956">नेव्हिगेशन शॉर्टकट संपादित करा</translation>
 <translation id="3471876058939596279">व्हिडिओसाठी HDMI आणि USB केबल एकाच वेळी वापरता येत नाहीत. वेगळी व्हिडिओ पोर्ट वापरा.</translation>
 <translation id="3472469028191701821">नवीन टॅबमध्ये उघडेल</translation>
 <translation id="3473241910002674503">टॅबलेट मोडमध्ये बटणांनी होम, परत जा वर नेव्हिगेट करा आणि अ‍ॅप्स स्विच करा.</translation>
@@ -7095,6 +7098,7 @@
 <translation id="5828181959764767444">सूर्यास्त</translation>
 <translation id="5828545842856466741">प्रोफाइल जोडा…</translation>
 <translation id="5828633471261496623">प्रिंट करत आहे...</translation>
+<translation id="5829544019044013776">Google Wallet मधील तुमच्या पेमेंट पद्धती</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> उघडू शकत नाही</translation>
 <translation id="5830512293931520102">तुमचा पासवर्ड एन्क्रिप्ट केलेला आहे आणि तो कधीच कोणालाही दिसत नाही</translation>
 <translation id="5830720307094128296">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
@@ -7663,6 +7667,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6212168817037875041">डिस्प्ले बंद करा</translation>
 <translation id="6212752530110374741">ईमेल लिंक</translation>
 <translation id="6214106213498203737">वॉटरकलर</translation>
+<translation id="6214157047210274853">Google Wallet मध्ये संपादित करा</translation>
 <translation id="621470880408090483">साइटना ब्लूटूथ डिव्‍हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="6215039389782910006">{1,plural, =1{तुमचा पासवर्ड सुरक्षित ठेवण्यासाठी, <ph name="BRAND" /> हे एका मिनिटाच्या निष्क्रियतेनंतर लॉक होते}other{तुमचा पासवर्ड सुरक्षित ठेवण्यासाठी, <ph name="BRAND" /> हे # मिनिटांच्या निष्क्रियतेनंतर लॉक होते}}</translation>
 <translation id="6216154119179790291">पहिल्या टॅबवर स्क्रोल करा</translation>
@@ -9133,6 +9138,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7243092385765551741">पासकी हटवायची आहे का?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (उत्कृष्‍ट)</translation>
 <translation id="7246230585855757313">तुमची सिक्युरिटी की पुन्हा घाला आणि पुन्हा प्रयत्न करा</translation>
+<translation id="7248671827512403053">ॲप्लिकेशन</translation>
 <translation id="7249197363678284330">अ‍ॅड्रेस बारमध्ये हे सेटिंग बदला.</translation>
 <translation id="7249764475759804559">फाइल उघडताना या अ‍ॅपचा पर्याय म्हणून समावेश करा</translation>
 <translation id="7249885578105575587">Google ला या टॅबविषयी विचारा: <ph name="TAB_TITLE" /></translation>
@@ -11308,6 +11314,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8703346390800944767">जाहिरात वगळा</translation>
 <translation id="8703372953981978786">ही लिंक काम करत नाही</translation>
 <translation id="8703766890819308134">शोधण्यासाठी शॉर्टकट दाखवा</translation>
+<translation id="8704248383043944131">कीबोर्ड शॉर्टकट संपादित करा</translation>
 <translation id="8704662571571150811">डोमेन</translation>
 <translation id="8705331520020532516">सिरीअल नंबर</translation>
 <translation id="870536819717176711">तुम्ही सद्य टॅब Gemini सोबत शेअर करणे निवडता, तेव्हा त्या टॅबचा संपूर्ण आशय, मीडिया आणि URL या गोष्टी Google ला पाठवल्या जातात.</translation>
@@ -11629,6 +11636,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8911914282056933784">प्रोजेक्ट लपवा</translation>
 <translation id="8912362522468806198">Google खाते</translation>
 <translation id="8912810933860534797">ऑटो- स्कॅन सुरू करा</translation>
+<translation id="8913485523736543337">अपडेटर</translation>
 <translation id="8914030287343429787">तुम्ही Chrome किंवा Android वापरत नसतानाही <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> मध्ये साइन इन करून तुमचे पासवर्ड पहा</translation>
 <translation id="8914504000324227558">Chrome रीलाँच करा</translation>
 <translation id="8915307125957890427">टॅबवर राइट-क्लिक करा आणि "गटामध्ये टॅब जोडा" निवडा व त्यानंतर "नवीन गट" निवडा</translation>
@@ -11769,6 +11777,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8999560016882908256">विभाग सिंटॅक्स एरर: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">स्क्रीनवरील कमी हालचाल</translation>
 <translation id="9000185763019430629">तुमच्या <ph name="DEVICE_TYPE" /> च्या उजव्या बाजूला असलेल्या फिंगरप्रिंट सेन्सरला स्पर्श करा. तुमचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला जातो आणि तुमच्या <ph name="DEVICE_TYPE" /> मध्येच राहतो.</translation>
+<translation id="9000529821022336229">कोणतीही इंस्टॉलेशन आढळली नाहीत.</translation>
 <translation id="900267527532832868">ही पासकी आता काम करत नाही. ती <ph name="GOOGLE_PASSWORD_MANAGER" /> वरून लवकरच हटवली जाईल.</translation>
 <translation id="9003031149571024583">पिनमधील ६ अंकांपैकी <ph name="NUM_DIGIT" /> क्रमांकाचा अंक एंटर करा. याआधीचा अंक काढून टाकण्यासाठी बॅकस्पेस किंवा डिलीट वापरा.</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> वाजता '<ph name="STATUS_TEXT" />' मुळे डिव्हाइस व्यवस्थापक सर्व्हरशी कनेक्ट करता आले नाही</translation>

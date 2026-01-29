@@ -2879,7 +2879,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2916067990491711240">Sair das sessões de visitante gerenciadas</translation>
 <translation id="2916073183900451334">Ao pressionar Tab em uma página da Web, os links e os campos de formulário são destacados</translation>
 <translation id="2916745397441987255">Pesquise extensões</translation>
-<translation id="2918484639460781603">Ir a configurações</translation>
+<translation id="2918484639460781603">Ir para as configurações</translation>
 <translation id="2918484644467055090">Este dispositivo não pode ser inscrito na organização a que sua conta pertence porque ele está marcado para ser gerenciado por outra organização.</translation>
 <translation id="2920346489891435227">Abrir link na visualização à direita</translation>
 <translation id="2920852127376356161">Sem permissão para gerenciar protocolos</translation>
@@ -9136,6 +9136,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7243092385765551741">Excluir a chave de acesso?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Melhor)</translation>
 <translation id="7246230585855757313">Reinsira sua chave de segurança e tente novamente</translation>
+<translation id="7248671827512403053">Aplicativo</translation>
 <translation id="7249197363678284330">Mude essa configuração na barra de endereço.</translation>
 <translation id="7249764475759804559">Incluir este app como opção ao abrir arquivos</translation>
 <translation id="7249885578105575587">Pergunte ao Google sobre esta guia: <ph name="TAB_TITLE" /></translation>

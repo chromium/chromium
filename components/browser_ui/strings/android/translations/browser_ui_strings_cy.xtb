@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Caniateir cwcis trydydd parti</translation>
 <translation id="1569054338208717605">Cyflymu gwefannau gydag injan V8 Chrome ond gwneud Chrome ychydig yn llai galluog i wrthsefyll ymosodiadau</translation>
 <translation id="1593426485665524382">Mae gweithredoedd newydd ar gael yn agos at frig y sgrîn</translation>
+<translation id="1601560923496285236">Defnyddio</translation>
 <translation id="1615755956145364867">Gall gwefannau ofyn am chwarae cynnwys gwarchodedig</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1621729191093924223">Ni fydd nodweddion sydd angen meicroffon yn gweithio</translation>
@@ -523,6 +524,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="6545864417968258051">Sganio Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall wedi'u rhwystro}zero{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}two{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}few{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}many{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}other{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}}</translation>
 <translation id="6554732001434021288">Ymwelwyd ddiwethaf <ph name="NUM_DAYS" /> o ddiwrnodau yn ôl</translation>
+<translation id="6556866813142980365">Ail-wneud</translation>
 <translation id="6557290421156335491">Fy llwybrau byr</translation>
 <translation id="656065428026159829">Gweld rhagor</translation>
 <translation id="6561560012278703671">Defnyddiwch negeseuon tawelach (mae'n rhwystro anogwyr hysbysiadau rhag torri ar eich traws)</translation>

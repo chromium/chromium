@@ -2587,6 +2587,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2724841811573117416">Nhật ký WebRTC</translation>
 <translation id="272488616838512378">Chuyển đổi đơn vị</translation>
 <translation id="2725200716980197196">Đã khôi phục kết nối mạng</translation>
+<translation id="2725312032345042618">Nhật ký sự kiện</translation>
 <translation id="2726776862643824793">giảm độ sáng màn hình</translation>
 <translation id="272741954544380994">Tìm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Đừng nhắc tôi lần nữa</translation>
@@ -2928,6 +2929,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2950666755714083615">Đăng ký cho tôi</translation>
 <translation id="2953210795988451570">Bạn sẽ không nhận được các bản cập nhật bảo mật nữa. Hãy nâng cấp lên Chromebook mới.</translation>
 <translation id="2953218713108551165">Không cho phép <ph name="SITE" /> gửi thông báo. Chúng tôi sẽ hỏi lại bạn trong lần tiếp theo bạn truy cập.</translation>
+<translation id="2954777802959138493">Không truy vấn được trạng thái của trình cập nhật.</translation>
 <translation id="2955048943983973430">Các dịch vụ có liên quan của Google</translation>
 <translation id="2956070239128776395">Phần lồng trong nhóm: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Bật chế độ nhà phát triển để sử dụng tiện ích này. Cửa hàng Chrome trực tuyến không thể xem xét tiện ích này.</translation>
@@ -3662,6 +3664,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3468298837301810372">Nhãn</translation>
 <translation id="3468999815377931311">Điện thoại Android</translation>
 <translation id="3469583217479686109">Công cụ lựa chọn</translation>
+<translation id="3471687177769494956">Chỉnh sửa phím tắt điều hướng</translation>
 <translation id="3471876058939596279">Không thể sử dụng đồng thời cổng USB Type-C và HDMI cho video. Hãy sử dụng một cổng video khác.</translation>
 <translation id="3472469028191701821">Mở trong thẻ mới</translation>
 <translation id="3473241910002674503">Chuyển về trang chủ, quay lại và chuyển đổi ứng dụng bằng các nút ở chế độ máy tính bảng.</translation>
@@ -7097,6 +7100,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5828181959764767444">Hoàng hôn</translation>
 <translation id="5828545842856466741">Thêm hồ sơ...</translation>
 <translation id="5828633471261496623">Đang in...</translation>
+<translation id="5829544019044013776">Phương thức thanh toán của bạn trong Google Wallet</translation>
 <translation id="5830205393314753525">Không thể mở <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Mật khẩu của bạn được mã hoá và không ai có thể nhìn thấy</translation>
 <translation id="5830720307094128296">Lưu trang &amp;dưới dạng...</translation>
@@ -7662,6 +7666,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6212168817037875041">Tắt màn hình</translation>
 <translation id="6212752530110374741">Gửi liên kết qua email</translation>
 <translation id="6214106213498203737">Màu nước</translation>
+<translation id="6214157047210274853">Chỉnh sửa trong Google Wallet</translation>
 <translation id="621470880408090483">Không cho phép trang web kết nối với thiết bị Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Để bảo vệ mật khẩu của bạn, <ph name="BRAND" /> sẽ khoá sau 1 phút không hoạt động}other{Để bảo vệ mật khẩu của bạn, <ph name="BRAND" /> sẽ khoá sau # phút không hoạt động}}</translation>
 <translation id="6216154119179790291">Di chuyển đến thẻ đầu tiên</translation>
@@ -9134,6 +9139,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7243092385765551741">Xoá khoá truy cập?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Tốt nhất)</translation>
 <translation id="7246230585855757313">Cắm lại khóa bảo mật rồi thử lại lần nữa</translation>
+<translation id="7248671827512403053">Ứng dụng</translation>
 <translation id="7249197363678284330">Thay đổi chế độ cài đặt này trong thanh địa chỉ.</translation>
 <translation id="7249764475759804559">Thêm ứng dụng này làm một tuỳ chọn để mở tệp</translation>
 <translation id="7249885578105575587">Hỏi Google về thẻ này: <ph name="TAB_TITLE" /></translation>
@@ -11309,6 +11315,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8703346390800944767">Bỏ qua quảng cáo</translation>
 <translation id="8703372953981978786">Đường liên kết này không hoạt động</translation>
 <translation id="8703766890819308134">Hiển thị lối tắt tìm kiếm</translation>
+<translation id="8704248383043944131">Chỉnh sửa phím tắt</translation>
 <translation id="8704662571571150811">Miền</translation>
 <translation id="8705331520020532516">Số Sê-ri</translation>
 <translation id="870536819717176711">Khi bạn chọn chia sẻ thẻ hiện tại với Gemini, toàn bộ nội dung, phương tiện và URL của thẻ đó sẽ được gửi cho Google.</translation>
@@ -11629,6 +11636,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8911914282056933784">Ẩn dự án</translation>
 <translation id="8912362522468806198">Tài khoản Google</translation>
 <translation id="8912810933860534797">Bật tính năng tự động quét</translation>
+<translation id="8913485523736543337">Trình cập nhật</translation>
 <translation id="8914030287343429787">Xem mật khẩu ngay cả khi bạn không sử dụng Chrome hoặc Android bằng cách đăng nhập vào <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Chạy lại Chrome</translation>
 <translation id="8915307125957890427">Nhấp chuột phải vào một thẻ rồi chọn "Thêm thẻ vào nhóm", sau đó chọn "Nhóm mới"</translation>
@@ -11769,6 +11777,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8999560016882908256">Lỗi cú pháp trong phần: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Giảm chuyển động trên màn hình</translation>
 <translation id="9000185763019430629">Chạm vào cảm biến vân tay ở bên phải <ph name="DEVICE_TYPE" />. Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
+<translation id="9000529821022336229">Không tìm thấy bản cài đặt trình cập nhật nào.</translation>
 <translation id="900267527532832868">Khoá truy cập này không còn hoạt động nữa. Khoá truy cập sẽ sớm bị xoá khỏi <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Nhập chữ số <ph name="NUM_DIGIT" />/6 của mã PIN. Dùng phím Backspace hoặc Delete để xoá chữ số cuối cùng.</translation>
 <translation id="9003185744423389627">Không kết nối được với Máy chủ quản lý thiết bị do trạng thái "<ph name="STATUS_TEXT" />" vào <ph name="FAILURE_TIME" /></translation>

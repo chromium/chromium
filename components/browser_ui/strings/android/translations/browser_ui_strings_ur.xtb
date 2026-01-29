@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">آپ سائٹس کے ڈیسک ٹاپ ورژن کو دیکھنے کیلئے کہہ سکتے ہیں</translation>
 <translation id="1085696779717592361">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
 <translation id="113098737392899175">کی بورڈ منسلک ہو جانے پر، ٹیکسٹ کرسر کی مدد سے صفحات پر نیویگیٹ کریں</translation>
+<translation id="1149644372535087155">‏‫Chrome میں پاس ورڈز محفوظ کریں</translation>
 <translation id="1178015372320901893">میری شارٹ کٹس کی نیچے کی شیٹ</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">فریق ثالث کوکیز کی اجازت ہے</translation>
 <translation id="1569054338208717605">‏‫Chrome کے V8 انجن کے ساتھ سائٹس کو تیز کریں لیکن Chrome کو حملوں کے لیے قدرے کم مزاحم بنائیں</translation>
 <translation id="1593426485665524382">اسکرین کے اوپری حصے کے قریب نئے ایکشنز دستیاب ہیں</translation>
+<translation id="1601560923496285236">لاگو کریں</translation>
 <translation id="1615755956145364867">سائٹس تحفظ یافتہ مواد چلانے کیلئے پوچھ سکتی ہیں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1621729191093924223">وہ خصوصیات کام نہیں کریں گی جن کے لیے مائيکروفون کی ضرورت ہوتی ہے</translation>
@@ -171,6 +173,7 @@
 <translation id="2682367912565197520">محفوظ شدہ زوم لیول کو حذف کریں</translation>
 <translation id="2683434792633810741">حذف اور ری سیٹ کریں؟</translation>
 <translation id="2685514716378236873">اجازت نہیں ہے</translation>
+<translation id="2710883118091822664">اپنے تمام آلات پر آسانی سے جاری رکھنے کے لیے سائن ان کریں</translation>
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2717722538473713889">ای میل پتے</translation>
 <translation id="2726059656860238749">‏فوکس کردہ اومنی باکس کے ساتھ Chrome لانچ کریں، جس سے کم خصوصیات والے آلات پر اسٹارٹ اپ ٹائم کو کم ہو جاتا ہے۔</translation>
@@ -198,6 +201,7 @@
 <translation id="3004438526346162184">سائٹس آپ کے تمام ڈسپلیز پر ونڈوز کا نظم کرنے کیلئے اس خصوصیت کا استعمال کر سکتی ہیں</translation>
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="301521992641321250">خود کار طور پر مسدود ہو گيا</translation>
+<translation id="3026311960038210">تھیم کے مجموعے</translation>
 <translation id="3064871050034234884">سائٹس آواز چلا سکتی ہیں</translation>
 <translation id="3065787901655140044">اعلی تحفظ آن ہے</translation>
 <translation id="3069226013421428034">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کی اجازت دیں۔</translation>
@@ -340,6 +344,7 @@
 <translation id="4478158430052450698">مختلف سائٹس کے لیے زوم کو حسب ضرورت بنانا آسان بنائیں</translation>
 <translation id="4479647676395637221">سائٹس کو آپ کا کیمرا استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="4505788138578415521">‏URL کو پھیلا دیا گیا</translation>
+<translation id="4523472416386354622">شروع کرنے کیلئے سائن ان کریں</translation>
 <translation id="4534723447064627427">‏<ph name="APP_NAME" /> کو اپنے مائیکروفون تک رسائی دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی مائیکروفون آن کریں۔</translation>
 <translation id="4566417217121906555">مائیکروفون کو خاموش کریں</translation>
 <translation id="4570913071927164677">تفاصیل</translation>
@@ -396,6 +401,7 @@
 <translation id="512938610812707830">نیا ٹیب صفحہ ظاہری تھیم کے مجموعے نیچے کی شیٹ پوری اونچائی پر کھولی گئی</translation>
 <translation id="5137460097045297858">دریافت فیڈ کی نیچے کی شیٹ نصف اسکرین پر کھلی ہے</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{آپ کے کھلے ٹیبز پر قیمت میں کمی}other{آپ کے کھلے ٹیبز پر قیمت میں کمی}}</translation>
+<translation id="5150048675001754041">سائٹس اور ایپس میں تیزی سے اور آسانی سے سائن ان کریں</translation>
 <translation id="5186036860380548585">اسکرین کے اوپری حصہ کے قریب اختیار دستیاب ہے</translation>
 <translation id="5197729504361054390">آپ کے منتخب کردہ رابطوں کا <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> کے ساتھ اشتراک کیا جائے گا۔</translation>
 <translation id="5198930230016462977">اپنے نئے ٹیب کے صفحہ کے نیچے کی شیٹ کو حسب ضرورت بنائیں بند ہے</translation>
@@ -523,6 +529,7 @@
 <translation id="6545864417968258051">بلوٹوتھ اسکیننگ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کو مسدود کیا گیا}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کو مسدود کیا گیا}}</translation>
 <translation id="6554732001434021288">سائٹ آخری بار <ph name="NUM_DAYS" /> دن پہلے ملاحظہ کی گئی</translation>
+<translation id="6556866813142980365">واپس لائیں</translation>
 <translation id="6557290421156335491">میرے شارٹ کٹس</translation>
 <translation id="656065428026159829">مزید دیکھیں</translation>
 <translation id="6561560012278703671">پر سکون پیغام رسانی کا استعمال کریں (اطلاع کی پرامپٹس کو آپ کو خلل ڈالنے سے مسدود کرتا ہے)</translation>
@@ -564,6 +571,7 @@
 <translation id="6980861169612950611">سائٹ ڈیٹا کو حذف کریں؟ <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="6991142177939282156">اجازت ہے • تخمینی کا استعمال کیا جا رہا ہے</translation>
+<translation id="6992014788289743568">اپنے پاس ورڈز کو چیک کر کے اپنی سیکیورٹی کو مضبوط کریں اور اپنے ڈیٹا کو محفوظ تر رکھیں</translation>
 <translation id="6992289844737586249">سائٹس کو آپ کا مائیکروفون استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="7000754031042624318">‏Android ترتیبات میں آف کر دیا گیا</translation>
 <translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>

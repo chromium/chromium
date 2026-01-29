@@ -28,6 +28,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1158134713295836892">Gemini kwenye Chrome</translation>
 <translation id="1184145431117212167">Imeshindwa kuweka kwenye kifaa kwa sababu toleo la Windows ulilonalo halitumiki.</translation>
 <translation id="1194807384646768652">Chrome imezuia upakuaji huu kwa sababu aina hii ya faili kwa kawaida haipakuliwi na huenda si salama</translation>
+<translation id="1197860368385086056">Utakapofungua Chrome tena kwenye <ph name="DEVICE_TYPE" /> yako, utaona kidokezo cha kuwasha arifa za ufuatiliaji wa bei.</translation>
 <translation id="1203500561924088507">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena kivinjari chako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Fungua tena ili usasishe &amp;Chrome</translation>
 <translation id="1290883685122687410">Hitilafu ya kuweka mipangilio: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -508,6 +509,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6321592572353357376">Kiendelezi cha "<ph name="EXTENSION_NAME" />" kinakuhitaji uingie katika Chrome</translation>
 <translation id="6326175484149238433">Ondoa kwenye Chrome</translation>
 <translation id="6327105987658262776">Hakuna sasisho linalopatikana.</translation>
+<translation id="6333195756043503664">Fungua Chrome ninapowasha kompyuta yangu</translation>
 <translation id="6334815226785304306">Fanya Google Chrome iwe kivinjari chaguomsingi na uibandike kwenye upauzana</translation>
 <translation id="63540178978900677">Chrome haitumiki tena kama kivinjari chako chaguomsingi. Ungependa kufanya Chrome iwe kivinjari chaguomsingi?</translation>
 <translation id="6360449101159168105">Kichupo hiki kilipokuwa hakitumiki, nafasi ya hifadhi ilirejeshwa ili Chrome iwe na kasi ya utendaji. Unaweza kuchagua tovuti hii iendelee kutumika kila wakati.</translation>
@@ -617,6 +619,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7515191208480168435">Unaweza kubandika Lenzi ya Google ili uifikie kwa urahisi</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">Ili utumie alamisho hii na zaidi kwenye vifaa vyako vyote, ingia katika Chrome</translation>
+<translation id="756134248912568991">Utakapofungua Chrome tena kwenye <ph name="DEVICE_TYPE" /> yako, utaona kidokezo cha kutumia vikundi vya vichupo.</translation>
 <translation id="756809126120519699">Data ya Chrome imefutwa</translation>
 <translation id="7572537927358445944">Kimezimwa • Chrome haiwezi kuthibitisha sehemu kinapotoka kiendelezi hiki</translation>
 <translation id="7583399374488819119">Kisakinishaji cha <ph name="COMPANY_NAME" /></translation>

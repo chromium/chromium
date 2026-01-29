@@ -421,6 +421,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1652862280638399816">Jei norite naudoti Slaptažodžių tvarkyklę su „macOS Keychain“, iš naujo paleiskite „Chromium“ ir leiskite „Keychain“ prieigą. Paleidus iš naujo skirtukai bus atidaryti iš naujo.</translation>
 <translation id="1652887625750064647">DI geriausia atitiktis</translation>
 <translation id="1653465303147789530">Mokėkite naudodami „<ph name="PAYMENT_METHOD" />“ neperjungę programų</translation>
+<translation id="1655159794885649984">Neleidžiama vilkti turinio šioje svetainėje</translation>
 <translation id="1656024727720460136">„Chrome“ supaprastino šį puslapį, kad būtų paprasčiau skaityti. „Chrome“ gavo pradinį puslapį prisijungusi saugiu ryšiu.</translation>
 <translation id="1656489000284462475">Paėmimas</translation>
 <translation id="1658111267661135323">TV ir vaizdo įrašai</translation>
@@ -1679,6 +1680,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="365641980390710834">Kasdienė apranga</translation>
 <translation id="3658742229777143148">Peržiūrėtas ir pataisytas leidimas</translation>
 <translation id="3659521826520353662">Kokiose administratoriaus nustatytose svetainėse lankomasi ir kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Šis IBAN išsaugotas „Google Wallet“, kad galėtumėte jį naudoti „Google“ paslaugose.</translation>
 <translation id="3664479564786885722">Ieškokite daugiau pirkimo parinkčių kitose parduotuvėse, kuriose parduodamas šis produktas.</translation>
 <translation id="3664782872746246217">Raktiniai žodžiai:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Sužinokite daugiau<ph name="LINK_END1" /></translation>
@@ -3199,6 +3201,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6085149458302186532">Etiketės (spalvotos)</translation>
 <translation id="6087312102907839798">Susijusios paieškos</translation>
 <translation id="6089505343295765444">Skirtukai, kuriuos ištrinate iš „Chrome“ istorijos, vis tiek bus rodomi palyginimo lentelėse</translation>
+<translation id="6091115085465716987">„Google Wallet“ logotipas</translation>
 <translation id="6091691259076781835">Kad galėtumėte sparčiau atsiskaityti, išsaugokite šį kortelės saugos kodą (CVC) įrenginyje</translation>
 <translation id="6093599771645355227">1 geltona</translation>
 <translation id="6093795393556121384">Kortelė patvirtinta</translation>
@@ -3815,6 +3818,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7057567173736333354">Aprašykite vaizdą</translation>
 <translation id="7058163556978339998">„<ph name="BROWSER" />“ patvirtino, kad „<ph name="ISSUER" />“ išdavė šios svetainės sertifikatą.</translation>
 <translation id="7058774143982824355">CSV slaptažodžio analizavimo įrankio paslauga</translation>
+<translation id="7062344833049251424">Kad kitą kartą galėtumėte greičiau atlikti mokėjimą, išsaugokite kortelę ir atsiskaitymo adresą „Google Wallet“</translation>
 <translation id="706295145388601875">Pridėkite ir tvarkykite adresus „Chrome“ nustatymuose</translation>
 <translation id="7063157783216323487">2 žalia</translation>
 <translation id="7064443976734085921">Kompaktiški automobiliai</translation>
@@ -4285,6 +4289,7 @@ Papildoma išsami informacija:
 <translation id="7754587126786572336">Pradėjus atnaujinimą, „Chrome“ skirtukai ir programos bus uždaryti</translation>
 <translation id="7755287808199759310">Jūsų tėtis ar mama gali ją atblokuoti už jus</translation>
 <translation id="7755624218968747854">Pagrindinis ritinėlis</translation>
+<translation id="7756441544371887150">Automatiškai užpildyti šios kortelės duomenis „Chrome“ atliekamiems pirkiniams, kai ji išsaugoma „Google Wallet“</translation>
 <translation id="7758069387465995638">Gali būti, kad užkarda arba antivirusinė programinė įranga užblokavo ryšį.</translation>
 <translation id="7759147511335618829">MIDI įrenginio valdymas ir programavimas iš naujo</translation>
 <translation id="7759809451544302770">Pasirenkama</translation>
@@ -5209,6 +5214,7 @@ Papildoma išsami informacija:
 <translation id="975560348586398090">{COUNT,plural, =0{Nėra}=1{1 elementas}one{# elementas}few{# elementai}many{# elemento}other{# elementų}}</translation>
 <translation id="976522784004777030">5 x 8 col.</translation>
 <translation id="977502174772294970">Vestuvės</translation>
+<translation id="978750072783101994">Automatiškai užpildyti šios kortelės duomenis „Chromium“ atliekamiems pirkiniams, kai ji išsaugoma „Google Wallet“</translation>
 <translation id="979107176848483472">Jūsų naršyklę ir profilį tvarko <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Parodos ir suvažiavimai</translation>
 <translation id="979503328401807348">Daugiau naudingų skelbimų</translation>

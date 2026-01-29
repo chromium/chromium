@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">„Бисквитките“ на трети страни са разрешени</translation>
 <translation id="1569054338208717605">Ускоряване на сайтовете с машината V8 на Chrome, като обаче устойчивостта на браузъра срещу атаки леко намалява</translation>
 <translation id="1593426485665524382">В горната част на екрана са налице нови действия</translation>
+<translation id="1601560923496285236">Прилагане</translation>
 <translation id="1615755956145364867">Сайтовете могат да извеждат запитвания за възпроизвеждане на защитено съдържание</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Функциите, за които е необходим микрофон, няма да работят</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">Сканиране за устройства с Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е блокиран}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е блокиран}}</translation>
 <translation id="6554732001434021288">Последно посещение: преди <ph name="NUM_DAYS" /> дни</translation>
+<translation id="6556866813142980365">Възстановяване</translation>
 <translation id="6557290421156335491">Моите преки пътища</translation>
 <translation id="656065428026159829">Вижте още</translation>
 <translation id="6561560012278703671">Използване на по-малко натрапчиви съобщения (подканите за известия се блокират, така че да не ви прекъсват)</translation>

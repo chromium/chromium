@@ -2580,6 +2580,7 @@
 <translation id="2724841811573117416">WebRTC ಲಾಗ್‌ಗಳು</translation>
 <translation id="272488616838512378">ಯೂನಿಟ್ ಪರಿವರ್ತನೆ</translation>
 <translation id="2725200716980197196">ನೆಟ್‌ವರ್ಕ್‌ ಸಂಪರ್ಕತೆಯನ್ನು ಮರುಸ್ಥಾಪಿಲಾಗಿದೆ</translation>
+<translation id="2725312032345042618">ಈವೆಂಟ್ ಇತಿಹಾಸ</translation>
 <translation id="2726776862643824793">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರಖರತೆ ಕಡಿಮೆ</translation>
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="2727633948226935816">ಮತ್ತೆ ನನಗೆ ಜ್ಞಾಪಿಸಬೇಡ</translation>
@@ -2921,6 +2922,7 @@
 <translation id="2950666755714083615">ನನ್ನನ್ನು ಸೈನ್ ಅಪ್ ಮಾಡಿ</translation>
 <translation id="2953210795988451570">ಭದ್ರತಾ ಅಪ್‌ಡೇಟ್‌ಗಳು ಕೊನೆಗೊಂಡಿವೆ. ಹೊಸ Chromebook ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> ಗಾಗಿ ಅಧಿಸೂಚನೆಗಳಿಗೆ ಅನುಮತಿಯಿಲ್ಲ. ನೀವು ಮುಂದಿನ ಬಾರಿ ಭೇಟಿ ನೀಡಿದಾಗ ಮತ್ತೊಮ್ಮೆ ಕೇಳಲಾಗುತ್ತದೆ.</translation>
+<translation id="2954777802959138493">ಅಪ್‌ಡೇಟರ್ ಸ್ಥಿತಿಯನ್ನು ಪ್ರಶ್ನಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="2955048943983973430">ಸಂಬಂಧಿತ Google ಸೇವೆಗಳು</translation>
 <translation id="2956070239128776395">ವಿಭಾಗವನ್ನು ಗುಂಪಿನೊಳಗೆ ಸೇರಿಸಲಾಗಿದೆ: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಬಳಸಲು ಡೆವಲಪರ್ ಮೋಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ, ಇದನ್ನು Chrome ವೆಬ್‌ ಸ್ಟೋರ್ ನಿಂದ ಪರಿಶೀಲಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -3653,6 +3655,7 @@
 <translation id="3468298837301810372">ಲೇಬಲ್</translation>
 <translation id="3468999815377931311">Android ಫೋನ್</translation>
 <translation id="3469583217479686109">ಆಯ್ಕೆ ಟೂಲ್</translation>
+<translation id="3471687177769494956">ನ್ಯಾವಿಗೇಶನ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="3471876058939596279">HDMI ಮತ್ತು USB ಟೈಪ್-C ಪೋರ್ಟ್‌ಗಳನ್ನು ವೀಡಿಯೊಗಾಗಿ ಒಂದೇ ಸಮಯದಲ್ಲಿ ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ಬೇರೆ ವೀಡಿಯೊ ಪೋರ್ಟ್ ಬಳಸಿ.</translation>
 <translation id="3472469028191701821">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ</translation>
 <translation id="3473241910002674503">ಟ್ಯಾಬ್ಲೆಟ್ ಮೋಡ್‌ನಲ್ಲಿ, ಹೋಮ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು, ಹಿಂತಿರುಗಲು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು ಬಟನ್‌ಗಳನ್ನು ಬಳಸಿ.</translation>
@@ -7089,6 +7092,7 @@
 <translation id="5828181959764767444">ಸನ್‌ಸೆಟ್</translation>
 <translation id="5828545842856466741">ಪ್ರೊಫೈಲ್ ಸೇರಿಸಿ...</translation>
 <translation id="5828633471261496623">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="5829544019044013776">Google Wallet ನಲ್ಲಿರುವ ನಿಮ್ಮ ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> ತೆರೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5830512293931520102">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ಯಾರೂ ನೋಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5830720307094128296">&amp;ಇದರಂತೆ ಪುಟವನ್ನು ಉಳಿಸಿ...</translation>
@@ -7654,6 +7658,7 @@
 <translation id="6212168817037875041">ಡಿಸ್‌ಪ್ಲೇ ಅನ್ನು ಆಫ್‌ ಮಾಡಿ</translation>
 <translation id="6212752530110374741">ಇಮೇಲ್ ಲಿಂಕ್</translation>
 <translation id="6214106213498203737">ವಾಟರ್‌ಕಲರ್</translation>
+<translation id="6214157047210274853">Google Wallet ನಲ್ಲಿ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="621470880408090483">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="6215039389782910006">{1,plural, =1{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನಿಷ್ಕ್ರಿಯತೆಯ 1 ನಿಮಿಷದ ನಂತರ <ph name="BRAND" /> ಲಾಕ್ ಆಗುತ್ತದೆ}one{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನಿಷ್ಕ್ರಿಯತೆಯ # ನಿಮಿಷಗಳ ನಂತರ <ph name="BRAND" /> ಲಾಕ್ ಆಗುತ್ತದೆ}other{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನಿಷ್ಕ್ರಿಯತೆಯ # ನಿಮಿಷಗಳ ನಂತರ <ph name="BRAND" /> ಲಾಕ್ ಆಗುತ್ತದೆ}}</translation>
 <translation id="6216154119179790291">ಮೊದಲ ಟ್ಯಾಬ್‌ಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
@@ -9127,6 +9132,7 @@
 <translation id="7243092385765551741">ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಅತ್ಯುತ್ತಮ)</translation>
 <translation id="7246230585855757313">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಮರುಸೇರ್ಪಡಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="7248671827512403053">ಅಪ್ಲಿಕೇಶನ್</translation>
 <translation id="7249197363678284330">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಿ.</translation>
 <translation id="7249764475759804559">ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯುವಾಗ ಈ ಆ್ಯಪ್ ಅನ್ನು ಆಯ್ಕೆಯಾಗಿ ಸೇರಿಸಿ</translation>
 <translation id="7249885578105575587">ಈ ಟ್ಯಾಬ್ ಕುರಿತು Google ಅನ್ನು ಕೇಳಿ: <ph name="TAB_TITLE" /></translation>
@@ -11298,6 +11304,7 @@
 <translation id="8703346390800944767">ಜಾಹೀರಾತು ಸ್ಕಿಪ್ ಮಾಡಿ</translation>
 <translation id="8703372953981978786">ಈ ಲಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="8703766890819308134">ಹುಡುಕಾಟದ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="8704248383043944131">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="8704662571571150811">ಡೊಮೇನ್‌ಗಳು</translation>
 <translation id="8705331520020532516">ಕ್ರಮ ಸಂಖ್ಯೆ</translation>
 <translation id="870536819717176711">ನೀವು ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಅನ್ನು Gemini ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಆಯ್ಕೆಮಾಡಿದಾಗ, ಟ್ಯಾಬ್‌ನ ಪೂರ್ಣ ಕಂಟೆಂಟ್‌, ಮೀಡಿಯಾ ಮತ್ತು URL ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -11619,6 +11626,7 @@
 <translation id="8911914282056933784">ಪ್ರಾಜೆಕ್ಟ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8912362522468806198">Google ಖಾತೆ</translation>
 <translation id="8912810933860534797">ಸ್ವಯಂ ಸ್ಕ್ಯಾನ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="8913485523736543337">ಅಪ್‌ಡೇಟರ್</translation>
 <translation id="8914030287343429787"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವ ಮೂಲಕ ನೀವು Chrome ಅಥವಾ Android ಅನ್ನು ಬಳಸದಿದ್ದಾಗಲೂ ಸಹ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="8914504000324227558">Chrome ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="8915307125957890427">ಟ್ಯಾಬ್ ಮೇಲೆ ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು "ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ" ಆಯ್ಕೆಮಾಡಿ ನಂತರ "ಹೊಸ ಗುಂಪು" ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -11759,6 +11767,7 @@
 <translation id="8999560016882908256">ವಿಭಾಗದ ಸಿಂಟ್ಯಾಕ್ಸ್ ದೋಷ: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">ಸ್ಕ್ರೀನ್‌ ಮೇಲೆ ಸರಿದಾಡುವುದು ಕಡಿಮೆಯಾಗಿದೆ</translation>
 <translation id="9000185763019430629">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ರ ಬಲಭಾಗದಲ್ಲಿರುವ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆನ್ಸರ್‌‌ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ. ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಡೇಟಾವನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ಇದು ಎಂದೂ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ಹೊರಗೆ ಹೋಗುವುದಿಲ್ಲ.</translation>
+<translation id="9000529821022336229">ಯಾವುದೇ ಅಪ್‌ಡೇಟರ್ ಇನ್‌ಸ್ಟಾಲೇಶನ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="900267527532832868">ಈ ಪಾಸ್‌ಕೀ ಇನ್ನು ಮುಂದೆ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ. ಇದನ್ನು ಶೀಘ್ರದಲ್ಲೇ <ph name="GOOGLE_PASSWORD_MANAGER" /> ನಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="9003031149571024583">6 ಅಂಕಿಯ ಪಿನ್ <ph name="NUM_DIGIT" /> ಅನ್ನು ನಮೂದಿಸಿ. ಕೊನೆಯ ಅಂಕಿಯನ್ನು ತೆಗೆದುಹಾಕಲು ಬ್ಯಾಕ್‌ಸ್ಪೇಸ್ ಅಥವಾ ಅಳಿಸಿ ಕೀ ಬಳಸಿ.</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> ನಲ್ಲಿ '<ph name="STATUS_TEXT" />' ಸ್ಥಿತಿಯೊಂದಿಗೆ ಸಾಧನ ನಿರ್ವಹಣೆ ಸರ್ವರ್‌ಗೆ ಸಂಪರ್ಕವು ವಿಫಲವಾಗಿದೆ</translation>

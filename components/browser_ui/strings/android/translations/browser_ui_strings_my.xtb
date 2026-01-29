@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ခွင့်ပြုထားသည်</translation>
 <translation id="1569054338208717605">Chrome ၏ V8 အင်ဂျင်ဖြင့် ဝဘ်ဆိုက်များကို ပိုမြန်အောင်လုပ်သော်လည်း တိုက်ခိုက်မှုများအပေါ် Chrome ၏ ခံနိုင်ရည် အနည်းငယ်လျော့ကျစေသည်</translation>
 <translation id="1593426485665524382">ဖန်သားပြင်ထိပ်အနီးတွင် လုပ်ဆောင်ချက်အသစ်များ ရနိုင်သည်</translation>
+<translation id="1601560923496285236">ကျင့်သုံးရန်</translation>
 <translation id="1615755956145364867">ကာကွယ်ထားသည့် အကြောင်းအရာများဖွင့်လိုပါက ဝဘ်ဆိုက်များက ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1621729191093924223">မိုက်ခရိုဖုန်းလိုအပ်သည့် ဝန်ဆောင်မှုများ အလုပ်လုပ်မည်မဟုတ်ပါ</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">ဘလူးတုသ် ရှာဖွေရန်</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်}}</translation>
 <translation id="6554732001434021288">ပြီးခဲ့သော <ph name="NUM_DAYS" /> ရက်က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
+<translation id="6556866813142980365">ပြန်လုပ်ရန်</translation>
 <translation id="6557290421156335491">ကျွန်ုပ်၏ ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="656065428026159829">ပိုကြည့်ရန်</translation>
 <translation id="6561560012278703671">ပိုမိုတိတ်ဆိတ်သော မက်ဆေ့ဂျ်ပို့ခြင်းကို အသုံးပြုပါ (သင့်အားမနှောင့်ယှက်စေရန် အကြောင်းကြားချက် အတည်ပြုစနစ်များကို ပိတ်ပေးသည်)</translation>

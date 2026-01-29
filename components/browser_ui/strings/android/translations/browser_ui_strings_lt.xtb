@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Galite prašyti peržiūrėti svetainių versiją staliniams kompiuteriams</translation>
 <translation id="1085696779717592361">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="113098737392899175">Naršykite puslapius naudodami teksto žymeklį, kai prijungta klaviatūra</translation>
+<translation id="1149644372535087155">Slaptažodžių išsaugojimas naršyklėje „Chrome“</translation>
 <translation id="1178015372320901893">Mano sparčiųjų klavišų apatinis lapas</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="1569054338208717605">Paspartinti svetaines naudojant „Chrome“ V8 variklį, bet padaryti „Chrome“ šiek tiek mažiau atsparią atakoms</translation>
 <translation id="1593426485665524382">Nauji veiksmai pasiekiami netoli ekrano viršaus</translation>
+<translation id="1601560923496285236">Taikyti</translation>
 <translation id="1615755956145364867">Svetainėse gali būti prašoma leisti apsaugotą turinį</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">Funkcijos, kurioms reikalingas mikrofonas, neveiks</translation>
@@ -171,6 +173,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2682367912565197520">Ištrinti išsaugotą mastelio lygį</translation>
 <translation id="2683434792633810741">Ištrinti ir nustatyti iš naujo?</translation>
 <translation id="2685514716378236873">Neleidžiama</translation>
+<translation id="2710883118091822664">Prisijunkite, kad galėtumėte lengvai tęsti visuose įrenginiuose</translation>
 <translation id="2713106313042589954">Išjungti fotoaparatą</translation>
 <translation id="2717722538473713889">El. pašto adresai</translation>
 <translation id="2726059656860238749">Paleiskite „Chrome“ su aktyviu „Omnibox“, kad sumažėtų paleidimo laikas žemesnės klasės įrenginiuose.</translation>
@@ -198,6 +201,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3004438526346162184">Svetainės gali naudoti šią funkciją, kad galėtų tvarkyti langus visuose ekranuose</translation>
 <translation id="3008272652534848354">Iš naujo nustatyti leidimus</translation>
 <translation id="301521992641321250">Automatiškai užblokuota</translation>
+<translation id="3026311960038210">Temų rinkiniai</translation>
 <translation id="3064871050034234884">Svetainėse galima leisti garsus</translation>
 <translation id="3065787901655140044">Papildoma apsauga įjungta</translation>
 <translation id="3069226013421428034">Leisti trečiajai šaliai prisijungti prie konkrečios svetainės.</translation>
@@ -340,6 +344,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4478158430052450698">Lengviau tinkinti mastelį skirtingose svetainėse</translation>
 <translation id="4479647676395637221">Pirmiausia klausti prieš leidžiant svetainėms naudoti kamerą (rekomenduojama)</translation>
 <translation id="4505788138578415521">URL išskleistas</translation>
+<translation id="4523472416386354622">Prisijungti ir pradėti</translation>
 <translation id="4534723447064627427">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų mikrofoną, taip pat įjunkite jį <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Nutildyti mikrofoną</translation>
 <translation id="4570913071927164677">Išsami informacija</translation>
@@ -396,6 +401,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="512938610812707830">Naujo skirtuko puslapio išvaizdos temų rinkinių apatinis lapas atidarytas per visą ekrano aukštį</translation>
 <translation id="5137460097045297858">„Discover“ sklaidos kanalo apatinis lapas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sumažinta kaina atidarytuose skirtukuose}one{Sumažinta kaina atidarytuose skirtukuose}few{Sumažinta kaina atidarytuose skirtukuose}many{Sumažinta kaina atidarytuose skirtukuose}other{Sumažinta kaina atidarytuose skirtukuose}}</translation>
+<translation id="5150048675001754041">Greitai ir lengvai prisijunkite prie svetainių ir programų</translation>
 <translation id="5186036860380548585">Parinktis pasiekiama netoli ekrano viršaus</translation>
 <translation id="5197729504361054390">Pasirinkti kontaktai bus bendrinami su <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Naujo skirtuko puslapio tinkinimo apatinis lapas uždarytas</translation>
@@ -523,6 +529,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6545864417968258051">„Bluetooth“ nuskaitymas</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Paskutinį kartą lankytasi prieš <ph name="NUM_DAYS" /> d.</translation>
+<translation id="6556866813142980365">Grąžinti</translation>
 <translation id="6557290421156335491">Mano spartieji klavišai</translation>
 <translation id="656065428026159829">Žr. daugiau</translation>
 <translation id="6561560012278703671">Naudoti tylesnio susirašinėjimo funkcijas (blokuojami pranešimų įspėjimai, kad jūsų neblaškytų)</translation>
@@ -564,6 +571,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6980861169612950611">Ištrinti svetainės duomenis? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="6991142177939282156">Leidžiama • Naudojama apytikslė vietovė</translation>
+<translation id="6992014788289743568">Sustiprinkite saugą ir apsaugokite duomenis patikrinę slaptažodžius</translation>
 <translation id="6992289844737586249">Pirmiausia klausti prieš leidžiant svetainėms naudoti mikrofoną (rekomenduojama)</translation>
 <translation id="7000754031042624318">Išjungta „Android“ nustatymuose</translation>
 <translation id="702275896380648118">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines. Ši svetainė taip pat gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus.</translation>

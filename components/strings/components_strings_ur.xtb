@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">‏macOS Keychain کے ساتھ پاس ورڈ مینیجر کا استعمال کرنے کے لیے، Chromium کو بند کر کے دوبارہ چلائیں اور Keychain تک رسائی کی اجازت دیں۔ بند کر کے دوبارہ چلانے کے بعد، آپ کے ٹیبز دوبارہ کھل جائیں گے۔</translation>
 <translation id="1652887625750064647">‏‫AI کا بہترین مماثل</translation>
 <translation id="1653465303147789530">ایپس سوئچ کئے بغیر <ph name="PAYMENT_METHOD" /> سے ادائیگی کریں</translation>
+<translation id="1655159794885649984">اس سائٹ پر مواد کو گھسیٹنے کی اجازت نہیں ہے</translation>
 <translation id="1656024727720460136">‏پڑھنے کو زیادہ آسان بنانے کے ليے Chrome نے اس صفحے کو آسان بنایا۔ Chrome نے محفوظ کنکنشن پر اصل صفحہ کو بازیاب کیا۔</translation>
 <translation id="1656489000284462475">پک اپ</translation>
 <translation id="1658111267661135323">‏TV اور ویڈیو</translation>
@@ -1679,6 +1680,7 @@
 <translation id="365641980390710834">غیر رسمی پوشاک</translation>
 <translation id="3658742229777143148">نظرثانی</translation>
 <translation id="3659521826520353662">ایڈمنسٹریٹر کی وضاحت کردہ کون سی ویب سائٹ دیکھی گئی ہے اور کب: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">‏یہ IBAN Google والٹ میں محفوظ ہے تاکہ آپ اسے تمام Google سروسز پر استعمال کر سکیں۔</translation>
 <translation id="3664479564786885722">اس پروڈکٹ کو بیچنے والے دوسرے اسٹورز سے خریداری کے مزید اختیارات تلاش کریں۔</translation>
 <translation id="3664782872746246217">کلیدی الفاظ:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />مزید جانیں<ph name="LINK_END1" /></translation>
@@ -3199,6 +3201,7 @@
 <translation id="6085149458302186532">لیبلز (رنگین)</translation>
 <translation id="6087312102907839798">متعلقہ تلاشیں</translation>
 <translation id="6089505343295765444">‏آپ اپنے Chrome کی سرگزشت سے جو ٹیبز حذف کرتے ہیں، وہ اب بھی آپ کے موازنہ ٹیبلز میں دکھائی دیں گے</translation>
+<translation id="6091115085465716987">‏‫Google والٹ لوگو</translation>
 <translation id="6091691259076781835">‏تیزی سے چیک آؤٹ کے لیے، اس CVC کو اپنے آلے پر محفوظ کریں</translation>
 <translation id="6093599771645355227">پیلا 1</translation>
 <translation id="6093795393556121384">آپ کے کارڈ کی توثیق ہو گئی ہے</translation>
@@ -3816,6 +3819,7 @@
 <translation id="7057567173736333354">اپنی تصویر کی وضاحت کریں</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> نے توثیق کی ہے کہ <ph name="ISSUER" /> نے اس ویب سائٹ کا سرٹیفیکیٹ جاری کیا ہے۔</translation>
 <translation id="7058774143982824355">‏CSV پاس ورڈ پارسر سروس</translation>
+<translation id="7062344833049251424">‏اگلی بار تیزی سے ادائیگی کرنے کے لیے، اپنا کارڈ اور بلنگ پتہ Google والٹ میں محفوظ کریں</translation>
 <translation id="706295145388601875">‏Chrome ترتیبات میں پتوں کو شامل کریں اور ان کا نظم کریں</translation>
 <translation id="7063157783216323487">سبز 2</translation>
 <translation id="7064443976734085921">چھوٹی کاریں</translation>
@@ -4285,6 +4289,7 @@
 <translation id="7754587126786572336">‏اپ ڈیٹ شروع ہونے پر آپ کے Chrome کے ٹیبز اور ایپس بند ہو جائیں گی</translation>
 <translation id="7755287808199759310">آپ کے والدین آپ کیلئے اسے غیر مسدود کر سکتے ہیں</translation>
 <translation id="7755624218968747854">بنیادی رول</translation>
+<translation id="7756441544371887150">‏اس کارڈ کے Google والٹ میں محفوظ ہونے پر اسے Chrome میں کی جانے والی خریداریوں کے لیے آٹو فل کریں</translation>
 <translation id="7758069387465995638">ممکن ہے فائروال یا اینٹی وائرس سافٹ ویئر نے کنکشن کو مسدود کر دیا ہو۔</translation>
 <translation id="7759147511335618829">‏MIDI آلے کا کنٹرول و دوبارہ پروگرام</translation>
 <translation id="7759809451544302770">اختیاری</translation>
@@ -5208,6 +5213,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 آئٹم}other{# آئٹمز}}</translation>
 <translation id="976522784004777030">‏‎5 x 8 انچ</translation>
 <translation id="977502174772294970">شادیاں</translation>
+<translation id="978750072783101994">‏اس کارڈ کے Google والٹ میں محفوظ ہونے پر اسے Chromium میں کی جانے والی خریداریوں کے لیے آٹو فل کریں</translation>
 <translation id="979107176848483472">آپ کے براؤزر اور پروفائل کا نظم <ph name="DOMAIN" /> کرتا ہے</translation>
 <translation id="979189555234810423">ایکسپوز اور کنونشنز</translation>
 <translation id="979503328401807348">مزید مفید اشتہارات</translation>

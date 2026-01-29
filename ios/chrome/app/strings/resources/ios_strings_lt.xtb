@@ -1523,6 +1523,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6556866813142980365">Grąžinti</translation>
 <translation id="6559301491397835130">{count,plural, =1{Žymė išsaugota skiltyje „{title}“. Ji išsaugoma tik šiame įrenginyje.}one{Žymės išsaugotos skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}few{Žymės išsaugotos skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}many{Žymės išsaugotos skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}other{Žymės išsaugotos skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}}</translation>
 <translation id="656065428026159829">Žr. daugiau</translation>
+<translation id="6565899972286925956">Sukurkite bet ką</translation>
 <translation id="6571070086367343653">Kredito kortelės redagavimas</translation>
 <translation id="6574092468346088891">Įjunkite Saugos patikros pranešimus</translation>
 <translation id="6579867704846662339">Galite pasirinkti atidaryti iš kitų programų gaunamus URL inkognito režimu.</translation>
@@ -1633,6 +1634,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6930799952781667037">Palieskite, kad pakeistumėte šią kalbą.</translation>
 <translation id="693761253105515415">Slaptažodžio nustatymas</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
+<translation id="6946722113367118030">Susimąstęs</translation>
 <translation id="6950522403736391608">Paslėpta</translation>
 <translation id="6962809930976936328">Gauti įžvalgų su „Gemini“</translation>
 <translation id="6964300328304469089">Šiuo metu pasirinkta: <ph name="NAME" />, <ph name="EMAIL" />. Pasirinkite paskyrą.</translation>

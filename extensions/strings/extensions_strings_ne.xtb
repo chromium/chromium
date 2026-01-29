@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">फोटो डिकोड गर्न सकिएन: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">अनुवाद प्रयोग गरिएको, तर सूचीमा पूर्वनिर्धारित_लोकेल तोकिएको</translation>
 <translation id="2576842806987913196">त्यहाँ पहिले नै यो नाम भएको CRX फाइल उपस्थित छ।</translation>
+<translation id="2743583586211388067">तपाईंको सङ्गठनको एक्स्टेन्सनको जोखिमसम्बन्धी नीतिअन्तर्गत यो एक्स्टेन्सन एक्सेस गर्न रोक लगाइएको छ।</translation>
 <translation id="2785530881066938471">सामग्री स्क्रिप्टको लागि फाइल '<ph name="RELATIVE_PATH" />' लोड गर्न सकेन। त्यो UFT-8 इन्कोडेड छैन।</translation>
 <translation id="2903070246402204397">प्रशासकले <ph name="EXTENSION_NAME" /> (विस्तारको ID "<ph name="EXTENSION_ID" />") लाई रोक लगाउनुभएको छ। <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">प्याकेज स्थापना गर्न सकेन: '<ph name="ERROR_CODE" />'</translation>

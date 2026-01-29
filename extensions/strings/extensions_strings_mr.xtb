@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल नमूद नाही.</translation>
 <translation id="2576842806987913196">या नावाने आधीपासूनच CRX फाइल उपस्थित आहे.</translation>
+<translation id="2743583586211388067">तुमच्या संस्थेच्या एक्स्टेंशनसंबंधित धोक्याच्या धोरणांतर्गत या एक्स्टेंशनचा अ‍ॅक्सेस ब्लॉक केला आहे.</translation>
 <translation id="2785530881066938471">आशय स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करणे शक्य नाही. ही UTF-8 द्वारे एन्कोड केलेली नाही.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> एक्स्टेंशन आयडी "<ph name="EXTENSION_ID" />") ॲडमिनिस्ट्रेटरने ब्लॉक केलेला आहे. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">हे पॅकेज इंस्टॉल करणे शक्य नाही: '<ph name="ERROR_CODE" />'</translation>

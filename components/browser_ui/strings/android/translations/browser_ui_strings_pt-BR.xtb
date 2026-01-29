@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Cookies de terceiros são permitidos</translation>
 <translation id="1569054338208717605">Tornar os sites mais rápidos com o mecanismo V8 do Chrome, mas deixar o navegador um pouco menos resistente a ataques</translation>
 <translation id="1593426485665524382">Novas ações disponíveis perto da parte de cima da tela</translation>
+<translation id="1601560923496285236">Aplicar</translation>
 <translation id="1615755956145364867">Os sites podem pedir para reproduzir conteúdo protegido</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1621729191093924223">Recursos que precisam de microfone não funcionarão</translation>
@@ -190,7 +191,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="2891975107962658722">Impedir que sites salvem dados no seu dispositivo</translation>
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="2910701580606108292">Perguntar antes de permitir que sites mostrem conteúdo protegido</translation>
-<translation id="2918484639460781603">Ir a configurações</translation>
+<translation id="2918484639460781603">Ir para as configurações</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Quando essa configuração está ativada, os sites podem pedir para rastrear a posição da câmera e saber mais sobre o ambiente à sua volta. Quando está desativada, os sites não podem rastrear a posição da câmera nem saber mais sobre o ambiente à sua volta.</translation>
 <translation id="2968755619301702150">Leitor de certificados</translation>
@@ -523,6 +524,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="6545864417968258051">Busca por Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloqueadas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}one{Bloqueadas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}other{Bloqueadas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Última visita: <ph name="NUM_DAYS" /> dias atrás</translation>
+<translation id="6556866813142980365">Refazer</translation>
 <translation id="6557290421156335491">Meus atalhos</translation>
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6561560012278703671">Usar mensagens mais silenciosas (bloqueia notificações que interrompem você)</translation>

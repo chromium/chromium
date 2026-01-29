@@ -2576,6 +2576,7 @@
 <translation id="2724841811573117416">Журналы WebRTC</translation>
 <translation id="272488616838512378">Преобразование единиц измерения</translation>
 <translation id="2725200716980197196">Подключение к сети восстановлено.</translation>
+<translation id="2725312032345042618">История событий</translation>
 <translation id="2726776862643824793">Уменьшить яркость экрана</translation>
 <translation id="272741954544380994">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Больше не напоминать</translation>
@@ -2917,6 +2918,7 @@
 <translation id="2950666755714083615">Подписаться на рассылку</translation>
 <translation id="2953210795988451570">Обновлений системы безопасности больше не будет. Перейдите на новое устройство Chromebook</translation>
 <translation id="2953218713108551165">Сайту <ph name="SITE" /> запрещено отправлять уведомления. При следующем посещении будет снова запрошено разрешение.</translation>
+<translation id="2954777802959138493">Не удалось запросить статус программы обновления.</translation>
 <translation id="2955048943983973430">Связанные сервисы Google</translation>
 <translation id="2956070239128776395">Раздел вложен в группу: <ph name="ERROR_LINE" />.</translation>
 <translation id="2957124229512318478">Включите режим разработчика, чтобы использовать это расширение, которое не может быть проверено интернет-магазином Chrome.</translation>
@@ -3651,6 +3653,7 @@
 <translation id="3468298837301810372">Ярлык:</translation>
 <translation id="3468999815377931311">Телефон Android</translation>
 <translation id="3469583217479686109">Инструмент "Выделение"</translation>
+<translation id="3471687177769494956">Изменить быстрые клавиши для перехода</translation>
 <translation id="3471876058939596279">Нельзя одновременно использовать порты HDMI и USB Type-C для передачи видеосигнала. Используйте другой видеопорт.</translation>
 <translation id="3472469028191701821">Откроется в новой вкладке</translation>
 <translation id="3473241910002674503">В режиме планшета будут видны кнопки для перехода к панели запуска, возврата на предыдущий экран и переключения между приложениями.</translation>
@@ -7085,6 +7088,7 @@
 <translation id="5828181959764767444">Закат</translation>
 <translation id="5828545842856466741">Добавить профиль…</translation>
 <translation id="5828633471261496623">Печать...</translation>
+<translation id="5829544019044013776">Ваши способы оплаты в Google Кошельке</translation>
 <translation id="5830205393314753525">Не удалось открыть приложение "<ph name="APP_NAME" />"</translation>
 <translation id="5830512293931520102">Пароли зашифрованы и видны только вам.</translation>
 <translation id="5830720307094128296">Сохранить страницу как...</translation>
@@ -7650,6 +7654,7 @@
 <translation id="6212168817037875041">Выключать экран</translation>
 <translation id="6212752530110374741">Отправить ссылку по эл. почте</translation>
 <translation id="6214106213498203737">Акварель</translation>
+<translation id="6214157047210274853">Изменить в Google Кошельке</translation>
 <translation id="621470880408090483">Запретить сайтам подключаться к устройствам Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Для защиты ваших данных <ph name="BRAND" /> блокируется после 1 минуты бездействия.}one{Для защиты ваших данных <ph name="BRAND" /> блокируется после # минуты бездействия.}few{Для защиты ваших данных <ph name="BRAND" /> блокируется после # минут бездействия.}many{Для защиты ваших данных <ph name="BRAND" /> блокируется после # минут бездействия.}other{Для защиты ваших данных <ph name="BRAND" /> блокируется после # минуты бездействия.}}</translation>
 <translation id="6216154119179790291">Прокрутить до первой вкладки</translation>
@@ -9126,6 +9131,7 @@
 <translation id="7243092385765551741">Удалить ключ доступа?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (оптимальное)</translation>
 <translation id="7246230585855757313">Вставьте электронный ключ ещё раз и повторите попытку.</translation>
+<translation id="7248671827512403053">Приложение</translation>
 <translation id="7249197363678284330">Измените эту настройку в адресной строке.</translation>
 <translation id="7249764475759804559">Добавить в список приложений, с помощью которых можно открывать файлы</translation>
 <translation id="7249885578105575587">Спросить Google об этой вкладке: "<ph name="TAB_TITLE" />"</translation>
@@ -11300,6 +11306,7 @@
 <translation id="8703346390800944767">Пропустить</translation>
 <translation id="8703372953981978786">Ссылка не работает</translation>
 <translation id="8703766890819308134">Показать ярлыки для поиска</translation>
+<translation id="8704248383043944131">Изменить сочетание клавиш</translation>
 <translation id="8704662571571150811">Домены</translation>
 <translation id="8705331520020532516">Серийный номер</translation>
 <translation id="870536819717176711">Когда вы делитесь с Gemini текущей вкладкой, ее URL и все содержимое, включая медиаконтент, отправляются в Google.</translation>
@@ -11623,6 +11630,7 @@
 <translation id="8911914282056933784">Скрыть проекты</translation>
 <translation id="8912362522468806198">Аккаунт Google</translation>
 <translation id="8912810933860534797">Включить автосканирование</translation>
+<translation id="8913485523736543337">Программа обновления</translation>
 <translation id="8914030287343429787">Просматривайте пароли, даже если не используете Chrome или Android. Для этого войдите в систему на сайте <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />.</translation>
 <translation id="8914504000324227558">Перезапустить Chrome</translation>
 <translation id="8915307125957890427">Нажмите правой кнопкой мыши на вкладку и выберите "Добавить вкладку в группу", а затем "Новая группа".</translation>
@@ -11763,6 +11771,7 @@
 <translation id="8999560016882908256">Ошибка синтаксиса раздела: <ph name="ERROR_LINE" />.</translation>
 <translation id="8999651235576960439">Меньше движений на экране</translation>
 <translation id="9000185763019430629">Приложите палец к сканеру отпечатков на правой боковой части устройства <ph name="DEVICE_TYPE" />. Данные отпечатков пальцев надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">Программа обновления не установлена.</translation>
 <translation id="900267527532832868">Ключ доступа больше не действителен. Он скоро будет удален из сервиса "<ph name="GOOGLE_PASSWORD_MANAGER" />".</translation>
 <translation id="9003031149571024583">Введите PIN-код. Знак <ph name="NUM_DIGIT" /> из 6. Чтобы удалить последнюю из введенных цифр, нажмите Backspace или Delete.</translation>
 <translation id="9003185744423389627">При подключении к серверу Диспетчера устройств произошла ошибка "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />).</translation>

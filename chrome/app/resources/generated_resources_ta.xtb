@@ -2587,6 +2587,7 @@
 <translation id="2724841811573117416">WebRTC பதிவுகள்</translation>
 <translation id="272488616838512378">அலகு மாற்றம்</translation>
 <translation id="2725200716980197196">நெட்வொர்க் இணைப்பு மீட்டெடுக்கப்பட்டது</translation>
+<translation id="2725312032345042618">நிகழ்வுப் பதிவுகள்</translation>
 <translation id="2726776862643824793">டிஸ்ப்ளேயின் ஒளிர்வைக் குறைக்கும்</translation>
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் படத்தைத் தேடு</translation>
 <translation id="2727633948226935816">மீண்டும் நினைவுபடுத்தாதே</translation>
@@ -2928,6 +2929,7 @@
 <translation id="2950666755714083615">இதில் என்னைப் பதிவு செய்</translation>
 <translation id="2953210795988451570">பாதுகாப்புப் புதுப்பிப்புகள் இனி கிடைக்காது. புதிய Chromebookகிற்கு மேம்படுத்துங்கள்.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> தளத்திற்கு அறிவிப்புகள் அனுப்ப அனுமதி இல்லை. அடுத்த வருகையின்போது உங்களிடம் மீண்டும் கேட்கப்படும்.</translation>
+<translation id="2954777802959138493">புதுப்பிப்பு நிலையை வினவ முடியவில்லை.</translation>
 <translation id="2955048943983973430">தொடர்புடைய Google சேவைகள்</translation>
 <translation id="2956070239128776395">இந்தப் பிரிவு குழுவினுள் உள்ளது: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Chrome ஆன்லைன் ஸ்டோரால் மதிப்பாய்வு செய்ய முடியாத இந்த நீட்டிப்பைப் பயன்படுத்த, டெவெலப்பர் பயன்முறையை ஆன் செய்யவும்.</translation>
@@ -3662,6 +3664,7 @@
 <translation id="3468298837301810372">லேபிள்</translation>
 <translation id="3468999815377931311">Android ஃபோன்</translation>
 <translation id="3469583217479686109">தேர்வுக் கருவி</translation>
+<translation id="3471687177769494956">வழிசெலுத்தல் ஷார்ட்கட்டைத் திருத்து</translation>
 <translation id="3471876058939596279">வீடியோவைக் காட்சிப்படுத்துவதற்கு HDMI மற்றும் USB டைப்-சி போர்ட்டுகளை ஒரே நேரத்தில் பயன்படுத்த இயலாது. வேறொரு வீடியோ போர்ட்டைப் பயன்படுத்தவும்.</translation>
 <translation id="3472469028191701821">புதிய பக்கத்தில் திறக்கும்</translation>
 <translation id="3473241910002674503">டேப்லெட் பயன்முறையில் பட்டன்களைப் பயன்படுத்தி முகப்பிற்குச் செல்லலாம், பின்செல்லலாம், ஆப்ஸுக்கு இடையே மாறலாம்.</translation>
@@ -7098,6 +7101,7 @@
 <translation id="5828181959764767444">சூரிய அஸ்தமனம்</translation>
 <translation id="5828545842856466741">சுயவிவரத்தைச் சேர்...</translation>
 <translation id="5828633471261496623">அச்சிடுகிறது...</translation>
+<translation id="5829544019044013776">Google Walletடில் உள்ள உங்கள் பேமெண்ட் முறைகள்</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> ஆப்ஸைத் திறக்க முடியவில்லை</translation>
 <translation id="5830512293931520102">உங்கள் கடவுச்சொல் என்க்ரிப்ஷன் செய்யப்படும், யாராலும் அதைப் பார்க்க முடியாது.</translation>
 <translation id="5830720307094128296">பக்கத்தை &amp;இவ்வாறு சேமி...</translation>
@@ -7663,6 +7667,7 @@
 <translation id="6212168817037875041">திரையை அணை</translation>
 <translation id="6212752530110374741">இணைப்பை மின்னஞ்சல் செய்</translation>
 <translation id="6214106213498203737">வாட்டர் கலர்</translation>
+<translation id="6214157047210274853">Google Walletடில் திருத்து</translation>
 <translation id="621470880408090483">புளூடூத் சாதனங்களுடன் இணைவதற்குத் தளங்களை அனுமதிக்காதே</translation>
 <translation id="6215039389782910006">{1,plural, =1{உங்கள் கடவுச்சொற்களைப் பாதுகாக்க, 1 நிமிடத்திற்கு எந்தச் செயல்பாடும் இல்லையெனில் <ph name="BRAND" /> லாக் செய்யப்படும்}other{உங்கள் கடவுச்சொற்களைப் பாதுகாக்க, # நிமிடங்களுக்கு எந்தச் செயல்பாடும் இல்லையெனில் <ph name="BRAND" /> லாக் செய்யப்படும்}}</translation>
 <translation id="6216154119179790291">முதல் பக்கத்திற்குச் செல்லும்</translation>
@@ -9133,6 +9138,7 @@
 <translation id="7243092385765551741">கடவுச்சாவியை நீக்கவா?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (சிறந்தது)</translation>
 <translation id="7246230585855757313">உங்கள் பாதுகாப்பு விசையை மீண்டும் செருகி முயலவும்</translation>
+<translation id="7248671827512403053">ஆப்ஸ்</translation>
 <translation id="7249197363678284330">முகவரிப் பட்டியில் இந்த அமைப்பை மாற்றலாம்.</translation>
 <translation id="7249764475759804559">ஃபைல்களைத் திறக்கும்போது இந்த ஆப்ஸை ஒரு விருப்பமாகச் சேர்</translation>
 <translation id="7249885578105575587">இந்தப் பக்கம் குறித்து Googleளிடம் கேட்கலாம்: <ph name="TAB_TITLE" /></translation>
@@ -11308,6 +11314,7 @@
 <translation id="8703346390800944767">விளம்பரத்தைத் தவிர்</translation>
 <translation id="8703372953981978786">இந்த இணைப்பு வேலை செய்யவில்லை</translation>
 <translation id="8703766890819308134">தேடல் ஷார்ட்கட்களைக் காட்டு</translation>
+<translation id="8704248383043944131">கீபோர்டு ஷார்ட்கட்டைத் திருத்து</translation>
 <translation id="8704662571571150811">டொமைன்கள்</translation>
 <translation id="8705331520020532516">வரிசை எண்</translation>
 <translation id="870536819717176711">தற்போதைய பக்கத்தை Geminiயுடன் பகிர்வதற்குத் தேர்வுசெய்தால் பக்கத்தின் முழு உள்ளடக்கம், மீடியா, URL ஆகியவை Googleளுக்கு அனுப்பப்படும்.</translation>
@@ -11628,6 +11635,7 @@
 <translation id="8911914282056933784">புராஜெக்ட்டுகளை மறைக்கும்</translation>
 <translation id="8912362522468806198">Google கணக்கு</translation>
 <translation id="8912810933860534797">தானியங்கு ஸ்கேனை இயக்கு</translation>
+<translation id="8913485523736543337">புதுப்பிப்பு</translation>
 <translation id="8914030287343429787">நீங்கள் Chrome அல்லது Androidஐப் பயன்படுத்தாதபோதும் <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> தளத்தில் உள்நுழைந்து உங்கள் கடவுச்சொற்களைப் பார்க்கலாம்</translation>
 <translation id="8914504000324227558">Chrome ஐ மீண்டும் தொடங்கு</translation>
 <translation id="8915307125957890427">பக்கத்தின் மீது வலது கிளிக் செய்து "குழுவில் பக்கத்தைச் சேர்" என்பதைத் தேர்ந்தெடுத்தப் பிறகு "புதிய குழு" என்பதைத் தேர்ந்தெடுக்கவும்</translation>
@@ -11768,6 +11776,7 @@
 <translation id="8999560016882908256">பிரிவில் சின்டாக்ஸ் பிழை: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">திரையில் குறைவான நகர்வு</translation>
 <translation id="9000185763019430629">உங்கள் <ph name="DEVICE_TYPE" /> இன் வலதுபக்கமுள்ள கைரேகை சென்சாரைத் தொடவும். உங்கள் கைரேகைத் தரவு பாதுகாப்பாகச் சேமிக்கப்படுவதுடன் <ph name="DEVICE_TYPE" /> சாதனத்திலேயே இருக்கும்.</translation>
+<translation id="9000529821022336229">புதுப்பிப்பு நிறுவல்கள் எதுவும் கண்டறியப்படவில்லை.</translation>
 <translation id="900267527532832868">இந்தக் கடவுச்சாவி இனி வேலை செய்யாது. அது <ph name="GOOGLE_PASSWORD_MANAGER" /> இல் இருந்து விரைவில் நீக்கப்படும்.</translation>
 <translation id="9003031149571024583">6 இலக்கங்கள் கொண்ட பின்னின் <ph name="NUM_DIGIT" />வது இலக்கத்தை டைப் செய்யவும். கடைசியாக டைப் செய்த இலக்கத்தை அகற்ற backspace அல்லது delete பட்டனைப் பயன்படுத்தவும்.</translation>
 <translation id="9003185744423389627">சாதன நிர்வாகச் சேவையுடன் இணைக்க முடியவில்லை. பிழைச் செய்தி: <ph name="STATUS_TEXT" />, நேரம்: <ph name="FAILURE_TIME" /></translation>

@@ -990,6 +990,15 @@ Als je het beleid niet instelt, wordt het gedrag vanaf <ph name="PRODUCT_NAME" /
 
 Vanaf <ph name="PRODUCT_NAME" /> 147 wordt dit beleid beëindigd. IT-beheerders kunnen <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> gebruiken om deze functie in de toekomst te beheren.</translation>
 <translation id="1686952487081322272">Snelle antwoorden uitzetten</translation>
+<translation id="1688920969335897857">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels. Dit beleid vervangt verouderde beleidsregels die misschien zijn ingesteld.
+
+Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de markering override_update_url is ingesteld op waar, wordt de extensie geïnstalleerd en krijgt die een update met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
+
+In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="1690383938831887552">Niet toestaan dat Signed HTTP Exchanges worden geladen</translation>
 <translation id="1692325295652827195">Als je het beleid instelt op True, worden rapporten over belangrijke, op basis van beleid geactiveerde installatiegebeurtenissen voor Android-apps naar Google gestuurd.
 
@@ -1007,6 +1016,25 @@ Als je het beleid instelt op False, of niet instelt, worden er geen gebeurteniss
 <translation id="1700811900332333712">Geef het apparaat toestemming om Powerwash te activeren</translation>
 <translation id="1702882980096462188">Google Drive (ondersteund vanaf versie 135)</translation>
 <translation id="1705215165572785706">Toetsen op de bovenste rij gebruiken als mediatoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
+<translation id="1707784442037814280">Als je het beleid instelt, wordt een lijst met apps en extensies gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers via de <ph name="PRODUCT_NAME" />-interface. Rechten worden impliciet verleend, waaronder voor de extensie-API's enterprise.deviceAttributes en enterprise.platformKeys. (Deze 2 API's zijn niet beschikbaar voor apps en extensies die niet afgedwongen zijn geïnstalleerd.)
+
+Hoewel <ph name="PRODUCT_NAME" /> probeert te voorkomen dat gebruikers deze extensies verwijderen, maken sommige besturingssystemen het onmogelijk voor <ph name="PRODUCT_NAME" /> om zich goed te verdedigen tegen externe wijzigingen in extensies. Deze poging tot voorkomen is dus een maximale inspanning.
+
+Als je dit beleid niet instelt, worden apps of extensies niet automatisch geïnstalleerd en kunnen gebruikers elke app of extensie in <ph name="PRODUCT_NAME" /> verwijderen.
+
+Dit beleid vervangt het beleid <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Als een eerder afgedwongen geïnstalleerde app of extensie wordt verwijderd uit deze lijst, verwijdert <ph name="PRODUCT_NAME" /> de app of extensie automatisch.
+
+Gebruikers kunnen de broncode van een extensie wijzigen via de tools voor ontwikkelaars, waardoor de extensie misschien niet meer functioneert. Als je je hierover zorgen maakt, stel je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> in.
+
+Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien aangegeven, moet verwijzen naar een XML-updatedocument voor het manifest ( https://developer.chrome.com/extensions/autoupdate ). De update-URL moet een van de volgende schema's gebruiken: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> of <ph name="FILE_SCHEME" />. Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven. De update-URL voor volgende updates kan worden overschreven door het beleid <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Zie http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
+
+In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Lees meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).
+
+Opmerking: Dit beleid is alleen van toepassing op platforms die extensies ondersteunen.</translation>
 <translation id="1708496595873025510">De beperking voor het ophalen van de seed voor varianten instellen</translation>
 <translation id="1709154322133526432">De check voor de standaardbrowser bij het opstarten aanzetten</translation>
 <translation id="1713829924716792485">Als je dit beleid toepast of niet instelt, kunnen gebruikers die met een host voor externe toegang zijn verbonden, bestanden overzetten tussen de client en de host. Dit is niet van toepassing op verbindingen voor hulp op afstand, die geen bestandsoverdracht ondersteunen.
@@ -1052,7 +1080,39 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
 <translation id="1744340218280697033">Niet toestaan dat ouders accounts toevoegen die onder toezicht staan</translation>
 <translation id="1745981653910662565">Controlled Frame API toestaan op deze sites</translation>
 <translation id="1755310913456007816">Bestaande instellingen voor online intrekkingscontrole gebruiken</translation>
+<translation id="1759485099646897145">Als je dit beleid instelt, wordt beheerd welke apps en extensies mogen worden geïnstalleerd in <ph name="PRODUCT_NAME" /> en met welke hosts ze interactie kunnen hebben. Ook wordt de runtime-toegang beperkt.
+
+Als je het beleid niet instelt, bestaan er geen beperkingen voor de geaccepteerde typen extensies en apps.
+
+Extensies en apps van een type dat niet op de lijst staat, worden niet geïnstalleerd. Elke waarde moet een van deze tekenreeksen zijn
+
+  * "extension"
+
+  * "theme"
+
+  * "user_script"
+
+  * "hosted_app"
+
+  * "legacy_packaged_app"
+
+  * "platform_app"
+
+Raadpleeg de documentatie over extensies van <ph name="PRODUCT_NAME" /> voor meer informatie over deze typen.
+
+Versies vóór 75 die gebruikmaken van meerdere, door komma's gescheiden extensie-ID's worden niet ondersteund en worden overgeslagen. De rest van het beleid is van toepassing.
+
+Opmerking: Dit beleid is ook van invloed op extensies en apps die afgedwongen worden geïnstalleerd met <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="1760951637494635692">De Serial API toestaan op deze sites</translation>
+<translation id="1762683840824757984">Als je dit beleid instelt, kun je aangeven welke URL's extensies, apps en thema's mogen installeren. Vóór <ph name="PRODUCT_NAME" /> 21 konden gebruikers op een link naar een *.crx-bestand klikken en bood <ph name="PRODUCT_NAME" /> aan het bestand te installeren na een aantal waarschuwingen. Sindsdien moeten bestanden worden gedownload en naar de instellingenpagina van <ph name="PRODUCT_NAME" /> worden gesleept. Met deze instelling kunnen specifieke URL's het oude, eenvoudigere installatieproces gebruiken.
+
+Elk item in deze lijst is een patroon van een extensie (zie https://developer.chrome.com/extensions/match_patterns). Gebruikers kunnen makkelijk items installeren vanaf elke URL die overeenkomt met een item in deze lijst. De locatie van het *.crx-bestand en de pagina waar de download wordt gestart (de verwijzer genoemd), moeten beide zijn toegestaan op basis van deze patronen.
+
+<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> krijgt voorrang boven dit beleid. Dat betekent dat een extensie op de blokkeerlijst niet wordt geïnstalleerd, zelfs niet als dit gebeurt vanaf een site op deze lijst.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="1764415246330773476">Met dit beleid bepaal je of de beheermelding zichtbaar is in de voettekst van de pagina Nieuw tabblad (NTP). De NTP-voettekst toont standaard informatie als de browser wordt beheerd door een organisatie (aangegeven met een gebouwicoon en 'Beheerd door [domeinnaam]'). Dit kan worden aangepast met het beleid <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> en <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
 
 Als je dit beleid niet instelt of instelt op Waar, tonen beheerde browsers een melding 'Beheerd door…' met een icoon.
@@ -5581,6 +5641,11 @@ Als je het beleid niet instelt, is <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLI
 URL-patronen mogen geen conflict vormen met <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
 
 Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
+<translation id="4885338965457068455">Bevat een reguliere expressie om te bepalen welke Google-accounts in aanmerking komen om pdf-bestanden op te slaan in Google Drive vanuit <ph name="PRODUCT_NAME" /> PDF Viewer.
+
+      Er wordt een foutmelding getoond als een gebruiker een pdf-bestand probeert te uploaden naar Google Drive met een account dat niet overeenkomt met dit patroon.
+
+      Als je dit beleid niet instelt of leeg laat, kan de gebruiker elk Google-account gebruiken om pdf-bestanden op te slaan in Google Drive.</translation>
 <translation id="4886138258823889910">De provider van het <ph name="UIA_NAME" />-toegankelijkheidsframework van de browser aanzetten in Windows</translation>
 <translation id="4889589161838982604">Beheert de status van de functie <ph name="DBSC_FEATURE_NAME" />.
 
@@ -7878,6 +7943,13 @@ WAARSCHUWING: Als je deze instelling wijzigt, kan dit ervoor zorgen dat ander be
 Als je dit beleid instelt op <ph name="DISALLOW" />, werken de opties <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> en <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> van het beleid <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> niet meer en gebruiken ze alleen de op <ph name="IP" /> gebaseerde locatie-omzetting op het scherm <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Systeemgegevens rapporteren</translation>
 <translation id="6339355882150329269">Gebruiker niet als inactief beschouwen tijdens afspelen van video's</translation>
+<translation id="6344617273230737436">Hiermee kun je aangeven welke extensies gebruikers NIET kunnen installeren. Extensies die al zijn geïnstalleerd, worden uitgezet als ze op de blokkeerlijst staan. De gebruiker kan ze niet weer aanzetten. Als een extensie die is uitgezet op basis van de blokkeerlijst, van die lijst wordt verwijderd, wordt de extensie automatisch weer aangezet.
+
+De waarde '*' op de blokkeerlijst betekent dat alle extensies standaard worden geblokkeerd. Extensies die expliciet op de toelatingslijst staan, zijn toegestaan als ze zijn ondertekend (verpakt). Alle uitgepakte extensies worden geblokkeerd.
+
+Als je dit beleid niet instelt, kan de gebruiker elke extensie installeren in <ph name="PRODUCT_NAME" />.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="6353890097388312479">Als je het beleid instelt op All (0) of niet instelt, kunnen gebruikers vertrouwensinstellingen bewerken voor alle CA-certificaten, door de gebruiker geïmporteerde certificaten verwijderen en certificaten importeren met Certificaatbeheer. Als je het beleid instelt op UserOnly (1), kunnen gebruikers alleen door de gebruiker geïmporteerde certificaten beheren, maar niet de vertrouwensinstellingen van ingebouwde certificaten wijzigen. Als je het beleid instelt op None (2), kunnen gebruikers CA-certificaten bekijken (maar niet beheren).</translation>
 <translation id="6358320368815225772">Extern attest voor het apparaat uitzetten</translation>
 <translation id="6362210464341005867">Als je <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> instelt, kun je een lijst met URL-patronen aangeven van sites die geen cookies kunnen instellen voor één sessie, tenzij het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> is ingesteld op het permanent herstellen van URL's uit vorige sessies.
@@ -9242,6 +9314,35 @@ Als dit beleid niet wordt ingesteld, wordt media niet automatisch afgespeeld doo
 
 Als je dit beleid wijzigt terwijl <ph name="PRODUCT_NAME" /> wordt uitgevoerd, wordt het alleen toegepast op nieuw geopende tabbladen.</translation>
 <translation id="7151366515472588710">De client moet deze gegevens niet interpreteren, maar woord voor woord doorsturen. De DMServer gebruikt policy_version om te verifiëren dat de beleidsweergave van DMServer overeenkomt met de weergave van het Chrome OS-apparaat.</translation>
+<translation id="7151871459020721123">Dit beleid biedt een manier om de lijst met sets te overschrijven die de browser gebruikt voor functies voor first-party sets (die later is omgedoopt tot de functie <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+
+Elke set in de lijst met first-party sets van de browser moet voldoen aan de vereisten van een first-party set.
+Een first-party set moet een primaire site en een of meer lidsites bevatten.
+Een set kan ook een lijst bevatten van servicesites waarvan de set de eigenaar is, evenals een routebeschrijving van een site naar alle ccTLD-varianten.
+Ga naar https://github.com/WICG/first-party-sets voor meer informatie over hoe <ph name="PRODUCT_NAME" /> first-party sets gebruikt.
+
+Alle sites in een first-party set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost. Elke site in een first-party set moet ook uniek zijn. Dit betekent dat een site niet meer dan één keer kan worden vermeld in een first-party set.
+
+Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met first-party sets.
+
+Voor alle sites in een first-party set uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, die site wordt verwijderd uit de first-party set van de browser.
+Daarna wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
+
+Voor alle sites in een first-party set uit de lijst <ph name="ADDITIONS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, een update voor de first-party set van de browser wordt doorgevoerd zodat de nieuwe first-party set kan worden toegevoegd aan de lijst van de browser. Nadat de update is doorgevoerd voor lijst van de browser, wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
+
+De lijst met first-party sets van de browser vereist dat voor alle sites op de lijst geen site in meer dan één set is opgenomen. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
+
+Jokertekens (*) worden zowel in first-party sets als in deze lijsten niet ondersteund als beleidswaarde.
+
+Alle sets die in dit beleid worden vermeld, moeten geldige first-party sets zijn. Zo niet, dan krijg je de relevante foutmelding.
+
+Dit is het equivalent van het beleid <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Beide beleidsregels kunnen worden gebruikt en hebben hetzelfde effect op het gedrag van de browser.
+Beide beleidsregels zijn beëindigd na de beëindiging van de functie <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> in <ph name="PRODUCT_NAME" /> versie 144.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" /> of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="7152640356717355643">Rapportage voor netwerkinterface van apparaat aanzetten</translation>
 <translation id="7153786895642570081">Met dit beleid bepaal je of de functie EphemeralNetworkPolicies wordt aangezet.
 Als je dit beleid instelt op True, worden de DeviceOpenNetworkConfiguration-vermeldingen RecommendedValuesAreEphemeral en UserCreatedNetworkConfigurationsAreEphemeral gerespecteerd.
@@ -9409,17 +9510,6 @@ Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_
 Als je dit beleid toepast, wordt de Kerberos-functionaliteit aangezet. Kerberos-accounts kunnen worden toegevoegd via zowel het beleid Kerberos-accounts configureren als de instellingen voor Kerberos-accounts op de pagina Kerberos-instellingen.
 
 Als je dit beleid niet toepast of niet instelt, staan de instellingen voor Kerberos-accounts uit. Er kunnen geen Kerberos-accounts worden toegevoegd en Kerberos-verificatie kan niet worden gebruikt. Alle bestaande Kerberos-accounts worden verwijderd en alle opgeslagen wachtwoorden worden verwijderd.</translation>
-<translation id="7273266646672521061">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden geblokkeerd voor het indienen van <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
-
-Als een oorsprong zowel door dit beleid als door LocalNetworkAccessAllowedForUrls wordt gedekt, heeft dit beleid voorrang.
-
-Afhankelijk van de fase van de uitrol van <ph name="LOCAL_NETWORK_ACCESS" /> moet LocalNetworkAccessRestrictionsEnabled misschien ook worden aangezet om te voorkomen dat dit beleid <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken blokkeert.
-
-Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-
-Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="7273785848231509306">Nooit namen en foto's van gebruikers laten zien</translation>
 <translation id="7274077256421167535">Energie delen via USB</translation>
 <translation id="7275334191706090484">Beheerde bookmarks</translation>
@@ -9454,7 +9544,6 @@ Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name=
 
       Dit beleid geldt alleen voor ARM-apparaten die naar ARC VM worden gemigreerd.</translation>
 <translation id="731208205557053914">VPD-gegevens rapporteren</translation>
-<translation id="7312630060538223455">Sta toe dat sites verzoeken naar lokale netwerkeindpunten sturen.</translation>
 <translation id="7313672174502374994">De SHA-256-hash van de achtergrondafbeelding.</translation>
 <translation id="7317472245305274219">Bepalen of het maken van toegangssleutels standaard wordt ingesteld op iCloud Sleutelhanger.</translation>
 <translation id="7318503436349210241">Aangezet: css-zoom voldoet aan de standaardspecificatie.</translation>
@@ -9909,6 +9998,15 @@ Beleidsregels die moeten worden samengevoegd, moeten ook worden ingesteld in <ph
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
 <translation id="76580522298425324">Schermopname zonder eerder gebruikersgebaar toestaan</translation>
 <translation id="7661379728107156839">Weinig complex</translation>
+<translation id="7664381844041906121">Beheert de installatie van externe extensies.
+
+Als je dit beleid toepast, kunnen externe extensies niet worden geïnstalleerd.
+
+Als je dit beleid niet toepast of niet instelt, kunnen externe extensies worden geïnstalleerd.
+
+Externe extensies en de installatie daarvan worden beschreven op https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="7664977773563102099">Als je het beleid instelt, specificeer je de lijst met URL's waarvan de patronen worden vergeleken met de beveiligingsoorsprong van de aanvragende URL. Bij een overeenkomst wordt zonder prompt toegang gegeven tot apparaten voor audio-opnamen.
 
 Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Houd er wel rekening mee dat het patroon *, dat overeenkomt met elke URL, niet wordt ondersteund door dit beleid.</translation>
@@ -10029,6 +10127,13 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="7736846524371077454">Afdwingen dat alle toegestane invoermethoden worden aangezet</translation>
 <translation id="7740644123648617252">Import van formuliergegevens voor automatisch invullen bij eerste uitvoering aanzetten</translation>
 <translation id="7744253761377202223">Percentage voor schermhelderheid als er op netvoeding wordt gewerkt</translation>
+<translation id="7746445432835314913">Als je het beleid instelt, geef je aan welke extensies niet onder de blokkeerlijst vallen.
+
+De waarde <ph name="ALL_EXTENSIONS" /> op de blokkeerlijst betekent dat alle extensies worden geblokkeerd. Gebruikers kunnen alleen extensies installeren die op de toelatingslijst staan.
+
+Standaard worden alle extensies toegestaan. Maar als je extensies via beleid hebt verboden, gebruik je de lijst met toegestane extensies om dat beleid te wijzigen.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="7747447585227954402">Toestaan dat apparaten een <ph name="PLUGIN_VM_NAME" /> gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7749024457938190837">Extensies die het bevestigingsdialoogvenster mogen overslaan als ze afdruktaken sturen via chrome.printing API</translation>
 <translation id="7749402620209366169">Hiermee zet je tweefactorauthenticatie aan in plaats van een door de gebruiker gedefinieerde pincode voor hosts voor externe toegang.
@@ -10461,15 +10566,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="8031651557770840616">Generatieve AI-achtergrond niet toestaan</translation>
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> uitzetten op alle webpagina's</translation>
-<translation id="8038781335960215878">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden niet onderworpen aan <ph name="LOCAL_NETWORK_ACCESS" />-checks.
-
-Als een oorsprong onder zowel dit beleid als LocalNetworkAccessBlockedForUrls valt, heeft LocalNetworkAccessBlockedForUrls voorrang.
-
-Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-
-Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="8044943551137872312">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan voor specifieke URL's.
 
@@ -10500,6 +10596,7 @@ Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="8062485064082966327">Een anonieme Google-service gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="8066428282805800713">Extra hardwaregegevens sturen op ChromeOS Flex</translation>
 <translation id="8071371098891664137">Als <ph name="PRINTERS_BLOCKLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers niet kunnen gebruiken. Alle printers zijn beschikbaar voor de gebruiker, behalve de ID's in dit beleid. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="8076539570602616846">Beperk in aanmerking komende Google-accounts voor het opslaan van pdf-bestanden in Google Drive vanuit <ph name="PRODUCT_NAME" /> PDF Viewer</translation>
 <translation id="8078297389450285582">Als je dit beleid toepast of niet instelt, wordt het slimme dimmodel gebruikt en kan het langer duren voordat het scherm wordt gedimd. Als dit het geval is, blijven de perioden tot het scherm uitgaat, het scherm wordt vergrendeld en inactiviteit wordt geactiveerd, gelijk aan de periode voor het dimmen van het scherm die je oorspronkelijk had ingesteld.
 
       Als je dit beleid niet toepast, heeft het slimme dimmodel geen invloed op het dimmen van het scherm.</translation>
@@ -10879,7 +10976,6 @@ Als je dit beleid niet instelt, staat gezichtsbediening in eerste instantie uit,
 
       De beleidswaarde moet worden opgegeven in milliseconden.</translation>
 <translation id="8330437518362176921">Alleen de door het beleid geleverde update-URL gebruiken als Chrome-kiosk-apps worden gedownload en geüpdatet</translation>
-<translation id="8331421240786531350">Voorkomen dat sites verzoeken naar lokale netwerkeindpunten kunnen sturen.</translation>
 <translation id="8331479227794770304">Plaktoetsen aanzetten</translation>
 <translation id="8332822245414537447">Controle van RSA-sleutelgebruik uitzetten</translation>
 <translation id="8333141477131859004">Verbeterd automatisch invullen toestaan en AI-modellen verbeteren.</translation>
@@ -11264,6 +11360,8 @@ Als je het beleid niet instelt, kunnen gebruikers de game niet spelen op ingesch
 
           De beleidswaarde moet worden gespecificeerd in milliseconden.</translation>
 <translation id="8592363656632862875">Model niet downloaden</translation>
+<translation id="8592887929147817620">Als je het beleid toepast of niet instelt, kunnen gebruikers zoeken met hun camera's via <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Als je het beleid niet toepast, zien gebruikers de knop <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet in het zoekvak als door de camera ondersteund zoeken via <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.
+Vanaf <ph name="PRODUCT_NAME" /> 147 wordt dit beleid beëindigd. IT-beheerders kunnen <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> gebruiken om deze functie in de toekomst te beheren.</translation>
 <translation id="859579553230883285">Zet de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties voor je gebruikers uit.</translation>
 <translation id="8596784129804979039">De standaardconfiguratie gebruiken voor de sandbox voor netwerkservice</translation>
 <translation id="8597758693275075382">OEM-tekenreeksen voor SMBIOS om tijdens de installatie aan de VM door te geven. Standaard wordt de lege lijst ingesteld.</translation>
@@ -12066,6 +12164,15 @@ Dit beleid is beëindigd in M69 en is vervangen door OverrideSecurityRestriction
 Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="9142561920976791097">Het nieuwe gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gebruikt.</translation>
 <translation id="91459503271584213">Uitvoerbare hosts voor native berichten rechtstreeks starten in Windows</translation>
+<translation id="9146808643918146928">Bepaal of gebruikers de ontwikkelaarsmodus kunnen aanzetten via chrome://extensions.
+
+Als je het beleid niet instelt, kunnen gebruikers de ontwikkelaarsmodus aanzetten via de pagina Extensies, tenzij het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> is ingesteld op <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2).
+Als het beleid is ingesteld op <ph name="ALLOW" /> (0), kunnen gebruikers de ontwikkelaarsmodus aanzetten via de pagina Extensies.
+Als je het beleid instelt op <ph name="DISALLOW" /> (1), kunnen gebruikers de ontwikkelaarsmodus niet aanzetten via de pagina Extensies.
+
+Als je dit beleid instelt, kan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> de ontwikkelaarsmodus niet meer beheren via de pagina Extensies.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="9148720248753722892">SHA-1-ondertekende certificaten niet toestaan</translation>
 <translation id="9149075762533142978">De functie voor de generator voor QR-codes staat aan.</translation>
 <translation id="9149678135092892302">Rapportage van versiegegevens uitzetten</translation>

@@ -1226,7 +1226,7 @@
 <translation id="5578795271662203820">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
 <translation id="5579012242779565775">إخفاء "قائمة القراءة"</translation>
 <translation id="5581786858144165447">‏طرح سؤال في "وضع AI"</translation>
-<translation id="5585019845078534178">بطاقات</translation>
+<translation id="5585019845078534178">البطاقات</translation>
 <translation id="5591526871732898147">‏الصورة المرفقة {index}</translation>
 <translation id="5595485650161345191">تعديل العنوان</translation>
 <translation id="559567008082979829">يمكنك ضبط عمليات التنزيل بحيث يتم حذفها بعد شهر واحد.</translation>
@@ -1631,6 +1631,7 @@
 <translation id="6930799952781667037">انقر للتغيير إلى هذه اللغة.</translation>
 <translation id="693761253105515415">يُرجى ضبط رمز مرور</translation>
 <translation id="6945221475159498467">تحديد</translation>
+<translation id="6946722113367118030">تفكير</translation>
 <translation id="6950522403736391608">مخفي</translation>
 <translation id="6962809930976936328">‏عرض أهم النقاط باستخدام Gemini</translation>
 <translation id="6964300328304469089">الحساب الذي تم اختياره حاليًا هو "<ph name="NAME" />" ‏(<ph name="EMAIL" />). اختَر حسابًا.</translation>

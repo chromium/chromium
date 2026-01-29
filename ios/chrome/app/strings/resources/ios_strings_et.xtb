@@ -1523,6 +1523,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6556866813142980365">Tee uuesti</translation>
 <translation id="6559301491397835130">{count,plural, =1{Järjehoidja salvestati kausta „{title}“. See salvestatakse ainult selles seadmes.}other{Järjehoidjad salvestati kausta „{title}“. Need salvestatakse ainult selles seadmes.}}</translation>
 <translation id="656065428026159829">Kuva rohkem</translation>
+<translation id="6565899972286925956">Looge midagi.</translation>
 <translation id="6571070086367343653">Muuda krediitkaarti</translation>
 <translation id="6574092468346088891">Lülitage ohutuskontrolli märguanded sisse</translation>
 <translation id="6579867704846662339">Soovi korral võite muudest rakendustest sissetulevad URL-id avada inkognito režiimis.</translation>
@@ -1633,6 +1634,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6930799952781667037">Puudutage selle keele valimiseks.</translation>
 <translation id="693761253105515415">Seadistage pääsukood</translation>
 <translation id="6945221475159498467">Vali</translation>
+<translation id="6946722113367118030">Mõtleb</translation>
 <translation id="6950522403736391608">Peidetud</translation>
 <translation id="6962809930976936328">Hankige statistikat Gemini abil</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> on praegu valitud. Valige konto.</translation>

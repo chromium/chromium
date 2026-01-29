@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS કીચેન સાથે Password Managerનો ઉપયોગ કરવા માટે, Chromiumને ફરીથી લૉન્ચ કરો અને કીચેનના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="1652887625750064647">AI દ્વારા શ્રેષ્ઠ મેળ</translation>
 <translation id="1653465303147789530">ઍપ સ્વિચ કર્યા વિના <ph name="PAYMENT_METHOD" /> વડે ચુકવણી કરો</translation>
+<translation id="1655159794885649984">આ સાઇટ પર કન્ટેન્ટને ખેંચવાની મંજૂરી નથી</translation>
 <translation id="1656024727720460136">Chrome દ્વારા આ પેજને સરળ બનાવવામાં આવ્યું છે જેથી તેને વધુ સરળતાથી વાંચી શકાય. Chrome દ્વારા સુરક્ષિત કનેક્શન વડે ઑરિજિનલ પેજ પાછું મેળવવામાં આવ્યું.</translation>
 <translation id="1656489000284462475">પિકઅપ</translation>
 <translation id="1658111267661135323">ટીવી અને વીડિયો</translation>
@@ -1678,6 +1679,7 @@
 <translation id="365641980390710834">કેઝ્યુઅલ પોશાક</translation>
 <translation id="3658742229777143148">પુનરાવર્તન</translation>
 <translation id="3659521826520353662">ઍડમિનિસ્ટ્રેટર દ્વારા વ્યાખ્યાયિત કઈ વેબસાઇટની મુલાકાત લેવામાં આવી અને ક્યારે: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">આ IBAN, Google Walletમાં સાચવવામાં આવ્યો છે, જેથી તમે Googleની બધી સેવાઓમાં તેનો ઉપયોગ કરી શકો.</translation>
 <translation id="3664479564786885722">આ પ્રોડક્ટ વેચતા અન્ય સ્ટોરમાંથી ખરીદીના વધુ વિકલ્પો શોધો.</translation>
 <translation id="3664782872746246217">કીવર્ડ:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />વધુ જાણો<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@
 <translation id="6085149458302186532">લેબલ (રંગીન)</translation>
 <translation id="6087312102907839798">સંબંધિત શોધ</translation>
 <translation id="6089505343295765444">તમે તમારા Chrome ઇતિહાસમાંથી ડિલીટ કરો છો તેવી ટૅબ હજી પણ તમારા સરખામણી ટેબલમાં બતાવવામાં આવશે</translation>
+<translation id="6091115085465716987">Google Walletનો લોગો</translation>
 <translation id="6091691259076781835">વધુ ઝડપી ચેકઆઉટ માટે, આ CVCને તમારા ડિવાઇસ પર સાચવો</translation>
 <translation id="6093599771645355227">પીળો 1</translation>
 <translation id="6093795393556121384">તમારું કાર્ડ ચકાસવામાં આવ્યું છે</translation>
@@ -3814,6 +3817,7 @@
 <translation id="7057567173736333354">તમારી છબીનું વર્ણન કરો</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> દ્વારા ચકાસણી કરાઈ છે કે <ph name="ISSUER" /> દ્વારા આ વેબસાઇટનું પ્રમાણપત્ર જારી કરાયું છે.</translation>
 <translation id="7058774143982824355">CSV પાસવર્ડ સંબંધિત વિશ્લેષક સેવા</translation>
+<translation id="7062344833049251424">આગલી વખતે વધુ ઝડપથી ચુકવણી કરવા માટે, તમારા કાર્ડ અને બિલિંગ સરનામાને Google Walletમાં સાચવો</translation>
 <translation id="706295145388601875">Chrome સેટિંગમાં ઍડ્રેસ ઉમેરો અને તેને મેનેજ કરો</translation>
 <translation id="7063157783216323487">લીલો 2</translation>
 <translation id="7064443976734085921">નાની કાર</translation>
@@ -4284,6 +4288,7 @@
 <translation id="7754587126786572336">જ્યારે અપડેટ શરૂ થશે ત્યારે તમારા Chromeના ટૅબ અને ઍપ બંધ થઈ જશે</translation>
 <translation id="7755287808199759310">તમારા માટે તમારા માતાપિતા તેને અનાવરોધિત કરી શકે છે</translation>
 <translation id="7755624218968747854">પ્રાથમિક રોલ</translation>
+<translation id="7756441544371887150">આ કાર્ડની માહિતી Google Walletમાં સાચવવામાં આવે, પછી Chromeમાં કરેલી ખરીદીઓ માટે તેને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="7758069387465995638">ફાયરવોલ અથવા એન્ટિવાયરસ સોફ્ટવેર એ કનેક્શન અવરોધિત કર્યું હોઈ શકે છે.</translation>
 <translation id="7759147511335618829">MIDI ડિવાઇસ નિયંત્રણ અને ફરીથી પ્રોગ્રામ કરવા</translation>
 <translation id="7759809451544302770">વૈકલ્પિક</translation>
@@ -5207,6 +5212,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{કોઈ નહીં}=1{1 આઇટમ}one{# આઇટમ}other{# આઇટમ}}</translation>
 <translation id="976522784004777030">5 x 8 ઇંચ</translation>
 <translation id="977502174772294970">લગ્ન</translation>
+<translation id="978750072783101994">આ કાર્ડની માહિતી Google Walletમાં સાચવવામાં આવે, પછી Chromiumમાં કરેલી ખરીદીઓ માટે તેને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" /> દ્વારા તમારા બ્રાઉઝર તેમજ પ્રોફાઇલ મેનેજ કરવામાં આવે છે</translation>
 <translation id="979189555234810423">પ્રદર્શન અને સંમેલનો</translation>
 <translation id="979503328401807348">વધુ ઉપયોગી જાહેરાતો</translation>

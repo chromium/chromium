@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Староннія файлы cookie дазволены</translation>
 <translation id="1569054338208717605">Паскорыць працу сайтаў на рухавіку Chrome V8, а Chrome зрабіць крыху менш устойлівым да атак</translation>
 <translation id="1593426485665524382">Новыя дзеянні даступныя ўверсе экрана</translation>
+<translation id="1601560923496285236">Ужыць</translation>
 <translation id="1615755956145364867">Сайты могуць запытваць дазвол на прайграванне абароненага змесціва</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Функцыі, якім патрэбны мікрафон, не будуць працаваць</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
+<translation id="6556866813142980365">Узнавіць</translation>
 <translation id="6557290421156335491">Мае ярлыкі</translation>
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6561560012278703671">Забараніць сайтам адцягваць вашу ўвагу запытамі дазволу на паказ апавяшчэнняў. Паказваць замест іх індыкатар блакіроўкі ў адрасным радку</translation>

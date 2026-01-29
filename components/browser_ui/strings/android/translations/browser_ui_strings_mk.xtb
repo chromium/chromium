@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Колачињата од трети страни се дозволени</translation>
 <translation id="1569054338208717605">Забрзај ги сајтовите со пребарувачот V8 на Chrome, но направи го Chrome малку понеотпорен на напади</translation>
 <translation id="1593426485665524382">Достапни се нови дејства речиси најгоре на екранот</translation>
+<translation id="1601560923496285236">Примени</translation>
 <translation id="1615755956145364867">Сајтовите може да прашуваат дали да пуштат заштитени содржини</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Функциите на коишто им треба микрофонот нема да работат</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">Скенирање за Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се блокирани}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се блокирани}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се блокирани}}</translation>
 <translation id="6554732001434021288">Последно посетено пред <ph name="NUM_DAYS" /> дена</translation>
+<translation id="6556866813142980365">Повтори</translation>
 <translation id="6557290421156335491">Мои кратенки</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6561560012278703671">Користете потивки пораки (не дозволува известувањата да ве попречуваат)</translation>

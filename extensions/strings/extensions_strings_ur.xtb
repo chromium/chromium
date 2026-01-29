@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">تصویر کو ڈیکوڈ نہیں کیا جا سکا: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏لوکلائزیشن کا استعمال کیا گیا، لیکن مینی فیسٹ میں default_locale کی وضاحت نہیں کی گئی۔</translation>
 <translation id="2576842806987913196">‏اس نام کی ایک CRX فائل پہلے سے موجود ہے۔</translation>
+<translation id="2743583586211388067">آپ کی تنظیم کی ایکسٹینشن کے خطرے کی پالیسی کے تحت اس ایکسٹینشن تک رسائی مسدود ہے۔</translation>
 <translation id="2785530881066938471">‏مواد کی اسکرپٹ کیلئے فائل '<ph name="RELATIVE_PATH" />' کو لوڈ نہیں کیا جا سکا۔ یہ UTF-8 ان کوڈڈ نہیں ہے۔</translation>
 <translation id="2903070246402204397">‏<ph name="EXTENSION_NAME" /> (ایکسٹینشن ID <ph name="EXTENSION_ID" />) کو منتظم نے مسدود کر دیا ہے۔ <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">پیکیج انسٹال نہیں کیا جا سکا: '<ph name="ERROR_CODE" />'</translation>

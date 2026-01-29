@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">ທ່ານສາມາດຂໍເບິ່ງເວັບໄຊເວີຊັນເດັສທັອບໄດ້</translation>
 <translation id="1085696779717592361">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="113098737392899175">ນຳທາງໜ້າດ້ວຍເຄີເຊີຂໍ້ຄວາມເມື່ອເຊື່ອມຕໍ່ແປ້ນພິມແລ້ວ</translation>
+<translation id="1149644372535087155">ບັນທຶກລະຫັດຜ່ານໃນ Chrome</translation>
 <translation id="1178015372320901893">ຊີດລຸ່ມສຸດໃນທາງລັດຂອງຂ້ອຍ</translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">ອະນຸຍາດໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="1569054338208717605">ເພີ່ມຄວາມໄວໃຫ້ເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chrome ແຕ່ເຮັດໃຫ້ Chrome ທົນທານຕໍ່ກັບການໂຈມຕີຫຼຸດລົງເລັກນ້ອຍ</translation>
 <translation id="1593426485665524382">ຄຳສັ່ງໃໝ່ພ້ອມໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງສຸດຂອງໜ້າຈໍ</translation>
+<translation id="1601560923496285236">ນໍາໃຊ້</translation>
 <translation id="1615755956145364867">ເວັບໄຊສາມາດຂໍຫຼິ້ນເນື້ອຫາທີ່ມີການປ້ອງກັນໄດ້</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1621729191093924223">ຄຸນສົມບັດທີ່ຕ້ອງການໃຊ້ໄມໂຄຣໂຟນຈະໃຊ້ບໍ່ໄດ້</translation>
@@ -171,6 +173,7 @@
 <translation id="2682367912565197520">ລຶບລະດັບການຊູມທີ່ບັນທຶກໄວ້</translation>
 <translation id="2683434792633810741">ລຶບ ແລະ ຣີເຊັດບໍ?</translation>
 <translation id="2685514716378236873">ບໍ່ອະນຸຍາດ</translation>
+<translation id="2710883118091822664">ເຂົ້າສູ່ລະບົບເພື່ອສືບຕໍ່ໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="2713106313042589954">ປິດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="2717722538473713889">ທີ່ຢູ່ອີເມວ</translation>
 <translation id="2726059656860238749">ເປີດໃຊ້ Chrome ໂດຍເນັ້ນໃສ່ Omnibox, ເຊິ່ງຊ່ວຍຫຼຸດເວລາສະຕາດອັບຂອງອຸປະກອນລະດັບລຸ່ມ.</translation>
@@ -198,6 +201,7 @@
 <translation id="3004438526346162184">ເວັບໄຊສາມາດໃຊ້ຄຸນສົມບັດນີ້ເພື່ອຈັດການໜ້າຈໍຢູ່ຈໍສະແດງຜົນທັງໝົດຂອງທ່ານໄດ້</translation>
 <translation id="3008272652534848354">ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="301521992641321250">ບລັອກອັດຕະໂນມັດແລ້ວ</translation>
+<translation id="3026311960038210">ຄໍເລັກຊັນຮູບແບບສີສັນ</translation>
 <translation id="3064871050034234884">ເວັບໄຊສາມາດຫຼິ້ນສຽງໄດ້</translation>
 <translation id="3065787901655140044">ການປົກປ້ອງຂັ້ນສູງເປີດຢູ່</translation>
 <translation id="3069226013421428034">ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
@@ -340,6 +344,7 @@
 <translation id="4478158430052450698">ປັບແຕ່ງການຊູມຂອງເວັບໄຊຕ່າງໆໄດ້ງ່າຍຂຶ້ນ</translation>
 <translation id="4479647676395637221">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ (ແນະນຳ)</translation>
 <translation id="4505788138578415521">ຂະຫຍາຍ URL ແລ້ວ</translation>
+<translation id="4523472416386354622">ເຂົ້າສູ່ລະບົບເພື່ອ​ເລີ່ມ​ຕົ້ນ​</translation>
 <translation id="4534723447064627427">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງໄມໂຄຣໂຟນ, ກະລຸນາເປີດໄມໂຄຣໂຟນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="4566417217121906555">ປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="4570913071927164677">ລາຍລະອຽດ</translation>
@@ -396,6 +401,7 @@
 <translation id="512938610812707830">ຮູບລັກສະນະໜ້າແຖບໃໝ່ຂອງຊີດລຸ່ມສຸດຄໍເລັກຊັນຮູບແບບສີສັນເປີດທີ່ຄວາມສູງເຕັມ</translation>
 <translation id="5137460097045297858">ຊີດລຸ່ມສຸດຂອງຟີດ Discover ເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜຶ່ງຂອງໜ້າຈໍ</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ລາຄາຫຼຸດລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ}other{ລາຄາຫຼຸດລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ}}</translation>
+<translation id="5150048675001754041">ເຂົ້າສູ່ລະບົບເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງວ່ອງໄວ ແລະ ງ່າຍດາຍ</translation>
 <translation id="5186036860380548585">ຕົວເລືອກມີໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5197729504361054390">ລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ທ່ານເລືອກຈະຖືກແບ່ງປັນກັບ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">ປິດຊີດລຸ່ມສຸດຂອງການປັບແຕ່ງໜ້າແຖບໃໝ່ຂອງທ່ານແລ້ວ</translation>
@@ -523,6 +529,7 @@
 <translation id="6545864417968258051">ການສະແກນ Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການໄວ້ແລ້ວ}other{ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການໄວ້ແລ້ວ}}</translation>
 <translation id="6554732001434021288">ເຂົ້າເບິ່ງຫຼ້າສຸດ <ph name="NUM_DAYS" /> ມື້ກ່ອນ</translation>
+<translation id="6556866813142980365">ເຮັດຄືນ</translation>
 <translation id="6557290421156335491">ທາງລັດຂອງຂ້ອຍ</translation>
 <translation id="656065428026159829">ເບິ່ງເພີ່ມເຕີມ</translation>
 <translation id="6561560012278703671">ໃຊ້ການສົ່ງຂໍ້ຄວາມທີ່ງຽບກວ່າ (ບລັອກບໍ່ໃຫ້ການແຈ້ງເຕືອນຂັດຈັງຫວະທ່ານ)</translation>
@@ -564,6 +571,7 @@
 <translation id="6980861169612950611">ລຶບຂໍ້ມູນເວັບໄຊບໍ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
 <translation id="6991142177939282156">ອະນຸຍາດ • ໃຊ້ສະຖານທີ່ໂດຍປະມານ</translation>
+<translation id="6992014788289743568">ເພີ່ມຄວາມປອດໄພຂອງທ່ານ ແລະ ຮັກສາຂໍ້ມູນຂອງທ່ານໃຫ້ປອດໄພຍິ່ງຂຶ້ນໂດຍການກວດສອບລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6992289844737586249">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ (ແນະນຳ)</translation>
 <translation id="7000754031042624318">ປິດໃນການຕັ້ງຄ່າ Android</translation>
 <translation id="702275896380648118">ເວັບໄຊນີ້ຈະລະບຸສິ່ງທີ່ທ່ານມັກແລ້ວແນະນຳໂຄສະນາໃນເວັບໄຊອື່ນ. ເວັບໄຊນີ້ຍັງຮັບຫົວຂໍ້ໂຄສະນາຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນນຳອີກ.</translation>

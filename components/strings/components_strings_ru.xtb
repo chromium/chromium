@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">Чтобы использовать Менеджер паролей со Связкой ключей macOS, перезапустите Chromium и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="1652887625750064647">Лучшие результаты (выбраны ИИ)</translation>
 <translation id="1653465303147789530"><ph name="PAYMENT_METHOD" />: платите, не переключаясь между приложениями</translation>
+<translation id="1655159794885649984">Перетаскивать контент на этот сайт запрещено</translation>
 <translation id="1656024727720460136">Браузер Chrome упростил вид страницы, чтобы ее было удобнее читать. Исходная страница была получена с использованием защищенного соединения.</translation>
 <translation id="1656489000284462475">Получение</translation>
 <translation id="1658111267661135323">Телевидение и видео</translation>
@@ -1677,6 +1678,7 @@
 <translation id="365641980390710834">Повседневная одежда</translation>
 <translation id="3658742229777143148">Версия</translation>
 <translation id="3659521826520353662">Какие сайты, заданные администратором, посещают пользователи и в какое время: <ph name="ALLOWLISTED_WEBSITES" />.</translation>
+<translation id="3662040827609932717">Этот код IBAN сохранен в Кошельке и может использоваться в сервисах Google.</translation>
 <translation id="3664479564786885722">Узнайте, в каких ещё магазинах продается этот товар.</translation>
 <translation id="3664782872746246217">Ключевые слова:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Подробнее…<ph name="LINK_END1" /></translation>
@@ -3197,6 +3199,7 @@
 <translation id="6085149458302186532">Этикетки (цветные)</translation>
 <translation id="6087312102907839798">Связанные запросы</translation>
 <translation id="6089505343295765444">Даже если вы удалите вкладки из истории Chrome, они останутся видны в сравнительных таблицах.</translation>
+<translation id="6091115085465716987">Логотип Google Кошелька</translation>
 <translation id="6091691259076781835">Чтобы сократить время оплаты, сохраните этот CVC-код на устройстве.</translation>
 <translation id="6093599771645355227">Желтый 1</translation>
 <translation id="6093795393556121384">Карта проверена</translation>
@@ -3813,6 +3816,7 @@
 <translation id="7057567173736333354">Опишите изображение</translation>
 <translation id="7058163556978339998">Данные браузера <ph name="BROWSER" /> подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Сервис синтаксического анализа паролей в файлах CSV</translation>
+<translation id="7062344833049251424">Чтобы оплачивать покупки быстрее, сохраните карту и платежный адрес в Google Кошельке.</translation>
 <translation id="706295145388601875">Добавить и изменить адреса в настройках Chrome</translation>
 <translation id="7063157783216323487">Зеленый 2</translation>
 <translation id="7064443976734085921">Компактные автомобили</translation>
@@ -4283,6 +4287,7 @@
 <translation id="7754587126786572336">Вкладки и приложения Chrome закроются, когда запустится обновление</translation>
 <translation id="7755287808199759310">Твой родитель может разблокировать его.</translation>
 <translation id="7755624218968747854">Основной рулон</translation>
+<translation id="7756441544371887150">После того как вы сохраните эту карту в Google Кошельке, ее реквизиты будут заполняться автоматически при покупках в Chrome.</translation>
 <translation id="7758069387465995638">Возможно, подключение заблокировано брандмауэром или антивирусным ПО.</translation>
 <translation id="7759147511335618829">Управление/программирование MIDI</translation>
 <translation id="7759809451544302770">Необязательно</translation>
@@ -5206,6 +5211,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{Нет}=1{1 запись}one{# запись}few{# записи}many{# записей}other{# записи}}</translation>
 <translation id="976522784004777030">5 x 8 дюймов</translation>
 <translation id="977502174772294970">Свадьбы</translation>
+<translation id="978750072783101994">После того как вы сохраните эту карту в Google Кошельке, ее реквизиты будут заполняться автоматически при покупках в Chromium.</translation>
 <translation id="979107176848483472">Вашим браузером и профилем управляет <ph name="DOMAIN" />.</translation>
 <translation id="979189555234810423">Общественные мероприятия и выставки</translation>
 <translation id="979503328401807348">Более полезная реклама</translation>

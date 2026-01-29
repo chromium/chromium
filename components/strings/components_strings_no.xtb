@@ -421,6 +421,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1652862280638399816">For å bruke Passordlagring med macOS-nøkkelring, start Chromium på nytt og gi tilgang til Nøkkelring. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="1652887625750064647">Beste AI-treff</translation>
 <translation id="1653465303147789530">Betal med <ph name="PAYMENT_METHOD" /> uten å bytte app</translation>
+<translation id="1655159794885649984">Det er ikke tillatt å dra innhold på dette nettstedet</translation>
 <translation id="1656024727720460136">Chrome har forenklet denne siden for å gjøre den lettere å lese. Chrome hentet den opprinnelige siden via en sikker forbindelse.</translation>
 <translation id="1656489000284462475">Henting</translation>
 <translation id="1658111267661135323">TV og video</translation>
@@ -1678,6 +1679,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="365641980390710834">Hverdagsklær</translation>
 <translation id="3658742229777143148">Versjon</translation>
 <translation id="3659521826520353662">Hvilke administratordefinerte nettsteder som besøkes, og når: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Dette IBAN-nummeret er lagret i Google Wallet, slik at du kan bruke det på alle Google-tjenester.</translation>
 <translation id="3664479564786885722">Søk etter flere kjøpsalternativer fra andre butikker som selger dette produktet.</translation>
 <translation id="3664782872746246217">Nøkkelord:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Finn ut mer<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6085149458302186532">Etiketter (farget)</translation>
 <translation id="6087312102907839798">Relaterte søk</translation>
 <translation id="6089505343295765444">Faner du sletter fra Chrome-loggen, vises fortsatt i sammenligningstabellene</translation>
+<translation id="6091115085465716987">Google Wallet-logoen</translation>
 <translation id="6091691259076781835">Lagre denne verifiseringskoden på enheten din for å betale raskere</translation>
 <translation id="6093599771645355227">Gul 1</translation>
 <translation id="6093795393556121384">Kortet er bekreftet</translation>
@@ -3814,6 +3817,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7057567173736333354">Beskriv bildet</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> har bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Tjeneste for parsing av CSV-passord</translation>
+<translation id="7062344833049251424">For å betale raskere neste gang, lagre kortet og faktureringsadressen i Google Wallet</translation>
 <translation id="706295145388601875">Legg til og administrer adresser i Chrome-innstillingene</translation>
 <translation id="7063157783216323487">Grønn 2</translation>
 <translation id="7064443976734085921">Kompaktbiler</translation>
@@ -4283,6 +4287,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7754587126786572336">Chrome-fanene og -appene dine lukkes når oppdateringen starter</translation>
 <translation id="7755287808199759310">Forelderen din kan oppheve blokkeringen for deg</translation>
 <translation id="7755624218968747854">Hovedrull</translation>
+<translation id="7756441544371887150">Autofyll dette kortet for kjøp i Chrome når det er lagret i Google Wallet</translation>
 <translation id="7758069387465995638">Brannmur- eller antivirusprogramvare kan ha blokkert tilkoblingen.</translation>
 <translation id="7759147511335618829">Kontroller og omprogrammer MIDI-enheter</translation>
 <translation id="7759809451544302770">Valgfritt</translation>
@@ -5206,6 +5211,7 @@ Mer informasjon:
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 element}other{# elementer}}</translation>
 <translation id="976522784004777030">5 x 8 tommer</translation>
 <translation id="977502174772294970">Bryllup</translation>
+<translation id="978750072783101994">Autofyll dette kortet for kjøp i Chromium når det er lagret i Google Wallet</translation>
 <translation id="979107176848483472">Nettleseren og profilen din administreres av <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Messer og konferanser</translation>
 <translation id="979503328401807348">Nyttigere annonser</translation>

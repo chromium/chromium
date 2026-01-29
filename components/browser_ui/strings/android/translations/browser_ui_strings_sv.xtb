@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Tredjepartscookies tillåts</translation>
 <translation id="1569054338208717605">Gör webbplatser snabbare med Chromes V8-motor men gör Chrome något mindre motståndskraftigt mot attacker</translation>
 <translation id="1593426485665524382">Nya åtgärder visas högt upp på skärmen</translation>
+<translation id="1601560923496285236">Verkställ</translation>
 <translation id="1615755956145364867">Webbplatser får begära tillstånd att spela upp skyddat innehåll</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">Funktioner som kräver en mikrofon slutar fungera</translation>
@@ -523,6 +524,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6545864417968258051">Bluetooth-sökning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras}}</translation>
 <translation id="6554732001434021288">Besöktes senast för <ph name="NUM_DAYS" /> dagar sedan</translation>
+<translation id="6556866813142980365">Upprepa</translation>
 <translation id="6557290421156335491">Mina genvägar</translation>
 <translation id="656065428026159829">Visa fler</translation>
 <translation id="6561560012278703671">Få mer diskreta meddelanden (blockera störande aviseringar)</translation>

@@ -28,6 +28,7 @@
 <translation id="1158134713295836892">Gemini ໃນ Chrome</translation>
 <translation id="1184145431117212167">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກລະບົບບໍ່ຮອງຮັບ Windows ເວີຊັນທີ່ທ່ານໃຊ້.</translation>
 <translation id="1194807384646768652">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ປະເພດນີ້ບໍ່ໄດ້ມີການດາວໂຫຼດໂດຍທົ່ວໄປ ແລະ ອາດເປັນອັນຕະລາຍ</translation>
+<translation id="1197860368385086056">ເທື່ອຕໍ່ໄປທີ່ທ່ານເປີດ Chrome ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ, ທ່ານຈະເຫັນຂໍ້ຄວາມແຈ້ງໃຫ້ເປີດການນຳໃຊ້ການແຈ້ງເຕືອນການຕິດຕາມລາຄາ.</translation>
 <translation id="1203500561924088507">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chrome</translation>
 <translation id="1290883685122687410">ຂໍ້ຜິດພາດໃນການຕັ້ງຄ່າ: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -508,6 +509,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6321592572353357376">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6326175484149238433">ເອົາ​ອອກ​ໄປຈາກ Chrome</translation>
 <translation id="6327105987658262776">ບໍ່ມີອັບເດດເທື່ອ.</translation>
+<translation id="6333195756043503664">ເປີດ Chrome ເມື່ອຄອມພິວເຕີຂອງຂ້ອຍເປີດເຄື່ອງ</translation>
 <translation id="6334815226785304306">ຕັ້ງ Google Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ ແລະ ປັກໝຸດໄວ້ຢູ່ແຖບໜ້າວຽກ</translation>
 <translation id="63540178978900677">Chrome ບໍ່ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານອີກຕໍ່ໄປ. ຕັ້ງຄ່າ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="6360449101159168105">ໃນຂະນະທີ່ແຖບນີ້ບໍ່ມີການນຳໃຊ້, ລະບົບຈະເພີ່ມພື້ນທີ່ຫວ່າງໃນໜ່ວຍຄວາມຈຳເພື່ອໃຫ້ໃຊ້ Chrome ໄດ້ຢ່າງວ່ອງໄວຢູ່ຕະຫຼອດ. ທ່ານສາມາດເລືອກຍົກເວັ້ນໃຫ້ເວັບໄຊນີ້ເຮັດວຽກຕະຫຼອດເວລາໄດ້.</translation>
@@ -617,6 +619,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7515191208480168435">ທ່ານສາມາດປັກໝຸດ Google Lens ເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ງ່າຍ</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">ເພື່ອຮັບເອົາບຸກມາກນີ້ ແລະ ອື່ນໆອີກໃນທຸກອຸປະກອນຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
+<translation id="756134248912568991">ເທື່ອຕໍ່ໄປທີ່ທ່ານເປີດ Chrome ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ, ທ່ານຈະເຫັນຂໍ້ຄວາມແຈ້ງໃຫ້ໃຊ້ກຸ່ມແຖບ.</translation>
 <translation id="756809126120519699">ລຶບລ້າງຂໍ້ມູນ Chrome ແລ້ວ</translation>
 <translation id="7572537927358445944">ປິດ • Chrome ບໍ່ສາມາດຢັ້ງຢືນໄດ້ວ່າສ່ວນຂະຫຍາຍນີ້ມາຈາກໃສ</translation>
 <translation id="7583399374488819119">ຕົວຕິດຕັ້ງ <ph name="COMPANY_NAME" /></translation>

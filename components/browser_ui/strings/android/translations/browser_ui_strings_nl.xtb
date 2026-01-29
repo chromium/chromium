@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
 <translation id="1569054338208717605">Sites versnellen met de V8-engine van Chrome, maar Chrome iets minder goed bestand maken tegen aanvallen</translation>
 <translation id="1593426485665524382">Er zijn nieuwe acties beschikbaar bovenaan het scherm</translation>
+<translation id="1601560923496285236">Toepassen</translation>
 <translation id="1615755956145364867">Sites kunnen vragen of ze beschermde content mogen afspelen</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1621729191093924223">Functies waarvoor een microfoon nodig is, werken niet</translation>
@@ -523,6 +524,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd}}</translation>
 <translation id="6554732001434021288">Laatst bezocht: <ph name="NUM_DAYS" /> dagen geleden</translation>
+<translation id="6556866813142980365">Opnieuw</translation>
 <translation id="6557290421156335491">Mijn snelkoppelingen</translation>
 <translation id="656065428026159829">Meer bekijken</translation>
 <translation id="6561560012278703671">Stillere berichten gebruiken (zorgt ervoor dat je niet wordt gestoord door meldingprompts)</translation>

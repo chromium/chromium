@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">გამოსახულების გაშიფვრა ვერ მოხერხდა: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">გამოყენებულია ლოკალიზაცია, მაგრამ ნაგულისხმევი ლოკალი არ არის მითითებული მანიფესტში.</translation>
 <translation id="2576842806987913196">უკვე არსებობს CRX ფაილი ამ სახელით.</translation>
+<translation id="2743583586211388067">ამ გაფართოებაზე წვდომა დაბლოკილია თქვენი ორგანიზაციის გაფართოების რისკის წესების მიხედვით.</translation>
 <translation id="2785530881066938471">ფაილი „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა შიგთავსის სკრიპტისთვის. იგი არ არის UTF-8 დაშიფრული.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (გაფართოების ID „<ph name="EXTENSION_ID" />“) დაბლოკილია ადმინისტრატორის მიერ. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">პაკეტი ვერ დაინსტალირდა: „<ph name="ERROR_CODE" />“</translation>

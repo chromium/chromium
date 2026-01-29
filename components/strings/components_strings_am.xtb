@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">የሚስጥር ቁልፍ አስተዳዳሪን ከ macOS Keychain ጋር ለመጠቀም Chromium ን እንደገና ያስጀምሩ እና የ Keychain መዳረሻን ይፍቀዱ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="1652887625750064647">ሰው ሠራሽ አስተውሎት ምርጥ ተዛማጅ</translation>
 <translation id="1653465303147789530">መተግበሪያዎችን ሳይቀይሩ በ<ph name="PAYMENT_METHOD" /> ይክፈሉ</translation>
+<translation id="1655159794885649984">በዚህ ጣቢያ ላይ ይዘትን መጎተት አይፈቀድም</translation>
 <translation id="1656024727720460136">Chrome ለማንበብ እንዲቀልል ይህን ገፅ አቃልሎታል። Chrome የመጀመሪያውን ገፅ ደህንነቱ በተጠበቀ ግንኙነት ላይ ሰርስሮ አውጥቶታል።</translation>
 <translation id="1656489000284462475">መውሰጃ</translation>
 <translation id="1658111267661135323">ቴሌቪዥን እና ቪድዮ</translation>
@@ -1677,6 +1678,7 @@
 <translation id="365641980390710834">የአዘቦት ቀን አልባሳት</translation>
 <translation id="3658742229777143148">ክለሳ</translation>
 <translation id="3659521826520353662">የትኞቹ በአስተዳዳሪ-የተገለጹ ድር ጣቢያዎች እንደሚጎበኙ እና መቼ እንደሚሆን፦ <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">ይህን አይቢኤኤን በመላው የGoogle አገልግሎቶች ላይ መጠቀም እንዲችሉ በGoogle Wallet ውስጥ ተቀምጧል።</translation>
 <translation id="3664479564786885722">ይህን ምርት ከሚሸጡ ሌሎች መደብሮች ተጨማሪ የግዢ አማራጮችን ይፈልጉ።</translation>
 <translation id="3664782872746246217">ቁልፍ ቃላት፦</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />የበለጠ ለመረዳት<ph name="LINK_END1" /></translation>
@@ -3197,6 +3199,7 @@
 <translation id="6085149458302186532">መሰየሚያዎች (የተቀለመ)</translation>
 <translation id="6087312102907839798">ተዛማጅ ፍለጋዎች</translation>
 <translation id="6089505343295765444">ከChrome ታሪክዎ የሚሰርዟቸው ትሮች አሁንም በንጽጽር ሠንጠረዦችዎ ላይ ይታያሉ</translation>
+<translation id="6091115085465716987">የGoogle Wallet ዓርማ</translation>
 <translation id="6091691259076781835">ለፈጣን ክፍያ ማጠናቀቅ ይህን ካርድ ማረጋገጫ ኮድ በመሣሪያዎ ላይ ያስቀምጡ</translation>
 <translation id="6093599771645355227">ቢጫ 1</translation>
 <translation id="6093795393556121384">የእርስዎ ካርድ ተረጋግጧል</translation>
@@ -3813,6 +3816,7 @@
 <translation id="7057567173736333354">ምስልዎን ይግለጹ</translation>
 <translation id="7058163556978339998">ይህን የድር ጣቢያ እውቅና ማረጋገጫ የሰጠው <ph name="ISSUER" /> መሆኑን <ph name="BROWSER" /> አረጋግጧል።</translation>
 <translation id="7058774143982824355">CSV የይለፍ ቃል ተንታኝ አገልግሎት</translation>
+<translation id="7062344833049251424">በሚቀጥለው ጊዜ በፍጥነት ለመክፈል፣ ካርድዎን እና የሒሳብ መጠየቂያ አድራሻዎን በGoogle Wallet ውስጥ ያስቀምጡ</translation>
 <translation id="706295145388601875">በChrome ቅንብሮች ውስጥ አድራሻዎችን ያክሉ እና ያቀናብሩ</translation>
 <translation id="7063157783216323487">አረንጓዴ 2</translation>
 <translation id="7064443976734085921">ኮምፓክት መኪናዎች</translation>
@@ -4283,6 +4287,7 @@
 <translation id="7754587126786572336">የእርስዎ የChrome ትሮች እና መተግበሪያዎች ዝማኔው ሲጀምር ይዘጋሉ</translation>
 <translation id="7755287808199759310">የእርስዎ ወላጅ እገዳውን ሊያነሱልዎ ይችላሉ</translation>
 <translation id="7755624218968747854">ዋና ጥቅልል</translation>
+<translation id="7756441544371887150">በGoogle Wallet ውስጥ ሲቀመጥ Chrome ውስጥ ለሚደረጉ ግዢዎች ይህን ካርድ በራስ-ይሙሉ</translation>
 <translation id="7758069387465995638">የኬላ ወይም የፀረ-ቫይረስ ሶፍትዌር ግንኙነቱን አግዶት ሊሆን ይችላል።</translation>
 <translation id="7759147511335618829">የMIDI መሣሪያ ቁጥጥር እና ዳግም ፕሮግራም</translation>
 <translation id="7759809451544302770">አስገዳጅ ያልሆነ</translation>
@@ -5207,6 +5212,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{ምንም}=1{1 ንጥል}one{# ንጥሎች}other{# ንጥሎች}}</translation>
 <translation id="976522784004777030">5 x 8 ኢንች</translation>
 <translation id="977502174772294970">ሠርጎች</translation>
+<translation id="978750072783101994">በGoogle Wallet ውስጥ ሲቀመጥ Chromium ውስጥ ለተደረጉ ግዢዎች ይህን ካርድ በራስ-ይሙሉ</translation>
 <translation id="979107176848483472">የእርስዎ አሳሸ እና መገለጫ የሚተዳደሩት በ<ph name="DOMAIN" /> ነው</translation>
 <translation id="979189555234810423">አውደ ርዕዮች እና ልዩ ስብሰባዎች</translation>
 <translation id="979503328401807348">ተጨማሪ ጠቃሚ ማስታወቂያዎች</translation>

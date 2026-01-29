@@ -1523,6 +1523,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6556866813142980365">Refazer</translation>
 <translation id="6559301491397835130">{count,plural, =1{Marcador guardado em "{title}". Está guardado apenas neste dispositivo.}other{Marcadores guardados em "{title}". Estão guardados apenas neste dispositivo.}}</translation>
 <translation id="656065428026159829">Ver mais</translation>
+<translation id="6565899972286925956">Crie o que quiser</translation>
 <translation id="6571070086367343653">Editar cartão de crédito</translation>
 <translation id="6574092468346088891">Ative as notificações da verificação de segurança</translation>
 <translation id="6579867704846662339">Pode optar por abrir os URLs recebidos de outras apps na Navegação anónima.</translation>
@@ -1633,6 +1634,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6930799952781667037">Toque para alterar para este idioma.</translation>
 <translation id="693761253105515415">Defina um código secreto</translation>
 <translation id="6945221475159498467">Selecionar</translation>
+<translation id="6946722113367118030">Pensativo</translation>
 <translation id="6950522403736391608">Oculto</translation>
 <translation id="6962809930976936328">Ver estatísticas com o Gemini</translation>
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" />. Selecione uma conta.</translation>

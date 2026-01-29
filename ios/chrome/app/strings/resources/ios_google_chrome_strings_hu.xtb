@@ -86,9 +86,9 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="2767464022270041271">Nincsenek mentett jelszavak. A Google Jelszókezelő képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="2788811701191021538">Megnyitja a Fizetési módok beállítási oldalát a Chrome-ban.</translation>
 <translation id="2876628302275096482">További információ arról, <ph name="BEGIN_LINK" />hogyan gondoskodik az Ön adatainak védelméről a Chrome<ph name="END_LINK" />.</translation>
-<translation id="288992067439702510">Elérte a Google Chrome <ph name="LIMIT" /> könyvjelzős korlátját, ezért egyes könyvjelzőit még nem mentette a rendszer a Google-fiókjába.
+<translation id="288992067439702510">Elérte a Google Chrome <ph name="LIMIT" /> könyvjelzőkorlátját, ezért egyes könyvjelzőit még nem mentette a rendszer a Google-fiókjába.
 
-Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most jelentkezik ki, a nem mentett könyvjelzők törlődnek.</translation>
+Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most kijelentkezik, a nem mentett könyvjelzők törlődnek.</translation>
 <translation id="2922914028977213693">Koppintson ide, hogy a legtöbbet hozhassa ki a Chrome-ból iPad eszközén.</translation>
 <translation id="292371311537977079">Chrome-beállítások</translation>
 <translation id="2923827943290349720">Inkognitó lapok zárolása a Chrome bezárásakor</translation>
@@ -307,7 +307,6 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7787205077729386167">Nyissa meg a Chrome beállításait iOS rendszeren, majd koppintson az „Alapértelmezett böngésző” elemre, és válassza ki a Chrome-ot.</translation>
 <translation id="778855399387580014">Keresés indítása új Chrome-lapon.</translation>
 <translation id="7792140019572081272">A Chrome biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>
-<translation id="7825648984449922731">Kép szerkesztése a Geminivel a Chrome-ban</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="787226752901403048">Jelentkezzen be a Chrome-ba, hogy megoszthasson lapcsoportokat, csatlakozhasson hozzájuk, és együtt dolgozhasson másokkal ötleteken</translation>
 <translation id="7897703007638178753">Legutóbbi Chrome-lapok megtekintése</translation>

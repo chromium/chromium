@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Гуравдагч талын күүкиг зөвшөөрдөг</translation>
 <translation id="1569054338208717605">Chrome-н V8 хөдөлгүүрээр сайтын хурдыг нэмэгдүүлэх ч Chrome-г халдлагад арай бага тэсвэртэй болгох</translation>
 <translation id="1593426485665524382">Дэлгэцийн дээд талын ойролцоо шинэ үйлдлүүд боломжтой</translation>
+<translation id="1601560923496285236">Ашиглах</translation>
 <translation id="1615755956145364867">Сайтууд хамгаалалттай контентыг тоглуулахыг хүсэх боломжтой</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1621729191093924223">Микрофон шаардлагатай онцлогууд ажиллахгүй</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}}</translation>
 <translation id="6554732001434021288">Хамгийн сүүлд <ph name="NUM_DAYS" /> хоногийн өмнө зочилсон</translation>
+<translation id="6556866813142980365">Дахин хийх</translation>
 <translation id="6557290421156335491">Миний товчлол</translation>
 <translation id="656065428026159829">Дэлгэрэнгүй үзэх</translation>
 <translation id="6561560012278703671">Илүү чимээгүй мессежийг ашиглах (мэдэгдлийн сануулгад танд саад болохыг хориглодог)</translation>

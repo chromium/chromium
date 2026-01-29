@@ -1523,6 +1523,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6556866813142980365">Gjør om</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bokmerket er lagret i «{title}». Det er bare lagret på denne enheten.}other{Bokmerkene er lagret i «{title}». De er bare lagret på denne enheten.}}</translation>
 <translation id="656065428026159829">Se mer</translation>
+<translation id="6565899972286925956">Lag hva som helst</translation>
 <translation id="6571070086367343653">Rediger kredittkort</translation>
 <translation id="6574092468346088891">Slå på varsler fra sikkerhetssjekk</translation>
 <translation id="6579867704846662339">Du kan velge å åpne innkommende nettadresser fra andre apper i Inkognito.</translation>
@@ -1633,6 +1634,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6930799952781667037">Trykk for å bytte til dette språket.</translation>
 <translation id="693761253105515415">Angi adgangskode</translation>
 <translation id="6945221475159498467">Velg</translation>
+<translation id="6946722113367118030">Tenkende</translation>
 <translation id="6950522403736391608">Skjult</translation>
 <translation id="6962809930976936328">Få statistikk med Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" /> (<ph name="EMAIL" />) er valgt. Velg en konto.</translation>

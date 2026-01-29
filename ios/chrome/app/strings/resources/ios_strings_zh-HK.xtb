@@ -1523,6 +1523,7 @@
 <translation id="6556866813142980365">重做</translation>
 <translation id="6559301491397835130">{count,plural, =1{書籤已儲存至「{title}」。系統只會將這項資料儲存在此裝置。}other{書籤已儲存至「{title}」。系統只會將這些資料儲存在此裝置。}}</translation>
 <translation id="656065428026159829">查看更多</translation>
+<translation id="6565899972286925956">創作任何內容</translation>
 <translation id="6571070086367343653">編輯信用卡</translation>
 <translation id="6574092468346088891">開啟「安全檢查」通知</translation>
 <translation id="6579867704846662339">你可選擇在無痕模式中開啟從其他應用程式收到的網址。</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6930799952781667037">輕按即可變更為此語言。</translation>
 <translation id="693761253105515415">設定密碼</translation>
 <translation id="6945221475159498467">選取</translation>
+<translation id="6946722113367118030">思考</translation>
 <translation id="6950522403736391608">隱藏</translation>
 <translation id="6962809930976936328">向 Gemini 索取分析</translation>
 <translation id="6964300328304469089">目前已選取<ph name="NAME" />，<ph name="EMAIL" />。請選擇帳戶。</translation>

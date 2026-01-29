@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Pode pedir para ver a versão para computador dos sites</translation>
 <translation id="1085696779717592361">Use o Chrome por predefinição</translation>
 <translation id="113098737392899175">Navegar pelas páginas com um cursor de texto quando tiver um teclado ligado</translation>
+<translation id="1149644372535087155">Guarde palavras-passe no Chrome</translation>
 <translation id="1178015372320901893">Secção inferior de Os meus atalhos</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">Os cookies de terceiros são permitidos</translation>
 <translation id="1569054338208717605">Acelerar os sites com o motor V8 do Chrome, mas tornar o Chrome ligeiramente menos resistente a ataques</translation>
 <translation id="1593426485665524382">Novas ações disponíveis junto à parte superior do ecrã</translation>
+<translation id="1601560923496285236">Aplicar</translation>
 <translation id="1615755956145364867">Os sites podem solicitar a reprodução de conteúdo protegido</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1621729191093924223">As funcionalidades que precisam de um microfone não funcionam</translation>
@@ -171,6 +173,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2682367912565197520">Eliminar nível de zoom guardado</translation>
 <translation id="2683434792633810741">Eliminar e repor?</translation>
 <translation id="2685514716378236873">Sem autorização</translation>
+<translation id="2710883118091822664">Inicie sessão para continuar facilmente em todos os seus dispositivos</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2717722538473713889">Moradas de email</translation>
 <translation id="2726059656860238749">Inicie o Chrome com o foco na caixa geral, reduzindo o tempo de arranque em dispositivos de gama baixa.</translation>
@@ -198,6 +201,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3004438526346162184">Os sites podem usar esta funcionalidade para gerir janelas em todos os seus ecrãs</translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
+<translation id="3026311960038210">Coleções de temas</translation>
 <translation id="3064871050034234884">Os sites podem reproduzir som</translation>
 <translation id="3065787901655140044">A Proteção avançada está ativada</translation>
 <translation id="3069226013421428034">Permita o início de sessão de terceiros num site específico.</translation>
@@ -340,6 +344,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4478158430052450698">Facilite a personalização do zoom para diferentes sites</translation>
 <translation id="4479647676395637221">Perguntar antes de permitir que os sites utilizem a câmara (recomendado)</translation>
 <translation id="4505788138578415521">URL expandido</translation>
+<translation id="4523472416386354622">Iniciar sessão para começar</translation>
 <translation id="4534723447064627427">Para permitir que a app <ph name="APP_NAME" /> aceda ao microfone, ative também o microfone nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
@@ -396,6 +401,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="512938610812707830">Secção inferior de coleções de temas de aspeto da página Novo separador aberta à altura total</translation>
 <translation id="5137460097045297858">Secção inferior do feed do Discover aberta a meia altura</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Descida do preço nos separadores abertos}other{Descidas de preços nos separadores abertos}}</translation>
+<translation id="5150048675001754041">Inicie sessão de forma rápida e fácil em sites e apps</translation>
 <translation id="5186036860380548585">Opção disponível junto à parte superior do ecrã</translation>
 <translation id="5197729504361054390">Os contactos que selecionar serão partilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Secção inferior de Personalize a página Novo separador fechada</translation>
@@ -523,6 +529,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6545864417968258051">Procura de Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}}</translation>
 <translation id="6554732001434021288">Última visita há <ph name="NUM_DAYS" /> dias</translation>
+<translation id="6556866813142980365">Refazer</translation>
 <translation id="6557290421156335491">Os meus atalhos</translation>
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6561560012278703671">Usar mensagens mais discretas (impede interrupções de pedidos de notificação)</translation>
@@ -564,6 +571,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6980861169612950611">Eliminar dados do site? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="6991142177939282156">Permitida • A usar a localização aproximada</translation>
+<translation id="6992014788289743568">Verifique as suas palavras-passe para reforçar a sua segurança e manter os seus dados mais seguros</translation>
 <translation id="6992289844737586249">Perguntar antes de permitir que os sites utilizem o microfone (recomendado)</translation>
 <translation id="7000754031042624318">Desativada nas Definições do Android</translation>
 <translation id="702275896380648118">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>

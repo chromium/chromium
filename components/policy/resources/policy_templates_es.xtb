@@ -9502,17 +9502,6 @@ Este ajuste de la política dejará de estar disponible en <ph name="PRODUCT_NAM
 Si se habilita esta política, se habilitará la función Kerberos. Las cuentas de Kerberos pueden añadirse mediante la política "Configurar cuentas de Kerberos" o a través de la configuración de cuentas de Kerberos en la página de configuración de cuentas de Kerberos.
 
 Si se inhabilita esta política o no se define, se inhabilitará la configuración de cuentas de Kerberos. No se podrán añadir cuentas de Kerberos ni se podrá utilizar la autenticación de Kerberos. Se eliminarán todas las cuentas de Kerberos ya añadidas y todas las contraseñas almacenadas.</translation>
-<translation id="7273266646672521061">Lista de patrones de URL. Las solicitudes iniciadas desde sitios web servidos por orígenes coincidentes no pueden enviar solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Si un origen está cubierto tanto por esta política como por LocalNetworkAccessAllowedForUrls, esta política tendrá prioridad.
-
-Según la fase de lanzamiento de <ph name="LOCAL_NETWORK_ACCESS" />, es posible que también deba habilitarse LocalNetworkAccessRestrictionsEnabled para que esta política bloquee las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-En el caso de los orígenes no incluidos en los patrones aquí indicados, se aplicará la configuración personal del usuario.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
-
-Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="7273785848231509306">No mostrar nunca nombres ni fotos de usuarios</translation>
 <translation id="7274077256421167535">Habilita la potencia compartida por USB</translation>
 <translation id="7275334191706090484">Marcadores administrados</translation>
@@ -9547,7 +9536,6 @@ Consulta https://wicg.github.io/local-network-access/ para conocer las restricci
 
       Esta política solo se aplica a los dispositivos ARM que se migren a la VM de ARC.</translation>
 <translation id="731208205557053914">Enviar información sobre VPD</translation>
-<translation id="7312630060538223455">Permitir que los sitios envíen solicitudes a endpoints de la red local.</translation>
 <translation id="7313672174502374994">El hash SHA-256 de la imagen de fondo de pantalla.</translation>
 <translation id="7317472245305274219">Controlar si las llaves de acceso se crearán de forma predeterminada en el llavero de iCloud</translation>
 <translation id="7318503436349210241">Habilitado: el zoom de CSS cumple la especificación estándar.</translation>
@@ -10563,15 +10551,6 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="8031651557770840616">No permitir fondos de pantalla creados con IA generativa</translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
 <translation id="8038007682032315784">Inhabilitar <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
-<translation id="8038781335960215878">Lista de patrones de URL. Las solicitudes iniciadas desde sitios web servidos por orígenes coincidentes no están sujetas a comprobaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Si un origen está cubierto tanto por esta política como por LocalNetworkAccessBlockedForUrls, prevalecerá LocalNetworkAccessBlockedForUrls.
-
-En el caso de los orígenes no incluidos en los patrones aquí indicados, se aplicará la configuración personal del usuario.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
-
-Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="8044493735196713914">Notificar modo de inicio de dispositivo</translation>
 <translation id="8044943551137872312">Esta política se puede usar para permitir las <ph name="CHROME_DEVTOOLS_NAME" /> en URLs específicas.
 
@@ -10986,7 +10965,6 @@ Si no se le asigna ningún valor, el control con gestos faciales se inhabilitar�
 
       El valor correspondiente a esta política se debe especificar en milisegundos.</translation>
 <translation id="8330437518362176921">Usar solo la URL de actualización proporcionada en la política al descargar y actualizar aplicaciones de kiosco de Chrome</translation>
-<translation id="8331421240786531350">Impedir que los sitios envíen solicitudes a endpoints de la red local.</translation>
 <translation id="8331479227794770304">Habilitar teclas persistentes</translation>
 <translation id="8332822245414537447">Inhabilitar la comprobación de uso de claves RSA</translation>
 <translation id="8333141477131859004">Permitir la función Autocompletar mejorada y mejorar los modelos de IA.</translation>

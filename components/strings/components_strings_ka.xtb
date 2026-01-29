@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">პაროლების მმართველი macOS Keychain-თან რომ გამოიყენოთ, ხელახლა გაუშვით Chromium და დაუშვით წვდომა Keychain-ზე. ხელახლა გაშვების შემდეგ თქვენი ჩანართები თავიდან გაიხსნება.</translation>
 <translation id="1652887625750064647">ხელოვნური ინტელექტით საუკეთესო შესატყვისობა</translation>
 <translation id="1653465303147789530">გადაიხადეთ <ph name="PAYMENT_METHOD" />-ის მეშვეობით აპების გადართვის გარეშე</translation>
+<translation id="1655159794885649984">ამ საიტზე კონტენტის ჩაგდება დაუშვებელია</translation>
 <translation id="1656024727720460136">Chrome-მა გაამარტივა ეს გვერდი მისი წაკითხვის გასაიოლებლად. Chrome-მა თავდაპირველი გვერდი ჩატვირთა დაცული კავშირის მეშვეობით.</translation>
 <translation id="1656489000284462475">წაღება</translation>
 <translation id="1658111267661135323">ტელევიზია და ვიდეო</translation>
@@ -1678,6 +1679,7 @@
 <translation id="365641980390710834">ყოველდღიური ტანსაცმელი</translation>
 <translation id="3658742229777143148">რედაქცია</translation>
 <translation id="3659521826520353662">ადმინისტრატორის მიერ განსაზღვრული რომელი ვებსაიტები არის მონახულებული და როდის: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">ეს IBAN შენახულია Google საფულეში, ასე რომ, შეგიძლიათ გამოიყენოთ ის Google-ის სხვადასხვა სერვისში.</translation>
 <translation id="3664479564786885722">მოიძიეთ შეძენის სხვა ვარიანტები სხვა მაღაზიებიდან, რომლებიც ამ პროდუქტს ყიდის.</translation>
 <translation id="3664782872746246217">საკვანძო სიტყვები:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@
 <translation id="6085149458302186532">ლეიბლები (ფერადი)</translation>
 <translation id="6087312102907839798">დაკავშირებული ძიებები</translation>
 <translation id="6089505343295765444">თქვენი Chrome-ის ისტორიიდან წაშლილი ჩანართები მაინც გამოჩნდება შედარების ცხრილებში</translation>
+<translation id="6091115085465716987">Google საფულის ლოგო</translation>
 <translation id="6091691259076781835">სწრაფი ანგარიშსწორებისთვის შეინახეთ ბარათის დადასტურების კოდი (CVC) თქვენს მოწყობილობაში</translation>
 <translation id="6093599771645355227">ყვითელი 1</translation>
 <translation id="6093795393556121384">თქვენი ბარათი დადასტურდა</translation>
@@ -3814,6 +3817,7 @@
 <translation id="7057567173736333354">აღწერეთ თქვენი სურათი</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />-მა დაადასტურა, რომ ამ ვებსაიტის სერტიფიკატის გამცემია <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">CSV პაროლების სინტაქსიკური ანალიზის სერვისი</translation>
+<translation id="7062344833049251424">შემდგომი გადახდების დასაჩქარებლად შეინახეთ თქვენი ბარათი და ბილინგის მისამართი Google საფულეში</translation>
 <translation id="706295145388601875">მისამართების დამატება და მართვა Chrome-ის პარამეტრებიდან</translation>
 <translation id="7063157783216323487">მწვანე 2</translation>
 <translation id="7064443976734085921">კომპაქტური მანქანები</translation>
@@ -4283,6 +4287,7 @@
 <translation id="7754587126786572336">თქვენი Chrome-ის ჩანართები და აპები დაიხურება განახლების დაწყებისას</translation>
 <translation id="7755287808199759310">მისი განბლოკვა თქვენს მშობელს შეუძლია</translation>
 <translation id="7755624218968747854">ძირითადი რულონი</translation>
+<translation id="7756441544371887150">ამ ბარათის მონაცემების ავტომატური შევსება Chrome-ში შესყიდვებისთვის, როცა ის შენახულია Google საფულეში</translation>
 <translation id="7758069387465995638">კავშირი შეიძლება ქსელის დაცვის ან ანტივირუსული პროგრამული უზრუნველყოფის მიერ იყოს დაბლოკილი.</translation>
 <translation id="7759147511335618829">MIDI-მოწყ. მართვა / გადაპროგრ.</translation>
 <translation id="7759809451544302770">არასავალდებულო</translation>
@@ -5206,6 +5211,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{არცერთი}=1{1 ერთეული}other{# ერთეული}}</translation>
 <translation id="976522784004777030">5 x 8 დუიმი</translation>
 <translation id="977502174772294970">ქორწილები</translation>
+<translation id="978750072783101994">ამ ბარათის მონაცემების ავტომატური შევსება Chromium-ში შესყიდვებისთვის, როცა ის შენახულია Google საფულეში</translation>
 <translation id="979107176848483472">თქვენს ბრაუზერსა და პროფილს მართავს <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">გამოფენები და თავყრილობები</translation>
 <translation id="979503328401807348">უფრო სასარგებლო რეკლამა</translation>

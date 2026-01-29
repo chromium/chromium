@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Үчүнчү тараптын cookie файлдарына уруксат берилет</translation>
 <translation id="1569054338208717605">V8 каражаты менен Chrome тез иштесин, бирок чабуулдардын туруктуулугу төмөндөсүн</translation>
 <translation id="1593426485665524382">Жаңы аракеттер экрандын жогору жагында жеткиликтүү</translation>
+<translation id="1601560923496285236">Колдонуу</translation>
 <translation id="1615755956145364867">Сайттар корголгон мазмунду сиздин уруксатыңыз менен ойното алат</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Микрофонду колдонгон функциялар иштебейт</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">Bluetooth түзмөктөрүн издөө</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> бөгөттөлдү}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> бөгөттөлдү}}</translation>
 <translation id="6554732001434021288">Акыркы жолу <ph name="NUM_DAYS" /> күн мурун кирген</translation>
+<translation id="6556866813142980365">Кайталоо</translation>
 <translation id="6557290421156335491">Менин ыкчам баскычтарым</translation>
 <translation id="656065428026159829">Дагы көрүү</translation>
 <translation id="6561560012278703671">Даректер тилкесинде көрсөтүлгөн билдирмелерди колдонуңуз (сизди алаксыткан билдирмелерди бөгөттөйт)</translation>

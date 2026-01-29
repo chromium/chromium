@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">Pour utiliser le gestionnaire de mots de passe avec le trousseau macOS, relancez Chromium et autorisez l'accès au trousseau. Vos onglets s'ouvriront à nouveau après la relance.</translation>
 <translation id="1652887625750064647">Meilleure correspondance d'IA</translation>
 <translation id="1653465303147789530">Payez avec <ph name="PAYMENT_METHOD" /> sans changer d'appli</translation>
+<translation id="1655159794885649984">Faire glisser du contenu sur ce site n'est pas autorisé</translation>
 <translation id="1656024727720460136">Chrome a simplifié cette page pour la rendre plus facile à lire. Chrome a téléchargé la page originale par connexion sécurisée.</translation>
 <translation id="1656489000284462475">Ramassage</translation>
 <translation id="1658111267661135323">Téléviseur et vidéo</translation>
@@ -1678,6 +1679,7 @@
 <translation id="365641980390710834">Vêtements confortables</translation>
 <translation id="3658742229777143148">Révision</translation>
 <translation id="3659521826520353662">Quels sites Web définis par l'administrateur sont visités et quand : <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Cet IBAN est enregistré dans Google Portefeuille afin que vous puissiez l'utiliser dans tous les services Google.</translation>
 <translation id="3664479564786885722">Recherchez plus d'options d'achat dans d'autres magasins qui vendent ce produit.</translation>
 <translation id="3664782872746246217">Mots clés :</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />En savoir plus<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6085149458302186532">Étiquettes (colorées)</translation>
 <translation id="6087312102907839798">Recherches connexes</translation>
 <translation id="6089505343295765444">Les onglets que vous supprimez de votre historique Chrome s'afficheront toujours dans vos tableaux de comparaison</translation>
+<translation id="6091115085465716987">Logo de Google Portefeuille</translation>
 <translation id="6091691259076781835">Pour un paiement plus rapide, enregistrez ce code CVC sur votre appareil</translation>
 <translation id="6093599771645355227">Jaune 1</translation>
 <translation id="6093795393556121384">Votre carte est validée</translation>
@@ -3814,6 +3817,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7057567173736333354">Décrivez votre image</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> a vérifié que <ph name="ISSUER" /> a émis le certificat de ce site Web.</translation>
 <translation id="7058774143982824355">Service d'analyse de mots de passe CSV</translation>
+<translation id="7062344833049251424">Pour payer plus rapidement la prochaine fois, enregistrez votre carte et votre adresse de facturation dans Google Portefeuille</translation>
 <translation id="706295145388601875">Ajoutez et gérez les adresses dans les paramètres de Chrome</translation>
 <translation id="7063157783216323487">Vert 2</translation>
 <translation id="7064443976734085921">Voitures compactes</translation>
@@ -4283,6 +4287,7 @@ Détails supplémentaires :
 <translation id="7754587126786572336">Vos onglets et applications Chrome se fermeront au démarrage de la mise à jour</translation>
 <translation id="7755287808199759310">L'un de tes parents peut le débloquer pour toi</translation>
 <translation id="7755624218968747854">Premier rouleau</translation>
+<translation id="7756441544371887150">Utilisez cette carte pour le remplissage automatique lors des achats effectués dans Chrome lorsqu'elle est enregistrée dans Google Portefeuille</translation>
 <translation id="7758069387465995638">Votre pare-feu ou votre antivirus ont peut-être bloqué la connexion.</translation>
 <translation id="7759147511335618829">Contrôler et reprog. app. MIDI</translation>
 <translation id="7759809451544302770">Facultatif</translation>
@@ -5205,6 +5210,7 @@ Détails supplémentaires :
 <translation id="975560348586398090">{COUNT,plural, =0{Aucun}=1{1 élément}one{# élément}other{# éléments}}</translation>
 <translation id="976522784004777030">5 po x 8 po</translation>
 <translation id="977502174772294970">Mariages</translation>
+<translation id="978750072783101994">Utilisez cette carte pour le remplissage automatique lors des achats effectués dans Chromium lorsqu'elle est enregistrée dans Google Portefeuille</translation>
 <translation id="979107176848483472">Votre navigateur et votre profil sont gérés par <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Expositions et congrès</translation>
 <translation id="979503328401807348">Des annonces plus pertinentes</translation>

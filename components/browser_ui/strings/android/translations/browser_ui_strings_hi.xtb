@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">तीसरे पक्ष की कुकी को अनुमति है</translation>
 <translation id="1569054338208717605">Chrome के v8 इंजन की मदद से, साइटों के काम करने की स्पीड तेज़ करें. इससे सुरक्षा से जुड़े खतरों की संभावना बढ़ जाती है</translation>
 <translation id="1593426485665524382">स्क्रीन के सबसे ऊपरी हिस्से में, नई कार्रवाइयां उपलब्ध हैं</translation>
+<translation id="1601560923496285236">लागू करें</translation>
 <translation id="1615755956145364867">साइटें कॉपीराइट वाले कॉन्टेंट को चलाने के लिए पूछ सकती हैं</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1621729191093924223">जिन सुविधाओं के लिए माइक्रोफ़ोन की ज़रूरत होती है वे काम नहीं करेंगी</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">ब्लूटूथ स्कैन करना</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को ब्लॉक किया गया}}</translation>
 <translation id="6554732001434021288">साइट पर पिछली बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
+<translation id="6556866813142980365">फिर से करें</translation>
 <translation id="6557290421156335491">मेरे शॉर्टकट</translation>
 <translation id="656065428026159829">ज़्यादा देखें</translation>
 <translation id="6561560012278703671">बिना आवाज़ के मैसेज पाएं (सूचनाओं में आवाज़ को रोकता है, ताकि आपके काम में रुकावट न आए)</translation>

@@ -2587,6 +2587,7 @@
 <translation id="2724841811573117416">WebRTC 記錄</translation>
 <translation id="272488616838512378">單位轉換</translation>
 <translation id="2725200716980197196">網絡連線已恢復</translation>
+<translation id="2725312032345042618">活動記錄</translation>
 <translation id="2726776862643824793">顯示屏校暗亮度</translation>
 <translation id="272741954544380994">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="2727633948226935816">不要再提醒我</translation>
@@ -2927,6 +2928,7 @@
 <translation id="2950666755714083615">我要訂閱</translation>
 <translation id="2953210795988451570">安全更新已終止，請改用新 Chromebook。</translation>
 <translation id="2953218713108551165">已禁止 <ph name="SITE" /> 傳送通知，系統將在您下次瀏覽網站時再次詢問您。</translation>
+<translation id="2954777802959138493">無法查詢更新程式狀態。</translation>
 <translation id="2955048943983973430">相關 Google 服務</translation>
 <translation id="2956070239128776395">群組中具有巢狀部份：<ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">開啟開發人員模式即可使用此擴充程式。請注意，此擴充程式尚未通過 Chrome 網上應用程式商店審核。</translation>
@@ -3659,6 +3661,7 @@
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
 <translation id="3469583217479686109">選取工具</translation>
+<translation id="3471687177769494956">編輯導覽快速鍵</translation>
 <translation id="3471876058939596279">HDMI 和 USB Type-C 連接埠無法同時用於影片。請使用其他影片連接埠。</translation>
 <translation id="3472469028191701821">喺新分頁度打開</translation>
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
@@ -7087,6 +7090,7 @@
 <translation id="5828181959764767444">日落</translation>
 <translation id="5828545842856466741">新增設定檔…</translation>
 <translation id="5828633471261496623">列印中…</translation>
+<translation id="5829544019044013776">「Google 錢包」入面嘅付款方法</translation>
 <translation id="5830205393314753525">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="5830512293931520102">你的密碼會加密，且不會向其他人顯示</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)…</translation>
@@ -7651,6 +7655,7 @@
 <translation id="6212168817037875041">關閉螢幕</translation>
 <translation id="6212752530110374741">透過電郵傳送連結</translation>
 <translation id="6214106213498203737">水彩</translation>
+<translation id="6214157047210274853">在「Google 錢包」中編輯</translation>
 <translation id="621470880408090483">不允許網站連接藍牙裝置</translation>
 <translation id="6215039389782910006">{1,plural, =1{為保障密碼安全，「<ph name="BRAND" />」會在閒置 1 分鐘後鎖定}other{為保障密碼安全，「<ph name="BRAND" />」會在閒置 # 分鐘後鎖定}}</translation>
 <translation id="6216154119179790291">捲動至第一個分頁</translation>
@@ -9121,6 +9126,7 @@
 <translation id="7243092385765551741">要刪除密鑰嗎？</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (最佳)</translation>
 <translation id="7246230585855757313">請重新插入安全密鑰，然後再試一次</translation>
+<translation id="7248671827512403053">應用程式</translation>
 <translation id="7249197363678284330">在網址列中變更此設定。</translation>
 <translation id="7249764475759804559">將此應用程式納入為檔案開啟方式選項</translation>
 <translation id="7249885578105575587">問 Google 有關呢個分頁嘅問題：<ph name="TAB_TITLE" /></translation>
@@ -11293,6 +11299,7 @@
 <translation id="8703346390800944767">略過廣告</translation>
 <translation id="8703372953981978786">此連結無法運作</translation>
 <translation id="8703766890819308134">顯示搜尋捷徑</translation>
+<translation id="8704248383043944131">編輯鍵盤快速鍵</translation>
 <translation id="8704662571571150811">網域</translation>
 <translation id="8705331520020532516">序號</translation>
 <translation id="870536819717176711">當你選擇與 Gemini 分享當前分頁，分頁的完整內容、媒體和網址會傳送到 Google。</translation>
@@ -11609,6 +11616,7 @@
 <translation id="8911914282056933784">隱藏項目</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912810933860534797">啟用自動掃瞄</translation>
+<translation id="8913485523736543337">更新程式</translation>
 <translation id="8914030287343429787">即使沒有在使用 Chrome 或 Android，只要登入 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 就能查看自己的密碼</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8915307125957890427">在分頁上按一下右鍵，並選取「將分頁加入群組」和「新群組」</translation>
@@ -11749,6 +11757,7 @@
 <translation id="8999560016882908256">部分語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">減少畫面上的動態效果</translation>
 <translation id="9000185763019430629">請輕觸 <ph name="DEVICE_TYPE" /> 右側的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
+<translation id="9000529821022336229">找不到任何更新程式安裝項目。</translation>
 <translation id="900267527532832868">此密鑰已失效，即將從「<ph name="GOOGLE_PASSWORD_MANAGER" />」中刪除。</translation>
 <translation id="9003031149571024583">請輸入 6 位數 PIN 嘅第 <ph name="NUM_DIGIT" /> 碼，同埋用 Backspace 掣或者 Delete 掣移除最後一個數字。</translation>
 <translation id="9003185744423389627">連線至「裝置管理工具伺服器」失敗，系統在<ph name="FAILURE_TIME" />報告了以下狀態：「<ph name="STATUS_TEXT" />」</translation>

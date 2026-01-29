@@ -50,6 +50,7 @@
 <translation id="1547123415014299762">Third-party cookies are allowed</translation>
 <translation id="1569054338208717605">Speed up sites with Chrome's V8 engine but make Chrome slightly less resistant to attacks</translation>
 <translation id="1593426485665524382">New actions available near top of the screen</translation>
+<translation id="1601560923496285236">Apply</translation>
 <translation id="1615755956145364867">Sites can ask to play protected content</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1621729191093924223">Features that need a microphone won't work</translation>
@@ -528,6 +529,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6545864417968258051">Bluetooth scanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more blocked}}</translation>
 <translation id="6554732001434021288">Last visited <ph name="NUM_DAYS" /> days ago</translation>
+<translation id="6556866813142980365">Redo</translation>
 <translation id="6557290421156335491">My shortcuts</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6561560012278703671">Use quieter messaging (blocks notification prompts from interrupting you)</translation>

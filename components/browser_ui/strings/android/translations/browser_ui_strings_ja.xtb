@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
 <translation id="1569054338208717605">Chrome の V8 エンジンでサイトを高速化する（攻撃に対する Chrome の耐性は若干低下します）</translation>
 <translation id="1593426485665524382">画面上部付近で新しい操作が可能になりました</translation>
+<translation id="1601560923496285236">適用</translation>
 <translation id="1615755956145364867">保護されたコンテンツの再生がサイトからリクエストされる場合があります</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1621729191093924223">マイクを必要とする機能は動作しなくなります</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">Bluetooth をスキャン</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}}</translation>
 <translation id="6554732001434021288">最終アクセス日: <ph name="NUM_DAYS" /> 日前</translation>
+<translation id="6556866813142980365">やり直す</translation>
 <translation id="6557290421156335491">カスタム ショートカット</translation>
 <translation id="656065428026159829">もっと見る</translation>
 <translation id="6561560012278703671">目立たない方法で通知する（割り込み通知を行わない）</translation>

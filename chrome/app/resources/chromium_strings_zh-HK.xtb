@@ -481,6 +481,7 @@
 <translation id="6450948450282634257">在手機下載 Chromium，追蹤價格並在任何網站降價時接收通知</translation>
 <translation id="645458117210240797">已關閉 • Chromium 無法驗證此擴充程式的來源</translation>
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
+<translation id="6460614424172581323">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你使用分頁群組。</translation>
 <translation id="6466344609055215035">從 Chromium 移除帳戶</translation>
 <translation id="6475912303565314141">這個擴充功能也會管制您啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="648319183876919572">「強化安全瀏覽」可進一步保護您免受危險網站和下載檔案威脅</translation>
@@ -627,6 +628,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8086881907087796310">由於你的電腦不符合最低硬件要求，因此安裝失敗。</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium 需要位置存取權，才能執行此網站要求的功能</translation>
+<translation id="8107060931443639922">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你啟用價格追蹤通知。</translation>
 <translation id="8118331347066725040">提供你對「智能鏡頭」搜尋功能的意見</translation>
 <translation id="8133124826068723441">您的網域無法使用「同步功能」，因此 Chromium 作業系統無法同步處理您的資料。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
@@ -703,6 +705,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="897581876605952338">Chromium Enterprise 標誌</translation>
 <translation id="8981150672034878610">由於開啟設定檔時發生錯誤，因此無法啟動 Chromium。請嘗試重新啟動 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 設定檔</translation>
+<translation id="9003988359820989654">在電腦開機時開啟 Chromium</translation>
 <translation id="9019929317751753759">為鞏固 Chromium 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="904366664621834601">此封存檔案包含可能隱藏惡意軟件的其他檔案，因此 Chromium 已禁止下載</translation>
 <translation id="9062666675513499497">在登入其他 Google 服務時登入 Chromium</translation>

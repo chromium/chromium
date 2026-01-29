@@ -28,6 +28,7 @@
 <translation id="1158134713295836892">Gemini ក្នុង Chrome</translation>
 <translation id="1184145431117212167">ការដំឡើងមិនបានសម្រេចទេ ដោយសារកំណែ Windows របស់អ្នកមិនអាចប្រើបាន។</translation>
 <translation id="1194807384646768652">Chrome បានទប់ស្កាត់​ការទាញយកនេះ ដោយសារ​ប្រភេទ​ឯកសារនេះ​មិនត្រូវបាន​ទាញយក​ជាទូទៅទេ ហើយវាអាច​បង្កគ្រោះថ្នាក់</translation>
+<translation id="1197860368385086056">នៅពេល​អ្នកបើក Chrome នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក​នៅលើកក្រោយ អ្នក​នឹងឃើញ​សារតម្រុយ​ដែលប្រាប់ឱ្យ​បើក​ការជូនដំណឹង​អំពី​ការតាមដាន​តម្លៃ។</translation>
 <translation id="1203500561924088507">សូមអរគុណសម្រាប់ការដំឡើង។ អ្នកត្រូវតែចាប់ផ្ដើមកម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នកឡើងវិញ មុនពេលប្រើ <ph name="BUNDLE_NAME" />។</translation>
 <translation id="1278833599417554002">ចាប់​ផ្តើមឡើងវិញដើម្បីដំឡើងកំណែ &amp;Chrome</translation>
 <translation id="1290883685122687410">បញ្ហា​ក្នុងការរៀបចំ៖ <ph name="METAINSTALLER_EXIT_CODE" />។ <ph name="WINDOWS_ERROR" /></translation>
@@ -507,6 +508,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6321592572353357376">កម្មវិធី​បន្ថែម "<ph name="EXTENSION_NAME" />" ចង់ឱ្យ​អ្នកចូលគណនី Chrome</translation>
 <translation id="6326175484149238433">ដកចេញពី Chrome</translation>
 <translation id="6327105987658262776">មិនមានកំណែថ្មីទេ។</translation>
+<translation id="6333195756043503664">បើក Chrome នៅពេល​កុំព្យូទ័រ​របស់ខ្ញុំ​ចាប់ផ្ដើម</translation>
 <translation id="6334815226785304306">កំណត់ Google Chrome ជា​កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម និង​ខ្ទាស់ទៅ​របារកិច្ចការ</translation>
 <translation id="63540178978900677">Chrome លែងជា​កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម​របស់អ្នក​ទៀតហើយ។ កំណត់ Chrome ជា​កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម​ឬ?</translation>
 <translation id="6360449101159168105">នៅពេលផ្ទាំងនេះអសកម្ម អង្គចងចាំត្រូវបានសម្អាត ដើម្បីរក្សា Chrome ឱ្យដើរលឿន។ អ្នកអាចជ្រើសរើសដកគេហទំព័រនេះចេញពីភាពអសកម្មបានជានិច្ច។</translation>
@@ -616,6 +618,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7515191208480168435">អ្នកអាចខ្ទាស់ Google Lens ដើម្បីងាយស្រួលចូលប្រើ</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">ដើម្បីទទួលបាន​ចំណាំនេះ និង​អ្វីៗជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក សូម​ចូលគណនី Chrome</translation>
+<translation id="756134248912568991">នៅពេល​អ្នកបើក Chrome នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក​នៅលើកក្រោយ អ្នក​នឹងឃើញ​សារតម្រុយ​ដែលប្រាប់​ឱ្យប្រើ​ក្រុមផ្ទាំង។</translation>
 <translation id="756809126120519699">បានជម្រះទិន្នន័យ Chrome</translation>
 <translation id="7572537927358445944">បិទ • Chrome មិនអាចផ្ទៀងផ្ទាត់ប្រភពរបស់កម្មវិធីបន្ថែម​នេះបានទេ</translation>
 <translation id="7583399374488819119">កម្មវិធីដំឡើង <ph name="COMPANY_NAME" /></translation>

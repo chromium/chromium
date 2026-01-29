@@ -26,6 +26,7 @@
 <translation id="1158134713295836892">Chrome ನಲ್ಲಿ Gemini</translation>
 <translation id="1184145431117212167">ನಿಮ್ಮ Windows ಆವೃತ್ತಿಯನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="1194807384646768652">ಈ ಫೈಲ್ ಪ್ರಕಾರವನ್ನು ಸಾಮಾನ್ಯ ರೀತಿಯಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡದ ಕಾರಣ Chrome ಈ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ ಹಾಗೂ ಇದು ಅಪಾಯಕಾರಿಯಾಗಿರಬಹುದು</translation>
+<translation id="1197860368385086056">ಮುಂದಿನ ಬಾರಿ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನೀವು Chrome ಅನ್ನು ತೆರೆದಾಗ, ದರ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಲರ್ಟ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನಿಮಗೆ ಪ್ರಾಂಪ್ಟ್ ಕಾಣಿಸುತ್ತದೆ.</translation>
 <translation id="1203500561924088507">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. <ph name="BUNDLE_NAME" /> ಅನ್ನು ಬಳಸುವ ಮೊದಲು ನೀವು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕು.</translation>
 <translation id="1278833599417554002">&amp;Chrome ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1290883685122687410">ಸೆಟಪ್ ದೋಷ: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -236,7 +237,7 @@
 <translation id="3503306920980160878">ಈ ಸೈಟ್‌ ಜೊತೆ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು Chrome ಗೆ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3533694711092285624">ಉಳಿಸಿರುವ ಯಾವುದೇ ಪಾಸ್‍‍ವರ್ಡ್‍ಗಳಿಲ್ಲ. ನೀವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಿದಾಗ, Chrome ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="3541482654983822893">Chrome ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. 24 ಗಂಟೆಗಳ ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="3576528680708590453"><ph name="TARGET_URL_HOSTNAME" /> ಗೆ ಪ್ರವೇಶಿಸಲು ಒಂದು ಪರ್ಯಾಯ ಬ್ರೌಸರ್ ತೆರೆಯುವಂತೆ ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Google Chrome ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>
+<translation id="3576528680708590453"><ph name="TARGET_URL_HOSTNAME" /> ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಒಂದು ಪರ್ಯಾಯ ಬ್ರೌಸರ್ ತೆರೆಯುವಂತೆ ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Google Chrome ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="3582972582564653026">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸಿಂಕ್ ಮಾಡಿ ಮತ್ತು ವೈಯಕ್ತೀಕರಿಸಿ</translation>
 <translation id="3583751698304738917">ನೀವು ಈಗಾಗಲೇ ಮತ್ತೊಂದು Chrome ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ <ph name="USER_EMAIL_ADDRESS" /> ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="358381413217813387">Google Lens ಬಳಸಿಕೊಂಡು ಈ ಪುಟವನ್ನು ಹುಡುಕಿ</translation>
@@ -502,6 +503,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ಬಳಸುವುದಕ್ಕಾಗಿ ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಿದೆ</translation>
 <translation id="6326175484149238433">Chrome ನಿಂದ ತೆಗೆದುಹಾಕು</translation>
 <translation id="6327105987658262776">ಯಾವುದೇ ಅಪ್‌ಡೇಟ್‌‌ ಲಭ್ಯವಿಲ್ಲ.</translation>
+<translation id="6333195756043503664">ನನ್ನ ಕಂಪ್ಯೂಟರ್ ಸ್ಟಾರ್ಟ್ ಆದಾಗ Chrome ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="6334815226785304306">Google Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಮಾಡಿ ಮತ್ತು ಟಾಸ್ಕ್‌ಬಾರ್‌ಗೆ ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="63540178978900677">Chrome ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿರುವುದಿಲ್ಲ. Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="6360449101159168105">ಈ ಟ್ಯಾಬ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದ್ದಾಗ, Chrome ವೇಗವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸಲು ಮೆಮೊರಿಯನ್ನು ಮುಕ್ತಗೊಳಿಸಿದೆ. ಈ ಸೈಟ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯವಾಗಿರದಂತೆ ಎಲ್ಲಾ ಸಮಯದಲ್ಲೂ ಹೊರಗಿಡಲು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
@@ -611,6 +613,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="7515191208480168435">ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ ನೀವು Google Lens ಅನ್ನು ಪಿನ್ ಮಾಡಬಹುದು</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಈ ಬುಕ್‌ಮಾರ್ಕ್ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು, Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="756134248912568991">ಮುಂದಿನ ಬಾರಿ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನೀವು Chrome ಅನ್ನು ತೆರೆದಾಗ, ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಬಳಸಲು ನಿಮಗೆ ಪ್ರಾಂಪ್ಟ್ ಕಾಣಿಸುತ್ತದೆ.</translation>
 <translation id="756809126120519699">Chrome ಡೇಟಾ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7572537927358445944">ಆಫ್ • ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಎಲ್ಲಿಂದ ಬರುತ್ತದೆ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ಇನ್‌ಸ್ಟಾಲರ್‌‌</translation>

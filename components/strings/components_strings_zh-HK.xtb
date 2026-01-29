@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">如要透過「MacOS 鑰匙圈」使用「Google 密碼管理工具」，請重新啟動 Chromium 並允許存取「鑰匙圈」。重新啟動後，分頁將會重新開啟。</translation>
 <translation id="1652887625750064647">AI 最佳配對結果</translation>
 <translation id="1653465303147789530">無需切換應用程式即可使用 <ph name="PAYMENT_METHOD" /> 付款</translation>
+<translation id="1655159794885649984">不允許在此網站上拖曳內容</translation>
 <translation id="1656024727720460136">Chrome 已簡化此頁面，方便您閱讀。Chrome 已透過安全連線擷取原始網頁。</translation>
 <translation id="1656489000284462475">取貨</translation>
 <translation id="1658111267661135323">電視節目和影片</translation>
@@ -1677,6 +1678,7 @@
 <translation id="365641980390710834">休閒服裝</translation>
 <translation id="3658742229777143148">修訂</translation>
 <translation id="3659521826520353662">瀏覽過哪些管理員定義的網站和瀏覽時間：<ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">此 IBAN 已儲存至「Google 錢包」，你可在各項 Google 服務中使用。</translation>
 <translation id="3664479564786885722">搜尋其他出售此產品的店舖的更多購買選項。</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="LINK_END1" /></translation>
@@ -3197,6 +3199,7 @@
 <translation id="6085149458302186532">標籤 (彩色)</translation>
 <translation id="6087312102907839798">相關搜尋</translation>
 <translation id="6089505343295765444">你從 Chrome 記錄刪除的分頁仍會在比較表格中顯示</translation>
+<translation id="6091115085465716987">「Google 錢包」標誌</translation>
 <translation id="6091691259076781835">在裝置上儲存此 CVC 可加快結帳速度</translation>
 <translation id="6093599771645355227">黃色 1</translation>
 <translation id="6093795393556121384">您的卡片已驗證</translation>
@@ -3813,6 +3816,7 @@
 <translation id="7057567173736333354">描述圖片</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 驗證到「<ph name="ISSUER" />」已發出此網站的憑證。</translation>
 <translation id="7058774143982824355">CSV 密碼剖析器服務</translation>
+<translation id="7062344833049251424">將付款卡和帳單地址儲存至「Google 錢包」，下次就能更快完成付款程序</translation>
 <translation id="706295145388601875">在 Chrome 設定中新增並管理地址</translation>
 <translation id="7063157783216323487">綠色 2</translation>
 <translation id="7064443976734085921">小型車</translation>
@@ -4283,6 +4287,7 @@
 <translation id="7754587126786572336">更新開始時，您的 Chrome 分頁和應用程式將會關閉</translation>
 <translation id="7755287808199759310">您的家長可以為您解除封鎖此網站</translation>
 <translation id="7755624218968747854">主卷</translation>
+<translation id="7756441544371887150">只要將此卡儲存至「Google 錢包」，就能在 Chrome 中購物時自動填入卡資料</translation>
 <translation id="7758069387465995638">連線可能遭防火牆或防毒軟件封鎖。</translation>
 <translation id="7759147511335618829">MIDI 裝置控制和重新編程</translation>
 <translation id="7759809451544302770">選用</translation>
@@ -5205,6 +5210,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{無}=1{1 個項目}other{# 個項目}}</translation>
 <translation id="976522784004777030">5 x 8 吋</translation>
 <translation id="977502174772294970">婚禮</translation>
+<translation id="978750072783101994">只要將此卡儲存至「Google 錢包」，就能在 Chromium 中購物時自動填入卡資料</translation>
 <translation id="979107176848483472">你的瀏覽器和個人檔案由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="979189555234810423">展覽及會議</translation>
 <translation id="979503328401807348">更實用的廣告</translation>

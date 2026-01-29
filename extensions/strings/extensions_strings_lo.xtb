@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">ບໍ່ສາມາດຖອດລະຫັດຮູບໄດ້: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ໃຊ້ການຈໍາກັດແລ້ວ, ແຕ່ default_locale ບໍ່ໄດ້ກໍານົດຢູ່ໃນໃບລາຍການ.</translation>
 <translation id="2576842806987913196">ມີ​​ໄຟລ​໌ CRX ເປັນ​ຊື່​ນີ້ຢູ່ແລ້ວ​.</translation>
+<translation id="2743583586211388067">ການເຂົ້າເຖິງສ່ວນຂະຫຍາຍນີ້ຖືກບລັອກພາຍໃຕ້ນະໂຍບາຍຄວາມສ່ຽງຂອງສ່ວນຂະຫຍາຍຂອງອົງກອນຂອງທ່ານ.</translation>
 <translation id="2785530881066938471">ບໍ່​ສາ​ມາດ​ໂຫຼດ​ໄຟລ​໌ '<ph name="RELATIVE_PATH" />' ສໍາລັບບົດເນື້ອໃນໄດ້. ມັນບໍ່ໄດ້ຂຽນລະຫັດ UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_ID" />") ຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ບໍ່​ສາ​ມາດ​ຕິດ​ຕັ້ງ​ແພັກເກດໄດ້: '<ph name="ERROR_CODE" />'</translation>

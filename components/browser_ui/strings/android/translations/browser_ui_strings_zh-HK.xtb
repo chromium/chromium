@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">你可要求查看桌面版網站</translation>
 <translation id="1085696779717592361">預設為使用 Chrome</translation>
 <translation id="113098737392899175">接駁鍵盤後，使用文字游標瀏覽頁面</translation>
+<translation id="1149644372535087155">在 Chrome 中儲存密碼</translation>
 <translation id="1178015372320901893">我嘅捷徑頁底面板</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1569054338208717605">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防攻擊的能力會略為下降</translation>
 <translation id="1593426485665524382">喺螢幕頂部附近有可以執行嘅新操作</translation>
+<translation id="1601560923496285236">套用</translation>
 <translation id="1615755956145364867">網站可要求播放受保護的內容</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1621729191093924223">需要麥克風的功能將無法運作</translation>
@@ -171,6 +173,7 @@
 <translation id="2682367912565197520">刪除已儲存的縮放等級</translation>
 <translation id="2683434792633810741">要刪除並重設嗎？</translation>
 <translation id="2685514716378236873">不允許</translation>
+<translation id="2710883118091822664">登入即可輕鬆在所有裝置上繼續</translation>
 <translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2717722538473713889">電郵地址</translation>
 <translation id="2726059656860238749">啟動 Chrome 時將焦點置於網址列，縮短低階裝置的啟動時間。</translation>
@@ -198,6 +201,7 @@
 <translation id="3004438526346162184">網站可使用此功能管理你所有顯示屏上的視窗</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
+<translation id="3026311960038210">主題系列</translation>
 <translation id="3064871050034234884">網站可播放音效</translation>
 <translation id="3065787901655140044">已啟用「進階保護功能」</translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
@@ -340,6 +344,7 @@
 <translation id="4478158430052450698">可在不同網站上更輕鬆自訂縮放比例</translation>
 <translation id="4479647676395637221">允許網站使用相機前先詢問您 (建議)</translation>
 <translation id="4505788138578415521">展開咗網址</translation>
+<translation id="4523472416386354622">登入即可開始</translation>
 <translation id="4534723447064627427">如要讓 <ph name="APP_NAME" /> 存取您的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
@@ -396,6 +401,7 @@
 <translation id="512938610812707830">新分頁外觀主題集頁底面板宜家顯示喺成個畫面</translation>
 <translation id="5137460097045297858">「探索」動態消息頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{已開啟的分頁上有商品降價}other{已開啟的分頁上有商品降價}}</translation>
+<translation id="5150048675001754041">快速輕鬆登入網站和應用程式</translation>
 <translation id="5186036860380548585">選項喺螢幕頂部附近</translation>
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
 <translation id="5198930230016462977">閂咗自訂新分頁頁底面板</translation>
@@ -523,6 +529,7 @@
 <translation id="6545864417968258051">藍牙掃瞄</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="6554732001434021288">上次瀏覽日期：<ph name="NUM_DAYS" /> 天前</translation>
+<translation id="6556866813142980365">重做</translation>
 <translation id="6557290421156335491">我的捷徑</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6561560012278703671">使用靜態訊息功能 (免受通知提示干擾)</translation>
@@ -564,6 +571,7 @@
 <translation id="6980861169612950611">要刪除網站資料嗎？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">協助工具</translation>
 <translation id="6991142177939282156">已允許 • 正在使用概略位置</translation>
+<translation id="6992014788289743568">檢查密碼以加強安全保障，確保資料更安全</translation>
 <translation id="6992289844737586249">允許網站使用麥克風前先詢問您 (建議)</translation>
 <translation id="7000754031042624318">已在「Android 設定」中關閉</translation>
 <translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>

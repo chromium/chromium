@@ -2575,6 +2575,7 @@
 <translation id="2724841811573117416">WebRTC लगहरू</translation>
 <translation id="272488616838512378">एकाइ रूपान्तरण</translation>
 <translation id="2725200716980197196">सञ्जाल जडान पुनर्स्थापित</translation>
+<translation id="2725312032345042618">क्रियाकलापको हिस्ट्री</translation>
 <translation id="2726776862643824793">डिस्प्लेको चमक घटाउने की</translation>
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत फोटो खोज्नुहोस्</translation>
 <translation id="2727633948226935816">मलाई फेरि नसम्झाउनुहोस्</translation>
@@ -2917,6 +2918,7 @@
 <translation id="2950666755714083615">साइन अप गर्नुहोस्</translation>
 <translation id="2953210795988451570">तपाईं अब आफ्नो Chromebook मा सुरक्षासम्बन्धी अपडेटहरू प्राप्त गर्नु हुने छैन। यो Chromebook अपग्रेड गरी नयाँ Chromebook लिनुहोस्।</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> का हकमा सूचना पठाउने अनुमति दिइएको छैन। तपाईंले अर्को पटक यो वेबसाइट खोल्दा तपाईंलाई फेरि सोधिने छ।</translation>
+<translation id="2954777802959138493">अपडेटरको स्थितिका बारेमा क्वेरी गर्न सकिएन।</translation>
 <translation id="2955048943983973430">सम्बन्धित Google सेवाहरू</translation>
 <translation id="2956070239128776395">समूहभित्र खण्ड छ: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">यो एक्स्टेन्सन प्रयोग गर्न 'विकासकर्ता' मोड अन गर्नुहोस्। Chrome वेब स्टोरले यो एक्स्टेन्सनको समीक्षा गर्न सक्दैन।</translation>
@@ -3649,6 +3651,7 @@
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फोन</translation>
 <translation id="3469583217479686109">चयन गर्ने टुल</translation>
+<translation id="3471687177769494956">नेभिगेसन सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="3471876058939596279">भिडियोसम्बन्धी प्रयोजनका लागि HDMI र USB Type-C पोर्टहरू एकै समयमा प्रयोग गर्न मिल्दैन। कुनै अर्को भिडियो पोर्ट प्रयोग गर्नुहोस्।</translation>
 <translation id="3472469028191701821">नयाँ ट्याबमा खुल्छ</translation>
 <translation id="3473241910002674503">ट्याब्लेट मोडमा हुँदा बटनहरूको प्रयोग गरी गृह स्क्रिनमा जानुहोस्, पछाडि फर्कनुहोस् र एउटा अनुप्रयोगबाट अर्को एपमा जानुहोस्।</translation>
@@ -7083,6 +7086,7 @@
 <translation id="5828181959764767444">सूर्यास्त</translation>
 <translation id="5828545842856466741">प्रोफाइल हाल्नुहोस्...</translation>
 <translation id="5828633471261496623">प्रिन्ट गर्दै...</translation>
+<translation id="5829544019044013776">Google Wallet मा भएका तपाईंका भुक्तानी विधिहरू</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> खोल्न सकिएन</translation>
 <translation id="5830512293931520102">तपाईंको पासवर्ड इन्क्रिप्ट गरिएको हुन्छ र कसैले कहिल्यै पनि उक्त पासवर्ड देख्दैनन्</translation>
 <translation id="5830720307094128296">पृष्ठलाई यसको &amp;रूपमा बचत गर्नुहोस्...</translation>
@@ -7647,6 +7651,7 @@
 <translation id="6212168817037875041">प्रदर्शन निष्क्रिय पार्नुहोस्</translation>
 <translation id="6212752530110374741">लिंक भएको इमेल पठाउनुहोस्</translation>
 <translation id="6214106213498203737">वाटरकलर</translation>
+<translation id="6214157047210274853">Google Wallet मा गई सम्पादन गर्नुहोस्</translation>
 <translation id="621470880408090483">साइटहरूलाई ब्लुटुथ चल्ने यन्त्रमा कनेक्ट गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="6215039389782910006">{1,plural, =1{तपाईंका पासवर्डहरूको सुरक्षार्थ १ मिनेटसम्म कुनै क्रियाकलाप नगरिएका खण्डमा <ph name="BRAND" /> लक हुन्छ}other{तपाईंका पासवर्डहरूको सुरक्षार्थ # मिनेटसम्म कुनै क्रियाकलाप नगरिएका खण्डमा <ph name="BRAND" /> लक हुन्छ}}</translation>
 <translation id="6216154119179790291">स्क्रोल गरेर पहिलो ट्याबमा जानुहोस्</translation>
@@ -9116,6 +9121,7 @@
 <translation id="7243092385765551741">पासकी मेटाउने हो?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (उत्कृष्ट)</translation>
 <translation id="7246230585855757313">आफ्नो सुरक्षा साँचो पुनः प्रविष्टि गरी फेरि प्रयास गर्नुहोस्</translation>
+<translation id="7248671827512403053">एप</translation>
 <translation id="7249197363678284330">एड्रेस बारमा गई यो सेटिङ बदल्नुहोस्।</translation>
 <translation id="7249764475759804559">फाइलहरू खोल्दा यो एप विकल्पका रूपमा समावेश गर्नुहोस्</translation>
 <translation id="7249885578105575587">Google लाई यो ट्याबका बारेमा सोध्नुहोस्: <ph name="TAB_TITLE" /></translation>
@@ -11290,6 +11296,7 @@
 <translation id="8703346390800944767">विज्ञापन हटाउनुहोस्</translation>
 <translation id="8703372953981978786">यो लिंकले काम गर्दैन</translation>
 <translation id="8703766890819308134">खोजका सर्टकटहरू देखाउनुहोस्</translation>
+<translation id="8704248383043944131">किबोर्ड सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="8704662571571150811">डोमेनहरू</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
 <translation id="870536819717176711">तपाईंले Gemini सँग हालको ट्याब सेयर गर्नुभयो भने उक्त ट्याबका सबै सामग्री, मिडिया र URL Google मा पठाइन्छन्।</translation>
@@ -11610,6 +11617,7 @@
 <translation id="8911914282056933784">परियोजनाहरू लुकाउनुहोस्</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8912810933860534797">स्वतः स्क्यान गर्ने सुविधा सक्षम पार्नुहोस्</translation>
+<translation id="8913485523736543337">अपडेटर</translation>
 <translation id="8914030287343429787"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> मा साइन इन गर्नुहोस् र Chrome वा Android नचलाइरहेका बेला पनि आफ्ना पासवर्डहरू हेर्नुहोस्</translation>
 <translation id="8914504000324227558">Chrome पुनः सुरु गर्नुहोस्</translation>
 <translation id="8915307125957890427">ट्याबमा दायाँ क्लिक गर्नुहोस् र "यो ट्याब समूहमा हाल्नुहोस्" चयन गर्नुहोस् अनि "नयाँ समूह" चयन गर्नुहोस्</translation>
@@ -11750,6 +11758,7 @@
 <translation id="8999560016882908256">खण्डको विन्याससम्बन्धी त्रुटि: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">स्क्रिनमा कम एनिमेसन देखाउने सेटिङ</translation>
 <translation id="9000185763019430629">आफ्नो <ph name="DEVICE_TYPE" /> को दायाँतिर रहेको फिंगरप्रिन्ट सेन्सरमा छुनुहोस्। तपाईंको फिंगरप्रिन्ट डेटा सुरक्षित रूपमा भण्डारण गरिन्छ र यो डेटा कहिल्यै पनि तपाईंको <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
+<translation id="9000529821022336229">अपडेटर इन्स्टल गरिएको भेटिएन।</translation>
 <translation id="900267527532832868">यो पासकीले अब काम गर्दैन। यसलाई <ph name="GOOGLE_PASSWORD_MANAGER" /> बाट पनि चाँडै मेटाइने छ।</translation>
 <translation id="9003031149571024583">PIN मा भएका ६ वटामध्ये <ph name="NUM_DIGIT" /> औँ अङ्क हाल्नुहोस्। पछिल्लो अङ्क मेटाउन ब्याकस्पेस वा डिलिट की थिच्नुहोस्।</translation>
 <translation id="9003185744423389627">डिभाइस म्यानेजमेन्ट सर्भरमा कनेक्ट गर्न सकिएन। कनेक्ट गर्न नसकिएको समय: "<ph name="FAILURE_TIME" />", स्थिति: "<ph name="STATUS_TEXT" />"</translation>

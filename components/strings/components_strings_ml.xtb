@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS Keychain-ന് ഒപ്പം Password Manager ഉപയോഗിക്കുന്നതിന്, Chromium വീണ്ടും ആരംഭിച്ച് Keychain ആക്‌സസ് അനുവദിക്കുക. വീണ്ടും ആരംഭിച്ചുകഴിഞ്ഞാൽ നിങ്ങളുടെ ടാബുകൾ വീണ്ടും തുറക്കും.</translation>
 <translation id="1652887625750064647">AI നിർദ്ദേശിക്കുന്ന മികച്ച പൊരുത്തം</translation>
 <translation id="1653465303147789530">ആപ്പുകൾ മാറാതെ തന്നെ <ph name="PAYMENT_METHOD" /> ഉപയോഗിച്ച് പേ ചെയ്യുക</translation>
+<translation id="1655159794885649984">ഈ സൈറ്റിൽ ഉള്ളടക്കം വലിച്ചിടുന്നത് അനുവദനീയമല്ല</translation>
 <translation id="1656024727720460136">വായന എളുപ്പമാക്കുന്നതിന് Chrome ഈ പേജ് ലളിതമാക്കി. സുരക്ഷിത കണക്ഷനിലൂടെ Chrome ഒറിജിനൽ പേജ് വീണ്ടെടുത്തു.</translation>
 <translation id="1656489000284462475">പിക്കപ്പ്</translation>
 <translation id="1658111267661135323">ടിവിയും വീഡിയോയും</translation>
@@ -1677,6 +1678,7 @@
 <translation id="365641980390710834">കാഷ്വൽ വസ്‌ത്രം</translation>
 <translation id="3658742229777143148">പുനരവലോകനം</translation>
 <translation id="3659521826520353662">അഡ്‌മിൻ വ്യക്തമാക്കിയ ഏതൊക്കെ വെബ്‌സൈറ്റുകൾ, എപ്പോഴൊക്കെയാണ് സന്ദർശിച്ചത്: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Google Wallet-ൽ ഈ IBAN സംരക്ഷിച്ചിരിക്കുന്നതിനാൽ നിങ്ങൾക്ക് അത് Google സേവനങ്ങളിലുടനീളം ഉപയോഗിക്കാനാകും.</translation>
 <translation id="3664479564786885722">ഈ ഉൽപ്പന്നം വിൽക്കുന്ന മറ്റ് സ്റ്റോറുകളിൽ നിന്ന്, വാങ്ങാനുള്ള കൂടുതൽ ഓപ്ഷനുകൾ തിരയുക.</translation>
 <translation id="3664782872746246217">കീവേഡുകൾ:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />കൂടുതലറിയുക<ph name="LINK_END1" /></translation>
@@ -3197,6 +3199,7 @@
 <translation id="6085149458302186532">ലേബലുകൾ (നിറമുള്ളത്)</translation>
 <translation id="6087312102907839798">അനുബന്ധ തിരയലുകൾ</translation>
 <translation id="6089505343295765444">നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ നിന്ന് നിങ്ങൾ ഇല്ലാതാക്കുന്ന ടാബുകൾ നിങ്ങളുടെ താരതമ്യ ടേബിളുകളിൽ തുടർന്നും ദൃശ്യമാകും</translation>
+<translation id="6091115085465716987">Google Wallet ലോഗോ</translation>
 <translation id="6091691259076781835">കൂടുതൽ വേഗത്തിലുള്ള ചെക്കൗട്ടിനായി, നിങ്ങളുടെ ഉപകരണത്തിൽ ഈ CVC സംരക്ഷിക്കുക</translation>
 <translation id="6093599771645355227">മഞ്ഞ 1</translation>
 <translation id="6093795393556121384">നിങ്ങളുടെ കാർഡ് പരിശോധിച്ചുറപ്പിച്ചു</translation>
@@ -3813,6 +3816,7 @@
 <translation id="7057567173736333354">നിങ്ങളുടെ ചിത്രത്തെ കുറിച്ച് വിവരിക്കുക</translation>
 <translation id="7058163556978339998">ഈ വെബ്‌സൈറ്റിന്റെ സർട്ടിഫിക്കറ്റ് <ph name="ISSUER" /> നൽകിയതാണെന്ന് <ph name="BROWSER" /> പരിശോധിച്ചുറപ്പിച്ചു.</translation>
 <translation id="7058774143982824355">CSV പാസ്‌വേഡ് പാർസർ സേവനം</translation>
+<translation id="7062344833049251424">അടുത്ത തവണ വേഗത്തിൽ പേ ചെയ്യാൻ, നിങ്ങളുടെ കാർഡും ബില്ലിംഗ് വിലാസവും Google Wallet-ൽ സംരക്ഷിക്കുക</translation>
 <translation id="706295145388601875">Chrome ക്രമീകരണത്തിൽ വിലാസങ്ങൾ ചേർക്കുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="7063157783216323487">പച്ച 2</translation>
 <translation id="7064443976734085921">കോംപാക്റ്റ് കാറുകൾ</translation>
@@ -4281,6 +4285,7 @@
 <translation id="7754587126786572336">അപ്‌ഡേറ്റ് ചെയ്യാൻ തുടങ്ങുമ്പോൾ, നിങ്ങളുടെ Chrome ടാബുകളും ആപ്പുകളും അടയ്‌ക്കും</translation>
 <translation id="7755287808199759310">നിങ്ങൾക്ക് വേണ്ടി ഇത് അൺബ്ലോക്ക് ചെയ്യാൻ രക്ഷിതാവിന് കഴിയും</translation>
 <translation id="7755624218968747854">പ്രാഥമിക റോൾ</translation>
+<translation id="7756441544371887150">Google Wallet-ൽ ഈ കാർഡ് സംരക്ഷിക്കുമ്പോൾ, Chrome-ൽ നടത്തിയ വാങ്ങലുകൾക്കായി ഇത് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="7758069387465995638">ഫയർവാളോ ആന്റി വൈറസ് സോഫ്‌റ്റ്‌വെയറോ കണക്ഷൻ ബ്ലോക്ക് ചെയ്‌തിട്ടുണ്ടാകാം.</translation>
 <translation id="7759147511335618829">MIDI ഉപകരണ കൺട്രോൾ &amp; റീപ്രോഗ്രാം</translation>
 <translation id="7759809451544302770">ഓപ്‌ഷണൽ</translation>
@@ -5204,6 +5209,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ഇനം}other{# ഇനങ്ങൾ}}</translation>
 <translation id="976522784004777030">5 x 8 ഇഞ്ച്</translation>
 <translation id="977502174772294970">വിവാഹങ്ങൾ</translation>
+<translation id="978750072783101994">Google Wallet-ൽ ഈ കാർഡ് സംരക്ഷിക്കുമ്പോൾ, Chromium-ൽ നടത്തിയ വാങ്ങലുകൾക്കായി ഇത് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="979107176848483472">നിങ്ങളുടെ ബ്രൗസറും പ്രൊഫൈലും മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
 <translation id="979189555234810423">എക്‌പോകളും കൺവെൻഷനുകളും</translation>
 <translation id="979503328401807348">കൂടുതൽ ഉപയോഗപ്രദമായ പരസ്യങ്ങൾ</translation>

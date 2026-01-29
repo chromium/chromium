@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">तुम्ही साइटची डेस्कटॉप आवृत्ती पाहण्याची विनंती करू शकता</translation>
 <translation id="1085696779717592361">बाय डीफॉल्ट Chrome वापरा</translation>
 <translation id="113098737392899175">कीबोर्ड अटॅच केलेला असताना मजकुराचा कर्सर वापरून पेज नेव्हिगेट करा</translation>
+<translation id="1149644372535087155">Chrome मध्ये पासवर्ड सेव्ह करा</translation>
 <translation id="1178015372320901893">माझे शॉर्टकट पेजच्या तळाशी असलेली शीट</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">तृतीय पक्ष कुकीना अनुमती आहे</translation>
 <translation id="1569054338208717605">Chrome चे V8 इंजीन वापरून साइटचा वेग वाढवा, पण Chrome ला हल्ल्यांबाबत किंचित कमी प्रतिरोधक बनवा</translation>
 <translation id="1593426485665524382">स्क्रीनच्या सर्वात वरच्या बाजूच्या जवळ नवीन कृती उपलब्ध आहेत</translation>
+<translation id="1601560923496285236">लागू करा</translation>
 <translation id="1615755956145364867">साइट संरक्षित आशय प्ले करण्यासाठी विचारू शकतात</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1621729191093924223">मायक्रोफोनची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
@@ -171,6 +173,7 @@
 <translation id="2682367912565197520">सेव्ह केलेली झूम पातळी हटवा</translation>
 <translation id="2683434792633810741">हटवायचे आणि रीसेट करायचे आहे का?</translation>
 <translation id="2685514716378236873">अनुमती नसलेल्या</translation>
+<translation id="2710883118091822664">तुमच्या सर्व डिव्हाइसवर सहजपणे पुढे सुरू ठेवण्यासाठी साइन इन करा</translation>
 <translation id="2713106313042589954">कॅमेरा बंद करा</translation>
 <translation id="2717722538473713889">ईमेल ॲड्रेस</translation>
 <translation id="2726059656860238749">ओम्निबॉक्स वर फोकस करून Chrome लाँच करा, ज्याने कमी दर्जाच्या डिव्हाइसवरील स्टार्ट-अप कालावधी कमी होतो.</translation>
@@ -198,6 +201,7 @@
 <translation id="3004438526346162184">साइट हे वैशिष्ट्य वापरून तुमच्या सर्व डिस्प्लेवरील विंडो व्यवस्थापित करण्याची विनंती करू शकतात</translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
 <translation id="301521992641321250">आपोआप ब्लॉक केलेले</translation>
+<translation id="3026311960038210">थीम संग्रह</translation>
 <translation id="3064871050034234884">साइट साउंड प्ले करू शकतात</translation>
 <translation id="3065787901655140044">प्रगत संरक्षण सुरू आहे</translation>
 <translation id="3069226013421428034">विशिष्ट साइटसाठी तृतीय पक्ष साइन-इनला अनुमती द्या.</translation>
@@ -340,6 +344,7 @@
 <translation id="4478158430052450698">वेगवेगळ्या साइटसाठी झूम कस्टमाइझ करणे सोपे करा</translation>
 <translation id="4479647676395637221">साइटना तुमचा कॅमेरा वापरण्याची अनुमती देण्यापूर्वी प्रथम विचारा (शिफारस केलेले)</translation>
 <translation id="4505788138578415521">URL चा विस्तार केला गेला</translation>
+<translation id="4523472416386354622">सुरू करण्यासाठी साइन इन करा</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> ला तुमचा मायक्रोफोन ॲक्सेस करू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील मायक्रोफोन सुरू करा.</translation>
 <translation id="4566417217121906555">मायक्रोफोन म्यूट करा</translation>
 <translation id="4570913071927164677">तपशील</translation>
@@ -396,6 +401,7 @@
 <translation id="512938610812707830">नवीन टॅब पेज स्वरूपाच्या थीम संग्रहांच्या तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="5137460097045297858">Discover फीडच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{तुमच्या उघड्या असलेल्या टॅबवरील कमी झालेली किंमत}other{तुमच्या उघड्या असलेल्या टॅबवरील कमी झालेल्या किमती}}</translation>
+<translation id="5150048675001754041">साइटमध्ये आणि अ‍ॅप्समध्ये झटपट व सहजपणे साइन इन करा</translation>
 <translation id="5186036860380548585">स्क्रीनच्या सर्वात वरती पर्याय उपलब्ध आहे</translation>
 <translation id="5197729504361054390">तुम्ही निवडलेले संपर्क <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />सोबत शेअर केले जातील.</translation>
 <translation id="5198930230016462977">तुमच्या नवीन टॅब पेजच्या तळाशी असलेली शीट कस्टमाइझ करा हे बंद केले आहे</translation>
@@ -523,6 +529,7 @@
 <translation id="6545864417968258051">ब्लूटूथ स्कॅन करत आहे</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" /> ब्लॉक केली}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" /> ब्लॉक केल्या}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> दिवसांपूर्वी शेवटची भेट दिली</translation>
+<translation id="6556866813142980365">पुन्हा करा</translation>
 <translation id="6557290421156335491">माझे शॉर्टकट</translation>
 <translation id="656065428026159829">आणखी पहा</translation>
 <translation id="6561560012278703671">कमी आवाजाचा मेसेज वापरा (तुम्हाला व्यत्यय आणणे थांबवण्यासाठी सूचना ब्लॉक करा)</translation>
@@ -564,6 +571,7 @@
 <translation id="6980861169612950611">साइट डेटा हटवायचा आहे का? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="6991142177939282156">अनुमती दिली आहे • अंदाजे वापरत आहे</translation>
+<translation id="6992014788289743568">तुमचे पासवर्ड तपासून तुमची सुरक्षा मजबूत करा आणि तुमचा डेटा अधिक सुरक्षित ठेवा</translation>
 <translation id="6992289844737586249">साइटना तुमचा मायक्रोफोन वापरण्याची अनुमती देण्यापूर्वी प्रथम विचारा (शिफारस केलेले)</translation>
 <translation id="7000754031042624318">Android सेटिंग्जमध्‍ये बंद केले</translation>
 <translation id="702275896380648118">ही साइट तुमच्या पसंतीच्या गोष्टी निर्धारित करते आणि इतर साइटना जाहिराती सुचवते. तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी, ही साइट Chrome मधून तुमचे जाहिरातीचे विषयदेखील मिळवते.</translation>

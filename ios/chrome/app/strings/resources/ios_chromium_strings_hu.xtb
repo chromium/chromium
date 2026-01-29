@@ -41,9 +41,9 @@
 <translation id="1707458603865303524">Bármikor használhatja a Chromiumot, amikor üzenetekben vagy más alkalmazásokban linkekre kattint.</translation>
 <translation id="1722370509450468186">Jelszavát a rendszer a fiókjába (<ph name="EMAIL" />) menti.</translation>
 <translation id="1747088204252710672">Önnek készült egyéni feed</translation>
-<translation id="1761196287436320018">Elérte a Chromium <ph name="LIMIT" /> könyvjelzős korlátját, ezért egyes könyvjelzőit még nem mentette a rendszer a Google-fiókjába.
+<translation id="1761196287436320018">Elérte a Chromium <ph name="LIMIT" /> könyvjelzőkorlátját, ezért egyes könyvjelzőit még nem mentette a rendszer a Google-fiókjába.
 
-Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most jelentkezik ki, a nem mentett könyvjelzők törlődnek.</translation>
+Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most kijelentkezik, a nem mentett könyvjelzők törlődnek.</translation>
 <translation id="1811860791247653035">A személyre szabás és az egyéb funkciók használatához vegye fel a Chromiumot a következők közé: <ph name="FEATURE_NAME_1" /> és <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="1838412507805038478">A Chromium ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="1839447949248872139">A linkek megnyitása a Chromiumban alapértelmezés szerint</translation>
@@ -132,7 +132,6 @@ A fiókváltás előtt várjon néhány percet. Ha most vált fiókot, akkor eze
 <translation id="3728124580182886854">A Chromium és más Google-szolgáltatások összekapcsolása személyre szabási és egyéb célokból</translation>
 <translation id="377649297473651452">A Chromium automatikus kitöltés funkciójának kibontott nézete</translation>
 <translation id="3780779443901618967">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chromium figyelmeztetéseinek kihagyását.</translation>
-<translation id="3793136096560888222">Kép szerkesztése a Geminivel a Chromiumban</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="3816686541346279443">A Chromium felkínálja a jelszó mentését.</translation>
 <translation id="3827545470516145620">Normál biztonsági védelemben részesül ezen az eszközön</translation>

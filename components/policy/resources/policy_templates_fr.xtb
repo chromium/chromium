@@ -9456,17 +9456,6 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 Si cette règle est activée, la fonctionnalité Kerberos l'est aussi. Des comptes Kerberos peuvent être ajoutés à l'aide de la règle "Configurer les comptes Kerberos" ou via les paramètres de comptes Kerberos sur la page "Paramètres Kerberos".
 
 Si cette règle est désactivée ou n'est pas configurée, les paramètres de comptes Kerberos sont désactivés. Aucun compte Kerberos ne peut être ajouté, et l'authentification Kerberos ne peut pas être utilisée. Les comptes Kerberos déjà créés et les mots de passe enregistrés sont tous supprimés.</translation>
-<translation id="7273266646672521061">Liste de formats d'URL. Les requêtes d‘<ph name="LOCAL_NETWORK_ACCESS" /> initiées à partir de sites desservis par des origines qui figurent sur la liste sont bloquées.
-
-Si une origine est couverte à la fois par cette règle et par LocalNetworkAccessAllowedForUrls, la présente règle prévaut.
-
-Selon le stade de déploiement de l‘<ph name="LOCAL_NETWORK_ACCESS" />, il peut aussi être nécessaire d'activer LocalNetworkAccessRestrictionsEnabled pour que cette règle bloque les requêtes d‘<ph name="LOCAL_NETWORK_ACCESS" />.
-
-Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.
-
-Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.</translation>
 <translation id="7273785848231509306">Ne jamais afficher le nom ni la photo des utilisateurs</translation>
 <translation id="7274077256421167535">Activer le partage d'alimentation USB</translation>
 <translation id="7275334191706090484">Favoris gérés</translation>
@@ -9501,7 +9490,6 @@ Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, 
 
       Cette règle ne s'applique qu'aux appareils ARM migrant vers ARCVM.</translation>
 <translation id="731208205557053914">Transmettre des informations sur les données VPD</translation>
-<translation id="7312630060538223455">Autoriser les sites à envoyer des requêtes à des points de terminaison du réseau local.</translation>
 <translation id="7313672174502374994">Hachage SHA-256 du fond d'écran.</translation>
 <translation id="7317472245305274219">Contrôler si la création de clés d'accès se fera par défaut dans le trousseau iCloud.</translation>
 <translation id="7318503436349210241">Activé : le zoom CSS suit la spécification standard.</translation>
@@ -10511,15 +10499,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="8031651557770840616">Ne pas autoriser le fond d'écran par IA générative</translation>
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8038007682032315784">Désactiver <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sur toutes les pages Web</translation>
-<translation id="8038781335960215878">Liste de formats d'URL. Les requêtes initiées à partir de sites desservis par des origines qui figurent sur la liste ne sont pas soumises aux contrôles d‘<ph name="LOCAL_NETWORK_ACCESS" />.
-
-Si une origine est couverte à la fois par cette règle et par LocalNetworkAccessBlockedForUrls, cette dernière prévaut.
-
-Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.
-
-Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
 <translation id="8044943551137872312">Cette règle peut être utilisée pour autoriser les <ph name="CHROME_DEVTOOLS_NAME" /> sur des URL spécifiques.
 
@@ -10930,7 +10909,6 @@ Si cette règle n'est pas configurée, la commande par le visage est désactivé
 
        La valeur de cette règle est définie en millisecondes.</translation>
 <translation id="8330437518362176921">N'utiliser que l'URL de mise à jour fournie par la règle pour télécharger et mettre à jour les applis Chrome Kiosk</translation>
-<translation id="8331421240786531350">Empêcher les sites d'envoyer des requêtes à des points de terminaison du réseau local.</translation>
 <translation id="8331479227794770304">Activer les touches rémanentes</translation>
 <translation id="8332822245414537447">Désactiver la vérification de l'utilisation des clés RSA</translation>
 <translation id="8333141477131859004">Autoriser la saisie automatique améliorée et améliorer les modèles d'IA.</translation>

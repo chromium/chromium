@@ -2575,6 +2575,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2724841811573117416">Registros de WebRTC</translation>
 <translation id="272488616838512378">Conversión de unidades</translation>
 <translation id="2725200716980197196">Conexión de red restaurada</translation>
+<translation id="2725312032345042618">Historial de eventos</translation>
 <translation id="2726776862643824793">reducir el brillo de la pantalla</translation>
 <translation id="272741954544380994">Buscar imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">No volver a recordármelo</translation>
@@ -2916,6 +2917,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2950666755714083615">Registrarme</translation>
 <translation id="2953210795988451570">Este dispositivo no recibirá más actualizaciones de seguridad. Cambia a un nuevo Chromebook.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> no tiene permiso para enviar notificaciones. Se te volverá a preguntar la próxima vez que visites el sitio.</translation>
+<translation id="2954777802959138493">No se ha podido consultar el estado de la herramienta de actualización.</translation>
 <translation id="2955048943983973430">Servicios de Google relacionados</translation>
 <translation id="2956070239128776395">Sección anidada dentro de un grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Activa el modo Desarrollador para usar esta extensión, que Chrome Web Store no puede revisar.</translation>
@@ -3650,6 +3652,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3469583217479686109">Herramienta de selección</translation>
+<translation id="3471687177769494956">Editar combinación de teclas de navegación</translation>
 <translation id="3471876058939596279">No se pueden usar los puertos HDMI y USB tipo C para vídeo al mismo tiempo. Usa otro puerto de vídeo.</translation>
 <translation id="3472469028191701821">Se abre en una nueva pestaña</translation>
 <translation id="3473241910002674503">Desplázate al menú de aplicaciones, vuelve atrás y cambia de aplicación con botones en el modo tablet.</translation>
@@ -7082,6 +7085,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5828181959764767444">Atardecer</translation>
 <translation id="5828545842856466741">Añadir perfil...</translation>
 <translation id="5828633471261496623">Imprimiendo...</translation>
+<translation id="5829544019044013776">Tus métodos de pago en Google Wallet</translation>
 <translation id="5830205393314753525">No se puede abrir <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Tu contraseña está cifrada y nadie la puede ver</translation>
 <translation id="5830720307094128296">Guardar página &amp;como...</translation>
@@ -7647,6 +7651,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6212168817037875041">Apagar la pantalla</translation>
 <translation id="6212752530110374741">Enviar enlace por correo electrónico</translation>
 <translation id="6214106213498203737">Acuarela</translation>
+<translation id="6214157047210274853">Editar en Google Wallet</translation>
 <translation id="621470880408090483">No permitir que los sitios se conecten a dispositivos Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Para proteger tus contraseñas, <ph name="BRAND" /> se bloquea después de 1 minuto de inactividad}other{Para proteger tus contraseñas, <ph name="BRAND" /> se bloquea después de # minutos de inactividad}}</translation>
 <translation id="6216154119179790291">Desplazarte a la primera pestaña</translation>
@@ -9117,6 +9122,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7243092385765551741">¿Eliminar llave de acceso?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (recomendado)</translation>
 <translation id="7246230585855757313">Vuelve a introducir la llave de seguridad e inténtalo de nuevo.</translation>
+<translation id="7248671827512403053">Aplicación</translation>
 <translation id="7249197363678284330">Cambia este ajuste en la barra de direcciones.</translation>
 <translation id="7249764475759804559">Incluir esta aplicación como opción al abrir archivos</translation>
 <translation id="7249885578105575587">Preguntar a Google sobre esta pestaña: <ph name="TAB_TITLE" /></translation>
@@ -11292,6 +11298,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8703346390800944767">Saltar anuncio</translation>
 <translation id="8703372953981978786">Este enlace no funciona</translation>
 <translation id="8703766890819308134">Mostrar atajos de búsqueda</translation>
+<translation id="8704248383043944131">Editar combinación de teclas</translation>
 <translation id="8704662571571150811">Dominios</translation>
 <translation id="8705331520020532516">Número de serie</translation>
 <translation id="870536819717176711">Cuando decides compartir la pestaña actual con Gemini, el contenido completo, el contenido multimedia y la URL de la pestaña se envían a Google.</translation>
@@ -11612,6 +11619,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8911914282056933784">Ocultar proyectos</translation>
 <translation id="8912362522468806198">cuenta de Google</translation>
 <translation id="8912810933860534797">Habilitar búsqueda automática</translation>
+<translation id="8913485523736543337">Herramienta de actualización</translation>
 <translation id="8914030287343429787">Consulta tus contraseñas aunque no estés usando Chrome ni Android iniciando sesión en <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8915307125957890427">Haz clic con el botón derecho en una pestaña y selecciona "Añadir pestaña al grupo" &gt; "Nuevo grupo"</translation>
@@ -11752,6 +11760,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8999560016882908256">Error de sintaxis de sección: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Movimiento reducido en la pantalla</translation>
 <translation id="9000185763019430629">Toca el sensor de huellas digitales, que está en el lado derecho de tu <ph name="DEVICE_TYPE" />. Los datos de tu huella digital se almacenan de forma segura y nunca salen de tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">No se ha podido encontrar ninguna instalación de la herramienta de actualización.</translation>
 <translation id="900267527532832868">Esta llave de acceso ya no funciona. Pronto se eliminará de <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Introduce el dígito <ph name="NUM_DIGIT" /> del PIN de 6 dígitos. Usa la tecla de retroceso o de eliminar para borrar el último dígito.</translation>
 <translation id="9003185744423389627">La conexión con el servidor de administración de dispositivos ha fallado con el estado "<ph name="STATUS_TEXT" />" a las <ph name="FAILURE_TIME" /></translation>

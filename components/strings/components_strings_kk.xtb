@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">Password Manager қызметін macOS кілттер тізбегімен бірге пайдалану үшін Chromium-ді қайта іске қосып, кілттер тізбегін пайдалануға рұқсат беріңіз. Қайта іске қосқаннан кейін, қойындылар қайта ашылады.</translation>
 <translation id="1652887625750064647">AI үздік сәйкестігі</translation>
 <translation id="1653465303147789530">Басқа қолданбаларға ауыспай-ақ <ph name="PAYMENT_METHOD" /> арқылы төлеңіз</translation>
+<translation id="1655159794885649984">Бұл сайтта контентті сүйреуге рұқсат етілмейді</translation>
 <translation id="1656024727720460136">Chrome бұл режимде беттің оқылуын жеңілдетті. Chrome бастапқы бетті қауіпсіз байланыс арқылы алды.</translation>
 <translation id="1656489000284462475">Алып кету</translation>
 <translation id="1658111267661135323">Теледидар және бейне</translation>
@@ -1677,6 +1678,7 @@
 <translation id="365641980390710834">Күнделікті киім</translation>
 <translation id="3658742229777143148">Қарап шығу</translation>
 <translation id="3659521826520353662">Әкімшілер белгілейтін мына веб-сайттарға біреу кіргені және қашан кіргені: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Бұл IBAN нөмірі Google Wallet-ке сақталды. Енді оны Google қызметтерінде пайдалануға болады.</translation>
 <translation id="3664479564786885722">Осы тауар сатылатын басқа дүкендердегі көбірек сатып алу опциясын іздеу.</translation>
 <translation id="3664782872746246217">Кілтсөздер:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Толық ақпарат<ph name="LINK_END1" /></translation>
@@ -3197,6 +3199,7 @@
 <translation id="6085149458302186532">Белгілер (түрлі түсті)</translation>
 <translation id="6087312102907839798">Ұқсас іздеу сұраулары</translation>
 <translation id="6089505343295765444">Chrome тарихынан өшірілетін қойындылар салыстыру кестелерінде көрсетіле береді.</translation>
+<translation id="6091115085465716987">Google Wallet логотипі</translation>
 <translation id="6091691259076781835">Жылдамырақ төлеу үшін осы CVC кодын құрылғыңызға сақтаңыз.</translation>
 <translation id="6093599771645355227">Сары 1</translation>
 <translation id="6093795393556121384">Картаңыз расталды</translation>
@@ -3813,6 +3816,7 @@
 <translation id="7057567173736333354">Суретті сипаттаңыз.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> браузері <ph name="ISSUER" /> осы веб-сайттың сертификатын шығарғанын растады.</translation>
 <translation id="7058774143982824355">CSV құпия сөзін талдау қызметі</translation>
+<translation id="7062344833049251424">Келесі жолы жылдамырақ төлеу үшін картаңызды және төлем мекенжайын Google Wallet-ке сақтаңыз.</translation>
 <translation id="706295145388601875">Chrome параметрлері арқылы мекенжайларды қосу және басқару</translation>
 <translation id="7063157783216323487">Жасыл 2</translation>
 <translation id="7064443976734085921">Шағын көліктер</translation>
@@ -4282,6 +4286,7 @@
 <translation id="7754587126786572336">Жаңарту басталған кезде, Chrome қойындылары мен қолданбалары жабылады</translation>
 <translation id="7755287808199759310">Ата-анаңыз оны сіз үшін бөгеуден шығара алады</translation>
 <translation id="7755624218968747854">Негізгі орам</translation>
+<translation id="7756441544371887150">Бұл карта Google Wallet-ке сақталса, Chrome-дағы сатып алу транзакцияларында автоматты түрде толтырылады.</translation>
 <translation id="7758069387465995638">Брандмауэр немесе вирусқа қарсы бағдарламалық құрал байланысты бөгеп қойған болуы мүмкін.</translation>
 <translation id="7759147511335618829">MIDI басқару/қайта бағдарламалау</translation>
 <translation id="7759809451544302770">Қосымша</translation>
@@ -5204,6 +5209,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{Жоқ}=1{1 элемент}other{# элемент}}</translation>
 <translation id="976522784004777030">5 x 8 дюйм</translation>
 <translation id="977502174772294970">Үйлену тойлары</translation>
+<translation id="978750072783101994">Бұл карта Google Wallet-ке сақталса, Chromium-дегі сатып алу транзакцияларында автоматты түрде толтырылады.</translation>
 <translation id="979107176848483472">Браузеріңіз бен профиліңізді <ph name="DOMAIN" /> басқарады</translation>
 <translation id="979189555234810423">Көрмелер және келісімдер</translation>
 <translation id="979503328401807348">Пайдасы көбірек жарнамалар</translation>

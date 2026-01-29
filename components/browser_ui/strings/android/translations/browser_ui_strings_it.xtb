@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Sono consentiti i cookie di terze parti</translation>
 <translation id="1569054338208717605">Accelera i siti con il motore V8 di Chrome, ma rendi Chrome leggermente meno resistente agli attacchi</translation>
 <translation id="1593426485665524382">Nuove azioni disponibili vicino alla parte superiore dello schermo</translation>
+<translation id="1601560923496285236">Applica</translation>
 <translation id="1615755956145364867">I siti possono chiedere di riprodurre contenuti protetti</translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1621729191093924223">Le funzionalità che richiedono un microfono non funzioneranno</translation>
@@ -523,6 +524,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ultima visita: <ph name="NUM_DAYS" /> giorni fa</translation>
+<translation id="6556866813142980365">Ripeti</translation>
 <translation id="6557290421156335491">Le mie scorciatoie</translation>
 <translation id="656065428026159829">Mostra altri</translation>
 <translation id="6561560012278703671">Usa messaggi più discreti (impedisce alle notifiche di disturbarti)</translation>

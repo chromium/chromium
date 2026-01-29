@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Երրորդ կողմի քուքիները թույլատրված են</translation>
 <translation id="1569054338208717605">Բարձրացնել կայքերի արագագործությունը Chrome-ի V8 համակարգով (Chrome-ի պաշտպանությունը հարձակումներից թեթևակի թուլանում է)</translation>
 <translation id="1593426485665524382">Նոր գործողությունները հասանելի են էկրանի վերին մասում</translation>
+<translation id="1601560923496285236">Կիրառել</translation>
 <translation id="1615755956145364867">Կայքերը կարող են պաշտպանված բովանդակություն նվագարկելու թույլտվություն հայցել</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1621729191093924223">Գործառույթները, որոնց համար պահանջվում է խոսափողը, չեն աշխատի</translation>
@@ -523,6 +524,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="6554732001434021288">Վերջին այցելությունը՝ <ph name="NUM_DAYS" /> օր առաջ</translation>
+<translation id="6556866813142980365">Կրկնել</translation>
 <translation id="6557290421156335491">Իմ դյուրանցումները</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6561560012278703671">Օգտագործել ավելի հանգիստ հաղորդագրություններ (արգելափակում է շեղող ծանուցումները)</translation>

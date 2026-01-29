@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS Keychain का सहायताले पासवर्ड म्यानेजर प्रयोग गर्न Chromium रिलन्च गर्नुहोस् र Keychain प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="1652887625750064647">AI मा आधारित उत्कृष्ट सुझाव</translation>
 <translation id="1653465303147789530">एपहरू अदलबदल नगरिकनै <ph name="PAYMENT_METHOD" /> मार्फत भुक्तानी गर्नुहोस्</translation>
+<translation id="1655159794885649984">यो साइटमा कन्टेन्ट ड्र्याग गर्न मिल्दैन</translation>
 <translation id="1656024727720460136">Chrome ले यो पृष्ठ पढ्न अझ सजिलो बनाउन यसलाई सरलीकृत गर्‍यो। Chrome ले एउटा सुरक्षित इन्टरनेटमार्फत मूल पृष्ठ पुनः प्राप्त गर्‍यो।</translation>
 <translation id="1656489000284462475">पिकअप</translation>
 <translation id="1658111267661135323">टिभी तथा भिडियो</translation>
@@ -1675,6 +1676,7 @@
 <translation id="365641980390710834">क्याजुअल लुगा</translation>
 <translation id="3658742229777143148">संशोधन</translation>
 <translation id="3659521826520353662">एड्मिनले तोकेका कुन-कुन वेबसाइटहरू हेरिएका छन् र कहिले हेरिएका छन्: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">तपाईं Google का विभिन्न सेवाहरूमा यो IBAN प्रयोग गर्न सक्नुहोस् भन्नाका लागि यसलाई Google Wallet मा सेभ गरिएको छ।</translation>
 <translation id="3664479564786885722">यो उत्पादन बिक्री गर्ने अन्य स्टोरमा खरिद गर्ने थप विकल्पहरू खोज्नुहोस्।</translation>
 <translation id="3664782872746246217">किवर्डहरू:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="LINK_END1" /></translation>
@@ -3196,6 +3198,7 @@
 <translation id="6085149458302186532">लेबल (रङ्गीन)</translation>
 <translation id="6087312102907839798">सम्बन्धित खोजहरू</translation>
 <translation id="6089505343295765444">तपाईंले आफ्नो Chrome हिस्ट्रीबाट मेटाउने ट्याबहरू तुलनात्मक जानकारी भएका तपाईंका तालिकाहरूमा देखिइरहने छन्</translation>
+<translation id="6091115085465716987">Google Wallet को लोगो</translation>
 <translation id="6091691259076781835">अझ छिटो चेकआउट गर्न यो CVC आफ्नो डिभाइसमा सेभ गर्नुहोस्</translation>
 <translation id="6093599771645355227">पहेँलो १</translation>
 <translation id="6093795393556121384">तपाईँको कार्ड प्रमाणीकरण गरियो</translation>
@@ -3812,6 +3815,7 @@
 <translation id="7057567173736333354">आफ्नो फोटोका बारेमा वर्णन गर्नुहोस्</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ले यस वेबसाइटको सर्टिफिकेट <ph name="ISSUER" /> ले जारी गरेको हो भन्ने कुरा पुष्टि गरेको छ।</translation>
 <translation id="7058774143982824355">CSV पासवर्ड पार्सर सेवा</translation>
+<translation id="7062344833049251424">अर्को पटक अझ छिटो भुक्तानी गर्न Google Wallet मा आफ्नो कार्ड तथा बिलिङ ठेगाना सेभ गर्नुहोस्</translation>
 <translation id="706295145388601875">Chrome का सेटिङमा गई ठेगानाहरू थप्नुहोस् तथा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7063157783216323487">हरियो २</translation>
 <translation id="7064443976734085921">सानो आकारका कारहरू</translation>
@@ -4281,6 +4285,7 @@
 <translation id="7754587126786572336">अपडेट सुरु भएपछि तपाईंका Chrome ट्याब तथा एपहरू बन्द हुने छन्</translation>
 <translation id="7755287808199759310">तपाईंको अभिभावकले तपाईंको रोक हटाउन सक्नुहुन्छ</translation>
 <translation id="7755624218968747854">मुख्य रोल</translation>
+<translation id="7756441544371887150">यो कार्डको विवरण Google Wallet मा सेभ गरिएका खण्डमा Chrome बाट गरिने खरिदका हकमा सो विवरण स्वतः भरिन्छ</translation>
 <translation id="7758069387465995638">फायरवाल वा एन्टिभाइरस सफ्टवेयरले जडानमाथि रोक लगाएको हुनसक्छ।</translation>
 <translation id="7759147511335618829">MIDI डिभाइस कन्ट्रोल र रिप्रोग्राम</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
@@ -5204,6 +5209,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{कुनै पनि होइन}=1{१ वस्तु}other{# वस्तुहरू}}</translation>
 <translation id="976522784004777030">५ x ८ इन्च</translation>
 <translation id="977502174772294970">विवाहसम्बन्धी सेवाहरू</translation>
+<translation id="978750072783101994">यो कार्डको विवरण Google Wallet मा सेभ गरिएका खण्डमा Chromium बाट गरिने खरिदका हकमा सो विवरण स्वतः भरिन्छ</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" /> ले तपाईंका ब्राउजर र प्रोफाइल व्यवस्थापन गर्छ</translation>
 <translation id="979189555234810423">एक्स्पो तथा कन्भेन्सनहरू</translation>
 <translation id="979503328401807348">थप उपयोगी विज्ञापनहरू</translation>

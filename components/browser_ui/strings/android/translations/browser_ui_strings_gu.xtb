@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">તમે સાઇટના ડેસ્કટૉપ વર્ઝન જોવાનું પૂછી શકો છો</translation>
 <translation id="1085696779717592361">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="113098737392899175">જ્યારે કીબોર્ડ જોડેલું હોય, ત્યારે કોઈ ટેક્સ્ટ કર્સર વડે પેજ નૅવિગેટ કરો</translation>
+<translation id="1149644372535087155">Chromeમાં પાસવર્ડ સાચવો</translation>
 <translation id="1178015372320901893">મારા શૉર્ટકટની બોટમ શીટ</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">ત્રીજા પક્ષની કુકીને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="1569054338208717605">Chromeના V8 એન્જિન વડે સાઇટની ગતિ વધારો, પણ Chromeને અટૅક પ્રતિ થોડું ઓછું પ્રતિરોધક બનાવો</translation>
 <translation id="1593426485665524382">સ્ક્રીનમાં સૌથી ઉપરની નજીક ક્રિયાઓ ઉપલબ્ધ છે</translation>
+<translation id="1601560923496285236">લાગુ કરો</translation>
 <translation id="1615755956145364867">સાઇટ, તમને સંરક્ષિત કન્ટેન્ટ ચલાવવાનું પૂછી શકે છે</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1621729191093924223">માઇક્રોફોનની આવશ્યકતા હોય તેવી સુવિધાઓ કાર્ય નહીં કરે</translation>
@@ -171,6 +173,7 @@
 <translation id="2682367912565197520">સાચવેલું ઝૂમ લેવલ ડિલીટ કરો</translation>
 <translation id="2683434792633810741">ડિલીટ કરીને રીસેટ કરીએ?</translation>
 <translation id="2685514716378236873">મંજૂરી નથી</translation>
+<translation id="2710883118091822664">તમારા બધા ડિવાઇસ પર સરળતાથી ચાલુ રાખવા માટે સાઇન ઇન કરો</translation>
 <translation id="2713106313042589954">કૅમેરા બંધ કરો</translation>
 <translation id="2717722538473713889">ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="2726059656860238749">ઑમ્નિબૉક્સ પર ફોકસ રાખીને Chrome લૉન્ચ કરો, જેનાથી સામાન્ય સુવિધા ધરાવતા ડિવાઇસનો સ્ટાર્ટ-અપ સમય ઘટે છે.</translation>
@@ -198,6 +201,7 @@
 <translation id="3004438526346162184">સાઇટ આ સુવિધાનો ઉપયોગ તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરવા માટે કરી શકે છે</translation>
 <translation id="3008272652534848354">પરવાનગીઓ રીસેટ કરો</translation>
 <translation id="301521992641321250">ઑટોમૅટિક રીતે બ્લૉક થયું</translation>
+<translation id="3026311960038210">થીમના સંગ્રહો</translation>
 <translation id="3064871050034234884">સાઇટ સાઉન્ડ વગાડી શકે છે</translation>
 <translation id="3065787901655140044">અદ્યતન સુરક્ષા ચાલુ છે</translation>
 <translation id="3069226013421428034">ચોક્કસ સાઇટ માટે ત્રીજા પક્ષ દ્વારા સાઇન-ઇનને મંજૂરી આપો.</translation>
@@ -340,6 +344,7 @@
 <translation id="4478158430052450698">વિવિધ સાઇટ માટે "નાનું-મોટું કરો"ને કસ્ટમાઇઝ કરવાનું સરળ બનાવો</translation>
 <translation id="4479647676395637221">સાઇટને તમારા કૅમેરાના ઉપયોગની મંજૂરી આપતાં પહેલાં પૂછો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="4505788138578415521">URL મોટી કરી છે</translation>
+<translation id="4523472416386354622">શરૂ કરવા માટે સાઇન ઇન કરો</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> તમારું માઇક્રોફોન ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ માઇક્રોફોન ચાલુ કરો.</translation>
 <translation id="4566417217121906555">માઇક્રોફોન મ્યૂટ કરો</translation>
 <translation id="4570913071927164677">વિગતો</translation>
@@ -396,6 +401,7 @@
 <translation id="512938610812707830">નવા ટૅબ પેજના દેખાવની થીમના સંગ્રહોની બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
 <translation id="5137460097045297858">Discover ફીડની બોટમ શીટ અડધી ઊંચાઈએ ખૂલી ગઈ છે</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો}one{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો}other{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડા}}</translation>
+<translation id="5150048675001754041">સાઇટ અને ઍપમાં ઝડપથી અને સરળતાથી સાઇન ઇન કરો</translation>
 <translation id="5186036860380548585">સ્ક્રીનની ટોચની નજીક વિકલ્પ ઉપલબ્ધ છે</translation>
 <translation id="5197729504361054390">તમે પસંદ કરશો તે સંપર્કોને <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> સાથે શેર કરવામાં આવશે.</translation>
 <translation id="5198930230016462977">'તમારું નવું ટૅબ પેજ કસ્ટમાઇઝ કરો'ની બોટમ શીટ બંધ કરી</translation>
@@ -523,6 +529,7 @@
 <translation id="6545864417968258051">બ્લૂટૂથ સ્કૅનિંગ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}}</translation>
 <translation id="6554732001434021288">છેલ્લે <ph name="NUM_DAYS" /> દિવસ પહેલાં મુલાકાત લીધી</translation>
+<translation id="6556866813142980365">ફરી કરો</translation>
 <translation id="6557290421156335491">મારા શૉર્ટકટ</translation>
 <translation id="656065428026159829">વધુ જુઓ</translation>
 <translation id="6561560012278703671">ગુપચુપ મેસેજિંગનો ઉપયોગ કરો (તમને ખલેલ પહોંચાડે તેવા નોટિફિકેશન સંકેતોને બ્લૉક કરે છે)</translation>
@@ -564,6 +571,7 @@
 <translation id="6980861169612950611">શું સાઇટનો ડેટા ડિલીટ કરીએ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
 <translation id="6991142177939282156">મંજૂરી આપી • અંદાજિત લોકેશનનો ઉપયોગ કરી રહ્યાં છીએ</translation>
+<translation id="6992014788289743568">તમારા પાસવર્ડ ચેક કરીને તમારી સુરક્ષા સશક્ત બનાવો અને તમારા ડેટાને વધુ સલામત રાખો</translation>
 <translation id="6992289844737586249">સાઇટને તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી આપતાં પહેલા પૂછો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="7000754031042624318">Android સેટિંગમાં પરવાનગી બંધ કરી છે</translation>
 <translation id="702275896380648118">તમને ગમતી બાબતો વિશે આ સાઇટ અનુમાન લગાવે છે અને પછી અન્ય સાઇટને જાહેરાતો સૂચવે છે. તમને વધુ સંબંધિત જાહેરાતો બતાવવા માટે, આ સાઇટ Chromeમાંથી જાહેરાતના તમારા વિષયોની માહિતી પણ મેળવે છે.</translation>

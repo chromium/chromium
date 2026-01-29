@@ -2576,6 +2576,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2724841811573117416">Journaux WebRTC</translation>
 <translation id="272488616838512378">Conversion d'unités</translation>
 <translation id="2725200716980197196">La connectivité réseau a été rétablie</translation>
+<translation id="2725312032345042618">Historique des événements</translation>
 <translation id="2726776862643824793">diminuer la luminosité de l'écran</translation>
 <translation id="272741954544380994">Rechercher une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne pas me le rappeler</translation>
@@ -2918,6 +2919,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2950666755714083615">Je m'inscris</translation>
 <translation id="2953210795988451570">Les mises à jour de sécurité ont cessé. Passez à un nouveau Chromebook.</translation>
 <translation id="2953218713108551165">Les notifications ne sont pas autorisées pour <ph name="SITE" />. Une autorisation vous sera demandée à nouveau lors de votre prochaine visite.</translation>
+<translation id="2954777802959138493">Échec de la requête sur l'état de l'outil de mise à jour.</translation>
 <translation id="2955048943983973430">Services Google connexes</translation>
 <translation id="2956070239128776395">Section imbriquée dans le groupe : <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Activez le mode Développeur pour utiliser cette extension, qui ne peut pas être examinée par la boutique en ligne Chrome Web Store.</translation>
@@ -3652,6 +3654,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3468298837301810372">Étiquette</translation>
 <translation id="3468999815377931311">Téléphone Android</translation>
 <translation id="3469583217479686109">Sélection</translation>
+<translation id="3471687177769494956">Modifier le raccourci de navigation</translation>
 <translation id="3471876058939596279">Les ports HDMI et USB de type C ne peuvent pas être utilisés simultanément pour la sortie vidéo. Utilisez un port vidéo différent.</translation>
 <translation id="3472469028191701821">S'ouvre dans un nouvel onglet</translation>
 <translation id="3473241910002674503">Naviguer vers l'écran d'accueil ou vers l'arrière et basculer entre les applications grâce aux boutons en mode tablette.</translation>
@@ -7085,6 +7088,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5828181959764767444">Coucher de soleil</translation>
 <translation id="5828545842856466741">Ajouter un profil…</translation>
 <translation id="5828633471261496623">Impression...</translation>
+<translation id="5829544019044013776">Vos modes de paiement dans Google Portefeuille</translation>
 <translation id="5830205393314753525">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Votre mot de passe est chiffré et n'est jamais vu par personne</translation>
 <translation id="5830720307094128296">Enregistrer la p&amp;age sous…</translation>
@@ -7650,6 +7654,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6212168817037875041">Désactiver l'écran</translation>
 <translation id="6212752530110374741">Envoyer le lien par courriel</translation>
 <translation id="6214106213498203737">Aquarelle</translation>
+<translation id="6214157047210274853">Modifiez les informations dans Google Portefeuille</translation>
 <translation id="621470880408090483">Ne pas autoriser les sites à se connecter à des appareils Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après 1 minute d'inactivité}one{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minute d'inactivité}other{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minutes d'inactivité}}</translation>
 <translation id="6216154119179790291">Faire défiler jusqu'au premier onglet</translation>
@@ -9121,6 +9126,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7243092385765551741">Supprimer la clé d'accès?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Meilleure résolution)</translation>
 <translation id="7246230585855757313">Réinsérez votre clé de sécurité, puis réessayez</translation>
+<translation id="7248671827512403053">Application</translation>
 <translation id="7249197363678284330">Modifiez ce paramètre dans la barre d'adresse.</translation>
 <translation id="7249764475759804559">Inclure cette application comme option lors de l'ouverture de fichiers</translation>
 <translation id="7249885578105575587">Poser une question à Google à propos de cet onglet : <ph name="TAB_TITLE" /></translation>
@@ -11295,6 +11301,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8703346390800944767">Ignorer l'annonce</translation>
 <translation id="8703372953981978786">Ce lien ne fonctionne pas</translation>
 <translation id="8703766890819308134">Afficher les raccourcis de recherche</translation>
+<translation id="8704248383043944131">Modifier le raccourci-clavier</translation>
 <translation id="8704662571571150811">Domaines</translation>
 <translation id="8705331520020532516">Numéro de série</translation>
 <translation id="870536819717176711">Lorsque vous choisissez de partager l'onglet actuel avec Gemini, le contenu complet, les éléments multimédias et l'URL de l'onglet sont envoyés à Google.</translation>
@@ -11615,6 +11622,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8911914282056933784">Masquer les projets</translation>
 <translation id="8912362522468806198">Compte Google</translation>
 <translation id="8912810933860534797">Activer l'analyse automatique</translation>
+<translation id="8913485523736543337">Outil de mise à jour</translation>
 <translation id="8914030287343429787">Affichez vos mots de passe même lorsque vous n'utilisez pas Chrome ni Android en vous connectant à <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8915307125957890427">Faites un clic droit sur un onglet et sélectionnez « Ajouter un onglet au groupe », puis « Nouveau groupe »</translation>
@@ -11755,6 +11763,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8999560016882908256">Erreur de syntaxe de section : <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Mouvement réduit sur l'écran</translation>
 <translation id="9000185763019430629">Touchez le capteur d'empreintes digitales sur le côté droit de votre <ph name="DEVICE_TYPE" />. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">Aucune installation de l'outil de mise à jour n'a pu être trouvée.</translation>
 <translation id="900267527532832868">Cette clé d'accès ne fonctionne plus. Elle sera bientôt supprimée du <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Entrer le chiffre <ph name="NUM_DIGIT" /> sur 6 du NIP. Utilisez la touche retour arrière ou supprimer pour retirer le dernier chiffre.</translation>
 <translation id="9003185744423389627">La connexion au serveur de gestion des appareils a échoué avec l'état « <ph name="STATUS_TEXT" /> » à <ph name="FAILURE_TIME" /></translation>

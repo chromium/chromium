@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS Keychain உடன் Password Managerரைப் பயன்படுத்த, Chromiumமை மீண்டும் தொடங்கி Keychain அணுகலை வழங்கவும். மீண்டும் தொடங்கியதும் உங்கள் உலாவிப் பக்கங்கள் மீண்டும் திறக்கும்.</translation>
 <translation id="1652887625750064647">பொருத்தமான AI பரிந்துரை</translation>
 <translation id="1653465303147789530">ஆப்ஸிற்கு இடையே மாறாமல் <ph name="PAYMENT_METHOD" /> மூலம் பணம் செலுத்துங்கள்</translation>
+<translation id="1655159794885649984">இந்தத் தளத்தில் உள்ளடக்கத்தை இழுத்து விடுவது அனுமதிக்கப்படவில்லை</translation>
 <translation id="1656024727720460136">சுலபமாகப் படிப்பதற்கு ஏற்றவகையில் Chrome இந்தப் பக்கத்தை எளிதாக்கியுள்ளது. பாதுகாப்பான இணைப்பின் மூலம் அசல் பக்கத்தை Chrome மீட்டெடுத்தது.</translation>
 <translation id="1656489000284462475">பிக்கப்</translation>
 <translation id="1658111267661135323">டிவி &amp; வீடியோ</translation>
@@ -1674,6 +1675,7 @@
 <translation id="365641980390710834">கேஷுவல் ஆடைகள்</translation>
 <translation id="3658742229777143148">மீள்திருத்தங்கள்</translation>
 <translation id="3659521826520353662">பார்வையிடப்பட்ட ‘நிர்வாகி-வரையறுத்த’ இணையதளங்களும், அவை பார்வையிடப்பட்ட நேரங்களும்: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">இந்த IBAN Google Walletடில் சேமிக்கப்பட்டுள்ளதால் Google சேவைகள் முழுவதிலும் இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="3664479564786885722">இந்தத் தயாரிப்பை விற்கும் பிற ஸ்டோர்களில் உள்ள கூடுதல் வாங்குதல் விருப்பங்களைத் தேடும்.</translation>
 <translation id="3664782872746246217">தேடல் குறிப்புகள்:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />மேலும் அறிக<ph name="LINK_END1" /></translation>
@@ -3194,6 +3196,7 @@
 <translation id="6085149458302186532">வண்ண லேபிள்கள்</translation>
 <translation id="6087312102907839798">தொடர்புடைய தேடல்கள்</translation>
 <translation id="6089505343295765444">உங்கள் Chrome செயல்பாடுகளில் இருந்து நீங்கள் நீக்கும் பக்கங்கள் ஒப்பீட்டு அட்டவணைகளில் தொடர்ந்து காட்டப்படும்</translation>
+<translation id="6091115085465716987">Google Wallet லோகோ</translation>
 <translation id="6091691259076781835">விரைவான செக்-அவுட்டிற்கு, உங்கள் சாதனத்தில் இந்த CVCயைச் சேமியுங்கள்</translation>
 <translation id="6093599771645355227">மஞ்சள் 1</translation>
 <translation id="6093795393556121384">கார்டு சரிபார்க்கப்பட்டது</translation>
@@ -3809,6 +3812,7 @@
 <translation id="7057567173736333354">உங்கள் படத்தை விவரியுங்கள்</translation>
 <translation id="7058163556978339998">இந்த இணையதளத்தின் சான்றிதழை <ph name="ISSUER" /> வழங்கியதா என <ph name="BROWSER" /> சரிபார்த்தது.</translation>
 <translation id="7058774143982824355">CSV கடவுச்சொல்லைப் பாகுபடுத்தும் சேவை</translation>
+<translation id="7062344833049251424">அடுத்த முறை விரைவாகப் பணம் செலுத்த, உங்கள் கார்டையும் பில்லிங் முகவரியையும் Google Walletடில் சேமியுங்கள்</translation>
 <translation id="706295145388601875">Chrome அமைப்புகளில் இணைய முகவரிகளைச் சேருங்கள் &amp; நிர்வகியுங்கள்</translation>
 <translation id="7063157783216323487">பச்சை 2</translation>
 <translation id="7064443976734085921">சிறிய கார்கள்</translation>
@@ -4279,6 +4283,7 @@
 <translation id="7754587126786572336">புதுப்பிப்புத் தொடங்கும்போது உங்கள் Chrome உலாவிப் பக்கங்களும் ஆப்ஸும் மூடப்படும்</translation>
 <translation id="7755287808199759310">உங்களுக்காக, தளத்தின் தடுப்பை உங்கள் பெற்றோர் நீக்க முடியும்</translation>
 <translation id="7755624218968747854">முதன்மை ரோல்</translation>
+<translation id="7756441544371887150">இந்தக் கார்டு Google Walletடில் சேமிக்கப்பட்டிருக்கும்போது Chromeமில் செய்யப்படும் பர்ச்சேஸ்களில் இதைத் தானாக நிரப்பலாம்</translation>
 <translation id="7758069387465995638">ஃபயர்வால் அல்லது வைரஸ்தடுப்பு மென்பொருள் உங்கள் இணைப்பைத் தடுத்திருக்கலாம்.</translation>
 <translation id="7759147511335618829">MIDI சாதனக் கட்டுப்பாடு &amp; ரீ-புரோகிராம்</translation>
 <translation id="7759809451544302770">விரும்பினால்</translation>
@@ -5203,6 +5208,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{ஏதுமில்லை}=1{1 உருப்படி}other{# உருப்படிகள்}}</translation>
 <translation id="976522784004777030">5 x 8 இன்ச்</translation>
 <translation id="977502174772294970">திருமணங்கள்</translation>
+<translation id="978750072783101994">இந்தக் கார்டு Google Walletடில் சேமிக்கப்பட்டிருக்கும்போது Chromiumமில் செய்யப்படும் பர்ச்சேஸ்களில் இதைத் தானாக நிரப்பலாம்</translation>
 <translation id="979107176848483472">உங்கள் உலாவியையும் சுயவிவரத்தையும் <ph name="DOMAIN" /> நிர்வகிக்கிறது</translation>
 <translation id="979189555234810423">கண்காட்சிகள் &amp; கருத்தரங்குகள்</translation>
 <translation id="979503328401807348">கூடுதல் பயனுள்ள விளம்பரங்கள்</translation>

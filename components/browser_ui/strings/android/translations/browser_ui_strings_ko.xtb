@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
 <translation id="1569054338208717605">Chrome의 V8 엔진으로 사이트 속도를 높이지만 Chrome이 공격에 약간 더 취약해집니다.</translation>
 <translation id="1593426485665524382">화면 상단에서 새로운 작업 가능</translation>
+<translation id="1601560923496285236">적용</translation>
 <translation id="1615755956145364867">사이트에서 보호된 콘텐츠 재생을 요청할 수 있음</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1621729191093924223">마이크가 필요한 기능이 작동하지 않음</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">블루투스 검색</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 차단됨}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 차단됨}}</translation>
 <translation id="6554732001434021288">최근 방문: <ph name="NUM_DAYS" />일 전</translation>
+<translation id="6556866813142980365">다시실행</translation>
 <translation id="6557290421156335491">내 바로가기</translation>
 <translation id="656065428026159829">더보기</translation>
 <translation id="6561560012278703671">조용한 메시지 사용(방해가 되지 않도록 알림 메시지 차단)</translation>

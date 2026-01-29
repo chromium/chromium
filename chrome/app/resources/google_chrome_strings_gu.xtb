@@ -28,6 +28,7 @@
 <translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1184145431117212167">Windowsનું તમારું વર્ઝન સપોર્ટેડ ન હોવાને કારણે આ ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="1194807384646768652">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે સામાન્ય રીતે આ પ્રકારની ફાઇલ ડાઉનલોડ કરવામાં આવતી નથી અને તે જોખમી હોઈ શકે છે</translation>
+<translation id="1197860368385086056">આગલી વખતે જ્યારે તમે તમારા <ph name="DEVICE_TYPE" /> પર Chrome ખોલો, ત્યારે તમને કિંમત ટ્રૅક કરવાના અલર્ટ ચાલુ કરવા માટેનો પ્રૉમ્પ્ટ દેખાશે.</translation>
 <translation id="1203500561924088507">ઇન્સ્ટૉલ કરવા બદલ આભાર. <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારે તમારું બ્રાઉઝર ફરી શરૂ કરવું આવશ્યક છે.</translation>
 <translation id="1278833599417554002">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="1290883685122687410">સેટઅપ કરવામાં ભૂલ: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -507,6 +508,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6321592572353357376">\"<ph name="EXTENSION_NAME" />\" એક્સ્ટેન્શન ઇચ્છે છે કે તમે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6326175484149238433">Chrome માંથી દૂર કરો</translation>
 <translation id="6327105987658262776">કોઈ અપડેટ ઉપલબ્ધ નથી.</translation>
+<translation id="6333195756043503664">જ્યારે મારું કમ્પ્યૂટર શરૂ થાય ત્યારે Chrome ખોલો</translation>
 <translation id="6334815226785304306">Google Chromeને ડિફૉલ્ટ બ્રાઉઝર બનાવો અને ટાસ્કબાર પર પિન કરો</translation>
 <translation id="63540178978900677">Chrome હવેથી તમારું ડિફૉલ્ટ બ્રાઉઝર નથી. Chromeને ડિફૉલ્ટ બ્રાઉઝર બનાવીએ?</translation>
 <translation id="6360449101159168105">જ્યારે આ ટૅબ નિષ્ક્રિય હતું, ત્યારે Chromeને ઝડપી રાખવા માટે મેમરી ખાલી કરવામાં આવી હતી. તમે આ સાઇટને નિષ્ક્રિય રહેવામાંથી બાકાત રાખવાનું હંમેશા પસંદ કરી શકો છો.</translation>
@@ -616,6 +618,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7515191208480168435">તમે સરળ ઍક્સેસ માટે Google Lensને પિન કરી શકો છો</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">તમારા બધા ડિવાઇસ પર આ બુકમાર્ક અને વધુ મેળવવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
+<translation id="756134248912568991">આગલી વખતે જ્યારે તમે તમારા <ph name="DEVICE_TYPE" /> પર Chrome ખોલો, ત્યારે તમને ટૅબના ગ્રૂપનો ઉપયોગ કરવા માટેનો પ્રૉમ્પ્ટ દેખાશે.</translation>
 <translation id="756809126120519699">Chrome ડેટા સાફ કર્યો</translation>
 <translation id="7572537927358445944">બંધ • આ એક્સ્ટેન્શન ક્યાંથી આવે છે તેની ચકાસણી Chrome કરી શકતું નથી</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ઇન્સ્ટૉલર</translation>

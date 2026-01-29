@@ -416,6 +416,7 @@
 <translation id="1652862280638399816">MacOS కీచెయిన్‌తో Password Managerను ఉపయోగించడానికి, Chromiumని రీ-లాంచ్ చేసి, కీచెయిన్ యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
 <translation id="1652887625750064647">AI అత్యుత్తమ మ్యాచ్</translation>
 <translation id="1653465303147789530">యాప్‌లను స్విచ్ చేయకుండానే <ph name="PAYMENT_METHOD" />తో పేమెంట్ చేయండి</translation>
+<translation id="1655159794885649984">ఈ సైట్‌లో కంటెంట్‌ను లాగడం అనుమతించబడదు</translation>
 <translation id="1656024727720460136">మరింత తేలికగా చదవడానికి వీలుగా Chrome ఈ పేజీని సులభతరం చేసింది. సురక్షిత కనెక్షన్ ద్వారా Chrome అసలు పేజీని తిరిగి పొందింది.</translation>
 <translation id="1656489000284462475">పికప్</translation>
 <translation id="1658111267661135323">టీవీ &amp; వీడియో</translation>
@@ -1673,6 +1674,7 @@
 <translation id="365641980390710834">సాధారణ దుస్తులు</translation>
 <translation id="3658742229777143148">పునర్విమర్శ</translation>
 <translation id="3659521826520353662">ఏ అడ్మినిస్ట్రేటర్-నిర్వచించిన వెబ్‌సైట్‌లను సందర్శించారు, అలాగే ఎప్పుడు సందర్శించారు: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">ఈ IBAN Google Walletలో సేవ్ అవుతుంది, కాబట్టి మీరు దీన్ని Google సర్వీస్‌ల అంతటా ఉపయోగించవచ్చు.</translation>
 <translation id="3664479564786885722">ఈ ప్రోడక్ట్‌ను విక్రయించే ఇతర స్టోర్‌ల నుండి మరిన్ని కొనుగోలు ఆప్షన్‌లను చూడండి.</translation>
 <translation id="3664782872746246217">కీవర్డ్‌లు:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />మరింత తెలుసుకోండి<ph name="LINK_END1" /></translation>
@@ -3193,6 +3195,7 @@
 <translation id="6085149458302186532">లేబుల్స్ (కలర్డ్)</translation>
 <translation id="6087312102907839798">సంబంధిత సెర్చ్‌లు</translation>
 <translation id="6089505343295765444">మీ Chrome హిస్టరీ నుండి మీరు తొలగించిన ట్యాబ్‌లు ఇప్పటికీ మీ కంపారిజన్ టేబుల్స్‌లో కనిపిస్తాయి</translation>
+<translation id="6091115085465716987">Google Wallet లోగో</translation>
 <translation id="6091691259076781835">వేగంగా చెక్ అవుట్ చేయడం కోసం, ఈ CVCని మీ డివైజ్‌లో సేవ్ చేయండి</translation>
 <translation id="6093599771645355227">పసుపు రంగు 1</translation>
 <translation id="6093795393556121384">మీ కార్డ్ ధృవీకరించబడింది</translation>
@@ -3809,6 +3812,7 @@
 <translation id="7057567173736333354">మీ ఇమేజ్ గురించి వివరించండి</translation>
 <translation id="7058163556978339998">ఈ వెబ్‌సైట్ సర్టిఫికెట్‌ను <ph name="ISSUER" /> జారీ చేసినట్లు <ph name="BROWSER" /> ధృవీకరించింది.</translation>
 <translation id="7058774143982824355">CSV పాస్‌వర్డ్‌ పార్సర్ సర్వీస్</translation>
+<translation id="7062344833049251424">తర్వాతిసారి మరింత వేగంగా పేమెంట్ చేయడానికి, మీ కార్డ్, బిల్లింగ్ అడ్రస్‌లను Google Walletలో సేవ్ చేయండి</translation>
 <translation id="706295145388601875">Chrome సెట్టింగ్‌లలో అడ్రస్‌లను జోడించండి, మేనేజ్ చేయండి</translation>
 <translation id="7063157783216323487">ఆకుపచ్చ రంగు 2</translation>
 <translation id="7064443976734085921">కాంపాక్ట్ కార్‌లు</translation>
@@ -4279,6 +4283,7 @@
 <translation id="7754587126786572336">అప్‌డేట్ చేయడం ప్రారంభమైనప్పుడు మీ Chrome ట్యాబ్‌లు, యాప్‌లు మూసివేయబడతాయి</translation>
 <translation id="7755287808199759310">మీ తల్లి/తండ్రి దీన్ని మీ కోసం అన్‌బ్లాక్ చేయగలరు</translation>
 <translation id="7755624218968747854">ప్రైమరీ రోల్</translation>
+<translation id="7756441544371887150">ఈ కార్డ్‌ను Google Walletలో సేవ్ చేసినప్పుడు, Chromeలో చేసే కొనుగోళ్ల విషయంలో దీన్ని ఆటోఫిల్ చేయండి</translation>
 <translation id="7758069387465995638">ఫైర్‌వాల్ లేదా యాంటీవైరస్ సాఫ్ట్‌వేర్ కనెక్షన్‌ను బ్లాక్ చేసి ఉండవచ్చు.</translation>
 <translation id="7759147511335618829">MIDI పరికర కంట్రోల్, రీప్రోగ్రాం</translation>
 <translation id="7759809451544302770">ఐచ్ఛికం</translation>
@@ -5202,6 +5207,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{ఏమీ లేవు}=1{1 అంశం}other{# అంశాలు}}</translation>
 <translation id="976522784004777030">5 x 8 అంగుళాలు</translation>
 <translation id="977502174772294970">వివాహాలు</translation>
+<translation id="978750072783101994">ఈ కార్డ్‌ను Google Walletలో సేవ్ చేసినప్పుడు, Chromiumలో చేసే కొనుగోళ్ల విషయంలో దీన్ని ఆటోఫిల్ చేయండి</translation>
 <translation id="979107176848483472">మీ బ్రౌజర్‌ను, ప్రొఫైల్‌ను <ph name="DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="979189555234810423">ప్రదర్శనలు &amp; సభలు</translation>
 <translation id="979503328401807348">మరింత ఉపయోగకరమైన యాడ్‌లు</translation>

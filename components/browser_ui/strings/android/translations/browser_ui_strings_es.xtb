@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Puedes pedir ver la versión para ordenadores de los sitios</translation>
 <translation id="1085696779717592361">Usar Chrome por defecto</translation>
 <translation id="113098737392899175">Desplazarse por las páginas con un cursor de texto cuando se conecta un teclado</translation>
+<translation id="1149644372535087155">Guardar contraseñas en Chrome</translation>
 <translation id="1178015372320901893">Hoja inferior de mis accesos directos</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Quitar</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">Se permiten las cookies de terceros</translation>
 <translation id="1569054338208717605">Acelerar los sitios con el motor V8 de Chrome, pero hacer que Chrome sea un poco menos resistente a los ataques</translation>
 <translation id="1593426485665524382">Hay nuevas acciones disponibles en la parte superior de la pantalla</translation>
+<translation id="1601560923496285236">Aplicar</translation>
 <translation id="1615755956145364867">Los sitios pueden solicitar permiso para reproducir contenido protegido</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1621729191093924223">Las funciones que necesiten un micrófono no se podrán utilizar</translation>
@@ -171,6 +173,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="2682367912565197520">Eliminar nivel de zoom guardado</translation>
 <translation id="2683434792633810741">¿Eliminar y restablecer?</translation>
 <translation id="2685514716378236873">No permitido</translation>
+<translation id="2710883118091822664">Inicia sesión para continuar fácilmente en todos tus dispositivos</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2717722538473713889">Direcciones de correo electrónico</translation>
 <translation id="2726059656860238749">Inicia Chrome con omnibox activado, lo que reduce el tiempo de arranque en dispositivos de gama baja.</translation>
@@ -198,6 +201,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3004438526346162184">Los sitios pueden usar esta función para gestionar las ventanas en todas tus pantallas</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="301521992641321250">Bloqueado automáticamente</translation>
+<translation id="3026311960038210">Colecciones de temas</translation>
 <translation id="3064871050034234884">Los sitios pueden reproducir sonido</translation>
 <translation id="3065787901655140044">Protección Avanzada está activada</translation>
 <translation id="3069226013421428034">Permite el inicio de sesión de terceros en un sitio específico.</translation>
@@ -340,6 +344,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="4478158430052450698">Facilita la personalización del zoom en diferentes sitios</translation>
 <translation id="4479647676395637221">Preguntar antes de permitir que los sitios utilicen la cámara (recomendado)</translation>
 <translation id="4505788138578415521">URL ampliada</translation>
+<translation id="4523472416386354622">Inicia sesión para empezar</translation>
 <translation id="4534723447064627427">Para que <ph name="APP_NAME" /> pueda acceder al micrófono, actívalo también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
@@ -396,6 +401,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="512938610812707830">Hoja inferior de colecciones de temas del aspecto de la página Nueva pestaña abierta a altura completa</translation>
 <translation id="5137460097045297858">Hoja inferior del feed de Discover abierta a media altura</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Bajada de precio en tus pestañas abiertas}other{Bajadas de precio en tus pestañas abiertas}}</translation>
+<translation id="5150048675001754041">Inicia sesión de forma rápida y sencilla en sitios y aplicaciones</translation>
 <translation id="5186036860380548585">Opción disponible cerca de la parte superior de la pantalla</translation>
 <translation id="5197729504361054390">Los contactos que selecciones se compartirán con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Hoja inferior de Personalizar la página Nueva pestaña cerrada</translation>
@@ -523,6 +529,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más bloqueados}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más bloqueados}}</translation>
 <translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
+<translation id="6556866813142980365">Rehacer</translation>
 <translation id="6557290421156335491">Mis accesos directos</translation>
 <translation id="656065428026159829">Ver más</translation>
 <translation id="6561560012278703671">Usar notificaciones más discretas (bloquea las notificaciones emergentes para que no te interrumpan)</translation>
@@ -564,6 +571,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="6980861169612950611">¿Eliminar datos del sitio <ph name="SITE_NAME" />?</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="6991142177939282156">Permitida • Usando aproximada</translation>
+<translation id="6992014788289743568">Refuerza tu seguridad y protege mejor tus datos comprobando tus contraseñas</translation>
 <translation id="6992289844737586249">Preguntar antes de permitir que los sitios utilicen el micrófono (recomendado)</translation>
 <translation id="7000754031042624318">Desactivado en los ajustes de Android</translation>
 <translation id="702275896380648118">Este sitio determina qué cosas te gustan y, después, ofrece sugerencias de anuncios a otros sitios. Este sitio también consulta tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>

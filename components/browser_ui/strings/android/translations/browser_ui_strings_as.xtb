@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">আপুনি ছাইটসমূহৰ ডেস্কটপ সংস্কৰণ চাবলৈ ক’ব পাৰে</translation>
 <translation id="1085696779717592361">ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="113098737392899175">কোনো কীব’ৰ্ড সংলগ্ন কৰিলে পাঠৰ কাৰ্ছৰৰ জৰিয়তে পৃষ্ঠাসমূহ নেভিগে’ট কৰক</translation>
+<translation id="1149644372535087155">Chromeত পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="1178015372320901893">মোৰ শ্বৰ্টকাটৰ তলৰ শ্বীট</translation>
 <translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়া হয়</translation>
 <translation id="1569054338208717605">Chromeৰ V8 ইঞ্জিন ব্যৱহাৰ কৰি ছাইটসমূহ দ্ৰুত কৰে কিন্তু ইয়ে Chromeৰ আক্ৰমণ প্ৰতিৰোধ কৰাৰ ক্ষমতা কম কৰে</translation>
 <translation id="1593426485665524382">স্ক্ৰীনখনৰ একেবাৰে ওপৰৰ অংশৰ ওচৰত নতুন কাৰ্য উপলব্ধ</translation>
+<translation id="1601560923496285236">প্ৰয়োগ কৰক</translation>
 <translation id="1615755956145364867">ছাইটে সুৰক্ষিত সমল প্লে’ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
 <translation id="1621729191093924223">মাইক্ৰ'ফ'নৰ আৱশ্যক হোৱা সুবিধাসমূহে কাম নকৰিব</translation>
@@ -171,6 +173,7 @@
 <translation id="2682367912565197520">ছেভ কৰি থোৱা জুমৰ স্তৰ মচক</translation>
 <translation id="2683434792633810741">মচি আৰু ৰিছেট কৰিবনে?</translation>
 <translation id="2685514716378236873">অনুমতি দিয়া নাই</translation>
+<translation id="2710883118091822664">আপোনাৰ আটাইবোৰ ডিভাইচত সহজে অব্যাহত ৰাখিবলৈ ছাইন ইন কৰক</translation>
 <translation id="2713106313042589954">কেমেৰা অফ কৰক</translation>
 <translation id="2717722538473713889">ইমেইল ঠিকনাবোৰ</translation>
 <translation id="2726059656860238749">অ’মনিবক্সত গুৰুত্ব আৰোপ কৰা ধৰণে Chrome লঞ্চ কৰক, যিয়ে কম শক্তিশালী ডিভাইচত ষ্টাৰ্টআপৰ সময় হ্ৰাস কৰে।</translation>
@@ -198,6 +201,7 @@
 <translation id="3004438526346162184">ছাইটসমূহে আপোনাৰ আটাইবোৰ ডিছপ্লে’ত থকা ৱিণ্ড’সমূহ পৰিচালনা কৰিবলৈ এই সুবিধাটো ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
+<translation id="3026311960038210">থীমৰ সংগ্ৰহ</translation>
 <translation id="3064871050034234884">ছাইটে ধ্বনি প্লে' কৰিব পাৰে</translation>
 <translation id="3065787901655140044">সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাটো অন আছে</translation>
 <translation id="3069226013421428034">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইনৰ অনুমতি দিয়ক।</translation>
@@ -340,6 +344,7 @@
 <translation id="4478158430052450698">বিভিন্ন ছাইটসমূহৰ বাবে জুম কাষ্টমাইজ কৰাটো অধিক সহজ কৰি তোলক</translation>
 <translation id="4479647676395637221">আপোনাৰ কেমেৰা ছাইটসমূহক ব্যৱহাৰ কৰিবলৈ দিয়াৰ পূর্বে অনুমতি ল'বলৈ দিয়ক(চুপাৰিছ কৰা)</translation>
 <translation id="4505788138578415521">URL বিস্তাৰ কৰা হৈছে</translation>
+<translation id="4523472416386354622">আৰম্ভ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />ক আপোনাৰ মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো মাইক্ৰ’ফ’ন অন কৰক।</translation>
 <translation id="4566417217121906555">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
 <translation id="4570913071927164677">সবিশেষ</translation>
@@ -396,6 +401,7 @@
 <translation id="512938610812707830">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা থীমৰ সংগ্ৰহৰ তলৰ শ্বীটখন সম্পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="5137460097045297858">ডিস্ক’ভাৰ ফীডৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}one{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}other{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}}</translation>
+<translation id="5150048675001754041">ছাইট আৰু এপ্‌সমূহত ক্ষিপ্ৰতাৰে আৰু সহজে ছাইন ইন কৰক</translation>
 <translation id="5186036860380548585">স্ক্ৰীনৰ ওপৰৰ অংশৰ ওচৰত বিকল্পটো উপলব্ধ</translation>
 <translation id="5197729504361054390">আপুনি বাছনি কৰা সম্পৰ্কবোৰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="5198930230016462977">আপোনাৰ নতুন টেবৰ পৃষ্ঠাৰ তলৰ শ্বীটখন কাষ্টমাইজ কৰাটো বন্ধ কৰা হৈছে</translation>
@@ -523,6 +529,7 @@
 <translation id="6545864417968258051">ব্লুটুথ স্কেনিং</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিনৰ পূৰ্বে শেষবাৰ চাইছিল</translation>
+<translation id="6556866813142980365">ৰিডু</translation>
 <translation id="6557290421156335491">মোৰ শ্বৰ্টকাটসমূহ</translation>
 <translation id="656065428026159829">অধিক চাওক</translation>
 <translation id="6561560012278703671">নীৰৱ বাৰ্তা আদান-প্ৰদানৰ সুবিধা ব্যৱহাৰ কৰক (জাননীৰ প্ৰম্প্‌টসমূহে আপোনাৰ বাবে ব্যাঘাত সৃষ্টি কৰিব নোৱৰাকৈ সেইবোৰ অৱৰোধ কৰে)</translation>
@@ -564,6 +571,7 @@
 <translation id="6980861169612950611">ছাইটৰ ডেটা মচিবনে? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="6991142177939282156">অনুমতি দিয়া হৈছে • আনুমানিক</translation>
+<translation id="6992014788289743568">আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰি আপোনাৰ সুৰক্ষা শক্তিশালী কৰক আৰু আপোনাৰ ডেটা সুৰক্ষিত কৰি ৰাখক</translation>
 <translation id="6992289844737586249">ছাইটসমূহে আপোনাৰ ডিভাইচৰ মাইক্ৰফ'ন ব্যৱহাৰ কৰাৰ পূর্বে অনুমতি ল'বলৈ দিয়ক (এয়া চুপাৰিছ কৰা হয়)</translation>
 <translation id="7000754031042624318">Androidৰ ছেটিংসমূহত অফ কৰা আছে</translation>
 <translation id="702275896380648118">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে। আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰাও আপোনাৰ বিজ্ঞাপনৰ বিষয়সমূহ লাভ কৰে।</translation>

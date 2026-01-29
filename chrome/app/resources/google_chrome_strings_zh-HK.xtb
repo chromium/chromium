@@ -28,6 +28,7 @@
 <translation id="1158134713295836892">Chrome 版 Gemini</translation>
 <translation id="1184145431117212167">你的 Windows 版本不受支援，因此無法安裝。</translation>
 <translation id="1194807384646768652">由於此檔案類型不是常見的下載項目，可能含有危險內容，因此 Chrome 已禁止下載</translation>
+<translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你啟用價格追蹤通知。</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1290883685122687410">設定錯誤：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
@@ -507,6 +508,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6321592572353357376">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chrome</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6327105987658262776">沒有可用的更新。</translation>
+<translation id="6333195756043503664">在電腦開機時開啟 Chrome</translation>
 <translation id="6334815226785304306">將 Google Chrome 設定為預設瀏覽器並固定到工作列</translation>
 <translation id="63540178978900677">Chrome 不再是你的預設瀏覽器。要將 Chrome 設定為預設瀏覽器嗎？</translation>
 <translation id="6360449101159168105">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chrome 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
@@ -616,6 +618,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7515191208480168435">你可以固定「Google 智能鏡頭」方便存取</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
 <translation id="7543146567111253230">如要在所有裝置上使用此書籤和其他資料，請登入 Chrome</translation>
+<translation id="756134248912568991">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你使用分頁群組。</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7572537927358445944">已關閉 • Chrome 無法驗證此擴充程式的來源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>

@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">کوکی‌های طرف سوم مجاز است</translation>
 <translation id="1569054338208717605">‏افزایش سرعت سایت‌ها بااستفاده از موتور V8‏ Chrome همراه با اندکی کاهش مقاومت Chrome در برابر حملات</translation>
 <translation id="1593426485665524382">کنش‌های جدیدی در نزدیکی بالای صفحه دردسترس است</translation>
+<translation id="1601560923496285236">اعمال</translation>
 <translation id="1615755956145364867">سایت‌ها می‌توانند پخش محتوای محافظت‌شده را درخواست کنند</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1621729191093924223">ویژگی‌هایی که به میکروفون نیاز دارند کار نخواهند کرد</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">اسکن کردن بلوتوث</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}}</translation>
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
+<translation id="6556866813142980365">ازنو انجام دادن</translation>
 <translation id="6557290421156335491">میان‌برهای من</translation>
 <translation id="656065428026159829">بیشتر دیدن</translation>
 <translation id="6561560012278703671">استفاده از پیام‌رسانی کم‌صداتر (درخواست‌های اعلان را مسدود می‌کند تا مزاحمتان نشود)</translation>

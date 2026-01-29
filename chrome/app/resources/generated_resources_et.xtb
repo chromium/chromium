@@ -2578,6 +2578,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2724841811573117416">WebRTC logid</translation>
 <translation id="272488616838512378">Ühikute teisendamine</translation>
 <translation id="2725200716980197196">Võrguühendus on taastatud</translation>
+<translation id="2725312032345042618">Sündmuste ajalugu</translation>
 <translation id="2726776862643824793">ekraanikuva ereduse vähendamine</translation>
 <translation id="272741954544380994">Otsi pilti teenusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ära tuleta rohkem meelde</translation>
@@ -2919,6 +2920,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2950666755714083615">Registreeri</translation>
 <translation id="2953210795988451570">Turvavärskendused on lõppenud. Hankige uus Chromebook.</translation>
 <translation id="2953218713108551165">Märguanded ei ole saidi <ph name="SITE" /> jaoks lubatud. Teilt küsitakse järgmisel külastusel uuesti.</translation>
+<translation id="2954777802959138493">Värskendaja oleku päring ebaõnnestus.</translation>
 <translation id="2955048943983973430">Seotud Google'i teenused</translation>
 <translation id="2956070239128776395">Grupis pesastatud jaotis: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Selle laienduse kasutamiseks lülitage arendaja režiim sisse. Chrome'i veebipood ei saa laiendust üle vaadata.</translation>
@@ -3653,6 +3655,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3468298837301810372">Silt</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
 <translation id="3469583217479686109">Valikutööriist</translation>
+<translation id="3471687177769494956">Muuda navigeerimise otseteed</translation>
 <translation id="3471876058939596279">HDMI- ja C-tüüpi USB-porte ei saa video jaoks samaaegselt kasutada. Kasutage mõnda teist videoporti.</translation>
 <translation id="3472469028191701821">Avaneb uuel vahelehel</translation>
 <translation id="3473241910002674503">Navigeerige tahvelarvutirežiimis nuppude abil avalehele, tagasi ja vahetage rakendusi.</translation>
@@ -7088,6 +7091,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5828181959764767444">Päikeseloojang</translation>
 <translation id="5828545842856466741">Lisa profiil …</translation>
 <translation id="5828633471261496623">Printimine ...</translation>
+<translation id="5829544019044013776">Teie makseviisid Google Walletis</translation>
 <translation id="5830205393314753525">Rakendust <ph name="APP_NAME" /> ei saa avada</translation>
 <translation id="5830512293931520102">Teie parool on krüpteeritud ja keegi pole seda kunagi näinud</translation>
 <translation id="5830720307094128296">Salvesta leht &amp;nimega...</translation>
@@ -7653,6 +7657,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6212168817037875041">Lülita ekraan välja</translation>
 <translation id="6212752530110374741">Saada link meiliga</translation>
 <translation id="6214106213498203737">Vesivärvid</translation>
+<translation id="6214157047210274853">Muuda Google Walletis</translation>
 <translation id="621470880408090483">Ära luba saitidel Bluetooth-seadmetega ühendust luua</translation>
 <translation id="6215039389782910006">{1,plural, =1{Teie paroolide kaitsmiseks lukustub <ph name="BRAND" /> pärast ühte minutit tegevusetust}other{Teie paroolide kaitsmiseks lukustub <ph name="BRAND" /> pärast # minutit tegevusetust}}</translation>
 <translation id="6216154119179790291">Esimese vaheleheni kerimine</translation>
@@ -9123,6 +9128,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7243092385765551741">Kas soovite pääsukoodi kustutada?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (parim)</translation>
 <translation id="7246230585855757313">Sisestage oma turvavõti uuesti ja proovige veel kord</translation>
+<translation id="7248671827512403053">Rakendus</translation>
 <translation id="7249197363678284330">Muutke seda seadet aadressiribal.</translation>
 <translation id="7249764475759804559">Lisa see rakendus failide avamisel valikuna</translation>
 <translation id="7249885578105575587">Küsige Google'ilt selle vahelehe kohta: <ph name="TAB_TITLE" /></translation>
@@ -11298,6 +11304,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8703346390800944767">Jäta reklaam vahele</translation>
 <translation id="8703372953981978786">See link ei toimi</translation>
 <translation id="8703766890819308134">Kuva otsingu otseteed</translation>
+<translation id="8704248383043944131">Muuda klaviatuuri otseteed</translation>
 <translation id="8704662571571150811">Domeenid</translation>
 <translation id="8705331520020532516">Seerianumber</translation>
 <translation id="870536819717176711">Kui otsustate praegust vahelehte Geminiga jagada, saadetakse Google'ile vahelehe kogu sisu, meedia ja URL.</translation>
@@ -11618,6 +11625,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8911914282056933784">Projektide peitmine</translation>
 <translation id="8912362522468806198">Google'i konto</translation>
 <translation id="8912810933860534797">Automaatse skannimise lubamine</translation>
+<translation id="8913485523736543337">Värskendaja</translation>
 <translation id="8914030287343429787">Isegi siis, kui te ei kasuta Chrome’i või Androidi, saate veebilehele <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> sisse logides vaadata oma paroole.</translation>
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>
 <translation id="8915307125957890427">Paremklõpsake vahelehel ja tehke valik „Lisa vaheleht gruppi“, seejärel valige „Uus grupp“</translation>
@@ -11758,6 +11766,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8999560016882908256">Jaotise süntaksi viga: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Vähendatud liikumine ekraanil</translation>
 <translation id="9000185763019430629">Puudutage seadme <ph name="DEVICE_TYPE" /> paremas servas olevat sõrmejäljeandurit. Teie sõrmejäljeandmed talletatakse turvaliselt ja neid ei edastata seadmest <ph name="DEVICE_TYPE" /> väljapoole.</translation>
+<translation id="9000529821022336229">Ühtegi värskendaja installimist ei leitud.</translation>
 <translation id="900267527532832868">See pääsuvõti ei toimi enam. See kustutatakse varsti teenusest <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Sisestage PIN-koodi <ph name="NUM_DIGIT" />. number 6-st. Viimase numbri kustutamiseks kasutage tagasilükke- või kustutamisklahvi.</translation>
 <translation id="9003185744423389627">Ühendus seadmehalduse serveriga ebaõnnestus: olek „<ph name="STATUS_TEXT" />“ – <ph name="FAILURE_TIME" /></translation>

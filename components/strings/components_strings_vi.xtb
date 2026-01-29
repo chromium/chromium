@@ -421,6 +421,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1652862280638399816">Để sử dụng Trình quản lý mật khẩu cùng với macOS Keychain, hãy chạy lại Chromium và cho phép truy cập Keychain. Các thẻ sẽ mở lại sau khi bạn chạy lại Chrome.</translation>
 <translation id="1652887625750064647">Kết quả phù hợp nhất do AI tạo</translation>
 <translation id="1653465303147789530">Thanh toán bằng <ph name="PAYMENT_METHOD" /> mà không cần chuyển đổi ứng dụng</translation>
+<translation id="1655159794885649984">Không được phép kéo nội dung trên trang web này</translation>
 <translation id="1656024727720460136">Chrome đơn giản hóa trang này để bạn dễ đọc hơn. Chrome đã truy xuất trang gốc qua đường kết nối an toàn.</translation>
 <translation id="1656489000284462475">Nhận hàng</translation>
 <translation id="1658111267661135323">Truyền hình và video</translation>
@@ -1678,6 +1679,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="365641980390710834">Thường phục</translation>
 <translation id="3658742229777143148">Bản sửa đổi</translation>
 <translation id="3659521826520353662">Những trang web do quản trị viên xác định được truy cập và thời điểm truy cập: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">IBAN này được lưu trong Google Wallet để bạn có thể sử dụng trên các dịch vụ của Google.</translation>
 <translation id="3664479564786885722">Tìm kiếm thêm lựa chọn mua hàng ở những cửa hàng khác có bán sản phẩm này.</translation>
 <translation id="3664782872746246217">Từ khóa:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Tìm hiểu thêm<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6085149458302186532">Nhãn (Có màu)</translation>
 <translation id="6087312102907839798">Nội dung tìm kiếm có liên quan</translation>
 <translation id="6089505343295765444">Các thẻ bạn xoá khỏi nhật ký duyệt web trên Chrome vẫn xuất hiện trong các bảng so sánh</translation>
+<translation id="6091115085465716987">Biểu tượng Google Wallet</translation>
 <translation id="6091691259076781835">Để thanh toán nhanh hơn, hãy lưu CVC này trên thiết bị của bạn</translation>
 <translation id="6093599771645355227">Vàng 1</translation>
 <translation id="6093795393556121384">Thẻ của bạn đã được xác minh</translation>
@@ -3814,6 +3817,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7057567173736333354">Mô tả hình ảnh bạn muốn tạo</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> đã xác minh rằng trang web này có chứng chỉ do <ph name="ISSUER" /> cấp.</translation>
 <translation id="7058774143982824355">Dịch vụ phân tích cú pháp mật khẩu trong tệp CSV</translation>
+<translation id="7062344833049251424">Để lần tới thanh toán nhanh hơn, hãy lưu thông tin thẻ và địa chỉ thanh toán vào Google Wallet</translation>
 <translation id="706295145388601875">Thêm và quản lý các địa chỉ trong phần Cài đặt của Chrome</translation>
 <translation id="7063157783216323487">Xanh lục 2</translation>
 <translation id="7064443976734085921">Ô tô cỡ nhỏ</translation>
@@ -4284,6 +4288,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7754587126786572336">Các thẻ và ứng dụng trên Chrome sẽ đóng khi quá trình cập nhật bắt đầu</translation>
 <translation id="7755287808199759310">Cha mẹ của bạn có thể bỏ chặn trang web cho bạn</translation>
 <translation id="7755624218968747854">Cuộn chính</translation>
+<translation id="7756441544371887150">Tự động điền thông tin thẻ này cho các giao dịch mua trong Chrome khi thẻ được lưu trong Google Wallet</translation>
 <translation id="7758069387465995638">Tường lửa hoặc phần mềm diệt vi-rút có thể đã chặn kết nối.</translation>
 <translation id="7759147511335618829">Lập trình lại và điều khiển thiết bị MIDI</translation>
 <translation id="7759809451544302770">Không bắt buộc</translation>
@@ -5208,6 +5213,7 @@ Thông tin chi tiết bổ sung:
 <translation id="975560348586398090">{COUNT,plural, =0{Không có}=1{1 mục}other{# mục}}</translation>
 <translation id="976522784004777030">5 x 8 inch</translation>
 <translation id="977502174772294970">Tiệc cưới</translation>
+<translation id="978750072783101994">Tự động điền thông tin thẻ này cho các giao dịch mua trong Chromium khi thẻ được lưu trong Google Wallet</translation>
 <translation id="979107176848483472">Trình duyệt và hồ sơ của bạn đều do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="979189555234810423">Triển lãm và hội nghị</translation>
 <translation id="979503328401807348">Các quảng cáo hữu ích hơn</translation>

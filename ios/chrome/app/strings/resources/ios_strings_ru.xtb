@@ -1523,6 +1523,7 @@
 <translation id="6556866813142980365">Повторить</translation>
 <translation id="6559301491397835130">{count,plural, =1{Закладка сохранена в "{title}" (только на этом устройстве).}one{Закладки сохранены в "{title}" (только на этом устройстве).}few{Закладки сохранены в "{title}" (только на этом устройстве).}many{Закладки сохранены в "{title}" (только на этом устройстве).}other{Закладки сохранены в "{title}" (только на этом устройстве).}}</translation>
 <translation id="656065428026159829">Ещё</translation>
+<translation id="6565899972286925956">Создавайте что угодно</translation>
 <translation id="6571070086367343653">Изменить данные карты</translation>
 <translation id="6574092468346088891">Включить уведомления проверки безопасности</translation>
 <translation id="6579867704846662339">Открывайте в режиме инкогнито входящие URL, размещенные в других приложениях.</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6930799952781667037">Нажмите, чтобы выбрать этот язык.</translation>
 <translation id="693761253105515415">Настройка кода доступа</translation>
 <translation id="6945221475159498467">Выбрать</translation>
+<translation id="6946722113367118030">Раздумья</translation>
 <translation id="6950522403736391608">Скрытые</translation>
 <translation id="6962809930976936328">Полезная информация от Gemini</translation>
 <translation id="6964300328304469089">Выбор аккаунта. Сейчас выбран <ph name="EMAIL" /> (<ph name="NAME" />).</translation>

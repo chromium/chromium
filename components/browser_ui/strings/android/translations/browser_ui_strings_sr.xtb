@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Колачићи трећих страна су дозвољени</translation>
 <translation id="1569054338208717605">Убрзава сајтове уз Chrome механизам V8, али чини Chrome мало мање отпорним на нападе</translation>
 <translation id="1593426485665524382">Нове радње су доступне у врху екрана</translation>
+<translation id="1601560923496285236">Примени</translation>
 <translation id="1615755956145364867">Сајтови могу да траже да пуштају заштићен садржај</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Функције којима је потребан микрофон неће радити</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">Bluetooth скенирање</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
+<translation id="6556866813142980365">Понови</translation>
 <translation id="6557290421156335491">Моје пречице</translation>
 <translation id="656065428026159829">Прикажи још</translation>
 <translation id="6561560012278703671">Користите ненаметљиву размену порука (спречава упите са обавештењима да вас ометају)</translation>

@@ -49,6 +49,7 @@
 <translation id="1547123415014299762">Сторонні файли cookie дозволено</translation>
 <translation id="1569054338208717605">Прискорити роботу сайтів за допомогою системи V8 для Chrome, але знизити стійкість вебпереглядача до атак</translation>
 <translation id="1593426485665524382">У меню вгорі екрана доступні нові дії</translation>
+<translation id="1601560923496285236">Застосувати</translation>
 <translation id="1615755956145364867">Сайти можуть просити дозвіл відтворювати захищений контент</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Функції, яким потрібен мікрофон, не працюватимуть</translation>
@@ -523,6 +524,7 @@
 <translation id="6545864417968258051">Пошук пристроїв Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Останнє відвідування: <ph name="NUM_DAYS" /> дн. тому</translation>
+<translation id="6556866813142980365">Повторити</translation>
 <translation id="6557290421156335491">Мої ярлики</translation>
 <translation id="656065428026159829">Показати більше</translation>
 <translation id="6561560012278703671">Показувати лише значок повідомлення (блокувати сповіщення)</translation>

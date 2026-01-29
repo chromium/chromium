@@ -50,6 +50,7 @@
 <translation id="1547123415014299762">Cookie pihak ketiga diizinkan</translation>
 <translation id="1569054338208717605">Percepat situs dengan mesin V8 Chrome, tetapi buat Chrome sedikit lebih rentan terhadap serangan</translation>
 <translation id="1593426485665524382">Tindakan baru tersedia di dekat bagian atas layar</translation>
+<translation id="1601560923496285236">Terapkan</translation>
 <translation id="1615755956145364867">Situs dapat meminta untuk memutar konten yang dilindungi</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">Fitur yang memerlukan mikrofon tidak akan berfungsi</translation>
@@ -528,6 +529,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="6545864417968258051">Pemindaian Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diblokir}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diblokir}}</translation>
 <translation id="6554732001434021288">Terakhir dibuka <ph name="NUM_DAYS" /> hari lalu</translation>
+<translation id="6556866813142980365">Urungkan</translation>
 <translation id="6557290421156335491">Pintasan saya</translation>
 <translation id="656065428026159829">Lihat lebih banyak</translation>
 <translation id="6561560012278703671">Gunakan notifikasi yang lebih tenang (memblokir pop-up notifikasi agar tidak mengganggu Anda)</translation>
