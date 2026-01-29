@@ -103,7 +103,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   bool IsConnectedForTest() const;
 
   // Reset max bookmarks till which sync is enabled.
-  void SetLocalBookmarksLimitForTesting(size_t limit);
+  void SetMaxBookmarksTillSyncEnabledForTest(size_t limit);
 
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetWeakPtr();
 
@@ -112,7 +112,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
 
   // Returns true if the bookmark count exceeded the limit and an error was
   // reported. Also disconnects sync and resets the `start_callback_`.
-  bool MaybeReportLocalBookmarksCountLimitExceededError(
+  bool MaybeReportBookmarkCountLimitExceededError(
       syncer::ModelError::Type error_type);
 
   // If preconditions are met, inform sync that we are ready to connect.
@@ -125,8 +125,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
 
   // Returns true if the given `count` of bookmarks exceeds the sync limit. An
   // `offset` can be provided for cases where the exact count is not known.
-  bool DoesCountExceedLocalBookmarksSyncLimit(size_t count,
-                                              size_t offset = 0) const;
+  bool DoesCountExceedBookmarksSyncLimit(size_t count, size_t offset = 0) const;
 
   // Performs the required clean up when bookmark model is being deleted.
   void OnBookmarkModelBeingDeleted();
@@ -255,7 +254,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   std::unique_ptr<BookmarkModelObserverImpl> bookmark_model_observer_;
 
   // This member variable exists only to allow tests to override the limit.
-  std::optional<size_t> sync_local_bookmarks_limit_for_tests_;
+  std::optional<size_t> sync_bookmarks_limit_for_tests_;
 
   // Marks whether metadata should be cleared upon ModelReadyToSync(). True if
   // ClearMetadataIfStopped() is called before ModelReadyToSync().

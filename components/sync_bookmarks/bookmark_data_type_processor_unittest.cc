@@ -1390,7 +1390,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfIncrementalLocalCreationCrossesMaxCountLimit) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   // Expect failure when adding new bookmark.
   EXPECT_CALL(*error_handler(), Run);
@@ -1421,7 +1421,7 @@ TEST_F(
     BookmarkDataTypeProcessorTest,
     ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataMatchesModel) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   // Expect error twice. First, when new bookmark is added. Next after restart.
   EXPECT_CALL(*error_handler(), Run).Times(2);
@@ -1455,7 +1455,7 @@ TEST_F(
 
   // Simulate browser restart.
   ResetDataTypeProcessor();
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
                                 bookmark_model());
   // Metadata matches model, so tracker should be not null.
@@ -1474,7 +1474,7 @@ TEST_F(
     BookmarkDataTypeProcessorTest,
     ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataDoesNotMatchModel) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   // Expect error twice. First, when new bookmark is added. Next after restart.
   EXPECT_CALL(*error_handler(), Run).Times(2);
@@ -1497,7 +1497,7 @@ TEST_F(
 
   // Simulate browser restart.
   ResetDataTypeProcessor();
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   SimulateModelReadyToSyncWithoutLocalMetadata();
 
   // Metadata does not match model, so tracker should be null.
@@ -1516,7 +1516,7 @@ TEST_F(
   // when max count limit is crossed.
 
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
@@ -1559,7 +1559,7 @@ TEST_F(
 
   // Simulate browser restart.
   ResetDataTypeProcessor();
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   processor()->ModelReadyToSync(metadata_str, base::DoNothing(),
                                 bookmark_model());
   // Should lead to error_handler::Run.
@@ -1573,7 +1573,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfBookmarksCountExceedsLimitAfterInitialUpdate) {
   // Set a limit of 4 bookmarks: 3 permanent nodes and 1 additional node which
   // is different from the remote.
-  processor()->SetLocalBookmarksLimitForTesting(4);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(4);
 
   const std::string kTitle1 = "title1";
   const std::string kUrl1 = "http://www.url1.com";
@@ -1635,7 +1635,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfBookmarksCountExceedsLimitAfterIncrementalUpdate) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   // Expect failure after initial update is merged.
   bool error_reported = false;
@@ -1684,7 +1684,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfInitialUpdatesCrossRemoteLimitButBelowLocalLimit) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   // Expect failure when initial update of count 4 is received.
   bool error_reported = false;
@@ -1747,7 +1747,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfInitialUpdatesCrossRemoteLimit) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   // Expect failure when initial update of count 7 is received (exceeds 2 * 3 =
   // 6).
@@ -1819,7 +1819,7 @@ TEST_F(
     BookmarkDataTypeProcessorTest,
     ShouldMergeButReportErrorIfInitialUpdatesAboveLocalLimitButBelowRemoteLimit) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
@@ -1888,7 +1888,7 @@ TEST_F(
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldSaveRemoteUpdatesCountExceedingLimitResultDuringInitialMerge) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
@@ -1951,7 +1951,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfRemoteBookmarksCountExceededLimitOnLastTry) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   // Expect failure when initial update of count > 6 is received.
   bool error_reported = false;
@@ -2038,7 +2038,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldPersistRemoteBookmarksCountExceedingLimitAcrossBrowserRestarts) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
-  processor()->SetLocalBookmarksLimitForTesting(3);
+  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
   // Expect failure when initial update of count > 6 is received.
   bool error_reported = false;

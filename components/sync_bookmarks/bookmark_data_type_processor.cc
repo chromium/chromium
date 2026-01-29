@@ -522,7 +522,7 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  if (MaybeReportLocalBookmarksCountLimitExceededError(
+  if (MaybeReportBookmarkCountLimitExceededError(
           syncer::ModelError::Type::
               kBookmarksLocalCountExceededLimitOnSyncStart)) {
     return;
@@ -555,11 +555,11 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
   std::move(start_callback_).Run(std::move(activation_context));
 }
 
-bool BookmarkDataTypeProcessor::DoesCountExceedLocalBookmarksSyncLimit(
+bool BookmarkDataTypeProcessor::DoesCountExceedBookmarksSyncLimit(
     size_t count,
     size_t offset) const {
-  if (sync_local_bookmarks_limit_for_tests_.has_value()) {
-    return count > sync_local_bookmarks_limit_for_tests_.value() + offset;
+  if (sync_bookmarks_limit_for_tests_.has_value()) {
+    return count > sync_bookmarks_limit_for_tests_.value() + offset;
   }
   // Count is less than the default limit so should not bother checking against
   // `kSyncBookmarksLimitValue` which is bound to be >= the default limit.
@@ -569,9 +569,8 @@ bool BookmarkDataTypeProcessor::DoesCountExceedLocalBookmarksSyncLimit(
   return count > syncer::kSyncBookmarksLimitValue.Get() + offset;
 }
 
-bool BookmarkDataTypeProcessor::
-    MaybeReportLocalBookmarksCountLimitExceededError(
-        syncer::ModelError::Type error_type) {
+bool BookmarkDataTypeProcessor::MaybeReportBookmarkCountLimitExceededError(
+    syncer::ModelError::Type error_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If `activation_request_.error_handler` is not set, the check is ignored
   // because this gets re-evaluated in ConnectIfReady().
@@ -582,7 +581,7 @@ bool BookmarkDataTypeProcessor::
   const size_t count = bookmark_tracker_
                            ? bookmark_tracker_->TrackedBookmarksCount()
                            : CountSyncableBookmarksFromModel(bookmark_model_);
-  if (DoesCountExceedLocalBookmarksSyncLimit(count)) {
+  if (DoesCountExceedBookmarksSyncLimit(count)) {
     // For the case where a tracker already
     // exists, local changes will continue
     // to be tracked in order order to allow users to delete bookmarks and
@@ -636,7 +635,7 @@ void BookmarkDataTypeProcessor::OnSyncStopping(
 void BookmarkDataTypeProcessor::NudgeForCommitIfNeeded() {
   DCHECK(bookmark_tracker_);
 
-  if (MaybeReportLocalBookmarksCountLimitExceededError(
+  if (MaybeReportBookmarkCountLimitExceededError(
           syncer::ModelError::Type::
               kBookmarksLocalCountExceededLimitNudgeForCommit)) {
     return;
@@ -674,10 +673,9 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   // Higher limit for initial download of remote updates to facilitate cleanup
   // by the user if they are over the standard limit.
-  size_t remote_updates_limit =
-      2 * sync_local_bookmarks_limit_for_tests_.value_or(
-              syncer::kDefaultSyncBookmarksLimit);
-  if (!sync_local_bookmarks_limit_for_tests_.has_value() &&
+  size_t remote_updates_limit = 2 * sync_bookmarks_limit_for_tests_.value_or(
+                                        syncer::kDefaultSyncBookmarksLimit);
+  if (!sync_bookmarks_limit_for_tests_.has_value() &&
       updates.size() > remote_updates_limit) {
     // This is to avoid checking against `kSyncBookmarksLimitValue` when the
     // count is already below the default limit.
@@ -740,10 +738,7 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   schedule_save_closure_.Run();
 
-  // This error is triggered if the number of bookmarks is between the local and
-  // remote limits, allowing the user to delete some bookmarks and recover when
-  // the bookmark count drops below the limit.
-  if (MaybeReportLocalBookmarksCountLimitExceededError(
+  if (MaybeReportBookmarkCountLimitExceededError(
           syncer::ModelError::Type::
               kBookmarksLocalCountExceededLimitAfterInitialMerge)) {
     return;
@@ -768,7 +763,7 @@ void BookmarkDataTypeProcessor::OnIncrementalUpdateReceived(
     updates_handler.Process(updates, got_new_encryption_requirements);
   }
 
-  if (MaybeReportLocalBookmarksCountLimitExceededError(
+  if (MaybeReportBookmarkCountLimitExceededError(
           syncer::ModelError::Type::
               kBookmarksLocalCountExceededLimitOnUpdateReceived)) {
     return;
@@ -998,8 +993,9 @@ void BookmarkDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   }
 }
 
-void BookmarkDataTypeProcessor::SetLocalBookmarksLimitForTesting(size_t limit) {
-  sync_local_bookmarks_limit_for_tests_ = limit;
+void BookmarkDataTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
+    size_t limit) {
+  sync_bookmarks_limit_for_tests_ = limit;
 }
 
 void BookmarkDataTypeProcessor::ClearMetadataIfStopped() {
