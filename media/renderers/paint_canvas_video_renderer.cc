@@ -519,11 +519,11 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
       libyuv::P010ToARGBMatrix(
           reinterpret_cast<const uint16_t*>(
               plane_meta[VideoFrame::Plane::kY].data.get()),
-          plane_meta[VideoFrame::Plane::kY].stride,
+          plane_meta[VideoFrame::Plane::kY].stride / 2,
           reinterpret_cast<const uint16_t*>(
               plane_meta[VideoFrame::Plane::kUV].data.get()),
-          plane_meta[VideoFrame::Plane::kUV].stride, pixels, row_bytes, matrix,
-          width, rows);
+          plane_meta[VideoFrame::Plane::kUV].stride / 2, pixels, row_bytes,
+          matrix, width, rows);
       if (!OUTPUT_ARGB) {
         libyuv::ARGBToABGR(pixels, row_bytes, pixels, row_bytes, width, rows);
       }
