@@ -22,12 +22,42 @@ runTests([
       'onBeforeSendHeaders',
       'onHeadersReceived'
     ];
+
+    // We need to capture the frame IDs dynamically because they can vary
+    // depending on what other features are enabled in the browser, e.g
+    // `kWebUIReloadButton` enables WebUI views which are created by the browser
+    // at startup, and consume frame IDs before this test runs.
+    let expectedParentFrameId = -1;
+    let expectedFencedFrameId = -1;
+    const getFrameIdsListener = (details) => {
+      if (details.url.endsWith('iframe.html')) {
+        expectedParentFrameId = details.frameId;
+      } else if (details.url.endsWith('frame.html')) {
+        expectedFencedFrameId = details.frameId;
+      }
+    };
+    chrome.webRequest.onBeforeRequest.addListener(
+          getFrameIdsListener,{urls: ['<all_urls>']});
+
     chrome.declarativeWebRequest.onMessage.addListener((details) => {
       if (EVENT_MESSAGE_EXTENSION_STRING != details.message) {
         chrome.test.fail('Invalid message: ' + details.message);
       }
-      chrome.test.assertEq(6, details.frameId);
-      chrome.test.assertEq(4, details.parentFrameId);
+
+      // Ensure that we have captured the frame IDs before asserting.
+      // The `onMessage` event is triggered by the request for the fenced frame,
+      // so we should have seen the `onBeforeRequest` for both the parent iframe
+      // (which loads before) and the fenced frame (which is the current
+      // request).
+      chrome.test.assertTrue(
+          expectedParentFrameId !== -1,
+          'Parent frame ID should have been captured');
+      chrome.test.assertTrue(
+          expectedFencedFrameId !== -1,
+          'Fenced frame ID should have been captured');
+
+      chrome.test.assertEq(expectedFencedFrameId, details.frameId);
+      chrome.test.assertEq(expectedParentFrameId, details.parentFrameId);
       chrome.test.assertEq('sub_frame', details.type);
       chrome.test.assertEq('fenced_frame', details.frameType);
       chrome.test.assertEq('active', details.documentLifecycle);
@@ -36,6 +66,7 @@ runTests([
       chrome.test.assertEq(getURLFencedFrame(), details.url);
       chrome.test.assertEq(details.stage, expectedEvents.shift());
       if (expectedEvents.length == 0) {
+        chrome.webRequest.onBeforeRequest.removeListener(getFrameIdsListener);
         chrome.test.succeed();
       }
     });
