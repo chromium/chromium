@@ -25,6 +25,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace {
 
@@ -166,7 +167,7 @@ void Provider::SetPrefs(base::DictValue prefs) {
   // First, check if this is for a migration from around 2013. Likely not.
   if (is_migration_) {
     DCHECK(!perform_new_installation_);
-    std::set<std::string> keys_to_erase;
+    absl::flat_hash_set<std::string> keys_to_erase;
     // Filter out the new pre-installed apps for migrating users, so that we
     // don't randomly install them out of the blue. Two-pass to keep iterators
     // nice and happy.
@@ -206,7 +207,7 @@ void Provider::SetPrefs(base::DictValue prefs) {
       return true;
     };
 
-    std::set<std::string> keys_to_erase;
+    absl::flat_hash_set<std::string> keys_to_erase;
     for (auto entry : prefs) {
       bool should_re_add = should_re_add_app(entry.first, entry.second);
       if (should_re_add) {
