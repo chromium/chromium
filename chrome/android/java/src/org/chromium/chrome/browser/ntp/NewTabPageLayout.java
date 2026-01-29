@@ -718,7 +718,7 @@ public class NewTabPageLayout extends LinearLayout
      */
     float getToolbarTransitionPercentage() {
         // During startup the view may not be fully initialized.
-        if (!mScrollDelegate.isScrollViewInitialized()) return 0f;
+        if (!mScrollDelegate.isScrollViewInitialized() || getSearchBoxView() == null) return 0f;
 
         if (isSearchBoxOffscreen()) {
             // getVerticalScrollOffset is valid only for the scroll view if the first item is
