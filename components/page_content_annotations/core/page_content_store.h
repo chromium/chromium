@@ -19,19 +19,6 @@ class Statement;
 
 namespace optimization_guide {
 
-// Defines the result of a page content fetch from the store.
-struct PageContentResult {
-  PageContentResult();
-  ~PageContentResult();
-  PageContentResult(PageContentResult&&);
-  PageContentResult& operator=(PageContentResult&&);
-
-  GURL url;
-  base::Time navigation_timestamp;
-  base::Time extraction_time;
-  proto::PageContext page_context;
-};
-
 // Stores page content (in the form of PageContext protos) in an
 // SQLite database.
 class PageContentStore {
@@ -64,8 +51,7 @@ class PageContentStore {
   std::optional<proto::PageContext> GetPageContent(const GURL& url);
 
   // Retrieves the page content for a given tab ID.
-  std::optional<optimization_guide::PageContentResult> GetPageContentForTab(
-      int64_t tab_id);
+  std::optional<proto::PageContext> GetPageContentForTab(int64_t tab_id);
 
   // Deletes page content, where visit timestamp older than a given `timestamp`.
   bool DeletePageContentOlderThan(base::Time timestamp);
@@ -87,9 +73,6 @@ class PageContentStore {
 
   // The error callback for the database.
   void OnDatabaseError(int extended_error, sql::Statement* stmt);
-
-  std::optional<optimization_guide::PageContentResult>
-  GetPageContentAndMetadataFromStatement(sql::Statement* statement);
 
   std::optional<proto::PageContext> GetPageContentFromStatement(
       sql::Statement* statement);

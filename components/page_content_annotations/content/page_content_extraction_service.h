@@ -85,9 +85,6 @@ class PageContentExtractionService : public KeyedService,
   // Called when a closed tab is undone.
   void OnTabCloseUndone(int64_t tab_id);
 
-  // Called when a tab closure is committed and can't be undone anymore.
-  void TabClosureCommitted(int64_t tab_id);
-
   // Called when the visibility of a WebContents changes.
   void OnVisibilityChanged(std::optional<int64_t> tab_id,
                            content::WebContents* web_contents,

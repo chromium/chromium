@@ -378,15 +378,9 @@ void ComposeboxQueryControllerBridge::OnGetTabPageContext(
 void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
     JNIEnv* env,
     const base::UnguessableToken& context_token,
-    std::optional<optimization_guide::PageContentResult> page_result) {
+    std::optional<optimization_guide::proto::PageContext> page_context) {
   // TODO(crbug.com/457869241): Merge this and the code in
   // TabContextualizationController.
-  if (!page_result.has_value()) {
-    return;
-  }
-
-  std::optional<optimization_guide::proto::PageContext> page_context =
-      std::move(page_result->page_context);
   if (!page_context.has_value()) {
     OnFileUploadStatusChanged(
         context_token, lens::MimeType::kUnknown,

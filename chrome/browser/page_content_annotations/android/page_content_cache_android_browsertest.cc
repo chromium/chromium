@@ -182,20 +182,20 @@ IN_PROC_BROWSER_TEST_F(PageContentCacheBrowserTest,
   AddTab(url1);
 
   cache_observer.WaitForPopulated(tab_id1);
-  base::test::TestFuture<std::optional<optimization_guide::PageContentResult>>
+  base::test::TestFuture<std::optional<optimization_guide::proto::PageContext>>
       future1;
   cache->GetPageContentForTab(tab_id1, future1.GetCallback());
-  auto result1 = future1.Take();
+  auto result1 = future1.Get();
   EXPECT_TRUE(result1.has_value());
 
   // Close tab: tab_id1, it should delete the cached contents.
   CloseTab(tab_id1);
 
   cache_observer.WaitForRemoved(tab_id1);
-  base::test::TestFuture<std::optional<optimization_guide::PageContentResult>>
+  base::test::TestFuture<std::optional<optimization_guide::proto::PageContext>>
       future_after_close;
   cache->GetPageContentForTab(tab_id1, future_after_close.GetCallback());
-  auto result_after_close = future_after_close.Take();
+  auto result_after_close = future_after_close.Get();
   EXPECT_FALSE(result_after_close.has_value());
 }
 

@@ -56,11 +56,6 @@ void PageContentExtractionTabModelObserverAndroid::WillCloseTab(
   service_->OnTabClosed(tab->GetAndroidId());
 }
 
-void PageContentExtractionTabModelObserverAndroid::TabClosureCommitted(
-    TabAndroid* tab) {
-  service_->TabClosureCommitted(tab->GetAndroidId());
-}
-
 void PageContentExtractionTabModelObserverAndroid::TabClosureUndone(
     TabAndroid* tab) {
   service_->OnTabCloseUndone(tab->GetAndroidId());

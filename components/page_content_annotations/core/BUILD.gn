@@ -111,7 +111,6 @@ source_set("unit_tests") {
     "page_content_annotations_features_unittest.cc",
     "page_content_annotations_service_unittest.cc",
     "page_content_annotations_validator_unittest.cc",
-    "page_content_cache_handler_unittest.cc",
     "page_content_cache_unittest.cc",
     "page_content_store_unittest.cc",
   ]

@@ -15,6 +15,22 @@ namespace page_content_annotations {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with PageContentExtractionAndCachingStatus in enums.xml.
+// LINT.IfChange(PageContentExtractionAndCachingStatus)
+enum class PageContentExtractionAndCachingStatus {
+  kUnknown = 0,
+  kExtractionObservedInForeground = 1,
+  kExtractionObservedInBackground = 2,
+  kContentsAvailableWhenBackgrounded = 3,
+  kContentsNotAvailableWhenBackgrounded = 4,
+  kContentsDeletedOnTabClose = 5,
+  kContentsDeletedOnTabUpdate = 6,
+  kMaxValue = kContentsDeletedOnTabUpdate,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/optimization/enums.xml:PageContentExtractionAndCachingStatus)
+
 void RecordExtractionAndCachingStatus(
     PageContentExtractionAndCachingStatus status) {
   base::UmaHistogramEnumeration(
@@ -22,29 +38,6 @@ void RecordExtractionAndCachingStatus(
 }
 
 }  // namespace
-
-void PageContentCacheHandler::OnPageContentRetrievedForClosedTab(
-    int64_t tab_id,
-    std::optional<optimization_guide::PageContentResult> result) {
-  if (!result.has_value()) {
-    return;
-  }
-
-  // The closed tab may have been reopened or committed to closure by the time
-  // we get to update the cache. In either case, ignore the cached contents.
-  auto it = closed_tabs_.find(tab_id);
-  if (it == closed_tabs_.end()) {
-    return;
-  }
-
-  std::unique_ptr<optimization_guide::PageContentResult> data =
-      std::make_unique<optimization_guide::PageContentResult>();
-  data->url = result->url;
-  data->navigation_timestamp = result->navigation_timestamp;
-  data->extraction_time = result->extraction_time;
-  data->page_context = std::move(result->page_context);
-  closed_tabs_[tab_id] = std::move(data);
-}
 
 PageContentCacheHandler::PageContentCacheHandler(
     os_crypt_async::OSCryptAsync* os_crypt_async,
@@ -58,35 +51,16 @@ PageContentCacheHandler::PageContentCacheHandler(
 PageContentCacheHandler::~PageContentCacheHandler() = default;
 
 void PageContentCacheHandler::OnTabClosed(int64_t tab_id) {
-  // Asynchronously fetch content to avoid blocking the UI thread. Stores
-  // tab ID in the map so that we can track and prevent double-caching
-  // (cached content associated with the tab ID in both the closed tabs map and
-  // the non-closed tabs database) as well as avoid potential race conditions
-  // where the tab closure is committed before we finish fetching the content.
-  closed_tabs_[tab_id] = nullptr;
-  page_content_cache_->GetPageContentForTab(
-      tab_id, base::BindOnce(
-                  &PageContentCacheHandler::OnPageContentRetrievedForClosedTab,
-                  weak_ptr_factory_.GetWeakPtr(), tab_id));
+  closed_tabs_.insert(tab_id);
   RecordExtractionAndCachingStatus(
       PageContentExtractionAndCachingStatus::kContentsDeletedOnTabClose);
   page_content_cache_->RemovePageContentForTab(tab_id);
 }
 
 void PageContentCacheHandler::OnTabCloseUndone(int64_t tab_id) {
-  auto it = closed_tabs_.find(tab_id);
-  if (it == closed_tabs_.end()) {
-    return;
-  }
-  const std::unique_ptr<optimization_guide::PageContentResult> data =
-      std::move(it->second);
-  closed_tabs_.erase(it);
-  if (data) {
-    UpdateCache(tab_id, data->url, data->navigation_timestamp,
-                data->extraction_time, std::move(data->page_context));
-    RecordExtractionAndCachingStatus(PageContentExtractionAndCachingStatus::
-                                         kContentsAvailableOnTabCloseUndone);
-  }
+  // TODO(haileywang): It would be nice to also restore the deleted page
+  // contents.
+  closed_tabs_.erase(tab_id);
 }
 
 void PageContentCacheHandler::OnVisibilityChanged(
@@ -109,9 +83,10 @@ void PageContentCacheHandler::OnVisibilityChanged(
   // contents. This is to avoid losing context if tab was killed as soon as it
   // was hidden. If extraction succeeds, then cache would be updated again in
   // ProcessPageContentExtraction().
-  UpdateCache(*tab_id, web_state.last_committed_url,
-              web_state.navigation_timestamp, extraction_time,
-              std::move(*page_context));
+
+  page_content_cache_->CachePageContent(*tab_id, web_state.last_committed_url,
+                                        web_state.navigation_timestamp,
+                                        extraction_time, *page_context);
   RecordExtractionAndCachingStatus(PageContentExtractionAndCachingStatus::
                                        kContentsAvailableWhenBackgrounded);
 }
@@ -126,15 +101,6 @@ void PageContentCacheHandler::OnNewNavigation(
       PageContentExtractionAndCachingStatus::kContentsDeletedOnTabUpdate);
   // Delete cached contents for the tab_id when page is updated.
   page_content_cache_->RemovePageContentForTab(*tab_id);
-}
-
-void PageContentCacheHandler::TabClosureCommitted(int64_t tab_id) {
-  // We only remove the value of the cache here, and not the tab id itself
-  // in case events such as OnVisibilityChanged are received after the closure
-  // is committed. Keeping the tab id here allows us to keep tracking the tab
-  // as closed, and avoid trying to extract its web contents and caching it.
-  closed_tabs_.erase(tab_id);
-  committed_closed_tabs_.insert(tab_id);
 }
 
 void PageContentCacheHandler::ProcessPageContentExtraction(
@@ -152,9 +118,9 @@ void PageContentCacheHandler::ProcessPageContentExtraction(
   if (web_state.visibility == PageContentVisibility::kHidden) {
     RecordExtractionAndCachingStatus(
         PageContentExtractionAndCachingStatus::kExtractionObservedInBackground);
-    UpdateCache(*tab_id, web_state.last_committed_url,
-                web_state.navigation_timestamp, extraction_time,
-                std::move(page_context));
+    page_content_cache_->CachePageContent(*tab_id, web_state.last_committed_url,
+                                          web_state.navigation_timestamp,
+                                          extraction_time, page_context);
   } else {
     RecordExtractionAndCachingStatus(
         PageContentExtractionAndCachingStatus::kExtractionObservedInForeground);
@@ -162,22 +128,7 @@ void PageContentCacheHandler::ProcessPageContentExtraction(
 }
 
 bool PageContentCacheHandler::IsTabClosed(int64_t tab_id) const {
-  return closed_tabs_.contains(tab_id) ||
-         committed_closed_tabs_.contains(tab_id);
-}
-
-void PageContentCacheHandler::UpdateCache(
-    int64_t tab_id,
-    const GURL& url,
-    const base::Time& navigation_timestamp,
-    const base::Time& extraction_time,
-    const optimization_guide::proto::PageContext& page_context) {
-  if (IsTabClosed(tab_id)) {
-    return;
-  }
-  page_content_cache_->CachePageContent(tab_id, url, navigation_timestamp,
-                                        extraction_time,
-                                        std::move(page_context));
+  return closed_tabs_.count(tab_id) > 0;
 }
 
 }  // namespace page_content_annotations
