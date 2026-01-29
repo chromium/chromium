@@ -181,8 +181,8 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual bool ShouldUseMappableSharedImagesForVideoFrames(
       bool for_media_stream) const = 0;
 
-  // Pixel format of the hardware video frames created when GpuMemoryBuffers
-  // video frames are enabled.
+  // Pixel format of the hardware video frames created when video frames backed
+  // by mappable SharedImages are enabled.
   virtual OutputFormat VideoFrameOutputFormat(
       VideoPixelFormat pixel_format) = 0;
 
