@@ -133,6 +133,7 @@ crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_GPURasterWithCanv
 # Win 11 AMD RX 5500XT
 crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
 crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
+crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
 crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
 
 # Win 11 / GTX 1660 timeouts
