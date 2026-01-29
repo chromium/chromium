@@ -36,6 +36,14 @@ void FrameSinkThrottler::SetCadenceThrottleInterval(base::TimeDelta interval) {
   UpdateBeginFrameInterval();
 }
 
+void FrameSinkThrottler::SetThrottledDueToInteraction(bool throttled) {
+  if (throttled_due_to_interaction_ == throttled) {
+    return;
+  }
+  throttled_due_to_interaction_ = throttled;
+  UpdateBeginFrameInterval();
+}
+
 void FrameSinkThrottler::SetLastKnownVsync(
     base::TimeDelta interval,
     base::TimeDelta unthrottled_interval) {
@@ -55,6 +63,9 @@ void FrameSinkThrottler::UpdateBeginFrameInterval() {
     return;
   }
 
+  // Fall back to explicitly-requested throttle interval if neither
+  // simple cadence throttling nor interaction throttling is
+  // possible.
   base::TimeDelta interval = throttle_interval_;
 
   if (IsThrottledBySimpleCadence()) {
@@ -63,13 +74,26 @@ void FrameSinkThrottler::UpdateBeginFrameInterval() {
     //
     // For now, simple cadence wins to avoid stuttering.
     interval = cadence_throttle_interval_;
+  } else if (throttled_due_to_interaction_) {
+    // Halve the framerate of the last known vsync interval
+    constexpr int kInteractiveThrottleScalar = 2;
+    base::TimeDelta vsync_interval = BeginFrameArgs::DefaultInterval();
+
+    // If the unthrottled vsync interval is known, use it instead of the
+    // default.
+    if (last_known_vsync_unthrottled_interval_.is_positive()) {
+      vsync_interval = last_known_vsync_unthrottled_interval_;
+    }
+
+    // Longest interval wins
+    interval = std::max(interval, vsync_interval * kInteractiveThrottleScalar);
   }
 
   begin_frame_interval_ = interval;
 }
 
 bool FrameSinkThrottler::IsThrottledBySimpleCadence() const {
-  if (!throttling_allowed_ || !cadence_throttle_interval_.is_positive()) {
+  if (!cadence_throttle_interval_.is_positive()) {
     return false;
   }
 

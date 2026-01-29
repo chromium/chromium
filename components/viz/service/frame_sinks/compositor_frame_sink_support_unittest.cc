@@ -2611,7 +2611,7 @@ TEST_F(VideoCadenceThrottlingTest, CadenceThrottlingResumes) {
       std::nullopt, 0);
 
   // Verify throttled.
-  EXPECT_TRUE(support_->GetThrottlerForTesting().IsThrottledBySimpleCadence());
+  EXPECT_TRUE(support_->GetThrottlerForTesting().throttling_allowed());
   EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
             kVideoInterval);
 
@@ -2621,7 +2621,7 @@ TEST_F(VideoCadenceThrottlingTest, CadenceThrottlingResumes) {
       CompositorFrameBuilder().AddDefaultRenderPass().Build(), std::nullopt, 0);
 
   // Verify unthrottled.
-  EXPECT_FALSE(support_->GetThrottlerForTesting().IsThrottledBySimpleCadence());
+  EXPECT_TRUE(support_->GetThrottlerForTesting().throttling_allowed());
   EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
             base::TimeDelta());
 
@@ -2637,7 +2637,7 @@ TEST_F(VideoCadenceThrottlingTest, CadenceThrottlingResumes) {
       std::nullopt, 0);
 
   // Verify throttled again.
-  EXPECT_TRUE(support_->GetThrottlerForTesting().IsThrottledBySimpleCadence());
+  EXPECT_TRUE(support_->GetThrottlerForTesting().throttling_allowed());
   EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
             kVideoInterval);
 }
@@ -2663,7 +2663,7 @@ TEST_F(VideoCadenceThrottlingTest, CaptureOverridesCadenceThrottling) {
       std::nullopt, 0);
 
   // Verify NOT throttled because of capture.
-  EXPECT_FALSE(support_->GetThrottlerForTesting().IsThrottledBySimpleCadence());
+  EXPECT_FALSE(support_->GetThrottlerForTesting().throttling_allowed());
   EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
             base::TimeDelta());
 
@@ -2671,7 +2671,7 @@ TEST_F(VideoCadenceThrottlingTest, CaptureOverridesCadenceThrottling) {
   support_->OnClientCaptureStopped();
 
   // Verify throttled now.
-  EXPECT_TRUE(support_->GetThrottlerForTesting().IsThrottledBySimpleCadence());
+  EXPECT_TRUE(support_->GetThrottlerForTesting().throttling_allowed());
   EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
             kVideoInterval);
 }

@@ -41,6 +41,10 @@ class VIZ_SERVICE_EXPORT FrameSinkThrottler {
   // stutter.
   void SetCadenceThrottleInterval(base::TimeDelta interval);
 
+  // Sets whether the frame sink should be throttled due to user interaction
+  // with another frame sink.
+  void SetThrottledDueToInteraction(bool throttled);
+
   // Sets the last known vsync interval, used to calculate simple cadence.
   void SetLastKnownVsync(base::TimeDelta interval,
                          base::TimeDelta unthrottled_interval);
@@ -51,41 +55,44 @@ class VIZ_SERVICE_EXPORT FrameSinkThrottler {
   bool throttling_allowed() const { return throttling_allowed_; }
 
   // Returns true if the current begin frame interval is throttled by a simple
-  // cadence. A simple cadence means the throttled interval is a perfect
+  // cadence. A simple cadence means the throttled interval is an integer
   // multiple of the display refresh rate.
   bool IsThrottledBySimpleCadence() const;
 
  private:
   void UpdateBeginFrameInterval();
 
-  // The interval to which this frame sink will be throttled to. This will be
-  // used unless the interaction throttling results in a larger value, in
-  // which case that will be used instead.
+  // Explicitly-set throttle_interval, used unless the interaction throttling
+  // results in a larger value or cadence throttling is possible.
   base::TimeDelta throttle_interval_;
 
   // If false, the begin frame interval will be base::TimeDelta() regardless of
   // any other throttling.
   bool throttling_allowed_ = true;
 
-  // The interval to which this frame sink will be throttled to if it's
-  // possible to do it with a simple cadence. A simple cadence means that we
+  // The interval that this frame sink will be throttled to if it's
+  // possible to do so with a simple cadence. A simple cadence means that we
   // can go from the original frame rate to a target frame rate without
-  // introducing stutter. For example we can go from 60hz to 30hz without
-  // issues, but going from 60hz to 24hz would cause a problem as it does not
-  // evenly divide.
+  // introducing stutter because the original frame rate is an integer
+  // multiple of the target frame rate.
+  //
+  // For example, throttling from 60hz to 30hz works while throttling from 60hz
+  // to 24hz does not.
   base::TimeDelta cadence_throttle_interval_;
 
-  // This value represents throttling on sending a BeginFrame. If non-zero, it
-  // represents the duration of time in between sending two consecutive
-  // frames. If zero, no throttling would be applied.
+  // True if another frame sink is being interacted with. If so this frame sink
+  // will throttle to prioritize giving resources to the interactive frame sink.
+  bool throttled_due_to_interaction_ = false;
+
+  // If non-zero, this represents the duration of time in between sending two
+  // consecutive frames. If zero, no throttling would be applied.
   base::TimeDelta begin_frame_interval_;
 
-  // The interval of the last vsync - potentially this value is unknown & if
-  // that is the case this value will be zero.
+  // The interval of the last vsync. If unknown, the value is 0.
   base::TimeDelta last_known_vsync_interval_;
 
-  // The unthrottled interval of the last vsync - which is the shortest
-  // interval possible for the current display
+  // The unthrottled interval of the last vsync, which is the shortest
+  // interval possible for the current display.
   base::TimeDelta last_known_vsync_unthrottled_interval_;
 };
 
