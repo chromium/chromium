@@ -1,15 +1,15 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_MUTATOR_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_MUTATOR_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_MUTATOR_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_MUTATOR_H_
 
 class GURL;
 
 // Mutator protocol for the view controller to communicate with the
 // `BWGSettingsMediator`.
-@protocol BWGSettingsMutator
+@protocol GeminiSettingsMutator
 
 // Handles tap on learn about your choices.
 - (void)openNewTabWithURL:(const GURL&)URL;
@@ -28,4 +28,4 @@ class GURL;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_MUTATOR_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_MUTATOR_H_

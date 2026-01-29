@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/grit/ios_branded_strings.h"

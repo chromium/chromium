@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mutator.h"
 
 class AuthenticationService;
 @protocol BWGSettingsConsumer;
@@ -15,7 +15,7 @@ class PrefService;
 @protocol SceneCommands;
 
 // BWG Mediator.
-@interface BWGSettingsMediator : NSObject <BWGSettingsMutator>
+@interface BWGSettingsMediator : NSObject <GeminiSettingsMutator>
 
 // The scene commands handler for this mediator.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;

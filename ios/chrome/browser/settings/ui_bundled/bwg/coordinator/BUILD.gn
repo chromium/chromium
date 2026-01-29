@@ -25,6 +25,6 @@ source_set("coordinator") {
 }
 
 source_set("protocols") {
-  sources = [ "bwg_settings_mutator.h" ]
+  sources = [ "gemini_settings_mutator.h" ]
   frameworks = [ "UIKit.framework" ]
 }

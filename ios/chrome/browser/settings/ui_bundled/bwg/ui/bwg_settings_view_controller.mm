@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_dynamic_settings_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_action.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_action_type.h"

@@ -117,7 +117,7 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   }
 }
 
-#pragma mark - BWGSettingsMutator
+#pragma mark - GeminiSettingsMutator
 
 - (void)openNewTabWithURL:(const GURL&)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];

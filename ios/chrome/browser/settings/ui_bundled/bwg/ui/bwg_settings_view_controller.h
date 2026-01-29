@@ -9,14 +9,14 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
-@protocol BWGSettingsMutator;
+@protocol GeminiSettingsMutator;
 
 // View controller related to BWG setting.
 @interface BWGSettingsViewController
     : SettingsRootTableViewController <BWGSettingsConsumer,
                                        SettingsControllerProtocol>
 
-@property(nonatomic, weak) id<BWGSettingsMutator> mutator;
+@property(nonatomic, weak) id<GeminiSettingsMutator> mutator;
 
 @end
 
