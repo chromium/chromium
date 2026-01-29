@@ -68,13 +68,19 @@ constexpr int kMaxIcons = 20;
 constexpr SquareSizePx kMaxIconSize =
     webapps::InstallableEvaluator::kMaximumIconSizeInPx;
 
+// Concept to ensure a map type has icu::Locale as its key type.
+template <typename MapType>
+concept IsMapKeyedLocale =
+    std::same_as<typename MapType::key_type, icu::Locale>;
+
 // Finds a value in a locale-keyed map, first trying exact match, then
 // language-only fallback.
 // The returned pointer is only valid as long as |localized_map| remains
 // unmodified. Callers must use the result immediately and not store it.
-template <typename T>
-const T* FindLocalizedValue(const base::flat_map<icu::Locale, T>& localized_map,
-                            const icu::Locale& application_locale) {
+template <IsMapKeyedLocale MapType>
+const typename MapType::mapped_type* FindLocalizedValue(
+    const MapType& localized_map,
+    const icu::Locale& application_locale) {
   if (localized_map.empty()) {
     return nullptr;
   }
@@ -100,6 +106,34 @@ blink::mojom::ManifestLocalizedTextObjectPtr MatchLocalizedText(
   const blink::mojom::ManifestLocalizedTextObjectPtr* result =
       FindLocalizedValue(localized_map, application_locale);
   return result ? (*result).Clone() : nullptr;
+}
+
+const std::vector<blink::Manifest::ImageResource>& GetLocalizedShortcutIcons(
+    const blink::Manifest::ShortcutItem& shortcut,
+    const icu::Locale& application_locale) {
+  if (shortcut.icons_localized.has_value() &&
+      !shortcut.icons_localized->empty()) {
+    const std::vector<blink::Manifest::ImageResource>* localized_icons =
+        FindLocalizedValue(*shortcut.icons_localized, application_locale);
+    if (localized_icons && !localized_icons->empty()) {
+      return *localized_icons;
+    }
+  }
+  return shortcut.icons;
+}
+
+const std::u16string& GetLocalizedShortcutName(
+    const blink::Manifest::ShortcutItem& shortcut,
+    const icu::Locale& application_locale) {
+  if (shortcut.name_localized.has_value() &&
+      !shortcut.name_localized->empty()) {
+    const blink::Manifest::ManifestLocalizedTextObject* localized =
+        FindLocalizedValue(*shortcut.name_localized, application_locale);
+    if (localized && !localized->value.empty()) {
+      return localized->value;
+    }
+  }
+  return shortcut.name;
 }
 
 LocalizedText GetLocalizedTitleFromManifestFields(
@@ -254,7 +288,10 @@ void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
 // blink::Manifest's shortcuts vector.
 void PopulateWebAppShortcutsMenuItemInfos(
     const std::vector<blink::Manifest::ShortcutItem>& shortcuts,
-    WebAppInstallInfo* web_app_info) {
+    WebAppInstallInfo* web_app_info,
+    const icu::Locale& application_locale) {
+  const bool localization_enabled = base::FeatureList::IsEnabled(
+      blink::features::kWebAppManifestLocalization);
   std::vector<WebAppShortcutsMenuItemInfo> web_app_shortcut_infos;
   web_app_shortcut_infos.reserve(shortcuts.size());
   int num_shortcut_icons = 0;
@@ -264,12 +301,20 @@ void PopulateWebAppShortcutsMenuItemInfos(
     }
 
     WebAppShortcutsMenuItemInfo shortcut_info;
-    shortcut_info.name = shortcut.name;
+    shortcut_info.name =
+        localization_enabled
+            ? GetLocalizedShortcutName(shortcut, application_locale)
+            : shortcut.name;
     shortcut_info.url = shortcut.url;
+
+    const std::vector<blink::Manifest::ImageResource>& shortcut_icons_list =
+        localization_enabled
+            ? GetLocalizedShortcutIcons(shortcut, application_locale)
+            : shortcut.icons;
 
     for (IconPurpose purpose : kIconPurposes) {
       std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons;
-      for (const auto& icon : shortcut.icons) {
+      for (const auto& icon : shortcut_icons_list) {
         CHECK(!icon.purpose.empty());
         if (!std::ranges::contains(icon.purpose, purpose)) {
           continue;
@@ -821,7 +866,8 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
 
   CHECK(install_info().shortcuts_menu_item_infos.empty());
-  PopulateWebAppShortcutsMenuItemInfos(manifest_->shortcuts, &install_info());
+  PopulateWebAppShortcutsMenuItemInfos(manifest_->shortcuts, &install_info(),
+                                       application_locale);
 
   for (const auto& migrate_from : manifest_->migrate_from) {
     install_info().migration_sources.push_back(
