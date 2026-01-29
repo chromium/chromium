@@ -63,14 +63,19 @@ void EnableDeprecateUnloadFeatures(
   base::FieldTrialParams main_params;
   if (percent) {
     main_params[network::features::kDeprecateUnloadPercent.name] =
-        base::StringPrintf("%d", percent.value());
-  }
-  if (bucket) {
-    main_params[network::features::kDeprecateUnloadBucket.name] =
-        base::StringPrintf("%d", bucket.value());
+        base::NumberToString(percent.value());
   }
   enabled_features.emplace_back(network::features::kDeprecateUnload,
                                 main_params);
+
+  if (bucket) {
+    enabled_features.push_back(
+        {network::features::kDeprecateUnloadByBucket,
+         {{network::features::kDeprecateUnloadBucket.name,
+           base::NumberToString(bucket.value())}}});
+  } else {
+    disabled_features.push_back(network::features::kDeprecateUnloadByBucket);
+  }
 
   if (origin_allowlist) {
     enabled_features.push_back(

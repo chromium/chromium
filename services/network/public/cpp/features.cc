@@ -413,20 +413,16 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
 // Enables unload handler deprecation via Permissions-Policy.
 // https://crbug.com/1324111
 BASE_FEATURE(kDeprecateUnload, base::FEATURE_DISABLED_BY_DEFAULT);
-// If < 100, each user experiences the deprecation on this % of origins.
-// Which origins varies per user.
+// If < 100, each user experiences the deprecation on this % of origins. Which
+// origins varies by which bucket the user is in. This parameter only takes
+// effect if DeprecateUnloadByBucket is enabled. They are are separated so that
+// the bucketing can be applied too all users in a separate study (more details
+// below).
 BASE_FEATURE_PARAM(int,
                    kDeprecateUnloadPercent,
                    &kDeprecateUnload,
                    "rollout_percent",
                    100);
-// This buckets users, with users in each bucket having a consistent experience
-// of the unload deprecation rollout.
-BASE_FEATURE_PARAM(int,
-                   kDeprecateUnloadBucket,
-                   &kDeprecateUnload,
-                   "rollout_bucket",
-                   0);
 
 // Only used if `kDeprecateUnload` is enabled. The deprecation will only apply
 // if the host is on the allow-list.
@@ -438,6 +434,23 @@ BASE_FEATURE_PARAM(std::string,
                    &kDeprecateUnloadByAllowList,
                    "allowlist",
                    "");
+
+// Only used if `kDeprecateUnload` is enabled. The deprecation will only apply
+// if the host+bucket hash below `kDeprecateUnloadPercent` above.
+// It's attached to a separate flag so that we can have a study with 100 groups,
+// assigning a bucket to every user and leave that as a static assignment, using
+// another study to control what fraction of users experience a specific value
+// of `kDeprecateUnloadPercent`. Doing both in one study greatly complicates the
+// study because we must deal in 100 1% groups.
+BASE_FEATURE(kDeprecateUnloadByBucket, base::FEATURE_DISABLED_BY_DEFAULT);
+// This buckets users, with users in each bucket having a consistent experience
+// of the unload deprecation rollout.
+BASE_FEATURE_PARAM(int,
+                   kDeprecateUnloadBucket,
+                   &kDeprecateUnloadByBucket,
+                   "rollout_bucket",
+                   0);
+
 // When enabled, a `Sec-Fetch-Frame-Top` header will be emitted on
 // outgoing requests.
 BASE_FEATURE(kFrameTopHeader, base::FEATURE_DISABLED_BY_DEFAULT);

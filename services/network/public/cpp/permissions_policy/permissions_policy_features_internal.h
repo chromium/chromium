@@ -25,9 +25,10 @@ bool UnloadDeprecationAllowedForHost(
     const std::string& host,
     const std::unordered_set<std::string>& hosts);
 
-// Checks `origin` against all criteria:
+// Checks `origin` against all criteria enabled by features/params
 // - the hosts listed in `kDeprecateUnloadAllowlist`
 // - the gradual rollout percentage
+// - the bucketing of origins
 // If `origin` is an opaque origin, the precursor origin is used.
 COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin);

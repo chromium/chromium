@@ -8364,12 +8364,33 @@
                     "name": "Enabled_145",
                     "params": {
                         "allowlist": "a.com,b.com,c.com,d.com,e.com,f.com,web-platform.test,www1.web-platform.test,127.0.0.1,example.test,www.google.com",
-                        "rollout_bucket": "0",
                         "rollout_percent": "1"
                     },
                     "enable_features": [
                         "DeprecateUnload",
                         "DeprecateUnloadByAllowList"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DeprecateUnloadByBucket": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_145",
+                    "params": {
+                        "rollout_bucket": "1"
+                    },
+                    "enable_features": [
+                        "DeprecateUnloadByBucket"
                     ]
                 }
             ]

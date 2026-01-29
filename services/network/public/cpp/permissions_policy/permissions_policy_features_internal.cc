@@ -79,9 +79,16 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
     }
   }
 
-  return IsIncludedInGradualRollout(
-      shp.host(), network::features::kDeprecateUnloadPercent.Get(),
-      network::features::kDeprecateUnloadBucket.Get());
+  // If enabled, apply the bucketting.
+  if (base::FeatureList::IsEnabled(
+          network::features::kDeprecateUnloadByBucket)) {
+    return IsIncludedInGradualRollout(
+        shp.host(), network::features::kDeprecateUnloadPercent.Get(),
+        network::features::kDeprecateUnloadBucket.Get());
+  }
+
+  // With no allowlist and no by-bucket, all hosts are included.
+  return true;
 }
 
 }  // namespace network
