@@ -120,9 +120,6 @@ class PLATFORM_EXPORT CanvasResource
   HighEntropyCanvasOpType HighEntropyCanvasOpTypes() const {
     return high_entropy_canvas_op_types_;
   }
-  void SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpType types) {
-    high_entropy_canvas_op_types_ = types;
-  }
 
   // Provides a StaticBitmapImage wrapping this resource. Commonly used for
   // snapshots not used in compositing (for instance to draw to another canvas).
