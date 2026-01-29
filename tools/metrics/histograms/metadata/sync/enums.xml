@@ -1554,7 +1554,6 @@ chromium-metrics-reviews@google.com.
       label="kAutofillValuableMetadataTransactionCommitFailedOnIncrementalSync"/>
   <int value="190" label="kAutofillValuableMetadataFailedToLoadMetadata"/>
   <int value="191" label="kDataTypeControllerInFailedState"/>
-  <int value="192" label="kBookmarksLocalCountExceededLimitAfterInitialMerge"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->

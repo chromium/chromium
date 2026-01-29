@@ -1302,7 +1302,7 @@ class ProfileMenuViewBookmarksLimitExceededTest
   }
 
   void SimulateBookmarksLimitExceededError() {
-    bookmark_sync_service_->SetLocalBookmarksLimitForTesting(0);
+    bookmark_sync_service_->SetBookmarksLimitForTesting(0);
 
     // Add a bookmark to trigger the check.
     bookmarks::BookmarkModel* model =

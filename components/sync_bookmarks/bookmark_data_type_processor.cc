@@ -671,24 +671,13 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   TRACE_EVENT0("sync", "BookmarkDataTypeProcessor::OnInitialUpdateReceived");
 
-  // Higher limit for initial download of remote updates to facilitate cleanup
-  // by the user if they are over the standard limit.
-  size_t remote_updates_limit = 2 * sync_bookmarks_limit_for_tests_.value_or(
-                                        syncer::kDefaultSyncBookmarksLimit);
-  if (!sync_bookmarks_limit_for_tests_.has_value() &&
-      updates.size() > remote_updates_limit) {
-    // This is to avoid checking against `kSyncBookmarksLimitValue` when the
-    // count is already below the default limit.
-    remote_updates_limit = 2 * syncer::kSyncBookmarksLimitValue.Get();
-  }
-
   // Report error if count of remote updates is more than the limit.
   // `updates` can contain an additional root folder. The server may or may not
   // deliver a root node - it is not guaranteed, but this works as an
   // approximated safeguard.
   // Note that we are not having this check for incremental updates as it is
   // very unlikely that there will be many updates downloaded.
-  if (updates.size() > remote_updates_limit) {
+  if (DoesCountExceedBookmarksSyncLimit(updates.size(), /*offset=*/1)) {
     DisconnectSync();
     initial_merge_remote_updates_exceeded_limit_timestamp_ = base::Time::Now();
     activation_request_.error_handler.Run(syncer::ModelError(
@@ -737,13 +726,6 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
                                activation_request_.configuration_start_time);
 
   schedule_save_closure_.Run();
-
-  if (MaybeReportBookmarkCountLimitExceededError(
-          syncer::ModelError::Type::
-              kBookmarksLocalCountExceededLimitAfterInitialMerge)) {
-    return;
-  }
-
   NudgeForCommitIfNeeded();
 }
 
