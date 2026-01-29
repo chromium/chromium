@@ -10010,21 +10010,6 @@
             ]
         }
     ],
-    "EnableClipboardDataControlsIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableClipboardDataControlsIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCustomInputStreamBufferSize": [
         {
             "platforms": [
