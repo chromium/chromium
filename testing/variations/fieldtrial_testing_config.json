@@ -7892,6 +7892,38 @@
             ]
         }
     ],
+    "CrossDevicePrefTracker": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "HomeModulePrefRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrostiniContainerless": [
         {
             "platforms": [
@@ -13118,21 +13150,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UseAlternateHistorySyncIllustration"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HomeModulePrefRefactor": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HomeModulePrefRefactor"
                     ]
                 }
             ]
