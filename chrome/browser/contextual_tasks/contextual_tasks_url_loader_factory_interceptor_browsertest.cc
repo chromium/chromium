@@ -36,6 +36,7 @@ namespace {
 
 const char kTestEmail[] = "test@example.com";
 const char kTestHost[] = "www.google.com";
+const char kTestSubHost[] = "sub.google.com";
 
 }  // namespace
 
@@ -53,9 +54,15 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
         &ContextualTasksUrlLoaderFactoryInterceptorBrowserTest::HandleRequest,
         base::Unretained(this)));
     https_server_.RegisterRequestHandler(base::BindRepeating(
+        &ContextualTasksUrlLoaderFactoryInterceptorBrowserTest::
+            HandlePreflightRetryRequest,
+        base::Unretained(this)));
+    https_server_.RegisterRequestHandler(base::BindRepeating(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.relative_url.find("/echoheader") != std::string::npos) {
+          if (request.relative_url.find("/echoheader") != std::string::npos ||
+              request.relative_url.find("/preflight-retry") !=
+                  std::string::npos) {
             return nullptr;
           }
           auto response =
@@ -95,6 +102,7 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule(kTestHost, "127.0.0.1");
+    host_resolver()->AddRule(kTestSubHost, "127.0.0.1");
     https_server_.StartAcceptingConnections();
 
     // Sign in.
@@ -144,6 +152,36 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
     return nullptr;
   }
 
+  std::unique_ptr<net::test_server::HttpResponse> HandlePreflightRetryRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url.find("/preflight-retry") == std::string::npos) {
+      return nullptr;
+    }
+
+    if (request.method == net::test_server::METHOD_OPTIONS) {
+      // Return a redirect to trigger kPreflightDisallowedRedirect.
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_FOUND);  // 302
+      response->AddCustomHeader("Location", "/somewhere-else");
+      return response;
+    }
+
+    if (request.method == net::test_server::METHOD_GET) {
+      // Verify Authorization header is missing.
+      auto it = request.headers.find("Authorization");
+      if (it == request.headers.end()) {
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ContextualTasksUrlLoaderFactoryInterceptorBrowserTest::
+                    OnRetrySuccess,
+                base::Unretained(this)));
+      }
+      return std::make_unique<net::test_server::BasicHttpResponse>();
+    }
+    return nullptr;
+  }
+
   void OnAuthHeaderCaptured(const std::string& header) {
     captured_auth_header_ = header;
     if (auth_capture_quit_closure_) {
@@ -151,9 +189,16 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
     }
   }
 
+  void OnRetrySuccess() {
+    if (retry_test_success_closure_) {
+      std::move(retry_test_success_closure_).Run();
+    }
+  }
+
  protected:
   std::string captured_auth_header_;
   base::OnceClosure auth_capture_quit_closure_;
+  base::OnceClosure retry_test_success_closure_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -209,6 +254,82 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   // "access_token_...".
   EXPECT_THAT(captured_auth_header_,
               testing::StartsWith("Bearer access_token"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
+                       PreflightRedirectTriggersRetry) {
+  base::RunLoop run_loop;
+  retry_test_success_closure_ = run_loop.QuitClosure();
+
+  // Navigate to the Contextual Tasks WebUI.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Wait for the WebUI to load and create the webview.
+  content::WebContents* web_ui_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Script to find the webview and perform a cross-origin fetch.
+  // We navigate the webview to about:blank (no interception), then
+  // fetch from "sub.google.com" (interception enabled).
+  GURL fetch_url = https_server_.GetURL(kTestSubHost, "/preflight-retry");
+
+  std::string script = content::JsReplace(
+      R"(
+    (async () => {
+      const waitFor = (selector, scope = document) => {
+        return new Promise(resolve => {
+          if (scope.querySelector(selector)) {
+            return resolve(scope.querySelector(selector));
+          }
+          const observer = new MutationObserver(() => {
+            if (scope.querySelector(selector)) {
+              observer.disconnect();
+              resolve(scope.querySelector(selector));
+            }
+          });
+          observer.observe(scope, {childList: true, subtree: true});
+        });
+      };
+
+      const app = await waitFor('contextual-tasks-app');
+      if (!app.shadowRoot) {
+        await customElements.whenDefined('contextual-tasks-app');
+      }
+      const webview = await waitFor('#threadFrame', app.shadowRoot);
+
+      // Navigate webview first
+      const targetUrl = 'data:text/html,<html><body></body></html>';
+      webview.src = targetUrl;
+
+      // Wait for load
+      await new Promise((resolve, reject) => {
+        const stop = () => {
+            webview.removeEventListener('loadstop', stop);
+            webview.removeEventListener('loadabort', abort);
+            resolve();
+        };
+        const abort = (e) => {
+            if (e.url === targetUrl) {
+                webview.removeEventListener('loadstop', stop);
+                webview.removeEventListener('loadabort', abort);
+                reject('Load aborted for ' + e.url + ': ' + e.reason);
+            }
+        };
+        webview.addEventListener('loadstop', stop);
+        webview.addEventListener('loadabort', abort);
+      });
+
+      // Execute fetch inside webview
+      webview.executeScript({code: `fetch($1, {mode: 'cors'});`});
+    })();
+  )",
+      fetch_url.spec());
+
+  EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
+
+  // Wait for the retry request to reach the server.
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks

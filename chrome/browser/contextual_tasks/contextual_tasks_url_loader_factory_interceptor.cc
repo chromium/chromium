@@ -19,11 +19,17 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/backoff_entry.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/cors.mojom.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace contextual_tasks {
 
@@ -34,6 +40,9 @@ const char* const kAuthTokenAllowList[] = {
     "googlers.com",  // For local servers.
 };
 
+const char kAuthorizationHeader[] = "Authorization";
+const char kBearerPrefix[] = "Bearer ";
+
 bool ShouldAddAuthHeader(const GURL& url) {
   // Only add the Authorization header to domains in the allow list.
   for (const char* domain : kAuthTokenAllowList) {
@@ -43,6 +52,146 @@ bool ShouldAddAuthHeader(const GURL& url) {
   }
   return false;
 }
+
+// Used to determine if a CORS error is due to a preflight request and retry
+// the request without the Authorization header if so.
+bool IsPreflightError(network::mojom::CorsError error) {
+  switch (error) {
+    case network::mojom::CorsError::kPreflightInvalidStatus:
+    case network::mojom::CorsError::kPreflightDisallowedRedirect:
+    case network::mojom::CorsError::kPreflightWildcardOriginNotAllowed:
+    case network::mojom::CorsError::kPreflightMissingAllowOriginHeader:
+    case network::mojom::CorsError::kPreflightMultipleAllowOriginValues:
+    case network::mojom::CorsError::kPreflightInvalidAllowOriginValue:
+    case network::mojom::CorsError::kPreflightAllowOriginMismatch:
+    case network::mojom::CorsError::kPreflightInvalidAllowCredentials:
+    case network::mojom::CorsError::kInvalidAllowMethodsPreflightResponse:
+    case network::mojom::CorsError::kInvalidAllowHeadersPreflightResponse:
+    case network::mojom::CorsError::kMethodDisallowedByPreflightResponse:
+    case network::mojom::CorsError::kHeaderDisallowedByPreflightResponse:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// A URLLoader that intercepts the response and retries the request without
+// the Authorization header if the preflight request fails. This is necessary
+// because adding the Authorization header transforms the request from a simple
+// request to a preflighted request, which some servers aren't expecting. If the
+// preflight request fails, it's likely because the server isn't expecting it,
+// so retrying without the Authorization header should succeed.
+class ContextualTasksURLLoader : public network::mojom::URLLoader,
+                                 public network::mojom::URLLoaderClient {
+ public:
+  ContextualTasksURLLoader(
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory)
+      : client_(std::move(client)),
+        request_id_(request_id),
+        options_(options),
+        request_(request),
+        traffic_annotation_(traffic_annotation) {
+    target_factory_.Bind(std::move(target_factory));
+    StartRequest();
+  }
+
+  ContextualTasksURLLoader(const ContextualTasksURLLoader&) = delete;
+  ContextualTasksURLLoader& operator=(const ContextualTasksURLLoader&) = delete;
+
+  ~ContextualTasksURLLoader() override = default;
+
+  // network::mojom::URLLoader:
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const std::optional<GURL>& new_url) override {
+    if (target_loader_) {
+      target_loader_->FollowRedirect(removed_headers, modified_headers,
+                                     modified_cors_exempt_headers, new_url);
+    }
+  }
+
+  void SetPriority(net::RequestPriority priority,
+                   int32_t intra_priority_value) override {
+    if (target_loader_) {
+      target_loader_->SetPriority(priority, intra_priority_value);
+    }
+  }
+
+  // network::mojom::URLLoaderClient:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    client_->OnReceiveEarlyHints(std::move(early_hints));
+  }
+
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
+    client_->OnReceiveResponse(std::move(head), std::move(body),
+                               std::move(cached_metadata));
+  }
+
+  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                         network::mojom::URLResponseHeadPtr head) override {
+    client_->OnReceiveRedirect(redirect_info, std::move(head));
+  }
+
+  void OnUploadProgress(int64_t current_position,
+                        int64_t total_size,
+                        base::OnceCallback<void()> callback) override {
+    client_->OnUploadProgress(current_position, total_size,
+                              std::move(callback));
+  }
+
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
+    client_->OnTransferSizeUpdated(transfer_size_diff);
+  }
+
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    if (should_retry_ && status.cors_error_status &&
+        IsPreflightError(status.cors_error_status->cors_error)) {
+      should_retry_ = false;
+      // Retry without auth header.
+      request_.headers.RemoveHeader(kAuthorizationHeader);
+
+      // Reset target loader and client receiver.
+      target_loader_.reset();
+      client_receiver_.reset();
+
+      StartRequest();
+      return;
+    }
+    client_->OnComplete(status);
+  }
+
+ private:
+  void StartRequest() {
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote;
+    client_receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver());
+
+    target_factory_->CreateLoaderAndStart(
+        target_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+        request_, std::move(client_remote), traffic_annotation_);
+  }
+
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+  int32_t request_id_;
+  uint32_t options_;
+  network::ResourceRequest request_;
+  net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
+  mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
+
+  mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};
+  mojo::Remote<network::mojom::URLLoader> target_loader_;
+
+  bool should_retry_ = true;
+};
 
 class ContextualTasksProxyingURLLoaderFactory
     : public network::SelfDeletingURLLoaderFactory {
@@ -112,11 +261,22 @@ class ContextualTasksProxyingURLLoaderFactory
       net::MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::string& token) {
     if (!token.empty()) {
-      request.headers.SetHeader("Authorization", "Bearer " + token);
+      request.headers.SetHeader(kAuthorizationHeader, kBearerPrefix + token);
     }
-    target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
-                                          options, request, std::move(client),
-                                          traffic_annotation);
+
+    // Clone the target factory to pass to the custom URLLoader.
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_clone;
+    target_factory_->Clone(
+        target_factory_clone.InitWithNewPipeAndPassReceiver());
+
+    // Create and start a new custom URLLoader which will handle the request.
+    // Mainly, the loader will retry the request without the Authorization
+    // header if the preflight request fails.
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<ContextualTasksURLLoader>(
+            request_id, options, request, std::move(client), traffic_annotation,
+            std::move(target_factory_clone)),
+        std::move(loader));
   }
 
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
