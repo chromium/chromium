@@ -4824,7 +4824,6 @@ crbug.com/1494858 external/wpt/css/css-page/page-name-flex-004-print.html [ Fail
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-003-print.html [ Failure ]
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-004-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
-crbug.com/462233640 external/wpt/css/css-page/page-name-unnamed-trailing-001-print.html [ Crash Failure Timeout ]
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
 crbug.com/346088869 external/wpt/css/css-page/page-size-011-print.html [ Pass Timeout ]
 crbug.com/468760502 external/wpt/css/css-multicol/multicol-under-vertical-rl-scroll.html [ Failure Pass ]

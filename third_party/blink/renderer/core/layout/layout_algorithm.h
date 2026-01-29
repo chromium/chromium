@@ -210,6 +210,11 @@ class CORE_EXPORT LayoutAlgorithm {
   // function and do their stuff in addition to calling this function.
   void SetupRelayoutData(const LayoutAlgorithm& previous_algorithm,
                          RelayoutType relayout_type) {
+    if (relayout_mode_ & kRelayoutWithoutFragmentation) {
+      // Keep any page name we got from fragmented layout.
+      container_builder_.SetPageNameIfNeeded(
+          previous_algorithm.container_builder_.PageName());
+    }
     if (relayout_mode_ & kRelayoutForEarlyBreak) {
       // We're not going to run out of space in the next layout pass, since
       // we're breaking earlier, so no space shortage will be detected. Repeat
