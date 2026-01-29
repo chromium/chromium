@@ -10,7 +10,7 @@
 ++++[label] label-for=[push button]
 ++++++[static] name='Color: '
 ++++++[push button] name='Color:' labelled-by=[label]
-++++[label] label-for=[date editor,spin button,spin button,spin button]
+++++[label] label-for=[dateeditor,spin button,spin button,spin button]
 ++++++[static] name='Date: '
 ++++++[dateeditor] name='Date:' labelled-by=[label] text-input-type:date
 ++++++++[section]
@@ -24,7 +24,7 @@
 ++++[label] label-for=[entry]
 ++++++[static] name='Datetime: '
 ++++++[entry] name='Datetime:' selectable-text labelled-by=[label] text-input-type:datetime
-++++[label] label-for=[date editor,spin button,spin button,spin button,spin button,spin button,spin button]
+++++[label] label-for=[dateeditor,spin button,spin button,spin button,spin button,spin button,spin button]
 ++++++[static] name='Datetime-local: '
 ++++++[dateeditor] name='Datetime-local:' labelled-by=[label] text-input-type:datetime-local
 ++++++++[section]
@@ -59,7 +59,7 @@
 ++++[label] label-for=[entry]
 ++++++[static] name='Invalid: '
 ++++++[entry] name='Invalid:' selectable-text labelled-by=[label] text-input-type:foo-bar
-++++[label] label-for=[date editor,spin button,spin button]
+++++[label] label-for=[dateeditor,spin button,spin button]
 ++++++[static] name='Month: '
 ++++++[dateeditor] name='Month:' labelled-by=[label] text-input-type:month
 ++++++++[section]
@@ -93,7 +93,7 @@
 ++++[label] label-for=[entry]
 ++++++[static] name='Text: '
 ++++++[entry] name='Text:' selectable-text labelled-by=[label] text-input-type:text
-++++[label] label-for=[date editor,spin button,spin button,spin button]
+++++[label] label-for=[dateeditor,spin button,spin button,spin button]
 ++++++[static] name='Time: '
 ++++++[dateeditor] name='Time:' labelled-by=[label] text-input-type:time
 ++++++++[section]
@@ -107,7 +107,7 @@
 ++++[label] label-for=[entry]
 ++++++[static] name='Url: '
 ++++++[entry] name='Url:' selectable-text labelled-by=[label] text-input-type:url
-++++[label] label-for=[date editor,spin button,spin button]
+++++[label] label-for=[dateeditor,spin button,spin button]
 ++++++[static] name='Week: '
 ++++++[dateeditor] name='Week:' labelled-by=[label] text-input-type:week
 ++++++++[section]

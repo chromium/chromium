@@ -356,7 +356,8 @@ std::string AXTreeFormatterAuraLinux::ToString(AtkRelation* relation) {
     AtkObject* atk_target = static_cast<AtkObject*>(
         UNSAFE_TODO(g_ptr_array_index(relation_targets, i)));
     DCHECK(atk_target);
-    target_roles[i] = atk_role_get_name(atk_object_get_role(atk_target));
+    // Use the same stable mapping as the per-node role output.
+    target_roles[i] = AtkRoleToString(atk_object_get_role(atk_target));
   }
 
   // We need to alphabetically sort the roles so tests don't flake from the

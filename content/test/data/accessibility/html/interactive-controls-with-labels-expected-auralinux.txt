@@ -1,5 +1,5 @@
 [document web]
-++[label] label-for=[combo box,combo box,date editor,entry,push button,push button,section,spin button,spin button,spin button]
+++[label] label-for=[combo box,combo box,dateeditor,entry,push button,push button,section,spin button,spin button,spin button]
 ++++[static] name='Test label'
 ++[section] name='aria label'
 ++++[static] name='Generic container'
