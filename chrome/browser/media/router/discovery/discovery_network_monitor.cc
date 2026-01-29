@@ -35,12 +35,15 @@ std::string ComputeNetworkId(
     return DiscoveryNetworkMonitor::kNetworkIdUnknown;
   }
 
-  std::string combined_ids;
+  crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
   for (const auto& network_info : network_info_list) {
-    combined_ids = combined_ids + "!" + network_info.network_id;
+    hasher.Update("!");
+    hasher.Update(network_info.network_id);
   }
+  std::array<uint8_t, crypto::hash::kSha256Size> digest;
+  hasher.Finish(digest);
 
-  return base::HexEncodeLower(crypto::hash::Sha256(combined_ids));
+  return base::HexEncodeLower(digest);
 }
 
 }  // namespace
