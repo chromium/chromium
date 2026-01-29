@@ -9,7 +9,9 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,53 +123,61 @@ TEST_F(DiscoveryNetworkMonitorTest, RefreshIndependentOfChangeObserver) {
   fake_network_info = fake_ethernet_info;
 
   discovery_network_monitor->AddObserver(&mock_observer);
+  base::RunLoop loop;
   EXPECT_CALL(mock_observer, OnNetworksChanged(_)).Times(testing::AtMost(1));
-  auto force_refresh_callback = [](const std::string& network_id) {
-    EXPECT_NE(std::string(DiscoveryNetworkMonitor::kNetworkIdDisconnected),
-              network_id);
-    EXPECT_NE(std::string(DiscoveryNetworkMonitor::kNetworkIdUnknown),
-              network_id);
+  auto force_refresh_callback = [&](const std::string& network_id) {
+    EXPECT_EQ(
+        "eddbf88445499c699466e51d55c51c726d0cb378005edbf8fc88ebb3d83c2c58",
+        network_id);
+    loop.Quit();
   };
 
-  discovery_network_monitor->Refresh(base::BindOnce(force_refresh_callback));
-  task_environment.RunUntilIdle();
+  discovery_network_monitor->Refresh(
+      base::BindLambdaForTesting(force_refresh_callback));
+  loop.Run();
 }
 
 TEST_F(DiscoveryNetworkMonitorTest, GetNetworkIdWithoutRefresh) {
-  task_environment.RunUntilIdle();
-
   fake_network_info = fake_ethernet_info;
 
-  auto check_network_id = [](const std::string& network_id) {
+  base::RunLoop loop;
+  auto check_network_id = [&](const std::string& network_id) {
     EXPECT_EQ(DiscoveryNetworkMonitor::kNetworkIdDisconnected, network_id);
+    loop.Quit();
   };
-  discovery_network_monitor->GetNetworkId(base::BindOnce(check_network_id));
-  task_environment.RunUntilIdle();
+  discovery_network_monitor->GetNetworkId(
+      base::BindLambdaForTesting(check_network_id));
+  loop.Run();
 }
 
 TEST_F(DiscoveryNetworkMonitorTest, GetNetworkIdWithRefresh) {
   fake_network_info = fake_ethernet_info;
 
-  std::string current_network_id;
-  auto capture_network_id = [](std::string* network_id_result,
-                               const std::string& network_id) {
-    EXPECT_NE(std::string(DiscoveryNetworkMonitor::kNetworkIdDisconnected),
-              network_id);
-    EXPECT_NE(std::string(DiscoveryNetworkMonitor::kNetworkIdUnknown),
-              network_id);
-    *network_id_result = network_id;
-  };
-  discovery_network_monitor->Refresh(
-      base::BindOnce(capture_network_id, &current_network_id));
-  task_environment.RunUntilIdle();
+  {
+    base::RunLoop loop;
+    auto capture_network_id = [&](const std::string& network_id) {
+      EXPECT_EQ(
+          "eddbf88445499c699466e51d55c51c726d0cb378005edbf8fc88ebb3d83c2c58",
+          network_id);
+      loop.Quit();
+    };
+    discovery_network_monitor->Refresh(
+        base::BindLambdaForTesting(capture_network_id));
+    loop.Run();
+  }
 
-  auto check_network_id = [](const std::string& refresh_network_id,
-                             const std::string& network_id) {
-    EXPECT_EQ(refresh_network_id, network_id);
-  };
-  discovery_network_monitor->GetNetworkId(
-      base::BindOnce(check_network_id, std::cref(current_network_id)));
-  task_environment.RunUntilIdle();
+  {
+    base::RunLoop loop;
+    auto check_network_id = [&](const std::string& network_id) {
+      EXPECT_EQ(
+          "eddbf88445499c699466e51d55c51c726d0cb378005edbf8fc88ebb3d83c2c58",
+          network_id);
+      loop.Quit();
+    };
+    discovery_network_monitor->GetNetworkId(
+        base::BindLambdaForTesting(check_network_id));
+    loop.Run();
+  }
 }
 
 TEST_F(DiscoveryNetworkMonitorTest, GetNetworkIdWithObserver) {
@@ -179,15 +189,16 @@ TEST_F(DiscoveryNetworkMonitorTest, GetNetworkIdWithObserver) {
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_ETHERNET);
   task_environment.RunUntilIdle();
 
-  std::string current_network_id;
-  auto check_network_id = [](const std::string& network_id) {
-    EXPECT_NE(std::string(DiscoveryNetworkMonitor::kNetworkIdDisconnected),
-              network_id);
-    EXPECT_NE(std::string(DiscoveryNetworkMonitor::kNetworkIdUnknown),
-              network_id);
+  base::RunLoop loop;
+  auto check_network_id = [&](const std::string& network_id) {
+    EXPECT_EQ(
+        "eddbf88445499c699466e51d55c51c726d0cb378005edbf8fc88ebb3d83c2c58",
+        network_id);
+    loop.Quit();
   };
-  discovery_network_monitor->GetNetworkId(base::BindOnce(check_network_id));
-  task_environment.RunUntilIdle();
+  discovery_network_monitor->GetNetworkId(
+      base::BindLambdaForTesting(check_network_id));
+  loop.Run();
 }
 
 }  // namespace media_router
