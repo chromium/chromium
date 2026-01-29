@@ -84,11 +84,6 @@ interface BookmarksPageHandler {
   // Bookmarks the current active tab in the given folder.
   BookmarkCurrentTabInFolder(string folder_id);
 
-  // Checks if the bookmarks specified by `side_panel_ids` can be opened in
-  // incognito window.
-  CanOpenBookmarksInIncognitoWindow(array<string> side_panel_ids)
-      => (bool can_open_in_incognito);
-
   // Creates a folder in `folder_id` at the first position with `title`.
   // Returns the id of the newly created node.
   CreateFolder(string folder_id, string title) => (string new_folder_id);
@@ -150,6 +145,11 @@ interface BookmarksPageHandler {
   // Deletes bookmarks specified by node_ids, using the same logic as the
   // native bookmarks context menu.
   ExecuteDeleteCommand(array<int64> node_ids, ActionSource source);
+
+  // Checks if the bookmarks specified by `side_panel_ids` can be opened in
+  // incognito window. Returns the count of bookmarks that can be opened.
+  GetIncognitoAvailableCount(array<string> side_panel_ids)
+      => (int32 incognito_count);
 
   // Opens the bookmark specified by node_id. Passes the parent folder
   // depth for metrics collection and the action source to identify

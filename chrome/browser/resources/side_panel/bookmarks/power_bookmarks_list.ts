@@ -1086,18 +1086,18 @@ export class PowerBookmarksListElement extends PolymerElement implements
     Promise
         .all([
           this.bookmarksApi_.isActiveTabInSplit(),
-          this.bookmarksApi_.canOpenBookmarksInIncognitoWindow([bookmark.id]),
+          this.bookmarksApi_.getIncognitoAvailableCount([bookmark.id]),
         ])
         .then(([isSplit, incognito]) => {
           if (event.detail.event.button === 0) {
             this.$.contextMenu.showAt(
                 target, [bookmark], priceTracked, priceTrackingEligible,
-                isSplit, incognito.canOpenInIncognito,
+                isSplit, incognito.incognitoCount,
                 this.onContextMenuShown_.bind(this, bookmark));
           } else {
             this.$.contextMenu.showAtPosition(
                 event.detail.event, [bookmark], priceTracked,
-                priceTrackingEligible, isSplit, incognito.canOpenInIncognito,
+                priceTrackingEligible, isSplit, incognito.incognitoCount,
                 this.onContextMenuShown_.bind(this, bookmark));
           }
         });
@@ -1262,12 +1262,12 @@ export class PowerBookmarksListElement extends PolymerElement implements
     Promise
         .all([
           this.bookmarksApi_.isActiveTabInSplit(),
-          this.bookmarksApi_.canOpenBookmarksInIncognitoWindow(ids),
+          this.bookmarksApi_.getIncognitoAvailableCount(ids),
         ])
         .then(([isSplit, incognito]) => {
           this.$.contextMenu.showAt(
               target, selectedBookmarks, false, false, isSplit,
-              incognito.canOpenInIncognito);
+              incognito.incognitoCount);
         });
   }
 
