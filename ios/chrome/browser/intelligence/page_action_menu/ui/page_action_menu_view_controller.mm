@@ -457,6 +457,10 @@ const CGFloat kDividerWidth = 1.0;
   ChromeButton* button =
       [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
 
+  // Override glassButtonConfiguration/prominentGlassButtonConfiguration
+  // to prevent wrong icon tinting.
+  button.configuration = [UIButtonConfiguration filledButtonConfiguration];
+
   // Create the background config.
   UIBackgroundConfiguration* backgroundConfig = button.configuration.background;
   backgroundConfig.backgroundColor = [UIColor colorNamed:kBlue600Color];
