@@ -7602,6 +7602,18 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_TAB_GROUPS_PANEL_OUT_OF_DATE_MESSAGE_UPDATE_BUTTON" desc="Title of the button in the out-of-date message of the tab groups panel.">
         Update
       </message>
+      <message name="IDS_IOS_TAB_GROUPS_PROMO_KEEP_BROWSING_BUTTON" desc="The text of the Keep browsing button on the full screen Tab Groups promo.">
+        Keep browsing
+      </message>
+      <message name="IDS_IOS_TAB_GROUPS_PROMO_SUBTITLE" desc="Subtitle of the full screen Tab Groups promo that explains tab groups are synced across devices.">
+        The tab groups you've created are saved in the tab group section and update across your devices.
+      </message>
+      <message name="IDS_IOS_TAB_GROUPS_PROMO_TAKE_ME_THERE_BUTTON" desc="The text of the Take me there button on the full screen Tab Groups promo.">
+        Take me there
+      </message>
+      <message name="IDS_IOS_TAB_GROUPS_PROMO_TITLE" desc="Title of the full screen Tab Groups promo that explains tab groups are synced across devices.">
+        Easily access your desktop tab groups
+      </message>
       <message name="IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_ADDED_TEXT" desc="Text in the label that indicates a user added a tab in a shared tab group.">
         Added
       </message>
