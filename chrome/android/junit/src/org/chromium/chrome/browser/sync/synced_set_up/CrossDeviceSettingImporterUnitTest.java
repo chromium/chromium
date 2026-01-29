@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.sync.synced_set_up;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.prefs.PrefService;
@@ -65,12 +68,14 @@ public class CrossDeviceSettingImporterUnitTest {
     @Mock private Snackbar mSnackbar;
     @Mock private NullableObservableSupplier<Tab> mActivityTabSupplier;
     @Mock private Tab mTab;
+    @Mock private Tab mTab2;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     @Captor private ArgumentCaptor<ModalDialogManagerObserver> mModalDialogManagerObserverCaptor;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
+    @Captor private ArgumentCaptor<Callback<Tab>> mTabChangeCallbackCaptor;
 
     private Activity mActivity;
     private CrossDeviceSettingImporter mCrossDeviceSettingImporter;
@@ -93,6 +98,8 @@ public class CrossDeviceSettingImporterUnitTest {
                         mActivity,
                         mModalDialogManagerSupplier,
                         mSnackbarManagerSupplier);
+
+        verify(mActivityTabSupplier).addObserver(mTabChangeCallbackCaptor.capture());
     }
 
     @Test
@@ -233,5 +240,21 @@ public class CrossDeviceSettingImporterUnitTest {
                 mActivity.getString(R.string.synced_set_up_snackbar_applied_confirmation),
                 secondUndoSnackbar.getTextForTesting());
         assertEquals(mActivity.getString(R.string.undo), secondUndoSnackbar.getActionText());
+    }
+
+    @Test
+    public void testTabObserverManagement() {
+        // Simulate initial tab.
+        mTabChangeCallbackCaptor.getValue().onResult(mTab);
+        verify(mTab).addObserver(any(TabObserver.class));
+
+        // Simulate tab change.
+        mTabChangeCallbackCaptor.getValue().onResult(mTab2);
+        verify(mTab).removeObserver(any(TabObserver.class));
+        verify(mTab2).addObserver(any(TabObserver.class));
+
+        // Simulate destroy.
+        mCrossDeviceSettingImporter.destroy();
+        verify(mTab2).removeObserver(any(TabObserver.class));
     }
 }

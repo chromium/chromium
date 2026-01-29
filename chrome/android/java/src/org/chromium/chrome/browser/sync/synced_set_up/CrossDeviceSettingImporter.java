@@ -26,12 +26,15 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,10 +48,31 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private final Context mContext;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onContentChanged(Tab tab) {
+                    onTabChangeOrGainFocus(tab);
+                }
+
+                @Override
+                public void onPageLoadFinished(Tab tab, GURL url) {
+                    onTabChangeOrGainFocus(tab);
+                }
+            };
+
+    private @Nullable Tab mObservedTab;
     private final Callback<@Nullable Tab> mTabChangeCallback =
             new Callback<@Nullable Tab>() {
                 @Override
                 public void onResult(@Nullable Tab tab) {
+                    if (mObservedTab != null) {
+                        mObservedTab.removeObserver(mTabObserver);
+                    }
+                    mObservedTab = tab;
+                    if (mObservedTab != null) {
+                        mObservedTab.addObserver(mTabObserver);
+                    }
                     onTabChangeOrGainFocus(tab);
                 }
             };
@@ -89,6 +113,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      */
     private void onTabChangeOrGainFocus(@Nullable Tab currentTab) {
         if (currentTab == null) return;
+
         // TODO(crbug.com/475543024): Implement.
     }
 
@@ -330,5 +355,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(this);
         mActivityTabSupplier.removeObserver(mTabChangeCallback);
+        if (mObservedTab != null) {
+            mObservedTab.removeObserver(mTabObserver);
+            mObservedTab = null;
+        }
     }
 }
