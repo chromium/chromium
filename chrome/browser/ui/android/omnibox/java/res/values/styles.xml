@@ -21,7 +21,7 @@ found in the LICENSE file.
     <!-- Fusebox bar styles -->
     <style name="Fusebox"/>
     <style name="Fusebox.PopupMenu"/>
-    <style name="Fusebox.PopupMenu.Header" parent="@style/TextButton">
+    <style name="Fusebox.PopupMenu.Item" parent="@style/TextButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">
             @dimen/min_touch_target_size
@@ -30,7 +30,7 @@ found in the LICENSE file.
         <item name="android:singleLine">true</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:textAppearance">
-            @style/TextAppearance.TextSmall.Primary
+            @style/TextAppearance.TextMedium.Primary
         </item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="layout_constraintEnd_toEndOf">parent</item>
@@ -38,14 +38,6 @@ found in the LICENSE file.
             @color/default_icon_color_tint_list
         </item>
         <item name="buttonTextColor">@null</item>
-    </style>
-
-    <style
-        name="Fusebox.PopupMenu.Item"
-        parent="@style/Fusebox.PopupMenu.Header">
-        <item name="android:textAppearance">
-            @style/TextAppearance.TextMedium.Primary
-        </item>
     </style>
 
     <style name="Fusebox.PopupMenu.Divider">
