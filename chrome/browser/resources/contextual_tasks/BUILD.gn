@@ -36,6 +36,8 @@ build_webui("build") {
     "composebox.ts",
     "constants.ts",
     "contextual_tasks_browser_proxy.ts",
+    "error_dialog.html.ts",
+    "error_dialog.ts",
     "error_page.html.ts",
     "error_page.ts",
     "favicon_group.html.ts",
@@ -58,6 +60,7 @@ build_webui("build") {
   css_files = [
     "app.css",
     "composebox.css",
+    "error_dialog.css",
     "error_page.css",
     "favicon_group.css",
     "ghost_loader.css",

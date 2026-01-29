@@ -88,4 +88,13 @@
   <message name="IDS_CONTEXTUAL_TASKS_CANNOT_SHARE_TAB_TOOL_TIP" desc="A tool tip shown on the compose box on the contextual task page when user try to add a tab that cannot be shared.">
     This tab can’t be shared
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_TITLE" desc="Title of the error dialog shown when an oAuth error occurs.">
+    Something went wrong
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_BODY" desc="Body of the error dialog shown when an oAuth error occurs.">
+    There was an error. Try again.
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_RELOAD_BUTTON" desc="Reload button shown on the oAuth error dialog.">
+    Reload
+  </message>
 </grit-part>

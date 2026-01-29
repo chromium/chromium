@@ -23,6 +23,8 @@ export function getHtml(this: ContextualTasksAppElement) {
   `}
   <webview id="threadFrame"></webview>
   <ghost-loader id="ghostLoader"></ghost-loader>
+  ${this.isErrorDialogVisible_ ?
+    html`<contextual-tasks-error-dialog></contextual-tasks-error-dialog>` : ''}
   <div class="flex-center">
     <div id="composeboxHeaderWrapper"
         ?hidden="${this.isInBasicMode_}">
