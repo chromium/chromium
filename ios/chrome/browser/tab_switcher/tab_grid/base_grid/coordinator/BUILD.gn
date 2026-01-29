@@ -21,6 +21,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/menu/ui_bundled:tab_context_menu_delegate",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",

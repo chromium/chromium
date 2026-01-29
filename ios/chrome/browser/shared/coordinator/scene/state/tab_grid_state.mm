@@ -45,6 +45,25 @@
   [_observers willChangePageTo:_currentPage];
 }
 
+- (void)setOriginPage:(TabGridPage)originPage {
+  if (_originPage == originPage) {
+    return;
+  }
+  _originPage = originPage;
+}
+
+- (void)setVisibleTabGroup:(const TabGroup*)visibleTabGroup {
+  if (_visibleTabGroup == visibleTabGroup) {
+    return;
+  }
+  _visibleTabGroup = visibleTabGroup;
+  if (visibleTabGroup) {
+    [_observers willShowTabGroup:visibleTabGroup];
+  } else {
+    [_observers willHideTabGroup];
+  }
+}
+
 - (void)addObserver:(id<TabGridStateObserver>)observer {
   [_observers addObserver:observer];
 }

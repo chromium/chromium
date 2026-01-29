@@ -81,6 +81,7 @@
 #pragma mark - Public
 
 - (void)setActivePage:(TabGridPage)page {
+  self.tabGridState.originPage = page;
   [self notifyPageMutatorAboutPage:page];
   [_currentPageMutator setPageAsActive];
 }
