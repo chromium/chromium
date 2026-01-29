@@ -98,6 +98,38 @@ TEST_P(OidcManagedProfileCreationDelegateTest, OnManagedProfileInitialized) {
   loop.Run();
 }
 
+TEST_P(OidcManagedProfileCreationDelegateTest,
+       OnManagedProfileInitializedWithEmptyDelegate) {
+  // Simulate an empty delegate used during profile switching.
+  auto delegate = std::make_unique<OidcManagedProfileCreationDelegate>();
+  Profile* new_profile =
+      profile_manager_->CreateTestingProfile("new_test_profile");
+
+  // Pre-set some values to ensure they are not cleared.
+  new_profile->GetPrefs()->SetString(
+      enterprise_signin::prefs::kProfileUserDisplayName, kSampleName);
+  new_profile->GetPrefs()->SetString(
+      enterprise_signin::prefs::kProfileUserEmail, kSampleEmail);
+
+  base::RunLoop loop;
+  delegate->OnManagedProfileInitialized(
+      profile_, new_profile,
+      base::BindOnce(
+          [&](base::OnceClosure quit_closure, base::WeakPtr<Profile> profile) {
+            auto* prefs = profile->GetPrefs();
+            EXPECT_EQ(kSampleName,
+                      prefs->GetString(
+                          enterprise_signin::prefs::kProfileUserDisplayName));
+            EXPECT_EQ(
+                kSampleEmail,
+                prefs->GetString(enterprise_signin::prefs::kProfileUserEmail));
+            std::move(quit_closure).Run();
+          },
+          loop.QuitClosure()));
+
+  loop.Run();
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          OidcManagedProfileCreationDelegateTest,
                          testing::Bool());

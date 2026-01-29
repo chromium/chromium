@@ -64,9 +64,14 @@ void OidcManagedProfileCreationDelegate::OnManagedProfileInitialized(
     Profile* new_profile,
     ProfileCreationCallback callback) {
   auto* prefs = new_profile->GetPrefs();
-  prefs->SetString(enterprise_signin::prefs::kProfileUserDisplayName,
-                   user_display_name_);
-  prefs->SetString(enterprise_signin::prefs::kProfileUserEmail, user_email_);
+  // Avoid clearing these preferences on profile switch.
+  if (!user_display_name_.empty()) {
+    prefs->SetString(enterprise_signin::prefs::kProfileUserDisplayName,
+                     user_display_name_);
+  }
+  if (!user_email_.empty()) {
+    prefs->SetString(enterprise_signin::prefs::kProfileUserEmail, user_email_);
+  }
 
   std::move(callback).Run(new_profile->GetWeakPtr());
 }

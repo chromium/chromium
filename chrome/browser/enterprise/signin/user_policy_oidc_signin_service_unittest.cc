@@ -57,7 +57,6 @@
 
 using testing::_;
 using testing::DoAll;
-using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 
@@ -184,17 +183,21 @@ class UserPolicyOidcSigninServiceTestBase
 
   void TearDown() override {
     profile_observation_.Reset();
-    oidc_signin_service_->Shutdown();
+    if (oidc_signin_service_) {
+      oidc_signin_service_->Shutdown();
+    }
     auto* profile = unit_test_profile_manager_->GetProfileByPath(profile_path_);
 
-    auto* profile_policy_manager = profile->GetProfileCloudPolicyManager();
-    if (profile_policy_manager) {
-      profile_policy_manager->Shutdown();
-    }
+    if (profile) {
+      auto* profile_policy_manager = profile->GetProfileCloudPolicyManager();
+      if (profile_policy_manager) {
+        profile_policy_manager->Shutdown();
+      }
 
-    auto* user_policy_manager = profile->GetUserCloudPolicyManager();
-    if (user_policy_manager) {
-      user_policy_manager->Shutdown();
+      auto* user_policy_manager = profile->GetUserCloudPolicyManager();
+      if (user_policy_manager) {
+        user_policy_manager->Shutdown();
+      }
     }
 
     oidc_signin_service_.reset();
@@ -299,7 +302,8 @@ class UserPolicyOidcSigninServiceTestBase
         network::TestNetworkConnectionTracker::CreateGetter());
   }
 
-  void CreateProfileAndInitializeSigninService() {
+  void CreateProfileAndInitializeSigninService(
+      bool user_email_missing = false) {
     Profile& profile = profiles::testing::CreateProfileSync(
         unit_test_profile_manager_, profile_path_);
     Profile* profile_ptr = &profile;
@@ -308,8 +312,10 @@ class UserPolicyOidcSigninServiceTestBase
         enterprise_signin::prefs::kPolicyRecoveryToken, kExampleDmToken);
     profile_ptr->GetPrefs()->SetString(
         enterprise_signin::prefs::kPolicyRecoveryClientId, kExampleClientId);
-    profile_ptr->GetPrefs()->SetString(
-        enterprise_signin::prefs::kProfileUserEmail, kExampleUserEmail);
+    if (!user_email_missing) {
+      profile_ptr->GetPrefs()->SetString(
+          enterprise_signin::prefs::kProfileUserEmail, kExampleUserEmail);
+    }
 
     std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
         policy_manager;
@@ -355,6 +361,16 @@ class UserPolicyOidcSigninServiceTestBase
   void OnPolicyFetchCompleteInNewProfile() {
     oidc_signin_service_->OnPolicyFetchCompleteInNewProfile(
         "123", base::TimeTicks(), false, base::BindOnce([](bool) {}), true);
+  }
+
+  void CallOnPolicyFetchCompleteInNewProfile(std::string user_email,
+                                             base::TimeTicks start_time,
+                                             bool switch_to_entry,
+                                             PolicyFetchCallback callback,
+                                             bool success) {
+    oidc_signin_service_->OnPolicyFetchCompleteInNewProfile(
+        std::move(user_email), start_time, switch_to_entry, std::move(callback),
+        success);
   }
 
   template <typename MockStore>
@@ -412,25 +428,51 @@ class UserPolicyOidcSigninServiceTest
       EXPECT_CALL(job_creation_handler_, OnJobCreation)
           .WillOnce(DoAll(
               device_management_service_.CaptureJobType(job_type_1),
-              Invoke(this, &UserPolicyOidcSigninServiceTestBase::SetPolicyData),
-              Invoke(this, &UserPolicyOidcSigninServiceTestBase::
-                               OnPolicyFetchCompleteInNewProfile),
+              [this](auto&&...) { SetPolicyData(); },
+              [this](auto&&...) { OnPolicyFetchCompleteInNewProfile(); },
               SaveArg<0>(job)))
           .WillOnce(DoAll(device_management_service_.CaptureJobType(job_type_2),
-                          SaveArg<0>(job),
-                          testing::Invoke(run_loop, &base::RunLoop::Quit)));
+                          SaveArg<0>(job), [run_loop] { run_loop->Quit(); }));
     } else {
       EXPECT_CALL(job_creation_handler_, OnJobCreation)
           .WillOnce(DoAll(device_management_service_.CaptureJobType(job_type_1),
                           SaveArg<0>(job)))
           .WillOnce(DoAll(
               device_management_service_.CaptureJobType(job_type_2),
-              Invoke(this, &UserPolicyOidcSigninServiceTestBase::SetPolicyData),
-              Invoke(this, &UserPolicyOidcSigninServiceTestBase::
-                               OnPolicyFetchCompleteInNewProfile),
-              SaveArg<0>(job),
-              testing::Invoke(run_loop, &base::RunLoop::Quit)));
+              [this](auto&&...) { SetPolicyData(); },
+              [this](auto&&...) { OnPolicyFetchCompleteInNewProfile(); },
+              SaveArg<0>(job), [run_loop] { run_loop->Quit(); }));
     }
+  }
+
+  void SetupBrokenProfileRecoveryExpectation(
+      DeviceManagementService::JobConfiguration::JobType* job_type_1,
+      DeviceManagementService::JobConfiguration::JobType* job_type_2,
+      DeviceManagementService::JobForTesting* job,
+      base::RunLoop* run_loop) {
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(
+            device_management_service_.CaptureJobType(job_type_1),
+            [this](DeviceManagementService::JobForTesting job) {
+              SetPolicyData();
+
+              // Set primary account available just before policy fetch
+              // completion to simulate the case where primary account already
+              // exists.
+              auto* profile =
+                  unit_test_profile_manager_->GetProfileByPath(profile_path_);
+              IdentityTestEnvironmentProfileAdaptor adaptor(profile);
+              adaptor.identity_test_env()->MakePrimaryAccountAvailable(
+                  kExampleUserEmail, signin::ConsentLevel::kSignin);
+
+              // Pass empty email to simulate broken profile state.
+              CallOnPolicyFetchCompleteInNewProfile(
+                  std::string(), base::TimeTicks(), false,
+                  base::BindOnce([](bool) {}), true);
+            },
+            SaveArg<0>(job)))
+        .WillOnce(DoAll(device_management_service_.CaptureJobType(job_type_2),
+                        SaveArg<0>(job), [run_loop] { run_loop->Quit(); }));
   }
 
   void VerifyPolicyRecoveryJobTypes(
@@ -515,6 +557,41 @@ TEST_P(UserPolicyOidcSigninServiceTest, InitializedStorePolicyRecovery) {
   ConfirmHasPolicy();
 }
 
+TEST_P(UserPolicyOidcSigninServiceTest, PolicyRecoverySelfHealing) {
+  // Only relevant for dasher-based profiles where we try to add primary
+  // account.
+  if (!is_3p_identity_synced()) {
+    return;
+  }
+
+  DeviceManagementService::JobConfiguration::JobType job_type_1 =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobConfiguration::JobType job_type_2 =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobForTesting job;
+  base::RunLoop run_loop;
+
+  SetupBrokenProfileRecoveryExpectation(&job_type_1, &job_type_2, &job,
+                                        &run_loop);
+
+  unit_test_profile_manager_->SetPolicyManagerForNextProfile(
+      BuildUserCloudPolicyManager(/*is_store_initialized=*/true,
+                                  CloudPolicyStore::Status::STATUS_LOAD_ERROR));
+
+  CreateProfileAndInitializeSigninService(/*user_email_missing=*/true);
+
+  run_loop.Run();
+
+  VerifyPolicyRecoveryJobTypes(job_type_1, job_type_2);
+
+  ConfirmHasPolicy();
+
+  auto* profile = unit_test_profile_manager_->GetProfileByPath(profile_path_);
+  EXPECT_EQ(kExampleUserEmail,
+            profile->GetPrefs()->GetString(
+                enterprise_signin::prefs::kProfileUserEmail));
+}
+
 TEST_P(UserPolicyOidcSigninServiceTest, InitializedSuccessLoad) {
   EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
   is_3p_identity_synced()
@@ -583,9 +660,8 @@ TEST_P(UserPolicySigninServicesInteractionTest, RecoverPolicyIfMissing) {
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
         .WillOnce(DoAll(
             device_management_service_.CaptureJobType(&job_type),
-            SaveArg<0>(&job),
-            Invoke(this, &UserPolicyOidcSigninServiceTestBase::SetPolicyData),
-            testing::Invoke(&run_loop, &base::RunLoop::Quit)));
+            SaveArg<0>(&job), [this](auto&&...) { SetPolicyData(); },
+            [&run_loop] { run_loop.Quit(); }));
   }
 
   unit_test_profile_manager_->SetPolicyManagerForNextProfile(
