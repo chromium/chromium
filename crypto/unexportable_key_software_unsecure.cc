@@ -75,6 +75,8 @@ class SoftwareECDSA : public UnexportableSigningKey {
 
 #if BUILDFLAG(IS_APPLE)
   SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
+#elif BUILDFLAG(IS_WIN)
+  bool SupportsTls13() override { return true; }
 #endif  // BUILDFLAG(IS_APPLE)
 
  private:
@@ -120,6 +122,8 @@ class SoftwareRSA : public UnexportableSigningKey {
 
 #if BUILDFLAG(IS_APPLE)
   SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
+#elif BUILDFLAG(IS_WIN)
+  bool SupportsTls13() override { return true; }
 #endif  // BUILDFLAG(IS_APPLE)
 
   StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {

@@ -447,6 +447,8 @@ class ECDSAKey : public UnexportableSigningKey {
     return provider_type_ == ProviderType::kTPM;
   }
 
+  bool SupportsTls13() override { return true; }
+
   StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
     return nullptr;
   }
@@ -494,6 +496,24 @@ class RSAKey : public UnexportableSigningKey {
 
   bool IsHardwareBacked() const override {
     return provider_type_ == ProviderType::kTPM;
+  }
+
+  bool SupportsTls13() override {
+    // TLS 1.3 requires support of RSA-PSS algorithm with Salt Length == Hash
+    // Length (32 bytes for SHA-256).
+    BCRYPT_PSS_PADDING_INFO padding_info = {0};
+    padding_info.pszAlgId = BCRYPT_SHA256_ALGORITHM;
+    padding_info.cbSalt = 32;
+
+    std::array<uint8_t, 32> dummy_hash;
+    dummy_hash.fill(0xAA);
+    DWORD cb_signature = 0;
+
+    // TODO(crbug.com/478227256): Add signature validation logic that does not
+    // use a Windows API, as it may very well ignore the cbSalt length too.
+    return !FAILED(NCryptSignHash(key_.get(), &padding_info, dummy_hash.data(),
+                                  dummy_hash.size(), nullptr, 0, &cb_signature,
+                                  NCRYPT_SILENT_FLAG | NCRYPT_PAD_PSS_FLAG));
   }
 
   StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
@@ -596,7 +616,6 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         return nullptr;
       }
     }
-
     if (provider_type_ == ProviderType::kTPM) {
       base::expected<std::vector<uint8_t>, SECURITY_STATUS> wrapped_key =
           ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB);

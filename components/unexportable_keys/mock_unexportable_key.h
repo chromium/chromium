@@ -32,6 +32,8 @@ class MockUnexportableKey : public crypto::StatefulUnexportableSigningKey {
   MOCK_METHOD(bool, IsHardwareBacked, (), (const, override));
 #if BUILDFLAG(IS_APPLE)
   MOCK_METHOD(SecKeyRef, GetSecKeyRef, (), (const, override));
+#elif BUILDFLAG(IS_WIN)
+  MOCK_METHOD(bool, SupportsTls13, (), (override));
 #endif  // BUILDFLAG(IS_APPLE)
   MOCK_METHOD(crypto::StatefulUnexportableSigningKey*,
               AsStatefulUnexportableSigningKey,

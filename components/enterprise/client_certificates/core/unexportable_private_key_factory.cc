@@ -17,6 +17,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/unexportable_private_key.h"
@@ -26,6 +27,15 @@
 namespace client_certificates {
 
 namespace {
+
+bool IsHardwareModuleSupported(crypto::UnexportableSigningKey* key) {
+#if BUILDFLAG(IS_WIN)
+  if (features::IsWindowsTpmTls13CheckEnabled() && !key->SupportsTls13()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  return true;
+}
 
 scoped_refptr<UnexportablePrivateKey> CreateKey(
     crypto::UnexportableKeyProvider::Config config) {
@@ -43,6 +53,10 @@ scoped_refptr<UnexportablePrivateKey> CreateKey(
     return nullptr;
   }
 
+  if (!IsHardwareModuleSupported(key.get())) {
+    return nullptr;
+  }
+
   return base::MakeRefCounted<UnexportablePrivateKey>(std::move(key));
 }
 
@@ -56,6 +70,10 @@ scoped_refptr<UnexportablePrivateKey> LoadKeyFromWrapped(
 
   auto key = provider->FromWrappedSigningKeySlowly(wrapped_key);
   if (!key) {
+    return nullptr;
+  }
+
+  if (!IsHardwareModuleSupported(key.get())) {
     return nullptr;
   }
 

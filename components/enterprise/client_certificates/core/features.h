@@ -28,6 +28,14 @@ BASE_DECLARE_FEATURE(kWindowsSoftwareKeysEnabled);
 
 // Return true if Windows software keys are enabled.
 bool AreWindowsSoftwareKeysEnabled();
+
+// Controls whether Windows TPM keys are blocked from
+// being used if they are not compatible with TLS 1.3.
+BASE_DECLARE_FEATURE(kWindowsTpmTls13Check);
+
+// Return true if Windows TPM keys are blocked from
+// being used if they are not compatible with TLS 1.3.
+bool IsWindowsTpmTls13CheckEnabled();
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace client_certificates::features
