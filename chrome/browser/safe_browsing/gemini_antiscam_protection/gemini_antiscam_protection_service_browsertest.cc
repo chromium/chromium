@@ -6,6 +6,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/gemini_antiscam_protection.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -28,16 +31,29 @@ namespace safe_browsing {
 class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
  public:
   GeminiAntiscamProtectionServiceBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        kGeminiAntiscamProtectionForMetricsCollection);
+    feature_list_.InitWithFeatures(
+        {kGeminiAntiscamProtectionForMetricsCollection},
+        {optimization_guide::features::kPreventLongRunningPredictionModels});
   }
   ~GeminiAntiscamProtectionServiceBrowserTest() override = default;
 
-  void SetUpSuccessfulModelExecution() {
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Mock the `ModelQualityLogsUploaderService`.
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->SetModelQualityLogsUploaderServiceForTesting(
+            std::make_unique<
+                optimization_guide::TestModelQualityLogsUploaderService>(
+                g_browser_process->local_state()));
+  }
+
+  void SetUpSuccessfulModelExecution(float scam_score,
+                                     std::string content_category,
+                                     std::string justification) {
     optimization_guide::proto::GeminiAntiscamProtectionResponse response;
-    response.set_scam_score(0.6);
-    response.set_content_category("investment(non-crypto)");
-    response.set_justification("gemini is smart");
+    response.set_scam_score(scam_score);
+    response.set_content_category(content_category);
+    response.set_justification(justification);
     std::string serialized_metadata;
     response.SerializeToString(&serialized_metadata);
     optimization_guide::proto::Any any_result;
@@ -67,6 +83,34 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
                 kGeminiAntiscamProtection,
             optimization_guide::OptimizationGuideModelExecutionResult(
                 any_result, nullptr));
+  }
+
+  optimization_guide::TestModelQualityLogsUploaderService* logs_uploader() {
+    return static_cast<
+        optimization_guide::TestModelQualityLogsUploaderService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile())
+            ->GetModelQualityLogsUploaderService());
+  }
+
+  const std::vector<
+      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>&
+  uploaded_logs() {
+    return logs_uploader()->uploaded_logs();
+  }
+
+  void VerifyUniqueQualityLog(const GURL& url,
+                              const std::string& page_text,
+                              float scam_score,
+                              const std::string& content_category,
+                              const std::string& justification) {
+    ASSERT_EQ(1u, uploaded_logs().size());
+    const auto& log = uploaded_logs()[0]->gemini_antiscam_protection();
+    EXPECT_EQ(url.spec(), log.request().url());
+    EXPECT_EQ(page_text, log.request().page_content());
+    EXPECT_EQ(scam_score, log.response().scam_score());
+    EXPECT_EQ(content_category, log.response().content_category());
+    EXPECT_EQ(justification, log.response().justification());
   }
 
  protected:
@@ -161,21 +205,32 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
       "SafeBrowsing.GeminiAntiscamProtection.FailedParsingError.Latency", 1);
 }
 
-IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
-                       EnhancedProtection_SuccessfulResponse) {
+IN_PROC_BROWSER_TEST_F(
+    GeminiAntiscamProtectionServiceBrowserTest,
+    EnhancedProtection_SuccessfulResponseReturnsScamVerdict) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
       browser()->profile());
   ASSERT_NE(nullptr, service);
-  SetUpSuccessfulModelExecution();
+
+  float scam_score = 0.6;
+  std::string content_category = "investment(non-crypto)";
+  std::string justification = "gemini is smart";
+  SetUpSuccessfulModelExecution(scam_score, content_category, justification);
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+  GURL url("https://example.com");
+  std::string page_text = "page text";
   service->MaybeStartAntiscamProtection(
-      GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
+      url, ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
       /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
-  content::RunAllTasksUntilIdle();
+      /*is_phishing=*/false, page_text);
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+
   EXPECT_EQ(
       4u, histogram_tester
               .GetTotalCountsForPrefix("SafeBrowsing.GeminiAntiscamProtection")
@@ -192,7 +247,57 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
       "SafeBrowsing.GeminiAntiscamProtection.Success.Latency", 1);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.Investment.ScamScore",
-      /*sample=*/60, /*expected_bucket_count=*/1);
+      /*sample=*/scam_score * 100, /*expected_bucket_count=*/1);
+  VerifyUniqueQualityLog(url, page_text, scam_score, content_category,
+                         justification);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GeminiAntiscamProtectionServiceBrowserTest,
+    EnhancedProtection_SuccessfulResponseReturnsBenignVerdict) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                               true);
+  base::HistogramTester histogram_tester;
+  auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
+      browser()->profile());
+  ASSERT_NE(nullptr, service);
+
+  float scam_score = 0.3;
+  std::string content_category = "charity";
+  std::string justification = "";
+  SetUpSuccessfulModelExecution(scam_score, content_category, justification);
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+  GURL url("https://example.com");
+  std::string page_text = "page text";
+  service->MaybeStartAntiscamProtection(
+      url, ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/false,
+      /*should_show_scam_warning=*/false,
+      /*is_phishing=*/false, page_text);
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+
+  EXPECT_EQ(
+      4u, histogram_tester
+              .GetTotalCountsForPrefix("SafeBrowsing.GeminiAntiscamProtection")
+              .size());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.ShouldSkipDueToPreviousVisit",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.GeminiAntiscamProtection.Success.Latency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.Charity.ScamScore",
+      /*sample=*/scam_score * 100, /*expected_bucket_count=*/1);
+  // Page text is not logged for benign verdicts.
+  VerifyUniqueQualityLog(url, /*page_text=*/"", scam_score, content_category,
+                         justification);
 }
 
 }  // namespace safe_browsing

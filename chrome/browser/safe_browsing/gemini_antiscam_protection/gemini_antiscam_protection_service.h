@@ -53,8 +53,12 @@ class GeminiAntiscamProtectionService : public KeyedService {
                                std::string page_inner_text,
                                history::VisibleVisitCountToHostResult result);
 
+  // Callback for querying the Gemini model. Log UMA histograms and MQLS data,
+  // based on model response.
   void OnModelResponse(
       base::TimeTicks start_time,
+      GURL url,
+      std::string page_inner_text,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

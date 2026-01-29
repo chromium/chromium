@@ -58,6 +58,10 @@ const char kContextualTasksContextEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.contextual_tasks_context_enterprise_"
     "policy_allowed";
 
+const char kGeminiAntiscamProtectionEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.gemini_antiscam_protection_enterprise_"
+    "policy_allowed";
+
 }  // namespace prefs
 
 namespace features {
@@ -89,6 +93,9 @@ BASE_FEATURE(kNotificationContentDetectionMqlsLogging,
 BASE_FEATURE(kBlingPrototypingMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksContextMqlsLogging,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGeminiAntiscamProtectionMqlsLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
@@ -296,6 +303,17 @@ void RegisterContextualTasksContext() {
           FeedbackUnspecified()));
 }
 
+void RegisterGeminiAntiscamProtection() {
+  MqlsFeatureRegistry::GetInstance().Register(
+      std::make_unique<MqlsFeatureMetadata>(
+          "GeminiAntiscamProtection",
+          proto::LogAiDataRequest::FeatureCase::kGeminiAntiscamProtection,
+          EnterprisePolicyRegistry::GetInstance().Register(
+              prefs::kGeminiAntiscamProtectionEnterprisePolicyAllowed),
+          &features::kGeminiAntiscamProtectionMqlsLogging,
+          FeedbackUnspecified()));
+}
+
 }  // anonymous namespace
 
 void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
@@ -317,6 +335,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterNotificationContentDetection();
     RegisterBlingPrototyping();
     RegisterContextualTasksContext();
+    RegisterGeminiAntiscamProtection();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);

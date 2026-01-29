@@ -9,6 +9,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/features/gemini_antiscam_protection.pb.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace {
 
@@ -18,6 +19,17 @@ BuildGeminiAntiscamProtectionRequest(GURL url, std::string page_inner_text) {
   request.set_url(url.spec());
   request.set_page_content(page_inner_text);
   return request;
+}
+
+optimization_guide::proto::GeminiAntiscamProtectionResponse
+BuildGeminiAntiscamProtectionResponse(float scam_score,
+                                      std::string content_category,
+                                      std::string justification) {
+  optimization_guide::proto::GeminiAntiscamProtectionResponse response;
+  response.set_scam_score(scam_score);
+  response.set_content_category(content_category);
+  response.set_justification(justification);
+  return response;
 }
 
 // LINT.IfChange(GetContentCategory)
@@ -70,6 +82,40 @@ std::string GetContentCategory(
 }
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/histograms.xml:GeminiAntiscamProtectionContentCategory)
+
+void LogsGeminiAntiscamProtectionMQLS(
+    base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
+        logs_uploader_service,
+    GURL url,
+    std::string page_inner_text,
+    float scam_score,
+    std::string content_category,
+    std::string justification) {
+  CHECK(logs_uploader_service);
+
+  // Create request and response protos, for logging.
+  optimization_guide::proto::GeminiAntiscamProtectionRequest request_proto_log =
+      BuildGeminiAntiscamProtectionRequest(url, page_inner_text);
+  optimization_guide::proto::GeminiAntiscamProtectionResponse
+      response_proto_log = BuildGeminiAntiscamProtectionResponse(
+          scam_score, content_category, justification);
+
+  // Create `GeminiAntiscamProtectionLoggingData`, for uploading the log.
+  std::unique_ptr<
+      optimization_guide::proto::GeminiAntiscamProtectionLoggingData>
+      logging_data = std::make_unique<
+          optimization_guide::proto::GeminiAntiscamProtectionLoggingData>();
+  *logging_data->mutable_request() = request_proto_log;
+  *logging_data->mutable_response() = response_proto_log;
+
+  // Upload log.
+  auto mqls_log_entry =
+      std::make_unique<optimization_guide::ModelQualityLogEntry>(
+          logs_uploader_service);
+  *mqls_log_entry->log_ai_data_request()->mutable_gemini_antiscam_protection() =
+      *logging_data;
+  optimization_guide::ModelQualityLogEntry::Upload(std::move(mqls_log_entry));
+}
 
 }  // namespace
 
@@ -139,11 +185,14 @@ void GeminiAntiscamProtectionService::DidGetVisibleVisitCount(
       optimization_guide::ModelBasedCapabilityKey::kGeminiAntiscamProtection,
       request, {},
       base::BindOnce(&GeminiAntiscamProtectionService::OnModelResponse,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now(), url,
+                     page_inner_text));
 }
 
 void GeminiAntiscamProtectionService::OnModelResponse(
     base::TimeTicks start_time,
+    GURL url,
+    std::string page_inner_text,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   base::TimeDelta latency = base::TimeTicks::Now() - start_time;
@@ -166,14 +215,29 @@ void GeminiAntiscamProtectionService::OnModelResponse(
   base::UmaHistogramTimes(
       "SafeBrowsing.GeminiAntiscamProtection.Success.Latency", latency);
 
+  bool scam_score_is_suspicious = false;
   if (response->has_scam_score()) {
     std::string content_category = GetContentCategory(response.value());
     base::UmaHistogramPercentage("SafeBrowsing.GeminiAntiscamProtection." +
                                      content_category + ".ScamScore",
                                  100 * response->scam_score());
+    scam_score_is_suspicious =
+        response->scam_score() >
+        kGeminiAntiscamProtectionMinScamScoreLogPageContent.Get();
   }
 
-  // TODO(crbug.com/467358093): Log MQLS.
+  // Get model quality logs uploader service and log data to MQLS.
+  auto* logs_uploader_service =
+      optimization_guide_keyed_service_->GetModelQualityLogsUploaderService();
+  if (!logs_uploader_service) {
+    return;
+  }
+  LogsGeminiAntiscamProtectionMQLS(
+      logs_uploader_service->GetWeakPtr(), url,
+      scam_score_is_suspicious ? page_inner_text : "",
+      response->has_scam_score() ? response->scam_score() : -1.0f,
+      response->has_content_category() ? response->content_category() : "",
+      response->has_justification() ? response->justification() : "");
 }
 
 }  // namespace safe_browsing
