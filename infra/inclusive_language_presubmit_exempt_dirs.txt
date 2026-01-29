@@ -65,6 +65,7 @@ chrome/browser/resources/chromeos/network_ui/third_party
 chrome/browser/resources/settings/site_settings
 chrome/browser/speech/extension_api
 chrome/browser/support_tool/ash
+chrome/browser/ui
 chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox
 chrome/browser/ui/views/search_engines
 chrome/browser/ui/views/side_panel
@@ -333,6 +334,7 @@ third_party/blink/public/mojom/storage_key
 third_party/blink/renderer/bindings
 third_party/blink/renderer/bindings/core/v8
 third_party/blink/renderer/core
+third_party/blink/renderer/core/animation
 third_party/blink/renderer/core/editing/ime
 third_party/blink/renderer/core/frame
 third_party/blink/renderer/core/html
