@@ -49,14 +49,6 @@ inline constexpr HighEntropyCanvasOpType& operator&=(
   return a;
 }
 
-inline constexpr bool ShouldPropagateHighEntropyCanvasOpTypes(
-    HighEntropyCanvasOpType op_types,
-    bool has_accelerated_rendering) {
-  return has_accelerated_rendering ||
-         static_cast<int>(op_types &
-                          HighEntropyCanvasOpType::kCopyFromCanvas) != 0;
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_HIGH_ENTROPY_OP_TYPE_H_
