@@ -8001,12 +8001,10 @@
             ]
         }
     ],
-    "DSEPrewarm": [
+    "DSEPrewarmAndroid": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux"
+                "android"
             ],
             "experiments": [
                 {
@@ -8015,6 +8013,32 @@
                         "reuse_search_host": "true",
                         "url": "https://www.google.com/search/warmup.html",
                         "zero_suggest_trigger": "true"
+                    },
+                    "enable_features": [
+                        "CheckHitEligibility",
+                        "Prerender2ReuseHost",
+                        "Prewarm",
+                        "ReusePrerenderingProcessForMainFrames"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DSEPrewarmDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithRPHReuse",
+                    "params": {
+                        "reuse_search_host": "true",
+                        "url": "https://www.google.com/search/warmup.html",
+                        "user_interaction_trigger": "true"
                     },
                     "enable_features": [
                         "CheckHitEligibility",
