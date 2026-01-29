@@ -296,9 +296,8 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
          GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
 
   // Avoid painting dirty objects because descendants maybe already destroyed.
-  bool is_dirty = NeedsLayout() && !ChildLayoutBlockedByDisplayLock();
-  DCHECK(!is_dirty);
-  if (is_dirty) [[unlikely]] {
+  if (NeedsLayout() && !ChildLayoutBlockedByDisplayLock()) [[unlikely]] {
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
