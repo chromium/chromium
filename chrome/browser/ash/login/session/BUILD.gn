@@ -70,7 +70,6 @@ static_library("session") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/tpm",
-    "//chrome/browser/ash/u2f",
     "//chrome/browser/google",
     "//chrome/browser/prefs:util",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",

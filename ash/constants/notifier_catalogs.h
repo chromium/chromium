@@ -60,7 +60,7 @@ enum class NotificationCatalogName {
   kScreenTimeLimit = 41,
   kBedtimeLimit = 42,
   kTPMFirmwareUpdate = 43,
-  kU2F = 44,
+  // [Deprecated] kU2F = 44,
   kReleaseNotes = 45,
   kSMS = 46,
   kAssistantNotification = 47,

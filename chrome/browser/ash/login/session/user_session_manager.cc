@@ -107,7 +107,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_notification_controller.h"
 #include "chrome/browser/ash/tether/tether_service.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update_notification.h"
-#include "chrome/browser/ash/u2f/u2f_notification.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -2223,9 +2222,6 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
   // and show the message accordingly.
   tpm_firmware_update::ShowNotificationIfNeeded(profile);
 
-  // Show legacy U2F notification if applicable.
-  MaybeShowU2FNotification();
-
   MaybeShowHelpAppReleaseNotesNotification(profile);
 
   g_browser_process->platform_part()
@@ -2627,7 +2623,6 @@ void UserSessionManager::Shutdown() {
   token_observers_.clear();
   always_on_vpn_manager_.reset();
   child_policy_observer_.reset();
-  u2f_notification_.reset();
   help_app_notification_controller_.reset();
   password_service_voted_.reset();
   password_was_saved_ = false;
@@ -2661,13 +2656,6 @@ void UserSessionManager::SetSwitchesForUser(
   SessionManagerClient::Get()->SetFlagsForUser(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id),
       all_switches);
-}
-
-void UserSessionManager::MaybeShowU2FNotification() {
-  if (!u2f_notification_) {
-    u2f_notification_ = std::make_unique<U2FNotification>();
-    u2f_notification_->Check();
-  }
 }
 
 void UserSessionManager::MaybeShowHelpAppReleaseNotesNotification(
