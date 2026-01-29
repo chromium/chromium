@@ -86,8 +86,7 @@ UserActionRecorder* FakePhoneHubManager::GetUserActionRecorder() {
 }
 
 FakePingManager* FakePhoneHubManager::GetPingManager() {
-  return features::IsPhoneHubPingOnBubbleOpenEnabled() ? &fake_ping_manager_
-                                                       : nullptr;
+  return &fake_ping_manager_;
 }
 
 void FakePhoneHubManager::GetHostLastSeenTimestamp(

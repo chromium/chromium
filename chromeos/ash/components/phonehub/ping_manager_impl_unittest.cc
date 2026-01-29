@@ -4,9 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/ping_manager_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/fake_message_receiver.h"
@@ -35,10 +33,6 @@ class PingManagerImplTest : public testing::Test {
   ~PingManagerImplTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPhoneHubPingOnBubbleOpen},
-        /*disabled_features=*/{});
-
     fake_connection_manager_ =
         std::make_unique<secure_channel::FakeConnectionManager>();
     ping_manager_ = std::make_unique<PingManagerImpl>(
@@ -98,7 +92,6 @@ class PingManagerImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   std::unique_ptr<secure_channel::FakeConnectionManager>

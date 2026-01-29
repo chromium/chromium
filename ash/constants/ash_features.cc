@@ -1609,12 +1609,6 @@ BASE_FEATURE(kPhoneHubCallNotification, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPhoneHubMonochromeNotificationIcons,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPhoneHubPingOnBubbleOpen, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Maximum number of seconds to wait for ping response before disconnecting
-const base::FeatureParam<base::TimeDelta> kPhoneHubPingTimeout{
-    &kPhoneHubPingOnBubbleOpen, "PhoneHubPingTimeout", base::Seconds(5)};
-
 BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3078,10 +3072,6 @@ bool IsPhoneHubCameraRollEnabled() {
 
 bool IsPhoneHubMonochromeNotificationIconsEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubMonochromeNotificationIcons);
-}
-
-bool IsPhoneHubPingOnBubbleOpenEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubPingOnBubbleOpen);
 }
 
 bool IsPhoneHubEnabled() {

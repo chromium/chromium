@@ -84,7 +84,9 @@ void PingManagerImpl::SendPingRequest() {
   message_sender_->SendPingRequest(kDefaultPingRequest);
 
   ping_sent_timestamp_ = base::TimeTicks::Now();
-  ping_timeout_timer_.Start(FROM_HERE, features::kPhoneHubPingTimeout.Get(),
+  // Maximum number of seconds to wait for ping response before disconnecting
+  const base::TimeDelta kPhoneHubPingTimeout = base::Seconds(5);
+  ping_timeout_timer_.Start(FROM_HERE, kPhoneHubPingTimeout,
                             base::BindOnce(&PingManagerImpl::OnPingTimerFired,
                                            base::Unretained(this)));
   is_waiting_for_response_ = true;

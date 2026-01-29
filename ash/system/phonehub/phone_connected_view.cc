@@ -83,7 +83,7 @@ PhoneConnectedView::PhoneConnectedView(
   }
 
   auto* ping_manager = phone_hub_manager->GetPingManager();
-  if (features::IsPhoneHubPingOnBubbleOpenEnabled() && ping_manager) {
+  if (ping_manager) {
     ping_manager->SendPingRequest();
   }
 

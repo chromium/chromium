@@ -150,8 +150,7 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     return;
   }
 
-  if (features::IsPhoneHubPingOnBubbleOpenEnabled() &&
-      message_type == proto::MessageType::PING_RESPONSE) {
+  if (message_type == proto::MessageType::PING_RESPONSE) {
     // We don't need to send the content of the ping response, we only care
     // that we got a response.
     NotifyPingResponseReceived();

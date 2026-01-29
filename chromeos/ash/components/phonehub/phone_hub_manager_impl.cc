@@ -199,13 +199,11 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<FeatureSetupResponseProcessor>(
               message_receiver_.get(),
               multidevice_feature_access_manager_.get())),
-      ping_manager_(features::IsPhoneHubPingOnBubbleOpenEnabled()
-                        ? std::make_unique<PingManagerImpl>(
-                              connection_manager_.get(),
-                              feature_status_provider_.get(),
-                              message_receiver_.get(),
-                              message_sender_.get())
-                        : nullptr) {}
+      ping_manager_(
+          std::make_unique<PingManagerImpl>(connection_manager_.get(),
+                                            feature_status_provider_.get(),
+                                            message_receiver_.get(),
+                                            message_sender_.get())) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
