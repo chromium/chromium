@@ -247,7 +247,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_VERTICAL:
       return 1;
     case DISTANCE_INFOBAR_BUTTON_VERTICAL_PADDING:
-      return 6;
+      return 8;
     case DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING:
       return 12;
   }
