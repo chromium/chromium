@@ -492,6 +492,11 @@ BASE_FEATURE_PARAM(int,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheMaxWriteBufferSizePerEntry",
                    512 * 1024);
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheMaxReadBufferTotalSize,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheMaxReadBufferTotalSize",
+                   32 * 1024 * 1024);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 BASE_FEATURE(kIgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);

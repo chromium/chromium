@@ -31,7 +31,9 @@
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/eviction_candidate_aggregator.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
+#include "net/disk_cache/sql/sql_persistent_store_backend.h"
 #include "net/disk_cache/sql/sql_persistent_store_backend_shard.h"
+#include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 
 namespace disk_cache {
 namespace {
@@ -73,9 +75,13 @@ SqlPersistentStore::CreateBackendShards(
   CHECK(num_shards < std::numeric_limits<ShardId::underlying_type>::max());
   std::vector<std::unique_ptr<BackendShard>> backend_shards;
   backend_shards.reserve(num_shards);
+  auto read_cache_memory_monitor =
+      base::MakeRefCounted<SqlReadCacheMemoryMonitor>(
+          net::features::kSqlDiskCacheMaxReadBufferTotalSize.Get());
   for (size_t i = 0; i < num_shards; ++i) {
     backend_shards.emplace_back(std::make_unique<BackendShard>(
-        ShardId(i), path, type, background_task_runners[i]));
+        ShardId(i), path, type, read_cache_memory_monitor,
+        background_task_runners[i]));
   }
   return backend_shards;
 }
@@ -205,7 +211,7 @@ void SqlPersistentStore::ReadEntryData(const CacheEntryKey& key,
                                        int buf_len,
                                        int64_t body_end,
                                        bool sparse_reading,
-                                       IntOrErrorCallback callback) {
+                                       ReadResultOrErrorCallback callback) {
   GetShard(key).ReadEntryData(key, res_id, offset, std::move(buffer), buf_len,
                               body_end, sparse_reading, std::move(callback));
 }
@@ -575,6 +581,15 @@ SqlPersistentStore::EntryInfo::~EntryInfo() = default;
 SqlPersistentStore::EntryInfo::EntryInfo(EntryInfo&&) = default;
 SqlPersistentStore::EntryInfo& SqlPersistentStore::EntryInfo::operator=(
     EntryInfo&&) = default;
+
+SqlPersistentStore::ReadResult::ReadResult() = default;
+SqlPersistentStore::ReadResult::~ReadResult() = default;
+SqlPersistentStore::ReadResult::ReadResult(const ReadResult&) = default;
+SqlPersistentStore::ReadResult& SqlPersistentStore::ReadResult::operator=(
+    const ReadResult&) = default;
+SqlPersistentStore::ReadResult::ReadResult(ReadResult&&) = default;
+SqlPersistentStore::ReadResult& SqlPersistentStore::ReadResult::operator=(
+    ReadResult&&) = default;
 
 SqlPersistentStore::ResIdAndShardId::ResIdAndShardId(ResId res_id,
                                                      ShardId shard_id)

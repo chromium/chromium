@@ -178,7 +178,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                     int buf_len,
                     int64_t body_end,
                     bool sparse_reading,
-                    CompletionOnceCallback callback);
+                    SqlPersistentStore::ReadResultOrErrorCallback callback);
 
   // Finds the available contiguous range of data for a given entry. The
   // operation is scheduled via the `ExclusiveOperationCoordinator` to ensure
@@ -449,7 +449,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int buf_len,
       int64_t body_end,
       bool sparse_reading,
-      SqlPersistentStore::IntOrErrorCallback callback,
+      SqlPersistentStore::ReadResultOrErrorCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for `GetEntryAvailableRange()`. This method is

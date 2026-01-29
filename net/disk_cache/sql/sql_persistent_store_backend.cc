@@ -38,6 +38,7 @@
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 #include "net/disk_cache/sql/sql_persistent_store_queries.h"
+#include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -67,7 +68,8 @@ using ErrorAndStoreStatus = SqlPersistentStore::ErrorAndStoreStatus;
 using ResIdListOrErrorAndStoreStatus =
     SqlPersistentStore::ResIdListOrErrorAndStoreStatus;
 using ResIdListOrError = SqlPersistentStore::ResIdListOrError;
-using IntOrError = SqlPersistentStore::IntOrError;
+using ReadResult = SqlPersistentStore::ReadResult;
+using ReadResultOrError = SqlPersistentStore::ReadResultOrError;
 using Int64OrError = SqlPersistentStore::Int64OrError;
 using OptionalEntryInfoWithKeyAndIterator =
     SqlPersistentStore::OptionalEntryInfoWithKeyAndIterator;
@@ -119,6 +121,13 @@ void PopulateTraceDetails(const RangeResult& range_result,
                           perfetto::TracedDictionary& dict) {
   dict.Add("range_start", range_result.start);
   dict.Add("range_available_len", range_result.available_len);
+}
+void PopulateTraceDetails(const ReadResult& read_result,
+                          perfetto::TracedDictionary& dict) {
+  dict.Add("read_bytes", read_result.read_bytes);
+  dict.Add("cache_buffer_size",
+           read_result.cache_buffer ? read_result.cache_buffer->size() : 0);
+  dict.Add("cache_buffer_offset", read_result.cache_buffer_offset);
 }
 void PopulateTraceDetails(const EntryInfoWithKeyAndIterator& result,
                           perfetto::TracedDictionary& dict) {
@@ -235,14 +244,37 @@ bool IsBrowserIdle() {
       performance_scenarios::kDefaultIdleScenarios);
 }
 
+class MonitoredVectorIOBuffer : public net::IOBuffer {
+ public:
+  MonitoredVectorIOBuffer(base::span<const uint8_t> data,
+                          scoped_refptr<SqlReadCacheMemoryMonitor> monitor)
+      : monitor_(std::move(monitor)), vector_(data.begin(), data.end()) {
+    SetSpan(vector_);
+  }
+
+ private:
+  ~MonitoredVectorIOBuffer() override {
+    ClearSpan();
+    if (monitor_) {
+      monitor_->ReleaseBytes(vector_.size());
+    }
+  }
+
+  scoped_refptr<SqlReadCacheMemoryMonitor> monitor_;
+  std::vector<uint8_t> vector_;
+};
+
 }  // namespace
 
-SqlPersistentStore::Backend::Backend(ShardId shard_id,
-                                     const base::FilePath& path,
-                                     net::CacheType type)
+SqlPersistentStore::Backend::Backend(
+    ShardId shard_id,
+    const base::FilePath& path,
+    net::CacheType type,
+    scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor)
     : shard_id_(shard_id),
       path_(path),
       type_(type),
+      read_cache_memory_monitor_(std::move(read_cache_memory_monitor)),
       db_(sql::DatabaseOptions()
               .set_exclusive_locking(true)
 #if BUILDFLAG(IS_WIN)
@@ -1713,7 +1745,7 @@ Error SqlPersistentStore::Backend::DeleteResourcesByResIds(
   return Error::kOk;
 }
 
-IntOrError SqlPersistentStore::Backend::ReadEntryData(
+ReadResultOrError SqlPersistentStore::Backend::ReadEntryData(
     const CacheEntryKey& key,
     ResId res_id,
     int64_t offset,
@@ -1750,7 +1782,7 @@ IntOrError SqlPersistentStore::Backend::ReadEntryData(
   return result;
 }
 
-IntOrError SqlPersistentStore::Backend::ReadEntryDataInternal(
+ReadResultOrError SqlPersistentStore::Backend::ReadEntryDataInternal(
     const CacheEntryKey& key,
     ResId res_id,
     int64_t offset,
@@ -1781,6 +1813,7 @@ IntOrError SqlPersistentStore::Backend::ReadEntryDataInternal(
   statement.BindInt64(1, read_end);
   statement.BindInt64(2, offset);
 
+  ReadResult read_result;
   size_t written_bytes = 0;
   while (statement.Step()) {
     const int64_t blob_start = statement.ColumnInt64(0);
@@ -1807,7 +1840,8 @@ IntOrError SqlPersistentStore::Backend::ReadEntryDataInternal(
       if (sparse_reading) {
         // In sparse reading mode, we stop at the first gap.
         // This might be before any data got read.
-        return written_bytes;
+        read_result.read_bytes = static_cast<int>(written_bytes);
+        return read_result;
       }
       // In normal mode, fill the gap with zeros.
       std::ranges::fill(
@@ -1820,10 +1854,30 @@ IntOrError SqlPersistentStore::Backend::ReadEntryDataInternal(
         .copy_from_nonoverlapping(blob.subspan(
             base::checked_cast<size_t>(copy_start - blob_start), copy_size));
     written_bytes = copy_end - offset;
+
+    // If the blob extends beyond the read request, cache the remaining part.
+    if (copy_end == read_end && blob_end > read_end) {
+      const int64_t remaining_bytes = blob_end - read_end;
+      // IOBuffer size is limited to int.
+      const int cache_size = base::saturated_cast<int>(remaining_bytes);
+
+      // We only cache the part from the *last* blob that overlaps with
+      // read_end. If multiple blobs overlap (unlikely due to
+      // TrimOverlappingBlobs), the last one wins.
+      if (read_cache_memory_monitor_->Allocate(cache_size)) {
+        read_result.cache_buffer =
+            base::MakeRefCounted<MonitoredVectorIOBuffer>(
+                blob.subspan(base::checked_cast<size_t>(read_end - blob_start),
+                             base::checked_cast<size_t>(cache_size)),
+                read_cache_memory_monitor_);
+        read_result.cache_buffer_offset = read_end;
+      }
+    }
   }
 
   if (sparse_reading) {
-    return written_bytes;
+    read_result.read_bytes = static_cast<int>(written_bytes);
+    return read_result;
   }
 
   // After processing all blobs, check if we need to zero-fill the rest of the
@@ -1837,7 +1891,8 @@ IntOrError SqlPersistentStore::Backend::ReadEntryDataInternal(
     written_bytes = last_pos_in_buffer;
   }
 
-  return written_bytes;
+  read_result.read_bytes = static_cast<int>(written_bytes);
+  return read_result;
 }
 
 RangeResult SqlPersistentStore::Backend::GetEntryAvailableRange(

@@ -18,12 +18,18 @@ class Transaction;
 
 namespace disk_cache {
 
+class SqlReadCacheMemoryMonitor;
+
 // The `Backend` class encapsulates all direct interaction with the SQLite
 // database. It is designed to be owned by a `base::SequenceBound` and run on a
 // dedicated background sequence to avoid blocking the network IO thread.
 class SqlPersistentStore::Backend {
  public:
-  Backend(ShardId shard_id, const base::FilePath& path, net::CacheType type);
+  Backend(ShardId shard_id,
+          const base::FilePath& path,
+          net::CacheType type,
+          scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor);
+
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
   ~Backend();
@@ -83,14 +89,14 @@ class SqlPersistentStore::Backend {
                                      int buf_len,
                                      bool truncate,
                                      base::TimeTicks start_time);
-  IntOrError ReadEntryData(const CacheEntryKey& key,
-                           ResId res_id,
-                           int64_t offset,
-                           scoped_refptr<net::IOBuffer> buffer,
-                           int buf_len,
-                           int64_t body_end,
-                           bool sparse_reading,
-                           base::TimeTicks start_time);
+  ReadResultOrError ReadEntryData(const CacheEntryKey& key,
+                                  ResId res_id,
+                                  int64_t offset,
+                                  scoped_refptr<net::IOBuffer> buffer,
+                                  int buf_len,
+                                  int64_t body_end,
+                                  bool sparse_reading,
+                                  base::TimeTicks start_time);
   RangeResult GetEntryAvailableRange(ResId res_id,
                                      int64_t offset,
                                      int len,
@@ -182,14 +188,14 @@ class SqlPersistentStore::Backend {
                                int buf_len,
                                bool truncate,
                                bool& corruption_detected);
-  IntOrError ReadEntryDataInternal(const CacheEntryKey& key,
-                                   ResId res_id,
-                                   int64_t offset,
-                                   scoped_refptr<net::IOBuffer> buffer,
-                                   int buf_len,
-                                   int64_t body_end,
-                                   bool sparse_reading,
-                                   bool& corruption_detected);
+  ReadResultOrError ReadEntryDataInternal(const CacheEntryKey& key,
+                                          ResId res_id,
+                                          int64_t offset,
+                                          scoped_refptr<net::IOBuffer> buffer,
+                                          int buf_len,
+                                          int64_t body_end,
+                                          bool sparse_reading,
+                                          bool& corruption_detected);
   RangeResultOrError GetEntryAvailableRangeInternal(ResId res_id,
                                                     int64_t offset,
                                                     int len);
@@ -302,6 +308,7 @@ class SqlPersistentStore::Backend {
   const ShardId shard_id_;
   const base::FilePath path_;
   const net::CacheType type_;
+  const scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor_;
   sql::Database db_;
   sql::MetaTable meta_table_;
   std::optional<Error> db_init_status_;

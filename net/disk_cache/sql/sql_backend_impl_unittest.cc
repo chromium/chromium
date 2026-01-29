@@ -2637,5 +2637,206 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadAcrossChunks) {
   entry->Close();
 }
 
+TEST_F(SqlBackendImplTest, ReadCaching) {
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // 1. Write some data to stream 1.
+  std::string data = "0123456789ABCDEF";
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+  net::TestCompletionCallback cb_write;
+  int rv_write = entry->WriteData(1, 0, buffer.get(), buffer->size(),
+                                  cb_write.callback(), false);
+  EXPECT_EQ(cb_write.GetResult(rv_write), static_cast<int>(data.size()));
+
+  // Close and re-open the entry to ensure data is written to the DB and we
+  // don't read from the write buffer.
+  entry->Close();
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry("key", net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  entry = open_result.ReleaseEntry();
+
+  // 2. Read only the first 5 bytes.
+  // The backend should read the whole blob (since it's a single blob in DB)
+  // and cache the remaining 11 bytes.
+  auto read_buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(5);
+  net::TestCompletionCallback cb_read1;
+  int rv_read1 =
+      entry->ReadData(1, 0, read_buffer1.get(), 5, cb_read1.callback());
+  EXPECT_EQ(cb_read1.GetResult(rv_read1), 5);
+  EXPECT_EQ(std::string_view(read_buffer1->data(), 5), "01234");
+
+  // Verify that the read_cache_buffer is populated.
+  EXPECT_TRUE(static_cast<SqlEntryImpl*>(entry)->read_cache_buffer_for_test());
+  EXPECT_EQ(
+      static_cast<SqlEntryImpl*>(entry)->read_cache_buffer_offset_for_test(),
+      5);
+
+  // 3. Read the next 5 bytes.
+  // This should be fulfilled from the cache synchronously (no IO pending).
+  auto read_buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(5);
+  int rv_read2 =
+      entry->ReadData(1, 5, read_buffer2.get(), 5, base::DoNothing());
+  // If it's cached, it returns immediately.
+  EXPECT_EQ(rv_read2, 5);
+  EXPECT_EQ(std::string_view(read_buffer2->data(), 5), "56789");
+
+  // 4. Read crossing the cache boundary.
+  // The cache has "56789ABCDEF" (offset 5 to 16).
+  // Request 5 bytes from offset 14: "EF" + 3 more.
+  // It should return 2 bytes synchronously if it uses partial cache,
+  // or return the whole thing if it triggers a new read.
+  // Current implementation returns copy_size = min(buf_len, cache_end -
+  // offset). So it should return 2 bytes synchronously.
+  auto read_buffer3 = base::MakeRefCounted<net::IOBufferWithSize>(5);
+  int rv_read3 =
+      entry->ReadData(1, 14, read_buffer3.get(), 5, base::DoNothing());
+  EXPECT_EQ(rv_read3, 2);
+  EXPECT_EQ(std::string_view(read_buffer3->data(), 2), "EF");
+
+  // 5. Write data should invalidate read cache.
+  entry->WriteData(1, 16, buffer.get(), 1, base::DoNothing(), false);
+  auto read_buffer4 = base::MakeRefCounted<net::IOBufferWithSize>(5);
+  int rv_read4 =
+      entry->ReadData(1, 5, read_buffer4.get(), 5, base::DoNothing());
+  // Now it should be pending because cache was invalidated.
+  EXPECT_EQ(rv_read4, net::ERR_IO_PENDING);
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, ReadCachingSparse) {
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // 1. Write some data to stream 1.
+  std::string data = "0123456789ABCDEF";
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+  net::TestCompletionCallback cb_write;
+  int rv_write = entry->WriteData(1, 0, buffer.get(), buffer->size(),
+                                  cb_write.callback(), false);
+  EXPECT_EQ(cb_write.GetResult(rv_write), static_cast<int>(data.size()));
+
+  // Close and re-open the entry to ensure data is written to the DB and we
+  // don't read from the write buffer.
+  entry->Close();
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry("key", net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  entry = open_result.ReleaseEntry();
+
+  // 2. Read sparse data.
+  auto read_buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(5);
+  net::TestCompletionCallback cb_read1;
+  int rv_read1 =
+      entry->ReadSparseData(0, read_buffer1.get(), 5, cb_read1.callback());
+  EXPECT_EQ(cb_read1.GetResult(rv_read1), 5);
+  EXPECT_EQ(std::string_view(read_buffer1->data(), 5), "01234");
+
+  // Verify that the read_cache_buffer IS populated even for sparse reads.
+  EXPECT_TRUE(static_cast<SqlEntryImpl*>(entry)->read_cache_buffer_for_test());
+  EXPECT_EQ(
+      static_cast<SqlEntryImpl*>(entry)->read_cache_buffer_offset_for_test(),
+      5);
+
+  // Subsequent read (could be normal or sparse) should use the cache.
+  auto read_buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(5);
+  int rv_read2 =
+      entry->ReadData(1, 5, read_buffer2.get(), 5, base::DoNothing());
+  EXPECT_EQ(rv_read2, 5);
+  EXPECT_EQ(std::string_view(read_buffer2->data(), 5), "56789");
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, ReadCachingGlobalLimit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxReadBufferTotalSize.name, "90"}});
+
+  auto backend = CreateBackendAndInit();
+
+  std::string data(60, 'a');
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+
+  // Create entry 1
+  TestEntryResultCompletionCallback cb_create1;
+  disk_cache::EntryResult create_result1 = cb_create1.GetResult(
+      backend->CreateEntry("key1", net::HIGHEST, cb_create1.callback()));
+  ASSERT_THAT(create_result1.net_error(), IsOk());
+  auto* entry1 = create_result1.ReleaseEntry();
+  entry1->WriteData(1, 0, buffer.get(), buffer->size(), base::DoNothing(),
+                    false);
+  entry1->Close();
+
+  // Create entry 2
+  TestEntryResultCompletionCallback cb_create2;
+  disk_cache::EntryResult create_result2 = cb_create2.GetResult(
+      backend->CreateEntry("key2", net::HIGHEST, cb_create2.callback()));
+  ASSERT_THAT(create_result2.net_error(), IsOk());
+  auto* entry2 = create_result2.ReleaseEntry();
+  entry2->WriteData(1, 0, buffer.get(), buffer->size(), base::DoNothing(),
+                    false);
+  entry2->Close();
+
+  // Open both
+  TestEntryResultCompletionCallback cb_open1;
+  auto* entry1_open = cb_open1
+                          .GetResult(backend->OpenEntry("key1", net::HIGHEST,
+                                                        cb_open1.callback()))
+                          .ReleaseEntry();
+  TestEntryResultCompletionCallback cb_open2;
+  auto* entry2_open = cb_open2
+                          .GetResult(backend->OpenEntry("key2", net::HIGHEST,
+                                                        cb_open2.callback()))
+                          .ReleaseEntry();
+
+  // Read from entry 1. 10 bytes. 50 bytes cached. Total 50.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  net::TestCompletionCallback cb_read1;
+  int rv1 =
+      entry1_open->ReadData(1, 0, read_buf.get(), 10, cb_read1.callback());
+  EXPECT_EQ(cb_read1.GetResult(rv1), 10);
+  EXPECT_TRUE(
+      static_cast<SqlEntryImpl*>(entry1_open)->read_cache_buffer_for_test());
+
+  // Read from entry 2. 10 bytes. 50 bytes to cache. Total would be 100 > 90.
+  // Should NOT be cached.
+  net::TestCompletionCallback cb_read2;
+  int rv2 =
+      entry2_open->ReadData(1, 0, read_buf.get(), 10, cb_read2.callback());
+  EXPECT_EQ(cb_read2.GetResult(rv2), 10);
+  EXPECT_FALSE(
+      static_cast<SqlEntryImpl*>(entry2_open)->read_cache_buffer_for_test());
+
+  entry1_open->Close();  // Releases 50 bytes. Total 0.
+
+  // Read again from entry 2 (offset 10).
+  // This will trigger a new read from DB. Since total is 0, the remaining 40
+  // bytes (60-10-10) should be cached?
+  net::TestCompletionCallback cb_read3;
+  int rv3 =
+      entry2_open->ReadData(1, 10, read_buf.get(), 10, cb_read3.callback());
+  EXPECT_EQ(cb_read3.GetResult(rv3), 10);
+  EXPECT_TRUE(
+      static_cast<SqlEntryImpl*>(entry2_open)->read_cache_buffer_for_test());
+
+  entry2_open->Close();
+}
+
 }  // namespace
 }  // namespace disk_cache

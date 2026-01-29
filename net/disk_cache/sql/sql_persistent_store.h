@@ -112,6 +112,23 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     bool opened = false;
   };
 
+  // Represents the result of a read operation.
+  struct NET_EXPORT_PRIVATE ReadResult {
+    ReadResult();
+    ~ReadResult();
+    ReadResult(const ReadResult&);
+    ReadResult& operator=(const ReadResult&);
+    ReadResult(ReadResult&&);
+    ReadResult& operator=(ReadResult&&);
+
+    // The number of bytes successfully read.
+    int read_bytes = 0;
+    // Optionally, a buffer containing data read beyond the requested range.
+    scoped_refptr<net::IOBuffer> cache_buffer;
+    // The offset within the entry's body where `cache_buffer` starts.
+    int64_t cache_buffer_offset = 0;
+  };
+
   // Holds a resource ID and the ID of the shard it belongs to.
   struct NET_EXPORT_PRIVATE ResIdAndShardId {
     ResIdAndShardId(ResId res_id, ShardId shard_id);
@@ -208,8 +225,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       std::optional<EntryInfoWithKeyAndIterator>;
   using OptionalEntryInfoWithKeyAndIteratorCallback =
       base::OnceCallback<void(OptionalEntryInfoWithKeyAndIterator)>;
-  using IntOrError = base::expected<int, Error>;
-  using IntOrErrorCallback = base::OnceCallback<void(IntOrError)>;
+  using ReadResultOrError = base::expected<ReadResult, Error>;
+  using ReadResultOrErrorCallback = base::OnceCallback<void(ReadResultOrError)>;
   using Int64OrError = base::expected<int64_t, Error>;
   using Int64OrErrorCallback = base::OnceCallback<void(Int64OrError)>;
 
@@ -219,7 +236,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   using ErrorAndStoreStatus = ResultAndStoreStatus<Error>;
   using EntryInfoOrErrorAndStoreStatus = ResultAndStoreStatus<EntryInfoOrError>;
-  using IntOrErrorAndStoreStatus = ResultAndStoreStatus<IntOrError>;
+  using ReadResultOrErrorAndStoreStatus =
+      ResultAndStoreStatus<ReadResultOrError>;
   using ResIdListOrErrorAndStoreStatus = ResultAndStoreStatus<ResIdListOrError>;
   using ResIdListOrErrorAndStoreStatusCallback =
       base::OnceCallback<void(ResIdListOrErrorAndStoreStatus)>;
@@ -369,7 +387,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                      int buf_len,
                      int64_t body_end,
                      bool sparse_reading,
-                     IntOrErrorCallback callback);
+                     ReadResultOrErrorCallback callback);
 
   // Finds the available contiguous range of data for a given entry.
   // `res_id` identifies the entry.

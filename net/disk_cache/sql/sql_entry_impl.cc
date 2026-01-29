@@ -140,6 +140,21 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
   if (body_end_ <= offset) {
     return 0;
   }
+  if (read_cache_buffer_) {
+    const int64_t cache_end =
+        read_cache_buffer_offset_ + read_cache_buffer_->size();
+    if (offset >= read_cache_buffer_offset_ && offset < cache_end) {
+      const int64_t relative_offset = offset - read_cache_buffer_offset_;
+      const int copy_size =
+          std::min(buf_len, static_cast<int>(cache_end - offset));
+      base::as_writable_bytes(buf->span())
+          .first(static_cast<size_t>(copy_size))
+          .copy_from(base::as_bytes(read_cache_buffer_->span())
+                         .subspan(static_cast<size_t>(relative_offset),
+                                  static_cast<size_t>(copy_size)));
+      return copy_size;
+    }
+  }
 
   if (!write_buffers_.empty()) {
     const int64_t write_buffer_end =
@@ -179,9 +194,28 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
       FlushBuffer();
     }
   }
+
+  auto read_callback = base::BindOnce(
+      [](base::WeakPtr<SqlEntryImpl> self, CompletionOnceCallback callback,
+         SqlPersistentStore::ReadResultOrError result) {
+        if (!result.has_value()) {
+          std::move(callback).Run(result.error() ==
+                                          SqlPersistentStore::Error::kAborted
+                                      ? net::ERR_ABORTED
+                                      : net::ERR_FAILED);
+          return;
+        }
+        if (self) {
+          self->read_cache_buffer_ = std::move(result->cache_buffer);
+          self->read_cache_buffer_offset_ = result->cache_buffer_offset;
+        }
+        std::move(callback).Run(result->read_bytes);
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback));
+
   return backend_->ReadEntryData(key_, res_id_or_error_, offset, buf, buf_len,
                                  body_end_, sparse_reading,
-                                 std::move(callback));
+                                 std::move(read_callback));
 }
 
 int SqlEntryImpl::WriteData(int index,
@@ -257,6 +291,9 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
           res_id_or_error_->data.value())) {
     return net::ERR_FAILED;
   }
+
+  read_cache_buffer_.reset();
+  read_cache_buffer_offset_ = -1;
 
   // Ignore zero-length writes that do not change the file size.
   if (buf_len == 0) {

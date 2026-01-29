@@ -82,6 +82,13 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   void SetEntryInMemoryData(uint8_t data) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
+  net::IOBuffer* read_cache_buffer_for_test() const {
+    return read_cache_buffer_.get();
+  }
+  int64_t read_cache_buffer_offset_for_test() const {
+    return read_cache_buffer_offset_;
+  }
+
   // Returns the cache key of the entry.
   const CacheEntryKey& cache_key() const { return key_; }
 
@@ -167,6 +174,11 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // The start offset of the data in `write_buffers_`. -1 indicates that the
   // buffer is empty/invalid.
   int64_t write_buffer_offset_ = -1;
+
+  // A buffer containing data read beyond the requested range.
+  scoped_refptr<net::IOBuffer> read_cache_buffer_;
+  // The offset within the entry's body where `read_cache_buffer_` starts.
+  int64_t read_cache_buffer_offset_ = -1;
 
   base::WeakPtrFactory<SqlEntryImpl> weak_factory_{this};
 };

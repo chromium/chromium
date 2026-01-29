@@ -26,8 +26,13 @@ SqlPersistentStore::BackendShard::BackendShard(
     ShardId shard_id,
     const base::FilePath& path,
     net::CacheType type,
+    scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : backend_(background_task_runner, shard_id, path, type) {}
+    : backend_(background_task_runner,
+               shard_id,
+               path,
+               type,
+               std::move(read_cache_memory_monitor)) {}
 
 SqlPersistentStore::BackendShard::~BackendShard() = default;
 
@@ -238,7 +243,7 @@ void SqlPersistentStore::BackendShard::ReadEntryData(
     int buf_len,
     int64_t body_end,
     bool sparse_reading,
-    SqlPersistentStore::IntOrErrorCallback callback) {
+    SqlPersistentStore::ReadResultOrErrorCallback callback) {
   backend_.AsyncCall(&SqlPersistentStore::Backend::ReadEntryData)
       .WithArgs(key, res_id, offset, std::move(buffer), buf_len, body_end,
                 sparse_reading, base::TimeTicks::Now())

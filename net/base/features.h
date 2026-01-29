@@ -565,6 +565,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // The maximum size of the write buffer for a single entry.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                       kSqlDiskCacheMaxWriteBufferSizePerEntry);
+// The maximum size of the read buffer for all entries.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSqlDiskCacheMaxReadBufferTotalSize);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.

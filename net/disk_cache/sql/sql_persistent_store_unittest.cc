@@ -341,7 +341,7 @@ class SqlPersistentStoreTest : public testing::Test {
   }
 
   // Synchronous wrapper for ReadEntryData.
-  SqlPersistentStore::IntOrError ReadEntryData(
+  SqlPersistentStore::ReadResultOrError ReadEntryData(
       const CacheEntryKey& key,
       SqlPersistentStore::ResId res_id,
       int64_t offset,
@@ -349,7 +349,7 @@ class SqlPersistentStoreTest : public testing::Test {
       int buf_len,
       int64_t body_end,
       bool sparse_reading) {
-    base::test::TestFuture<SqlPersistentStore::IntOrError> future;
+    base::test::TestFuture<SqlPersistentStore::ReadResultOrError> future;
     store_->ReadEntryData(key, res_id, offset, std::move(buffer), buf_len,
                           body_end, sparse_reading, future.GetCallback());
     return future.Take();
@@ -444,8 +444,8 @@ class SqlPersistentStoreTest : public testing::Test {
     auto read_result = ReadEntryData(key, res_id, offset, read_buffer,
                                      buffer_len, body_end, sparse_reading);
     ASSERT_TRUE(read_result.has_value());
-    EXPECT_EQ(read_result.value(), static_cast<int>(expected_data.size()));
-    EXPECT_EQ(std::string_view(read_buffer->data(), read_result.value()),
+    EXPECT_EQ(read_result->read_bytes, static_cast<int>(expected_data.size()));
+    EXPECT_EQ(std::string_view(read_buffer->data(), read_result->read_bytes),
               expected_data);
   }
 
@@ -3596,7 +3596,7 @@ TEST_F(SqlPersistentStoreTest, ReadDataCallbackNotRunOnStoreDestruction) {
       kKey, res_id, /*offset=*/0, read_buffer, read_buffer->size(),
       /*body_end=*/10, /*sparse_reading=*/false,
       base::BindLambdaForTesting(
-          [&](SqlPersistentStore::IntOrError) { callback_run = true; }));
+          [&](SqlPersistentStore::ReadResultOrError) { callback_run = true; }));
   store_.reset();
   FlushPendingTask();
   EXPECT_FALSE(callback_run);
