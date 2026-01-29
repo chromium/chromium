@@ -7,9 +7,11 @@
 #include <string_view>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -48,12 +50,21 @@ testing::AssertionResult MatchesPngFileImpl(
     return testing::AssertionFailure() << "Reference: " << expected_png_file;
   }
 
-  if (!cc::MatchesPNGFile(actual_bitmap, GetTestDataFilePath(expected_png_file),
-                          comparitor)) {
+  const base::FilePath expected_path = GetTestDataFilePath(expected_png_file);
+  if (cc::MatchesPNGFile(actual_bitmap, expected_path, comparitor)) {
+    return testing::AssertionSuccess();
+  }
+
+  auto* cmd = base::CommandLine::ForCurrentProcess();
+  if (!cmd->HasSwitch(switches::kRebaselinePixelTests)) {
     return testing::AssertionFailure() << "Reference: " << expected_png_file;
   }
 
-  return testing::AssertionSuccess();
+  if (cc::WritePNGFile(actual_bitmap, expected_path, true)) {
+    return testing::AssertionSuccess();
+  }
+
+  return testing::AssertionFailure() << "Rebase: " << expected_png_file;
 }
 
 SkBitmap RenderPdfToSkBitmap(base::span<const uint8_t> pdf_data,
