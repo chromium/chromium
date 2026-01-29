@@ -200,6 +200,9 @@ inline constexpr char
 inline constexpr char kLocalTestPoliciesForNextStartup[] =
     "local_test_policies_for_next_startup";
 
+// A boolean pref that controls XSLT.
+inline constexpr char kXSLTEnabled[] = "policy.xslt_enabled";
+
 // Enables the deprecated :--foo syntax of CSS custom state. The :--foo syntax
 // was deprecated and replaced by :state(foo).
 inline constexpr char kCSSCustomStateDeprecatedSyntaxEnabled[] =

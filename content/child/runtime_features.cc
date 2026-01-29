@@ -314,6 +314,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebXRSpecParity,
            raw_ref(device::features::kWebXRIncubations)},
 #endif
+          {wf::EnableXSLT, raw_ref(blink::features::kXSLT)},
           {wf::EnablePermissions, raw_ref(features::kWebPermissionsApi),
            kSetOnlyIfOverridden},
       };
@@ -710,6 +711,12 @@ void SetRuntimeFeaturesDefaultsAndUpdateFromArgs(
   for (const std::string& feature :
        FeaturesFromSwitch(command_line, switches::kDisableBlinkFeatures)) {
     WebRuntimeFeatures::EnableFeatureFromString(feature, false);
+  }
+
+  if (command_line.HasSwitch(blink::switches::kXSLTEnabledPolicy)) {
+    std::string value =
+        command_line.GetSwitchValueASCII(blink::switches::kXSLTEnabledPolicy);
+    WebRuntimeFeatures::EnableXSLT(value == "true");
   }
 
   ResolveInvalidConfigurations();

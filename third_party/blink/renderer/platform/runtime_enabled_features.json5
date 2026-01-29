@@ -6305,6 +6305,7 @@
       // crbug.com/435623334.
       name: "XSLT",
       status: "stable",
+      public: true,
     },
     {
       // A feature flag that will be used for a "special trial" of disabling

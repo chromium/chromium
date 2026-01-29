@@ -55,7 +55,7 @@ XSLStyleSheet::XSLStyleSheet(XSLStyleSheet* parent_style_sheet,
       compilation_failed_(false),
       parent_style_sheet_(parent_style_sheet),
       owner_document_(nullptr) {
-  CHECK(XSLTProcessor::XSLTEnabled());
+  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
 }
 
 XSLStyleSheet::XSLStyleSheet(Node* parent_node,
@@ -73,7 +73,7 @@ XSLStyleSheet::XSLStyleSheet(Node* parent_node,
       compilation_failed_(false),
       parent_style_sheet_(nullptr),
       owner_document_(nullptr) {
-  CHECK(XSLTProcessor::XSLTEnabled());
+  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
 }
 
 XSLStyleSheet::XSLStyleSheet(Document* owner_document,
@@ -92,7 +92,7 @@ XSLStyleSheet::XSLStyleSheet(Document* owner_document,
       compilation_failed_(false),
       parent_style_sheet_(nullptr),
       owner_document_(owner_document) {
-  CHECK(XSLTProcessor::XSLTEnabled());
+  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
 }
 
 XSLStyleSheet::~XSLStyleSheet() {

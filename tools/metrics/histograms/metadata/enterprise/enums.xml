@@ -2359,6 +2359,7 @@ chromium-metrics-reviews@google.com.
   <int value="1426" label="LocalNetworkBlockedForUrls"/>
   <int value="1427" label="LoopbackNetworkAllowedForUrls"/>
   <int value="1428" label="LoopbackNetworkBlockedForUrls"/>
+  <int value="1429" label="XSLTEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

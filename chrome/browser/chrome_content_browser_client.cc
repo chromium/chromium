@@ -1508,6 +1508,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kDataUrlInSvgUseEnabled, false);
   registry->RegisterBooleanPref(prefs::kPartitionedBlobUrlUsage, true);
 
+  registry->RegisterBooleanPref(policy::policy_prefs::kXSLTEnabled, false);
+
   registry->RegisterBooleanPref(
       policy::policy_prefs::kCSSCustomStateDeprecatedSyntaxEnabled,
       /*default_value=*/false);
@@ -2799,6 +2801,14 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
       if (prefs->GetBoolean(prefs::kDataUrlInSvgUseEnabled)) {
         command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
+      }
+
+      if (prefs->FindPreference(policy::policy_prefs::kXSLTEnabled)
+              ->IsManaged()) {
+        command_line->AppendSwitchASCII(
+            blink::switches::kXSLTEnabledPolicy,
+            prefs->GetBoolean(policy::policy_prefs::kXSLTEnabled) ? "true"
+                                                                  : "false");
       }
 
       if (!prefs->GetBoolean(prefs::kPartitionedBlobUrlUsage)) {

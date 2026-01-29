@@ -1,0 +1,31 @@
+caption: Control the availability of the XSLT feature
+default: null
+desc: |-
+  This policy controls the availability of the XSLT feature (the XSLTProcessor Javascript API and the XSL processing instruction).
+  If this policy is set to Enabled, XSLT will be available, regardless of the default state of the feature in the browser.
+  If this policy is set to Disabled, XSLT will be unavailable, regardless of the default state of the feature in the browser.
+  If this policy is left unset, XSLT availability will be determined by the browser's default settings and field trials.
+  This policy is a temporary measure, and will be removed in M164.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: 'Enabled: XSLT is explicitly enabled.'
+  value: true
+- caption: 'Disabled: XSLT is explicitly disabled.'
+  value: false
+- caption: 'Default: XSLT availability will be determined by browser defaults and field trials.'
+  value: null
+owners:
+- masonf@chromium.org
+- dom-dev@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:146-
+- chrome_os:146-
+- android:146-
+- webview_android:146-
+tags: []
+type: main
