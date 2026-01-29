@@ -19,10 +19,10 @@ schema:
   type: array
   items:
     type: string
-future_on:
-- chrome.*
-- chrome_os
-- android
+supported_on:
+- chrome.*:146-
+- chrome_os:146-
+- android:146-
 tags:
 - website-sharing
 type: list

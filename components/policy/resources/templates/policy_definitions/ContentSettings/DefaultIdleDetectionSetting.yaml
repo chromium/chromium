@@ -25,10 +25,10 @@ label: Idle detection
 owners:
 - pastarmovj@chromium.org
 - zmin@chromium.org
-future_on:
-- chrome.*
-- chrome_os
-- android
+supported_on:
+- chrome.*:146-
+- chrome_os:146-
+- android:146-
 tags:
 - website-sharing
 type: int-enum
