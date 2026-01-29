@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -166,7 +167,8 @@ void OmniboxPopupWebUIBaseContent::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  // Note: This is needed for voice search in the AIM popup.
+  // Handle the media access requests for voice search by routing them through
+  // `MediaCaptureDevicesDispatcher`.
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
       web_contents, request, std::move(callback), /*extension=*/nullptr);
 }
@@ -182,8 +184,6 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
       content_url_, location_bar_view_->profile(), IDS_TASK_MANAGER_OMNIBOX);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
-  extensions::SetViewType(contents_wrapper_->web_contents(),
-                          extensions::mojom::ViewType::kComponent);
   // LocationBarView can be instantiated in windows that do not have a
   // Browser object (i.e Captive Portal). In that case, features depending on
   // the browser are not supported and should be skipped.
@@ -198,6 +198,15 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
   OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
       ->set_omnibox_controller(controller_);
+
+  // Set ViewType::kComponent so `ChromeSpeechRecognitionManagerDelegate`
+  // allows speech recognition in `CheckRenderFrameType()`.
+  extensions::SetViewType(contents_wrapper_->web_contents(),
+                          extensions::mojom::ViewType::kComponent);
+  // Create PermissionRequestManager explicitly for this WebContents.
+  // The permission bubble will anchor to the browser window via
+  // BrowserWindowInterface.
+  permissions::PermissionRequestManager::CreateForWebContents(GetWebContents());
 
   OnViewBoundsChanged(location_bar_view_);
 }

@@ -77,6 +77,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -639,25 +640,47 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
   }
 #endif
 
-  // The New Tab Page is excluded from origin checks as its effective
-  // requesting origin may be the Default Search Engine origin.
-  return embedding_origin ==
-             GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() ||
-         embedding_origin ==
-             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
+  // New Tab Page:
+  // Bypass embedding origin check as the `requesting_origin` will later be
+  // transformed to the DSE origin in `GetCanonicalOriginOverride()`.
+  if (embedding_origin.host() == chrome::kChromeUINewTabHost ||
+      embedding_origin.host() == chrome::kChromeUINewTabPageHost) {
+    return true;
+  }
+
+  // Omnibox Popup and Contextual Tasks:
+  // Bypass embedding origin check as the `requesting_origin` will later be
+  // transformed to the DSE origin in `GetCanonicalOriginOverride()`.
+  if (embedding_origin.host() == chrome::kChromeUIOmniboxPopupHost ||
+      embedding_origin.host() == chrome::kChromeUIContextualTasksHost) {
+    return true;
+  }
+
+  return false;
 }
 
-std::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
+std::optional<GURL> ChromePermissionsClient::GetCanonicalOriginOverride(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  if (embedding_origin.DeprecatedGetOriginAsURL() ==
-      GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
-    if (requesting_origin.DeprecatedGetOriginAsURL() ==
-        GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL()) {
+  // New Tab Page:
+  // Transform chrome:// origins to the DSE origin so that permissions are
+  // stored under and shared with the DSE.
+  if (embedding_origin.host() == chrome::kChromeUINewTabHost) {
+    if (requesting_origin.host() == chrome::kChromeUINewTabPageHost) {
       return GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
           .DeprecatedGetOriginAsURL();
     }
     return requesting_origin;
+  }
+
+  // Omnibox and Contextual Tasks:
+  // Transform chrome:// origins to the DSE origin so that permissions are
+  // stored under and shared with the DSE.
+  if (requesting_origin == embedding_origin &&
+      (requesting_origin.host() == chrome::kChromeUIOmniboxPopupHost ||
+       requesting_origin.host() == chrome::kChromeUIContextualTasksHost)) {
+    return GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
+        .DeprecatedGetOriginAsURL();
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -673,13 +696,33 @@ std::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
   return std::nullopt;
 }
 
-bool ChromePermissionsClient::DoURLsMatchNewTabPage(
+std::optional<GURL> ChromePermissionsClient::GetEmbeddingOriginOverride(
     const GURL& requesting_origin,
-    const GURL& embedding_origin) {
-  return embedding_origin ==
-             GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() &&
-         requesting_origin ==
-             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
+    content::WebContents* web_contents) {
+  GURL embedding_origin =
+      web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+
+  // New Tab Page:
+  // Use the WebContents URL (chrome://newtab) as the embedding origin when
+  // the requesting origin is the NTP (chrome://new-tab-page).
+  // Note that the embedding origin is later transformed to the DSE origin via
+  // `GetCanonicalOriginOverride()`.
+  if (requesting_origin.host() == chrome::kChromeUINewTabPageHost &&
+      embedding_origin.host() == chrome::kChromeUINewTabHost) {
+    return embedding_origin;
+  }
+
+  // Omnibox Popup and Contextual Tasks:
+  // Use the WebContents URL as the embedding origin.
+  // Note that the embedding origin is later transformed to the DSE origin via
+  // `GetCanonicalOriginOverride()`.
+  if (requesting_origin == embedding_origin &&
+      (requesting_origin.host() == chrome::kChromeUIOmniboxPopupHost ||
+       requesting_origin.host() == chrome::kChromeUIContextualTasksHost)) {
+    return embedding_origin;
+  }
+
+  return std::nullopt;
 }
 
 #if BUILDFLAG(IS_ANDROID)

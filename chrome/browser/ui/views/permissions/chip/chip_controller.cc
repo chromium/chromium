@@ -315,6 +315,8 @@ void ChipController::InitializePermissionPrompt(
       permissions::PermissionRequestManager::FromWebContents(
           delegate->GetAssociatedWebContents());
   active_chip_permission_request_manager_.value()->AddObserver(this);
+
+  observation_.Reset();
   observation_.Observe(chip_);
   std::move(callback).Run();
 }
@@ -442,12 +444,26 @@ void ChipController::ResetPermissionPromptChip() {
       // is holding. The typical update is for it to destruct the
       // PermissionPrompt instance and not to hold any PermissionPrompt instance
       // during the edit time.
+      //
+      // Keep the permission request active for WebUI pages (NTP, Omnibox Popup,
+      // Contextual Tasks) that should bypass the omnibox empty or editing state
+      // check.
+      const GURL visible_url = active_chip_permission_request_manager_.value()
+                                   ->web_contents()
+                                   ->GetVisibleURL();
+      const GURL committed_url =
+          active_chip_permission_request_manager_.value()
+              ->web_contents()
+              ->GetLastCommittedURL();
+      bool should_ignore_omnibox_state_check =
+          visible_url == GURL(chrome::kChromeUINewTabURL) ||
+          committed_url.host() == chrome::kChromeUIOmniboxPopupHost ||
+          committed_url.host() == chrome::kChromeUIContextualTasksHost;
+
       if (GetLocationBarView()->IsEditingOrEmpty() &&
-          (active_chip_permission_request_manager_.value()
-               ->IsRequestInProgress() &&
-           (active_chip_permission_request_manager_.value()
-                ->web_contents()
-                ->GetVisibleURL() != GURL(chrome::kChromeUINewTabURL)))) {
+          active_chip_permission_request_manager_.value()
+              ->IsRequestInProgress() &&
+          !should_ignore_omnibox_state_check) {
         active_chip_permission_request_manager_.value()->Ignore(
             /*prompt_options=*/std::monostate());
       }

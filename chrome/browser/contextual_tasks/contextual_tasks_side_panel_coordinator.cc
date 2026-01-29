@@ -49,6 +49,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -77,6 +78,13 @@ std::unique_ptr<content::WebContents> CreateWebContents(
                                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                         std::string());
   webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
+
+  // Create PermissionRequestManager explicitly for this WebContents.
+  // The permission bubble will anchor to the browser window via
+  // BrowserWindowInterface.
+  permissions::PermissionRequestManager::CreateForWebContents(
+      web_contents.get());
+
   return web_contents;
 }
 
@@ -146,7 +154,8 @@ class ContextualTasksWebView : public views::WebView {
       wc->WasShown();
       // Set `this` as the delegate to handle media access permissions.
       wc->SetDelegate(this);
-      // Set ViewType::kComponent for voice recognition to work.
+      // Set ViewType::kComponent so `ChromeSpeechRecognitionManagerDelegate`
+      // allows speech recognition in `CheckRenderFrameType()`.
       extensions::SetViewType(wc, extensions::mojom::ViewType::kComponent);
     }
   }
@@ -156,8 +165,8 @@ class ContextualTasksWebView : public views::WebView {
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override {
-    // Forward directly to MediaCaptureDevicesDispatcher. This bypasses the
-    // origin check that would incorrectly use the main tab's origin.
+    // Handle the media access requests for voice search by routing them through
+    // `MediaCaptureDevicesDispatcher`.
     MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
         web_contents, request, std::move(callback), /*extension=*/nullptr);
   }
@@ -434,6 +443,13 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
     webui::SetBrowserWindowInterface(web_contents.get(),
                                      /*browser_window_interface=*/nullptr);
     MaybeDetachWebContentsFromWebView(web_contents.get());
+    // Set ViewType to kTabContents so `ChromeSpeechRecognitionManagerDelegate`
+    // allows speech recognition in `CheckRenderFrameType()`.
+    extensions::SetViewType(web_contents.get(),
+                            extensions::mojom::ViewType::kTabContents);
+    // Clear the WebContents delegate since `ContextualTasksWebView` will no
+    // longer be a valid delegate when WebContents is moved to a tab.
+    web_contents->SetDelegate(nullptr);
     task_id_to_web_contents_cache_.erase(it);
     return web_contents;
   }
