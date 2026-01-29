@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_current_entry_change_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_defer_page_swap_restore_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_history_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_navigate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_reload_options.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
@@ -386,6 +388,9 @@ void NavigationApi::SetEntriesForRestore(
     if (it == keys_to_indices_.end() || entries_[it->value] != entry)
       disposed_entries->push_back(entry);
   }
+
+  FlushRestoreCallbacks();
+
   window_->GetTaskRunner(TaskType::kInternalDefault)
       ->PostTask(FROM_HERE, BindOnce(&FireDisposeEventsAsync,
                                      WrapPersistent(disposed_entries)));
@@ -1000,9 +1005,23 @@ void NavigationApi::DidAbort(ScriptValue value) {
   }
   DispatchEvent(*event);
 
+  FlushRestoreCallbacks();
+
   if (transition_) {
     transition_->RejectFinishedPromise(value);
     transition_ = nullptr;
+  }
+}
+
+void NavigationApi::FlushRestoreCallbacks() {
+  HeapVector<Member<V8NavigationDeferPageSwapRestoreCallback>>
+      restore_callback_list;
+  std::swap(restore_callback_list, restore_callback_list_);
+  CHECK(restore_callback_list.empty() ||
+        RuntimeEnabledFeatures::NavigateEventDeferCrossDocumentCommitEnabled());
+
+  for (auto& callback : restore_callback_list) {
+    (void)callback->Invoke(this);
   }
 }
 
@@ -1081,6 +1100,7 @@ void NavigationApi::Trace(Visitor* visitor) const {
   visitor->Trace(upcoming_traverse_api_method_trackers_);
   visitor->Trace(upcoming_non_traverse_api_method_tracker_);
   visitor->Trace(ongoing_navigate_event_);
+  visitor->Trace(restore_callback_list_);
 }
 
 }  // namespace blink

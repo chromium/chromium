@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_defer_page_swap_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_defer_page_swap_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_defer_page_swap_restore_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_precommit_handler.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/navigation_api/navigate_event_dispatch_params.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api_method_tracker.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_defer_page_swap_controller.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_precommit_controller.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -309,9 +311,11 @@ void NavigateEvent::MaybeDeferCrossDocumentCommit(
   handler_list.swap(deferred_commit_handler_list_);
 
   HeapVector<MemberScriptPromise<IDLAny>> defer_promise_list;
+  auto* controller =
+      MakeGarbageCollected<NavigationDeferPageSwapController>(this);
   for (auto& handler : handler_list) {
     ScriptPromise<IDLAny> result;
-    if (handler->Invoke(this).To(&result)) {
+    if (handler->Invoke(this, controller).To(&result)) {
       defer_promise_list.push_back(result);
     }
   }
@@ -415,6 +419,24 @@ void NavigateEvent::AddHandlerDuringPrecommit(
   }
 
   navigation_action_handlers_list_.push_back(handler);
+}
+
+void NavigateEvent::AddDeferPageSwapRestoreCallback(
+    V8NavigationDeferPageSwapRestoreCallback* callback,
+    ExceptionState& exception_state) {
+  if (!PerformSharedChecks("addRestoreCallback", exception_state)) {
+    return;
+  }
+
+  if (intercept_state_ >= InterceptState::kIntercepted) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "navigation has already committed or intercepted.");
+    return;
+  }
+
+  NavigationApi* navigation = DomWindow()->navigation();
+  navigation->restore_callback_list_.push_back(callback);
 }
 
 void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {

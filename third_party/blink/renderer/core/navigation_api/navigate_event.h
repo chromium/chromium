@@ -37,6 +37,7 @@ class NavigationNavigateOptions;
 class ExceptionState;
 class FormData;
 class V8NavigationDeferPageSwapHandler;
+class V8NavigationDeferPageSwapRestoreCallback;
 class V8NavigationInterceptHandler;
 class V8NavigationInterceptPrecommitHandler;
 
@@ -85,6 +86,9 @@ class NavigateEvent final : public Event,
   void Redirect(const String& url, NavigationNavigateOptions*, ExceptionState&);
   void AddHandlerDuringPrecommit(V8NavigationInterceptHandler*,
                                  ExceptionState&);
+  void AddDeferPageSwapRestoreCallback(
+      V8NavigationDeferPageSwapRestoreCallback*,
+      ExceptionState&);
 
   void React(ScriptState* script_state);
 

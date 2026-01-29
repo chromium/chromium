@@ -6807,6 +6807,10 @@ interface NavigationCurrentEntryChangeEvent : Event
     getter from
     getter navigationType
     method constructor
+interface NavigationDeferPageSwapController
+    attribute @@toStringTag
+    method addRestoreCallback
+    method constructor
 interface NavigationDestination
     attribute @@toStringTag
     getter id

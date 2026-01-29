@@ -36,6 +36,7 @@ class NavigationOptions;
 class NavigationTransition;
 class RegisteredEventListener;
 class SerializedScriptValue;
+class V8NavigationDeferPageSwapRestoreCallback;
 
 class CORE_EXPORT NavigationApi final : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
@@ -138,6 +139,8 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
   void RemovedEventListener(const AtomicString&,
                             const RegisteredEventListener&) final;
 
+  void FlushRestoreCallbacks();
+
   void Trace(Visitor*) const final;
 
  private:
@@ -184,6 +187,9 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
   Member<NavigationApiMethodTracker> upcoming_non_traverse_api_method_tracker_;
 
   Member<NavigateEvent> ongoing_navigate_event_;
+
+  HeapVector<Member<V8NavigationDeferPageSwapRestoreCallback>>
+      restore_callback_list_;
 
   int navigate_event_handler_count_ = 0;
 };

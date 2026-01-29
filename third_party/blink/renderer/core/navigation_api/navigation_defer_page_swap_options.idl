@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // / https://html.spec.whatwg.org/multipage/nav-history-apis.html#navigation-api
-callback NavigationDeferPageSwapHandler = Promise<any> ();
+callback NavigationDeferPageSwapHandler = Promise<any> (NavigationDeferPageSwapController controller);
 
 dictionary NavigationDeferPageSwapOptions {
   NavigationDeferPageSwapHandler handler;
