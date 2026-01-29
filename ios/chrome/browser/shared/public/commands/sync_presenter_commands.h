@@ -7,9 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
+
 namespace trusted_vault {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace trusted_vault
+
+// Called when the presented UI is dismissed, irrespective of whether it was
+// interrupted, cancelled or successful.
+using SyncPresenterCompletionCallback = ProceduralBlock;
 
 // Protocol used to display sync-related UI.
 @protocol SyncPresenterCommands
@@ -17,6 +23,12 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Asks the presenter to display the reauthenticate the primary account.
 // The primary should be available.
 - (void)showPrimaryAccountReauth;
+
+// Asks the presenter to display the reauthenticate the primary account.
+// The primary should be available.
+// `completion` is executed after the UI is dismissed.
+- (void)showPrimaryAccountReauthWithDismissalCompletion:
+    (SyncPresenterCompletionCallback)completion;
 
 // Asks the presenter to display the sync encryption passphrase UI.
 - (void)showSyncPassphraseSettings;
@@ -28,15 +40,26 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showAccountSettings;
 
 // Presents the Trusted Vault reauthentication dialog, for sync security domain
-// id. `trigger` UI elements where the trusted vault reauth has been triggered.
+// id.
+// `trigger` UI elements where the trusted vault reauth has been triggered.
+// `completion` is executed after the UI is dismissed.
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger;
+            (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
+                                           completion:
+                                               (SyncPresenterCompletionCallback)
+                                                   completion;
 
 // Presents the Trusted Vault degraded recoverability dialog (to enroll
 // additional recovery factors), for sync security domain id.
 // `trigger` UI elements where the trusted vault reauth has been triggered.
-- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger;
+// `completion` is executed after the UI is dismissed.
+- (void)
+    showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+        (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
+                                                    completion:
+                                                        (SyncPresenterCompletionCallback)
+                                                            completion;
+;
 
 // Presents the help center article for the bookmarks limit exceeded error.
 - (void)showBookmarksLimitExceededHelp;

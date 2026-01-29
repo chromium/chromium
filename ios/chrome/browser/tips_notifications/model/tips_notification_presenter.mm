@@ -209,7 +209,8 @@ void TipsNotificationPresenter::StartTrustedVaultKeyRetrievalFlow() {
   }
   [HandlerForProtocol(browser_->GetCommandDispatcher(), SyncPresenterCommands)
       showTrustedVaultReauthForFetchKeysWithTrigger:
-          trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification];
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification
+                                         completion:nil];
   base::UmaHistogramEnumeration(
       metric_name, TrustedVaultNotificationEvents::kKeyRetrievalFlowStarted);
 }

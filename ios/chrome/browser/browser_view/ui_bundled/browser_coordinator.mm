@@ -4246,6 +4246,13 @@ const char kChromeAppStoreUrl[] =
   [_signinCoordinator start];
 }
 
+- (void)showPrimaryAccountReauthWithDismissalCompletion:
+    (SyncPresenterCompletionCallback)completion {
+  // TODO(crbug.com/464228247): Implement calling `completion` once the UI is
+  // dismissed.
+  [self showPrimaryAccountReauth];
+}
+
 - (void)showSyncPassphraseSettings {
   [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showSyncPassphraseSettingsFromViewController:self.viewController];
@@ -4263,14 +4270,25 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger {
+            (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
+                                           completion:
+                                               (SyncPresenterCompletionCallback)
+                                                   completion {
+  // TODO(crbug.com/464228247): Implement calling `completion` once the UI is
+  // dismissed.
   [self showTrustedVaultReauthWithTrigger:trigger
                                    intent:
                                        SigninTrustedVaultDialogIntentFetchKeys];
 }
 
-- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger {
+- (void)
+    showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+        (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
+                                                    completion:
+                                                        (SyncPresenterCompletionCallback)
+                                                            completion {
+  // TODO(crbug.com/464228247): Implement calling `completion` once the UI is
+  // dismissed.
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentDegradedRecoverability;
   [self showTrustedVaultReauthWithTrigger:trigger intent:intent];

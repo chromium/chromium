@@ -519,7 +519,8 @@ TEST_F(BrowserCoordinatorTest, TestDoubleTapTrustedVaultReauth) {
       .andReturn(trusted_vault_mock);
   OCMExpect([trusted_vault_mock setDelegate:[OCMArg any]]);
   OCMExpect([trusted_vault_mock start]);
-  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger];
+  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger
+                                              completion:nil];
   EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
   // Checks that the second tap is ignored.
   // Checks that the second tap is ignored. No more
@@ -527,8 +528,10 @@ TEST_F(BrowserCoordinatorTest, TestDoubleTapTrustedVaultReauth) {
   OCMStub([((id)trusted_vault_mock) alloc]).andDo(^(NSInvocation* invocation) {
     EXPECT_FALSE(true);
   });
-  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger];
-  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger];
+  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger
+                                              completion:nil];
+  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger
+                                                           completion:nil];
 
   OCMExpect([trusted_vault_mock setDelegate:nil]);
   OCMExpect([trusted_vault_mock stop]);
@@ -562,7 +565,8 @@ TEST_F(BrowserCoordinatorTest,
       .andReturn(trusted_vault_mock);
   OCMExpect([trusted_vault_mock setDelegate:[OCMArg any]]);
   OCMExpect([trusted_vault_mock start]);
-  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger];
+  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger
+                                                           completion:nil];
   EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
 
   // Checks that the second tap is ignored. No more
@@ -570,8 +574,10 @@ TEST_F(BrowserCoordinatorTest,
   OCMStub([((id)trusted_vault_mock) alloc]).andDo(^(NSInvocation* invocation) {
     EXPECT_FALSE(true);
   });
-  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger];
-  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger];
+  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger
+                                              completion:nil];
+  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger
+                                                           completion:nil];
 
   OCMExpect([trusted_vault_mock setDelegate:nil]);
   OCMExpect([trusted_vault_mock stop]);
