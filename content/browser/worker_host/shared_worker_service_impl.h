@@ -108,6 +108,11 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   // them.
   bool EvictBFCachedClientsIfLastActive(RenderFrameHostImpl* render_frame_host);
 
+  // For all connected workers with `render_frame_host`, calls
+  // SharedWorkerHost::OnClientStateChanged(). The worker will be frozen if no
+  // active clients remain, or resumed if at least one client is active.
+  void OnClientStateChanged(RenderFrameHostImpl* render_frame_host);
+
  private:
   friend class SharedWorkerHostTest;
   friend class SharedWorkerServiceImplTest;

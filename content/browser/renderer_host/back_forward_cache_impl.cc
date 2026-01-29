@@ -1225,7 +1225,8 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     }
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kBFCacheWithSharedWorker)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBFCacheWithSharedWorker) &&
+      !base::FeatureList::IsEnabled(blink::features::kFreezeSharedWorker)) {
     // If this frame is a client of a Shared Worker and all other clients are in
     // this frame's frame-tree, block this frame from entering BFCache. Also,
     // other clients of the same worker that are already in BFCache will be

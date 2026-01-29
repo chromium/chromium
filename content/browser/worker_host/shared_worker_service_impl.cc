@@ -547,4 +547,14 @@ bool SharedWorkerServiceImpl::EvictBFCachedClientsIfLastActive(
   return was_last_active_for_any_worker;
 }
 
+void SharedWorkerServiceImpl::OnClientStateChanged(
+    RenderFrameHostImpl* render_frame_host) {
+  // Notify all workers that have this frame as a client.
+  for (const auto& host : worker_hosts_) {
+    if (host->ContainsClient(render_frame_host)) {
+      host->OnClientStateChanged();
+    }
+  }
+}
+
 }  // namespace content

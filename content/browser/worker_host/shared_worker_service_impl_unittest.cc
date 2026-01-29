@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -1526,6 +1527,133 @@ TEST_F(SharedWorkerServiceImplTest, Observer_OnClientConnectionLost) {
 
   EXPECT_EQ(0u, observer.GetWorkerCount());
   EXPECT_EQ(0u, observer.GetClientCount());
+}
+
+// This test ensures that the shared worker is frozen when all connected clients
+// are in the BackForwardCache, and resumed when a client is restored.
+TEST_F(SharedWorkerServiceImplTest, FreezeAndResumeOnBFCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kFreezeSharedWorker);
+
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("http://example.com/"));
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
+  const int process_id = renderer_host->GetDeprecatedID();
+  renderer_host->OverrideBinderForTesting(
+      blink::mojom::SharedWorkerFactory::Name_,
+      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
+                          base::Unretained(this), process_id));
+
+  MockSharedWorkerClient client;
+  MessagePortChannel local_port;
+  const GURL kUrl("http://example.com/w.js");
+  ConnectToSharedWorker(
+      MakeSharedWorkerConnector(render_frame_host->GetGlobalId()), kUrl, "name",
+      &client, &local_port);
+
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
+  MockSharedWorkerFactory factory(std::move(factory_receiver));
+  base::RunLoop().RunUntilIdle();
+
+  mojo::Remote<blink::mojom::SharedWorkerHost> worker_host;
+  mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return factory.CheckReceivedCreateSharedWorker(
+        kUrl, "name", std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+        &worker_host, &worker_receiver);
+  }));
+  MockSharedWorker worker(std::move(worker_receiver));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return worker.CheckReceivedConnect(nullptr, nullptr);
+  }));
+  EXPECT_TRUE(client.CheckReceivedOnCreated());
+
+  // The worker is not frozen when the frame is active.
+  EXPECT_FALSE(worker.IsFrozen());
+
+  RenderFrameHostImpl* rfh_impl =
+      static_cast<RenderFrameHostImpl*>(render_frame_host);
+  rfh_impl->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  // The worker is frozen when the frame is in BackForwardCache.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return worker.IsFrozen(); }));
+
+  rfh_impl->SetLifecycleState(RenderFrameHostImpl::LifecycleStateImpl::kActive);
+  // The worker is resumed when the frame is active.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !worker.IsFrozen(); }));
+}
+
+// This test ensures that a frozen shared worker is resumed when a new client
+// connects to it.
+TEST_F(SharedWorkerServiceImplTest, FreezeAndResumeOnAddClient) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kFreezeSharedWorker);
+
+  std::unique_ptr<TestWebContents> web_contents1 =
+      CreateWebContents(GURL("http://example.com/"));
+  TestRenderFrameHost* rfh1 = web_contents1->GetPrimaryMainFrame();
+  MockRenderProcessHost* renderer_host1 = rfh1->GetProcess();
+  const int process_id = renderer_host1->GetDeprecatedID();
+  renderer_host1->OverrideBinderForTesting(
+      blink::mojom::SharedWorkerFactory::Name_,
+      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
+                          base::Unretained(this), process_id));
+
+  MockSharedWorkerClient client1;
+  MessagePortChannel local_port1;
+  const GURL kUrl("http://example.com/w.js");
+  ConnectToSharedWorker(
+      MakeSharedWorkerConnector(rfh1->GetGlobalId()), kUrl, "name",
+      &client1, &local_port1);
+
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
+  MockSharedWorkerFactory factory(std::move(factory_receiver));
+  base::RunLoop().RunUntilIdle();
+
+  mojo::Remote<blink::mojom::SharedWorkerHost> worker_host;
+  mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return factory.CheckReceivedCreateSharedWorker(
+        kUrl, "name", std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+        &worker_host, &worker_receiver);
+  }));
+  MockSharedWorker worker(std::move(worker_receiver));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return worker.CheckReceivedConnect(nullptr, nullptr);
+  }));
+  EXPECT_TRUE(client1.CheckReceivedOnCreated());
+
+  // The worker is not frozen when the frame is active.
+  EXPECT_FALSE(worker.IsFrozen());
+
+  RenderFrameHostImpl* rfh_impl1 = static_cast<RenderFrameHostImpl*>(rfh1);
+  rfh_impl1->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  // The worker is frozen when the frame is in BackForwardCache.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return worker.IsFrozen(); }));
+
+  std::unique_ptr<TestWebContents> web_contents2 =
+      CreateWebContents(GURL("http://example.com/"));
+  TestRenderFrameHost* rfh2 = web_contents2->GetPrimaryMainFrame();
+
+  MockSharedWorkerClient client2;
+  MessagePortChannel local_port2;
+  ConnectToSharedWorker(
+      MakeSharedWorkerConnector(rfh2->GetGlobalId()), kUrl, "name",
+      &client2, &local_port2);
+
+  // The worker is resumed when a new client connects to it.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !worker.IsFrozen(); }));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return worker.CheckReceivedConnect(nullptr, nullptr);
+  }));
+  EXPECT_TRUE(client2.CheckReceivedOnCreated());
 }
 
 }  // namespace content

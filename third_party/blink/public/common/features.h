@@ -651,6 +651,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceOffTextAutosizing);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFrameMetadataObserver);
 
+// If enabled, shared workers will be frozen when all their clients are in the
+// back/forward cache.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFreezeSharedWorker);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFrequencyCappingForLargeStickyAdDetection);
 

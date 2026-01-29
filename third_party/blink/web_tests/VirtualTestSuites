@@ -4360,6 +4360,27 @@
     "expires": "Jul 7, 2026"
   },
   {
+    "prefix": "freeze-shared-worker-bfcache",
+    "owners": ["annasato@chromium.org"],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/shared-worker.html",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage-transferred-port.window.js",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage.window.js",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-freeze.window.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FreezeSharedWorker"
+    ],
+    "expires": "Sep 10, 2026"
+  },
+  {
     "prefix": "target-device-scale-factor-2",
     "owners": [
       "leimy@google.com"

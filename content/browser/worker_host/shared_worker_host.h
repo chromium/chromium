@@ -173,6 +173,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   // the last active client.
   bool EvictBFCachedClientsIfLastActive(RenderFrameHostImpl* render_frame_host);
 
+  // Updates the worker's freeze state based on client status. This is called
+  // when a client transitions to/from the BackForwardCache, or when a client is
+  // added or removed.
+  void OnClientStateChanged();
+
   // Returns the frame ids of this worker's clients.
   std::vector<GlobalRenderFrameHostId> GetRenderFrameIDsForWorker();
 
@@ -366,6 +371,9 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   // Indicates if Start() was invoked on this instance.
   bool started_ = false;
+
+  // Indicates if the worker is frozen.
+  bool is_frozen_ = false;
 
   GURL final_response_url_;
 

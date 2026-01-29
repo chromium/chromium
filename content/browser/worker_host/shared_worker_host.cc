@@ -964,6 +964,10 @@ void SharedWorkerHost::AddClient(
   info.client.set_disconnect_handler(base::BindOnce(
       &SharedWorkerHost::OnClientConnectionLost, weak_factory_.GetWeakPtr()));
 
+  if (base::FeatureList::IsEnabled(blink::features::kFreezeSharedWorker)) {
+    // Re-evaluate the worker status upon acquiring a new client.
+    OnClientStateChanged();
+  }
   worker_->Connect(info.connection_request_id, port.ReleaseHandle());
 
   // Notify that a new client was added now.
@@ -988,6 +992,13 @@ void SharedWorkerHost::PruneNonExistentClients() {
     } else {
       ++it;
     }
+  }
+  // The worker will be destroyed if there are no clients left.
+  if (!clients_.empty() &&
+      base::FeatureList::IsEnabled(blink::features::kFreezeSharedWorker)) {
+    // Freeze the worker if we pruned the last active client, leaving only
+    // BFCached clients.
+    OnClientStateChanged();
   }
 }
 
@@ -1031,6 +1042,28 @@ bool SharedWorkerHost::EvictBFCachedClientsIfLastActive(
   return true;
 }
 
+void SharedWorkerHost::OnClientStateChanged() {
+  bool has_active_client = false;
+
+  for (const auto& client_info : clients_) {
+    RenderFrameHostImpl* const rfh =
+        RenderFrameHostImpl::FromID(client_info.render_frame_host_id);
+    if (rfh && rfh->IsActive()) {
+      has_active_client = true;
+      break;
+    }
+  }
+
+  // Resume if there is an active client, or freeze if there are none.
+  if (is_frozen_ && has_active_client) {
+    worker_->Resume();
+    is_frozen_ = false;
+  } else if (!is_frozen_ && !has_active_client) {
+    worker_->Freeze();
+    is_frozen_ = true;
+  }
+}
+
 const base::UnguessableToken& SharedWorkerHost::GetDevToolsToken() const {
   return devtools_handle_->dev_tools_token();
 }
@@ -1057,6 +1090,12 @@ void SharedWorkerHost::OnClientConnectionLost() {
       clients_.erase(it);
       break;
     }
+  }
+  if (!clients_.empty() &&
+      base::FeatureList::IsEnabled(blink::features::kFreezeSharedWorker)) {
+    // The disconnected client might have been the last active one. Re-evaluate
+    // the freeze state to freeze the worker if no active clients remain.
+    OnClientStateChanged();
   }
   if (instance_.extended_lifetime()) {
     if (!clients_.empty()) {  // Early return.
