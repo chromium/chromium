@@ -149,8 +149,6 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 20;
     case LayoutConstant::kVerticalTabStripTopButtonPadding:
       return 4;
-    case LayoutConstant::kVerticalTabStripBottomButtonPadding:
-      return 4;
     case LayoutConstant::kVerticalTabStripCollapsedBottomButtonPadding:
       return 2;
     case LayoutConstant::kVerticalTabStripTopButtonContainerHeight:
