@@ -123,7 +123,7 @@ class DropdownFieldView implements FieldView {
     }
 
     void setLabel(String label, boolean isRequired) {
-        mLabel.setText(isRequired ? label + EditorDialogView.REQUIRED_FIELD_INDICATOR : label);
+        mLabel.setText(isRequired ? label + FieldView.REQUIRED_FIELD_INDICATOR : label);
     }
 
     void setDropdownValues(List<String> values, @Nullable String hint) {

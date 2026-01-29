@@ -9,6 +9,9 @@ import org.chromium.build.annotations.NullMarked;
 /** The interface for editor fields that handle validation, display errors, and can be updated. */
 @NullMarked
 interface FieldView {
+    /** The indicator for input fields that are required. */
+    String REQUIRED_FIELD_INDICATOR = "*";
+
     /**
      * Validates the field.
      *

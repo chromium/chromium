@@ -373,8 +373,7 @@ public final class TextFieldViewUnitTest {
                 mActivity.getString(
                         R.string.autofill_address_edit_dialog_required_field_content_description,
                         FIELD_LABEL));
-        assertTrue(
-                inputLayout.getHint().toString().contains(TextFieldView.REQUIRED_FIELD_INDICATOR));
+        assertTrue(inputLayout.getHint().toString().contains(FieldView.REQUIRED_FIELD_INDICATOR));
     }
 
     /**
@@ -398,7 +397,6 @@ public final class TextFieldViewUnitTest {
                 mActivity.getString(
                         R.string.autofill_address_edit_dialog_required_field_content_description,
                         FIELD_LABEL));
-        assertFalse(
-                inputLayout.getHint().toString().contains(TextFieldView.REQUIRED_FIELD_INDICATOR));
+        assertFalse(inputLayout.getHint().toString().contains(FieldView.REQUIRED_FIELD_INDICATOR));
     }
 }

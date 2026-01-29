@@ -80,9 +80,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
         implements OnClickListener,
                 DialogInterface.OnShowListener,
                 DialogInterface.OnDismissListener {
-    /** The indicator for input fields that are required. */
-    public static final String REQUIRED_FIELD_INDICATOR = "*";
-
     /** Duration of the animation to show the UI to full height. */
     private static final int DIALOG_ENTER_ANIMATION_MS = 300;
 
