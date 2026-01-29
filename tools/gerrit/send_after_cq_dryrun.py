@@ -139,6 +139,40 @@ class ReviewMonitor:
             else:
                 print(f"      ✅ Success")
 
+    def set_wip(self, message=None):
+        print(f"   Setting CL {self.issue_id} to WIP...")
+        cmd = [
+            'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
+            '--method', 'POST', '--path', f'/changes/{self.issue_id}/wip'
+        ]
+        if message:
+            cmd.extend(['--body', json.dumps({"message": message})])
+
+        print(f"      {' '.join(cmd)}")
+        if not self.dry_run:
+            out, code = run_command(cmd)
+            if code != 0 and "409" not in out:
+                print(f"      ❌ Failed: {out}")
+            else:
+                print(f"      ✅ Success")
+
+    def set_ready(self, message=None):
+        print(f"   Setting CL {self.issue_id} to Ready for Review...")
+        cmd = [
+            'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
+            '--method', 'POST', '--path', f'/changes/{self.issue_id}/ready'
+        ]
+        if message:
+            cmd.extend(['--body', json.dumps({"message": message})])
+
+        print(f"      {' '.join(cmd)}")
+        if not self.dry_run:
+            out, code = run_command(cmd)
+            if code != 0 and "409" not in out:
+                print(f"      ❌ Failed: {out}")
+            else:
+                print(f"      ✅ Success")
+
     def monitor(self):
         print(f"🚀 Monitoring CQ for CL {self.issue_id} "
               f"(Patchset: {self.patchset})")
@@ -147,6 +181,10 @@ class ReviewMonitor:
         if self.dry_run:
             print("🧪 Dry run mode: Commands will be printed but not executed.")
         print(f"⏱️  Timeout: {TIMEOUT_HOURS} hours\n")
+
+        self.set_wip(
+            message="[automated] Monitoring CQ dry run; will mark "
+            "Ready for Review upon success (via send_after_cq_dryrun.py).")
 
         start_time = time.time()
         try:
@@ -176,6 +214,11 @@ class ReviewMonitor:
 
                         for r in self.reviewers:
                             self.add_reviewer(r)
+
+                        self.set_ready(
+                            message="[automated] CQ dry run passed! "
+                            "Sending for review (via send_after_cq_dryrun.py)."
+                        )
                     else:
                         msg = f"CQ failed on: {', '.join(names)}"
                         print(f"\n\n🛑 {msg}")
