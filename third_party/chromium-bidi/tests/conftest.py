@@ -276,6 +276,13 @@ async def context_id(websocket):
 
 
 @pytest_asyncio.fixture
+async def client_window_id(websocket):
+    """Return the client window id from the first browsing context."""
+    result = await get_tree(websocket)
+    return result["contexts"][0]["clientWindow"]
+
+
+@pytest_asyncio.fixture
 async def another_context_id(create_context):
     """Return an additional browsing context id."""
     return await create_context()

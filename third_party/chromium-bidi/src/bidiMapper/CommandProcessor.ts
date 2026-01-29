@@ -243,9 +243,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseRemoveUserContextParameters(command.params),
         );
       case 'browser.setClientWindowState':
-        this.#parser.parseSetClientWindowStateParameters(command.params);
-        throw new UnsupportedOperationException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#browserProcessor.setClientWindowState(
+          this.#parser.parseSetClientWindowStateParameters(command.params),
         );
       case 'browser.setDownloadBehavior':
         return await this.#browserProcessor.setDownloadBehavior(
