@@ -1871,7 +1871,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios18-sdk-device",
+    name = "ios26-sdk-device",
     description_html = (
         "Validates that Chromium on iOS compiles for device using the latest iOS SDK." +
         "Particularly useful during WWDC season when new beta SDKs are being frequently" +
@@ -1911,12 +1911,12 @@ fyi_ios_builder(
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "iOS|iOS18",
+            category = "iOS|iOS26",
             short_name = "dev",
         ),
     ],
     contact_team_email = "bling-engprod@google.com",
-    xcode = xcode.x16betabots,
+    xcode = xcode.x26betabots,
 )
 
 fyi_ios_builder(

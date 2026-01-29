@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/ios18-sdk-device/gn-args.json"
+        "infra/config/generated/builders/ci/ios26-sdk-device/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ios18-sdk-device",
+              "builder": "ios26-sdk-device",
               "project": "chromium"
             },
             "builder_spec": {
@@ -35,11 +35,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ios18-sdk-device",
+          "builder": "ios26-sdk-device",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/ios18-sdk-device/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/ios26-sdk-device/targets"
     }
   },
   "$build/siso": {
@@ -62,5 +62,5 @@
   },
   "builder_group": "chromium.fyi",
   "recipe": "chromium",
-  "xcode_build_version": "16f6"
+  "xcode_build_version": "17c52"
 }
