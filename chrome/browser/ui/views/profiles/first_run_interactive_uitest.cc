@@ -336,27 +336,18 @@ class FirstRunInteractiveUiTest
 
   void SimulateSignIn(const std::string& account_email,
                       const std::string& account_given_name,
-                      bool with_extended_info = true,
-                      bool set_primary_account_in_advance = false) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    auto enable_disclaimer_on_primary_account_change_resetter =
+                      bool with_extended_info = true) {
+    enable_disclaimer_on_primary_account_change_resetter_ =
         enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
 
     auto options_builder =
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
             .WithCookie()
             .WithAccessPoint(signin_metrics::AccessPoint::kForYouFre);
-    if (set_primary_account_in_advance) {
-      // When this step is skipped, the primary account is set by
-      // `ProcessDiceHeaderDelegateImpl::CompleteChromeSignInAfterGaiaSignin`
-      // below.
-      // TODO(crbug.com/307233905): Consider having the real implementation handle the
-      // signin in all cases. Right now it causes the management rejection tests to crash.
-      options_builder.AsPrimary(signin::ConsentLevel::kSignin);
-    }
+    // Note: the primary account is set later by the call to
+    // `ProcessDiceHeaderDelegateImpl::CompleteChromeSignInAfterGaiaSignin`.
     // Kombucha note: This function waits on a `base::RunLoop`.
     AccountInfo account_info = signin::MakeAccountAvailable(
         identity_manager, options_builder.Build(account_email));
@@ -412,6 +403,7 @@ class FirstRunInteractiveUiTest
     EXPECT_EQ(tab_helper->signin_access_point(),
               signin_metrics::AccessPoint::kForYouFre);
     // Simulate the Dice "ENABLE_SYNC" header parameter.
+    // This step also sets the primary account.
     {
       auto process_dice_header_delegate_impl =
           ProcessDiceHeaderDelegateImpl::Create(web_contents());
@@ -466,6 +458,7 @@ class FirstRunInteractiveUiTest
 
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
   base::HistogramTester histogram_tester_;
+  base::ScopedClosureRunner enable_disclaimer_on_primary_account_change_resetter_;
 };
 
 // TODO(crbug.com/366119368): Re-enable this test
@@ -1299,8 +1292,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 
   // Pulled out of the test sequence because it waits using `RunLoop`s.
   SimulateSignIn(kTestEnterpriseEmail, kTestGivenName,
-                 /*with_extended_info=*/false,
-                 /*set_primary_account_in_advance=*/true);
+                 /*with_extended_info=*/false);
   ASSERT_TRUE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
