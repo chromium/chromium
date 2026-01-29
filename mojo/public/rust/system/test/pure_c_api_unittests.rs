@@ -4,8 +4,8 @@
 use rust_gtest_interop::prelude::*;
 
 chromium::import! {
-    pub "//mojo/public/rust:mojo_rust_system_api" as system;
-    pub "//mojo/public/rust/test_support:test_util" as test_util;
+    "//mojo/public/rust/system";
+    "//mojo/public/rust/system/test_util";
 }
 
 // This file is meant to mimic the tests in

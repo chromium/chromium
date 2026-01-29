@@ -8,13 +8,13 @@
 //! representation).
 
 chromium::import! {
-    "//mojo/public/rust/mojom_parser";
-    "//mojo/public/rust:mojo_rust_system_api";
+    "//mojo/public/rust/mojom_value_parser";
+    "//mojo/public/rust/system";
 }
 
 use crate::message_header::*;
-use mojo_rust_system_api::message_pipe::RawMojoMessage;
-use mojom_parser::ParsingResult;
+use mojom_value_parser::ParsingResult;
+use system::message_pipe::RawMojoMessage;
 
 /// Represents a Mojom message with a structured header and unstructured
 /// payload.
@@ -22,8 +22,9 @@ use mojom_parser::ParsingResult;
 /// This type does not make any guarantees. It is the user's responsibility to
 /// ensure that the header and payload combine to create a valid Mojom message.
 /// In practice, this means ensuring that the payload represents an encoded
-/// mojom value (obtained from mojom_parser::serialize), and that the header
-/// matches the value. See message_header.rs for more information on headers.
+/// mojom value (obtained from mojom_value_parser::serialize), and that the
+/// header matches the value. See message_header.rs for more information on
+/// headers.
 ///
 /// FOR_RELEASE: Integrate/replace this with the new RawMojoMessage type in the
 /// system bindings

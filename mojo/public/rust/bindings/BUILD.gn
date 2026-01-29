@@ -1,6 +1,6 @@
 import("//build/rust/rust_static_library.gni")
 
-rust_static_library("mojo_rust_bindings_api") {
+rust_static_library("bindings") {
   crate_root = "lib.rs"
   sources = [
     "interface.rs",
@@ -12,10 +12,11 @@ rust_static_library("mojo_rust_bindings_api") {
 
   deps = [
     ":helper_functions_cxx",
-    "..:mojo_rust_system_api",
-    "../mojom_parser",
-    "../mojom_parser:mojom_parser_core",
+    "../mojom_value_parser",
+
+    # "../mojom_value_parser:mojom_value_parser_core",
     "../sequences",
+    "../system",
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/bitflags/v2:lib",
   ]

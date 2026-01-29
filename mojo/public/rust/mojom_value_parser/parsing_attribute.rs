@@ -77,14 +77,14 @@ fn derive_mojomparse_struct(
         .collect();
 
     // We wrap the `impl` blocks in an anonymous scope so that we can
-    // import mojom_parser_core without polluting the caller's namespace.
+    // import mojom_value_parser_core without polluting the caller's namespace.
     return quote! {
         const _: () = {
             chromium::import! {
-                "//mojo/public/rust/mojom_parser:mojom_parser_core";
+                "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
             }
 
-            use mojom_parser_core::*;
+            use mojom_value_parser_core::*;
 
             impl MojomParse for #name {
                 fn mojom_type() -> MojomType {
@@ -175,10 +175,10 @@ fn derive_mojomparse_union(
     return quote! {
         const _: () = {
             chromium::import! {
-                "//mojo/public/rust/mojom_parser:mojom_parser_core";
+                "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
             }
 
-            use mojom_parser_core::*;
+            use mojom_value_parser_core::*;
             use std::collections::BTreeMap;
 
             impl MojomParse for #name {
@@ -287,10 +287,10 @@ pub fn derive_primitiveenum(input: proc_macro::TokenStream) -> proc_macro::Token
     let quoted = quote! {
         const _ : () = {
             chromium::import! {
-                "//mojo/public/rust/mojom_parser:mojom_parser_core";
+                "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
             }
 
-            use mojom_parser_core::*;
+            use mojom_value_parser_core::*;
 
             impl From<#name> for u32 {
                 fn from(value: #name) -> u32 { value as u32 }

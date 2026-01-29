@@ -135,8 +135,8 @@ template("mojom_rust") {
       deps = [
         ":$rust_crate_root_target_name",
         ":$rust_generator_target_name",
-        "//mojo/public/rust/bindings:mojo_rust_bindings_api",
-        "//mojo/public/rust/mojom_parser",
+        "//mojo/public/rust/bindings",
+        "//mojo/public/rust/mojom_value_parser",
         "//third_party/rust/anyhow/v1:lib",
         "//third_party/rust/ordered_float/v5:lib",
       ]

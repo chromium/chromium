@@ -11,7 +11,7 @@
 //! possible fields. Messages containing older headers will fail to parse.
 
 chromium::import! {
-    "//mojo/public/rust/mojom_parser";
+    "//mojo/public/rust/mojom_value_parser";
     "//mojo/public/rust/bindings:helper_functions_cxx";
 }
 
@@ -40,7 +40,7 @@ use helper_functions_cxx::ffi as cxx_helpers;
 /// - The payload of the message is of the type indicated by the `name` field.
 /// - The flags are correct.
 /// - If this is a response, then the request_id matches the one in the request.
-#[derive(mojom_parser::MojomParse)]
+#[derive(mojom_value_parser::MojomParse)]
 pub struct MessageHeaderV3 {
     /// The ordinal of the mojom `interface` this message corresponds to. Used
     /// for sending multiple interfaces via the same pipe.
@@ -93,7 +93,7 @@ impl MessageHeaderV3 {
     /// FOR_RELEASE: We can add another version that takes an output buffer if
     /// we want to, instead of allocating here
     pub fn serialize_with_version(self) -> Vec<u8> {
-        let mut serialized = mojom_parser::serialize(self);
+        let mut serialized = mojom_value_parser::serialize(self);
         Self::adjust_version_number(&mut serialized);
         return serialized;
     }
@@ -104,9 +104,11 @@ impl MessageHeaderV3 {
     ///
     /// This function must have mutable access to the buffer so it can
     /// overwrite the version value before deserializing
-    pub fn deserialize_with_version(data: &mut [u8]) -> mojom_parser::ParsingResult<(&[u8], Self)> {
+    pub fn deserialize_with_version(
+        data: &mut [u8],
+    ) -> mojom_value_parser::ParsingResult<(&[u8], Self)> {
         Self::adjust_version_number(data);
-        return mojom_parser::deserialize(data);
+        return mojom_value_parser::deserialize(data);
     }
 
     /// Replace the version number of a serialized header with 3.
@@ -139,9 +141,9 @@ bitflags::bitflags! {
 // special semantics.
 const _: () = {
     chromium::import! {
-            "//mojo/public/rust/mojom_parser:mojom_parser_core";
+            "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
     }
-    use mojom_parser_core::{MojomType, MojomValue};
+    use mojom_value_parser_core::{MojomType, MojomValue};
 
     impl MessageHeaderFlags {
         /// Check if a given combination of flags is valid.
@@ -181,7 +183,7 @@ const _: () = {
         }
     }
 
-    impl mojom_parser::MojomParse for MessageHeaderFlags {
+    impl mojom_value_parser::MojomParse for MessageHeaderFlags {
         fn mojom_type() -> MojomType {
             MojomType::UInt32
         }

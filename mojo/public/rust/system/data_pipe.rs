@@ -8,7 +8,7 @@ use std::ffi::c_void;
 use std::ptr;
 
 chromium::import! {
-  pub "//mojo/public/rust:mojo_ffi";
+  "//mojo/public/rust/system:mojo_ffi";
 }
 
 bitflags::bitflags! {

@@ -173,8 +173,8 @@
 #![allow(unused)]
 
 chromium::import! {
-  "//mojo/public/rust:mojo_rust_system_api";
-  "//mojo/public/rust/sequences:sequences";
+  "//mojo/public/rust/system";
+  "//mojo/public/rust/sequences";
 }
 
 use std::collections::HashMap;
@@ -185,9 +185,9 @@ use std::marker::PhantomData;
 // it's stabilized, if any uses remain.
 use std::sync::{Arc, Mutex, Weak};
 
-use mojo_rust_system_api::message_pipe::{MessageEndpoint, RawMojoMessage};
-use mojo_rust_system_api::mojo_types::{MojoResult, UntypedHandle};
 use sequences::SequencedTaskRunnerHandle;
+use system::message_pipe::{MessageEndpoint, RawMojoMessage};
+use system::mojo_types::{MojoResult, UntypedHandle};
 
 use crate::message::MojomMessage;
 use crate::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
@@ -516,8 +516,6 @@ pub mod remote {
 
 // FOR_RELEASE: Put in a different file
 pub mod receiver {
-    use mojo_rust_system_api_61c68895::message_pipe::RawMojoMessage;
-
     use super::*;
 
     /// This type represents one end of a Mojo pipe corresponding to a

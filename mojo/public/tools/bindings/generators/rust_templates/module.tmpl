@@ -10,16 +10,13 @@
 #![allow(non_snake_case)]
 
 chromium::import! {
-    "//mojo/public/rust/mojom_parser";
-    "//mojo/public/rust/bindings:mojo_rust_bindings_api";
+    "//mojo/public/rust/mojom_value_parser";
+    "//mojo/public/rust/bindings";
 }
 
 {#- FOR RELEASE (optional): Look into calling rustfmt as part of the generation process #}
 
-use mojom_parser::*;
-{% if module.interfaces %}
-use mojo_rust_bindings_api as bindings;
-{%- endif %}
+use mojom_value_parser::*;
 
 #[allow(unused_imports)]
 use std::collections::HashMap;

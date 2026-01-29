@@ -8,10 +8,10 @@
 // public, etc. For now, just (re-)export everything blindly.
 
 chromium::import! {
-    "//mojo/public/rust/mojom_parser:mojom_parser_core";
-    "//mojo/public/rust/mojom_parser:parsing_attribute";
+    "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
+    "//mojo/public/rust/mojom_value_parser:parsing_attribute";
 }
 
-pub use mojom_parser_core::{deserialize, deserialize_exact, serialize, ParsingResult};
-pub use mojom_parser_core::{MojomParse, PrimitiveEnum};
+pub use mojom_value_parser_core::{deserialize, deserialize_exact, serialize, ParsingResult};
+pub use mojom_value_parser_core::{MojomParse, PrimitiveEnum};
 pub use parsing_attribute::{MojomParse, PrimitiveEnum};

@@ -97,7 +97,7 @@ use std::mem;
 use std::sync::{Arc, Mutex, Weak};
 
 chromium::import! {
-  pub "//mojo/public/rust:mojo_ffi";
+  "//mojo/public/rust/system:mojo_ffi";
 }
 
 use mojo_ffi::types;

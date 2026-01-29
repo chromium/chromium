@@ -21,10 +21,7 @@ use std::fmt;
 use std::ptr;
 
 chromium::import! {
-  // FOR_RELEASE: everything brought in from mojo_ffi should be pub(crate) at
-  // most. We don't want any of these types exposed outside of
-  // mojo/public/rust/system.
-  pub "//mojo/public/rust:mojo_ffi";
+  "//mojo/public/rust/system:mojo_ffi";
 }
 
 use mojo_ffi::types;

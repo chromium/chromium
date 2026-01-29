@@ -7,8 +7,8 @@ use rust_gtest_interop::prelude::*;
 use std::sync::{Arc, Condvar, LazyLock, Mutex};
 
 chromium::import! {
-    pub "//mojo/public/rust:mojo_rust_system_api" as system;
-    pub "//mojo/public/rust/test_support:test_util" as test_util;
+    "//mojo/public/rust/system";
+    "//mojo/public/rust/system/test_util";
 }
 
 use system::mojo_types::Handle;

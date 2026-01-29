@@ -37,7 +37,7 @@ mod ffi {
     }
 
     unsafe extern "C++" {
-        include!("mojo/public/rust/test_support/cxx_shim.h");
+        include!("mojo/public/rust/system/test_util/cxx_shim.h");
 
         // FOR_RELEASE: This doesn't logically need to be boxed, but cxx
         // requires it. See if we can avoid it, maybe be making

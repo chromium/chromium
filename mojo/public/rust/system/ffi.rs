@@ -6,7 +6,7 @@
 #![allow(non_snake_case)]
 
 chromium::import! {
-  pub "//mojo/public/rust:mojo_c_system_bindings" as raw_ffi;
+  pub "//mojo/public/rust/system:mojo_c_system_bindings" as raw_ffi;
 }
 
 pub mod types {

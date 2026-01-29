@@ -14,14 +14,14 @@
 //! //mojo/public/rust/test_mojom/parser_unittests.mojom
 
 chromium::import! {
-    "//mojo/public/rust/mojom_parser:mojom_parser_core";
-    "//mojo/public/rust/mojom_parser:parser_unittests_rust";
-    "//mojo/public/rust/mojom_parser:validation_parser";
+    "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
+    "//mojo/public/rust/mojom_value_parser:parser_unittests_rust";
+    "//mojo/public/rust/mojom_value_parser:validation_parser";
 }
 
 use std::iter;
 
-use mojom_parser_core::*;
+use mojom_value_parser_core::*;
 use ordered_float::OrderedFloat;
 use parser_unittests_rust::parser_unittests::*;
 use rust_gtest_interop::prelude::*;

@@ -1,8 +1,6 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/rust/rust_bindgen.gni")
-import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
@@ -10,40 +8,12 @@ group("all") {
   # Meta target, don't depend on it from production code
   testonly = true
   deps = [
-    ":mojo_c_system_bindings",
     ":rust_mojo_tests",
-    "bindings:mojo_rust_bindings_api",
-    "mojom_parser",
+    "bindings",
+    "mojom_value_parser",
     "sequences",
-  ]
-}
-
-rust_bindgen("mojo_c_system_bindings") {
-  header = "//mojo/public/c/system/thunks.h"
-  deps = [ "//mojo/public/c/system" ]
-}
-
-rust_static_library("mojo_ffi") {
-  crate_root = "system/ffi.rs"
-  sources = [ "system/ffi.rs" ]
-  deps = [ ":mojo_c_system_bindings" ]
-  allow_unsafe = true
-}
-
-rust_static_library("mojo_rust_system_api") {
-  crate_root = "system/lib.rs"
-  sources = [
-    "system/data_pipe.rs",
-    "system/lib.rs",
-    "system/message_pipe.rs",
-    "system/mojo_types.rs",
-    "system/raw_trap.rs",
-    "system/trap.rs",
-  ]
-  allow_unsafe = true
-  deps = [
-    ":mojo_ffi",
-    "//third_party/rust/bitflags/v2:lib",
+    "system",
+    "system:mojo_c_system_bindings",
   ]
 }
 
@@ -51,10 +21,9 @@ rust_static_library("mojo_rust_system_api") {
 group("tests") {
   testonly = true
   deps = [
-    "mojom_parser:mojom_parser_unittests",
+    "mojom_value_parser:mojom_value_parser_unittests",
     "sequences:rust_sequences_unittests",
-    "test_mojom:test_mojom_rust",
-    "test_system:system_api_unittests",
+    "system:system_api_unittests",
   ]
 }
 
