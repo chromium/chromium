@@ -75,7 +75,6 @@ source_set("gfx") {
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/service",
     "//gpu/ipc/common",
-    "//gpu/skia_bindings",
     "//gpu/vulkan",
     "//gpu/vulkan/init",
     "//services/viz/privileged/mojom",

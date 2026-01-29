@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/khronos",
-  "+third_party/skia",
-]

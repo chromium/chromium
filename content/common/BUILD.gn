@@ -222,7 +222,6 @@ source_set("common") {
     "//gpu/command_buffer/service",
     "//gpu/ipc/client",
     "//gpu/ipc/common",
-    "//gpu/skia_bindings",
     "//ipc",
     "//media",
     "//media/base/ipc",

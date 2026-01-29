@@ -197,6 +197,7 @@ blink_modules_sources("webgl") {
   deps = [
     "//device/vr/buildflags",
     "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/client:gles2_interface",
     "//third_party/blink/renderer/modules/webcodecs",
     "//third_party/blink/renderer/modules/xr",
     "//ui/gl",

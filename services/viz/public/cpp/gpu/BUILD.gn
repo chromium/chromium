@@ -36,7 +36,6 @@ source_set("gpu") {
     "//gpu/command_buffer/client:webgpu",
     "//gpu/command_buffer/common:raster",
     "//gpu/config",
-    "//gpu/skia_bindings",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
     "//services/viz/public/mojom",

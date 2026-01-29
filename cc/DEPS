@@ -58,7 +58,6 @@ specific_include_rules = {
     "+gpu/command_buffer/common",
     "+gpu/command_buffer/service",
     "+gpu/ipc",
-    "+gpu/skia_bindings",
   ],
   "in_process_context_provider\.h": [
     "+gpu/command_buffer/common",
@@ -71,9 +70,6 @@ specific_include_rules = {
     "+gpu/command_buffer/common/command_buffer_id.h",
     "+gpu/command_buffer/common/constants.h",
   ],
-  "gpu_image_decode_cache_unittest\.cc" : [
-      "+gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h",
-  ],
   "layer_tree_host_impl_test_base\.cc": [
     "+components/viz/test",
   ],
@@ -82,7 +78,6 @@ specific_include_rules = {
     "+gpu/command_buffer/common",
     "+gpu/config",
     "+gpu/ipc",
-    "+gpu/skia_bindings",
   ],
   "transfer_cache_unittest\.cc" : [
     "+gpu/command_buffer/client",

@@ -308,7 +308,6 @@ viz_component("service") {
     "//gpu/ipc/common",
     "//gpu/ipc/common:surface_handle_type",
     "//gpu/ipc/service",
-    "//gpu/skia_bindings",
     "//gpu/vulkan:buildflags",
     "//media",
     "//media:media_buildflags",
