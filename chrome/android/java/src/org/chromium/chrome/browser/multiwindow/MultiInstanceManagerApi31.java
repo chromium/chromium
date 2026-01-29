@@ -1554,12 +1554,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (mTabModelObserver != null) mTabModelObserver.destroy();
         // This handles a case where an instance is deleted within Chrome but not through
         // Window manager UI, and the task is removed by system. See https://crbug.com/1241719.
-        // A point of activity destruction should be recorded as last access of the instance for a
-        // more accurate ordering of inactive instances displayed on surfaces like the instance
-        // switcher dialog and Recent Tabs.
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
 
-        MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+        if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            // A point of activity destruction should be recorded as last access of the instance for
+            // a more accurate ordering of inactive instances displayed on surfaces like the
+            // instance switcher dialog and Recent Tabs.
+            MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+        }
 
         if (mInstanceId != INVALID_WINDOW_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);
@@ -1601,7 +1603,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // destruction needs to be recorded as an additional case of last access of the instance so
         // that surfaces like Recent Tabs and the instance switcher dialog can display a more
         // accurate list of inactive instances sorted by their last accessed time.
-        MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+        if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+        }
     }
 
     @Override
