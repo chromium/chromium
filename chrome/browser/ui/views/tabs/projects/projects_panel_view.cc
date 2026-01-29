@@ -137,6 +137,10 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         &mouse_event_handler_, GetWidget()->GetNativeWindow(),
         {ui::EventType::kMousePressed, ui::EventType::kGestureTapDown});
+
+    // TODO(crbug.com/477602874): Have the panel view observe the controller and
+    // pipe updates to the list.
+    tab_groups_view_->SetTabGroups(panel_controller_->GetTabGroups());
   } else {
     event_monitor_.reset();
   }

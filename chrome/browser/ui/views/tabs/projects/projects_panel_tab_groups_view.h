@@ -37,6 +37,9 @@ class ProjectsPanelTabGroupsView : public views::View {
       delete;
   ~ProjectsPanelTabGroupsView() override;
 
+  // Sets the tab groups shown in the list.
+  void SetTabGroups(const std::vector<tab_groups::SavedTabGroup>& tab_groups);
+
  private:
   raw_ptr<views::Label> title_ = nullptr;
   std::vector<raw_ptr<ProjectsPanelTabGroupsItemView>> item_views_;

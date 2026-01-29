@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_view.h"
 
+#include <utility>
+
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
@@ -45,6 +47,19 @@ ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
 }
 
 ProjectsPanelTabGroupsView::~ProjectsPanelTabGroupsView() = default;
+
+void ProjectsPanelTabGroupsView::SetTabGroups(
+    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
+  for (auto& item_view : item_views_) {
+    RemoveChildViewT(std::exchange(item_view, nullptr));
+  }
+  item_views_.clear();
+
+  for (const auto& group : tab_groups) {
+    item_views_.emplace_back(
+        AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(group)));
+  }
+}
 
 BEGIN_METADATA(ProjectsPanelTabGroupsView)
 END_METADATA
