@@ -308,7 +308,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '3f4069a6c844c0d0b18721d78c50eec947630ea2',
+  'src_internal_revision': '1f24cc33d9640dd0d72cf5e13e1e0d6bb3e3a8be',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -1206,7 +1206,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/chrome/android/orderfiles/arm64',
-              'version': 'pDm4dzJfozFvvccuoLSNWQ0IemghiBcQzpqS333dAz4C',
+              'version': '1-qUms7vpv6fzwQH3Qj8GsKkHvu8AR6N69rSI2iAtUsC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
