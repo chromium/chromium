@@ -57,6 +57,9 @@ class InputStateModel {
   // Add a subscriber to this model.
   base::CallbackListSubscription subscribe(Subscriber callback);
 
+  // Initializes the model and notifies subscribers of the initial state.
+  void Initialize();
+
   // Set a new tool.
   void setActiveTool(ToolMode tool);
 

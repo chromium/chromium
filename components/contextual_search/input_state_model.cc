@@ -121,6 +121,10 @@ InputStateModel::InputStateModel(
 
 InputStateModel::~InputStateModel() = default;
 
+void InputStateModel::Initialize() {
+  notifySubscribers();
+}
+
 base::CallbackListSubscription InputStateModel::subscribe(Subscriber callback) {
   return subscribers_.Add(std::move(callback));
 }
@@ -196,12 +200,10 @@ std::vector<omnibox::InputType> GetCurrentInputTypes(
 
 void InputStateModel::setActiveTool(ToolMode tool) {
   updateSelectedState(tool, state_.active_model);
-  notifySubscribers();
 }
 
 void InputStateModel::setActiveModel(ModelMode model) {
   updateSelectedState(state_.active_tool, model);
-  notifySubscribers();
 }
 
 void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
@@ -211,6 +213,9 @@ void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
   // Update the disabled state based on the active model, tool, and current
   // input types.
   updateDisabledState();
+
+  // Notify subscribers once `state_` is updated.
+  notifySubscribers();
 }
 
 void InputStateModel::UpdateDisabledTools() {

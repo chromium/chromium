@@ -319,6 +319,7 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     input_state_subscription_ = input_state_model_->subscribe(
         base::BindRepeating(&ContextualSearchboxHandler::OnInputStateChanged,
                             weak_ptr_factory_.GetWeakPtr()));
+    input_state_model_->Initialize();
   }
 
   auto* browser_window_interface =
