@@ -585,6 +585,7 @@ struct SuggestionContent {
 
 // @generate glic_api
 // Enum to specify the source of the Skill.
+// LINT.IfChange(SkillSource)
 [Stable, Extensible]
 enum SkillSource {
   [Default] kUnknown = 0,
@@ -593,7 +594,9 @@ enum SkillSource {
   // Skill created by an end-user.
   kUserCreated = 2,
 };
+// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource, //depot/chromium/components/skills/public/skill.h:SkillSource)
 
+// LINT.IfChange(Skill)
 // A single skill preview.
 struct SkillPreview {
   // The unique identifier of the skill which is an UUID.
@@ -613,6 +616,7 @@ struct Skill {
   // The prompt of the skill.
   string prompt;
 };
+// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:Skill, //depot/chromium/components/skills/public/skill.h:Skill)
 
 // Request to create a skill.
 struct CreateSkillRequest {

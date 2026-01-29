@@ -9,6 +9,7 @@
 
 namespace skills {
 
+// LINT.IfChange(SkillSource)
 enum class SkillSource {
   kUnknown = 0,
   // Skill created by Google.
@@ -16,7 +17,10 @@ enum class SkillSource {
   // Skill created by an end-user.
   kUserCreated = 2,
 };
+// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource,
+// //depot/chromium/chrome/browser/glic/host/glic.mojom:SkillSource)
 
+// LINT.IfChange(Skill)
 // Represents a single skill.
 struct Skill {
   // A unique identifier for the skill. It's GUID now but can be other IDs in
@@ -43,6 +47,8 @@ struct Skill {
   Skill& operator=(const Skill& other) = delete;
   ~Skill();
 };
+// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:Skill,
+// //depot/chromium/chrome/browser/glic/host/glic.mojom:Skill)
 
 }  // namespace skills
 
