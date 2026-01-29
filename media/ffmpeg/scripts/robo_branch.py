@@ -13,8 +13,10 @@ a sanity check that we're being used correctly.
 import check_merge
 from datetime import datetime
 import config_flag_changes
+import json
 import os
 import re
+import requests
 from robo_lib.errors import UserInstructions
 from robo_lib import shell
 import robo_setup
@@ -384,8 +386,13 @@ def IsUploadedForReviewAndLanded(robo_configuration):
     branch_name = robo_configuration.sushi_branch_name()
     # See if origin/sushi and local/sushi are the same.  This check by itself
     # isn't sufficient, since it would return true any time the two are in sync.
-    diff = shell.output_or_error(
-        ["git", "diff", "origin/" + branch_name, branch_name])
+    upstream_branch = shell.output_or_error(
+        ["git", "rev-parse", "--abbrev-ref", "@{u}"])
+    if 'origin' not in upstream_branch:
+        print(f"WARNING - Your branch upstream is set to `{upstream_branch}`" +
+              " but it must be set to an upstream branch in order to continue")
+        return False
+    diff = shell.output_or_error(["git", "diff", upstream_branch, branch_name])
     if diff:
         print(
             "WARNING: Local and origin branches differ. Run `git diff origin/"
@@ -436,6 +443,13 @@ def IsSushiMergedBackToOriginMasterAndPushed(robo_configuration):
 
 @RequiresCleanWorkingDirectory
 def MergeBackToOriginMaster(robo_configuration):
+    if not DoesFakeDepsRollExist(robo_configuration):
+        raise UserInstructions(
+            "You must upload the fake merge to chromium CQ to run *san bots")
+
+    if not IsFakeDepsRollGreen(robo_configuration):
+        raise UserInstructions("You must wait for the CQ to be pass all tests")
+
     """Once the sushi branch has landed in origin after review, merge it back
      to upstream locally and push it."""
     shell.log("Considering merge back of sushi to origin/master")  # nocheck
@@ -525,6 +539,10 @@ def TryFakeDepsRoll(robo_configuration):
     """Start a deps roll against the sushi branch, and -1 it."""
     shell.log("Considering starting a fake deps roll")
 
+    if DoesFakeDepsRollExist(robo_configuration):
+        shell.log("Sorry, you can't re-run this step without a new branch")
+        return
+
     # Make sure that we've landed the sushi commits. Note that this can happen
     # if somebody re-runs robosushi after we upload the commits to Gerrit, but
     # before they've been reviewed and landed. This way, we provide a meaningful
@@ -534,7 +552,7 @@ def TryFakeDepsRoll(robo_configuration):
             "Cannot start a fake deps roll until gerrit review lands!")
 
     robo_configuration.chdir_to_ffmpeg_home()
-    sha1 = shell.output_or_error("git", "log", "-1", "--format=%H")
+    sha1 = shell.output_or_error(["git", "log", "-1", "--format=%H"])
     if not sha1:
         raise Exception("Cannot get sha1 of HEAD for fakes dep roll")
 
@@ -544,3 +562,110 @@ def TryFakeDepsRoll(robo_configuration):
     # TODO(crbug.com/450394703): get mad otherwise.
     shell.output_or_error(["roll_dep.py", "third_party/ffmpeg", sha1])
     # TODO(crbug.com/450394703): -1 it.
+
+
+def DoesFakeDepsRollExist(robo_configuration):
+    robo_configuration.chdir_to_chrome_src()
+    current_branch = shell.output_or_error(["git", "branch", "--show-current"])
+    issue = f"branch.{current_branch}.gerritissue"
+    try:
+        return shell.output_or_error(["git", "config", "--get", issue]).strip()
+    except:
+        return False
+
+
+
+_DETAIL = "https://chromium-review.googlesource.com/changes/{}/detail?O=16314"
+_CQINFO = "https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/Batch"
+_CQLINK = "https://chromium-review.googlesource.com/c/chromium/src/+/{}"
+
+
+def _FetchGerritUrlToJson(url:str):
+    query = requests.get(url=url)
+    if query.status_code // 100 != 2:
+        raise Exception(f"Status code [{url}] = {query.status_code}")
+    if query.text[0:4] == ")]}'":
+        return json.loads(query.text[5:])
+    return json.loads(query.text)
+
+
+def _GetCQInfo(issue, revision):
+    # BEHOLD THE MAGICAL INCANTATION
+    payload = {"requests": [{
+        "searchBuilds": {
+            "pageSize": 1000,
+            "mask": {
+                "fields": "id,builder,status,critical",
+                "output_properties": [
+                    {"path": ["cq_fault_attributions"]}
+                ]
+            },
+            "predicate": {
+                "includeExperimental": False,
+                "gerritChanges": [{
+                    "change": issue,
+                    "host": "chromium-review.googlesource.com",
+                    "patchset": revision,
+                    "project": "chromium/src",
+                }]
+            }
+        }
+    }]}
+    headers = {
+        "accept": "application/json",
+    }
+    query = requests.post(_CQINFO, json=payload, headers=headers)
+    if query.status_code // 100 != 2:
+        raise Exception(f"Status code [{url}] = {query.status_code}")
+    if query.text[0:4] == ")]}'":
+        return json.loads(query.text[5:])
+    return json.loads(query.text)
+
+
+def IsFakeDepsRollGreen(robo_configuration):
+    if issue := DoesFakeDepsRollExist(robo_configuration):
+        info = _FetchGerritUrlToJson(_DETAIL.format(issue))
+        active_revision = info["revisions"][info["current_revision"]]
+        rev = active_revision["_number"]
+        cq_info = _GetCQInfo(issue, rev)
+        try:
+            link4msg = _CQLINK.format(issue)
+            botlist = cq_info["responses"][0]["searchBuilds"].get("builds", [])
+            required_bots = set([
+                "linux-tsan-rel", "linux-ubsan-rel", "win-asan-rel",
+                "linux-asan-rel", "mac-asan-rel", "mac-arm64-asan-rel"])
+            bots_pending = False
+            if len(botlist) < 30:
+                shell.log(f"Kick off trybots on {link4msg}")
+                return False
+
+            has_rendered_botlist_url = False
+            for bot in botlist:
+                botname = bot["builder"]["builder"]
+                if bot["status"] != "SUCCESS":
+                    if not has_rendered_botlist_url:
+                        shell.log(f"Follow trybot status at: {link4msg}")
+                        has_rendered_botlist_url = True
+                    shell.log(f"  Bot status [{botname}] is `{bot['status']}`")
+                else:
+                    bots_pending = True
+                if botname in required_bots:
+                    required_bots.remove(botname)
+
+            if required_bots:
+                shell.log(f"CQ {link4msg} is missing bots: {required_bots}")
+                return False
+
+            if bots_pending:
+                shell.log(f"CQ {link4msg} bots are still pending")
+                return False
+        except Exception as e:
+            shell.log(f"DEBUG - Why are the trybots failing?")
+            print("request params", issue, rev)
+            print("response", cq_info)
+            raise e
+
+        return True
+    else:
+        shell.log("This branch has not been uploaded to gerrit for CQ")
+        return False

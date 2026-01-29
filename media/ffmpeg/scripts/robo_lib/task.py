@@ -7,6 +7,7 @@ import typing
 
 from robo_lib import shell
 from robo_lib import config
+from robo_lib.errors import UserInstructions
 
 
 ExecFN = typing.Callable[[config.RoboConfiguration], None]
@@ -92,7 +93,9 @@ def MakeErrorStr(queue:[Task]):
 
 class StepError(Exception):
     def __init__(self, target_queue:[Task], nested_exception:Exception):
-        super().__init__(MakeErrorStr(target_queue) + str(nested_exception))
+        super().__init__(
+            f"{MakeErrorStr(target_queue)} "
+            + f"{type(nested_exception)}({nested_exception})")
         self._steps = target_queue
         self._nested = nested_exception
 
@@ -111,5 +114,7 @@ def RunTasks(cfg:config.RoboConfiguration, tasks:[Task]):
                 task.execute(cfg)
         except StepError as se:
             se.RaiseFrom(task)
+        except UserInstructions as ui:
+            raise ui from None
         except Exception as e:
-            raise StepError([task], e) from None
+            raise StepError([task], e) from e
