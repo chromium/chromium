@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui_browser/webui_location_bar.h"
+#include "chrome/browser/ui/webui_browser/webui_stub_location_bar.h"
 
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,63 +13,62 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "ui/views/bubble/bubble_border.h"
-#include "ui/views/interaction/element_tracker_views.h"
 
-WebUILocationBar::WebUILocationBar(WebUIBrowserWindow* window)
+WebUIStubLocationBar::WebUIStubLocationBar(WebUIBrowserWindow* window)
     : LocationBar(window->browser()
                       ->GetBrowserForMigrationOnly()
                       ->command_controller()),
       window_(window) {}
 
-WebUILocationBar::~WebUILocationBar() = default;
+WebUIStubLocationBar::~WebUIStubLocationBar() = default;
 
-void WebUILocationBar::FocusLocation(bool is_user_initiated) {
+void WebUIStubLocationBar::FocusLocation(bool is_user_initiated) {
   NOTIMPLEMENTED();
 }
 
-void WebUILocationBar::FocusSearch() {
+void WebUIStubLocationBar::FocusSearch() {
   NOTIMPLEMENTED();
 }
 
-void WebUILocationBar::UpdateContentSettingsIcons() {
+void WebUIStubLocationBar::UpdateContentSettingsIcons() {
   NOTIMPLEMENTED();
 }
 
-void WebUILocationBar::SaveStateToContents(content::WebContents* contents) {
+void WebUIStubLocationBar::SaveStateToContents(content::WebContents* contents) {
   NOTIMPLEMENTED();
 }
 
-void WebUILocationBar::Revert() {
+void WebUIStubLocationBar::Revert() {
   NOTIMPLEMENTED();
 }
 
-OmniboxView* WebUILocationBar::GetOmniboxView() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-OmniboxController* WebUILocationBar::GetOmniboxController() {
+OmniboxView* WebUIStubLocationBar::GetOmniboxView() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-ChipController* WebUILocationBar::GetChipController() {
+OmniboxController* WebUIStubLocationBar::GetOmniboxController() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-content::WebContents* WebUILocationBar::GetWebContents() {
+ChipController* WebUIStubLocationBar::GetChipController() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-LocationBarModel* WebUILocationBar::GetLocationBarModel() {
+content::WebContents* WebUIStubLocationBar::GetWebContents() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+LocationBarModel* WebUIStubLocationBar::GetLocationBarModel() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
 std::optional<bubble_anchor_util::AnchorConfiguration>
-WebUILocationBar::GetChipAnchor() {
+WebUIStubLocationBar::GetChipAnchor() {
   ui::TrackedElement* location_button =
       BrowserElements::From(window_->browser())
           ->GetElement(kLocationIconElementId);
@@ -77,48 +76,48 @@ WebUILocationBar::GetChipAnchor() {
   return {{location_button, nullptr, views::BubbleBorder::TOP_LEFT}};
 }
 
-void WebUILocationBar::OnChanged() {
+void WebUIStubLocationBar::OnChanged() {
   NOTIMPLEMENTED();
 }
 
-void WebUILocationBar::UpdateWithoutTabRestore() {
+void WebUIStubLocationBar::UpdateWithoutTabRestore() {
   NOTIMPLEMENTED();
 }
 
-bool WebUILocationBar::IsVisible() const {
+bool WebUIStubLocationBar::IsVisible() const {
   NOTIMPLEMENTED();
   return true;
 }
 
-gfx::Rect WebUILocationBar::Bounds() const {
+gfx::Rect WebUIStubLocationBar::Bounds() const {
   NOTIMPLEMENTED();
   return gfx::Rect();
 }
 
-gfx::Size WebUILocationBar::MinimumSize() const {
+gfx::Size WebUIStubLocationBar::MinimumSize() const {
   NOTIMPLEMENTED();
   return gfx::Size();
 }
 
-gfx::Size WebUILocationBar::PreferredSize() const {
+gfx::Size WebUIStubLocationBar::PreferredSize() const {
   NOTIMPLEMENTED();
   return gfx::Size();
 }
 
-void WebUILocationBar::Update(content::WebContents* contents) {
+void WebUIStubLocationBar::Update(content::WebContents* contents) {
   NOTIMPLEMENTED();
 }
 
-void WebUILocationBar::ResetTabState(content::WebContents* contents) {
+void WebUIStubLocationBar::ResetTabState(content::WebContents* contents) {
   NOTIMPLEMENTED();
 }
 
-bool WebUILocationBar::HasSecurityStateChanged() {
+bool WebUIStubLocationBar::HasSecurityStateChanged() {
   NOTIMPLEMENTED();
   return false;
 }
 
-LocationBarTesting* WebUILocationBar::GetLocationBarForTesting() {
+LocationBarTesting* WebUIStubLocationBar::GetLocationBarForTesting() {
   NOTIMPLEMENTED();
   return nullptr;
 }

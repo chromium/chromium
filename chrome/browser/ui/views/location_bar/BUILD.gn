@@ -31,6 +31,7 @@ source_set("location_bar") {
       "omnibox_popup_file_selector.h",
       "selected_keyword_view.h",
       "star_view.h",
+      "webui_location_bar.h",
       "zoom_bubble_coordinator.h",
       "zoom_bubble_view.h",
     ]
@@ -89,6 +90,7 @@ source_set("impl") {
       "omnibox_popup_file_selector.cc",
       "selected_keyword_view.cc",
       "star_view.cc",
+      "webui_location_bar.cc",
       "zoom_bubble_coordinator.cc",
       "zoom_bubble_view.cc",
     ]

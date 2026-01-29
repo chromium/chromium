@@ -35,7 +35,7 @@ class WebUIBrowserModalDialogHost;
 class WebUIBrowserSidePanelUI;
 class WebUIBrowserUI;
 class WebUIBrowserWebContentsDelegate;
-class WebUILocationBar;
+class WebUIStubLocationBar;
 
 // A BrowserWindow implementation that uses WebUI for its primary UI. It still
 // uses views::Widget for windowing management.
@@ -304,7 +304,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   std::unique_ptr<WidgetDelegate> widget_delegate_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::WebView> web_view_ = nullptr;
-  std::unique_ptr<WebUILocationBar> location_bar_;
+  std::unique_ptr<WebUIStubLocationBar> location_bar_;
 
   // A mapping between accelerators and Chrome command IDs as defined in
   // //chrome/app/chrome_command_ids.h.

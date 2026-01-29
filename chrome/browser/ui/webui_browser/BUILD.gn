@@ -18,7 +18,7 @@ source_set("webui_browser") {
     "webui_browser_side_panel_ui.h",
     "webui_browser_ui.h",
     "webui_browser_window.h",
-    "webui_location_bar.h",
+    "webui_stub_location_bar.h",
   ]
   public_deps = [
     ":browser_mojo_bindings",
@@ -60,7 +60,7 @@ source_set("impl") {
     "webui_browser_web_contents_delegate.cc",
     "webui_browser_web_contents_delegate.h",
     "webui_browser_window.cc",
-    "webui_location_bar.cc",
+    "webui_stub_location_bar.cc",
   ]
 
   if (is_mac) {

@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
-#include "chrome/browser/ui/webui_browser/webui_location_bar.h"
+#include "chrome/browser/ui/webui_browser/webui_stub_location_bar.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -106,7 +106,7 @@ class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
 };
 
 WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
-  location_bar_ = std::make_unique<WebUILocationBar>(this);
+  location_bar_ = std::make_unique<WebUIStubLocationBar>(this);
   web_contents_delegate_ =
       std::make_unique<WebUIBrowserWebContentsDelegate>(this);
   widget_delegate_ =
