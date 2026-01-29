@@ -1,0 +1,65 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "cb"
+      }, {
+         "O": "PrintField",
+         "checked": "on"
+      }, {
+         "Desc": "Enabled switch",
+         "O": "PrintField"
+      } ],
+      "type": "Form",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "cb"
+      }, {
+         "Desc": "Disabled switch",
+         "O": "PrintField"
+      } ],
+      "type": "Form",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "cb"
+      }, {
+         "O": "PrintField",
+         "checked": "on"
+      } ],
+      "type": "Form",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "cb"
+      }, {
+         "Desc": "Switch without checked state",
+         "O": "PrintField"
+      } ],
+      "type": "Form",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "cb"
+      } ],
+      "type": "Form",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   } ]
+}

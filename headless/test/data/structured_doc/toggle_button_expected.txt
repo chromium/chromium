@@ -1,0 +1,56 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "NonStruct",
+      "~children": [ {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "pb"
+         }, {
+            "O": "PrintField",
+            "checked": "on"
+         }, {
+            "Desc": "Pressed toggle",
+            "O": "PrintField"
+         } ],
+         "type": "Form",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      }, {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "pb"
+         }, {
+            "Desc": "Unpressed toggle",
+            "O": "PrintField"
+         } ],
+         "type": "Form",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      }, {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "pb"
+         }, {
+            "O": "PrintField",
+            "checked": "on"
+         } ],
+         "type": "Form",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      }, {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "pb"
+         } ],
+         "type": "Form",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   } ]
+}

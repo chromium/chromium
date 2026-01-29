@@ -86,6 +86,16 @@ sk_sp<SkPicture> GetEmptyPicture() {
   return rec.finishRecordingAsPicture();
 }
 
+void AppendCheckedStateIfTrue(const ui::AXNode* ax_node,
+                              SkPDF::StructureElementNode* tag) {
+  // Handle checked state (default "off").
+  if (ax_node->data().GetCheckedState() == ax::mojom::CheckedState::kTrue) {
+    tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                chrome_pdf::kPDFPrintFieldCheckedAttribute,
+                                chrome_pdf::kPDFCheckedOnAttribute);
+  }
+}
+
 void AppendFormFieldDescFromAccessibleName(const ui::AXNode* ax_node,
                                            SkPDF::StructureElementNode* tag) {
   auto name_from = ax_node->GetNameFrom();
@@ -236,47 +246,57 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
       valid = true;
       break;
-    case ax::mojom::Role::kCheckBox: {
+    case ax::mojom::Role::kCheckBox:
+    case ax::mojom::Role::kSwitch:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeForm;
       tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
                                   chrome_pdf::kPDFPrintFieldRoleAttribute,
                                   chrome_pdf::kPDFRoleCheckBoxAttribute);
 
-      // The default value of the "checked" attribute is "Off". All other
-      // CheckedStates options do not clearly apply to PDF.
-      if (ax_node->data().GetCheckedState() == ax::mojom::CheckedState::kTrue) {
-        tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
-                                    chrome_pdf::kPDFPrintFieldCheckedAttribute,
-                                    chrome_pdf::kPDFCheckedOnAttribute);
-      }
+      AppendCheckedStateIfTrue(ax_node, tag);
 
-      // Add Desc attribute from accessible name.
       AppendFormFieldDescFromAccessibleName(ax_node, tag);
 
       // In case someone is printing to PDF a web page that is 100% checkboxes
       // (no kStaticText nodes), the PDF should still be tagged.
       valid = true;
       break;
-    }
-    case ax::mojom::Role::kRadioButton: {
+    case ax::mojom::Role::kRadioButton:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeForm;
       tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
                                   chrome_pdf::kPDFPrintFieldRoleAttribute,
                                   chrome_pdf::kPDFRoleRadioButtonAttribute);
 
-      // Handle checked state (default "off").
-      if (ax_node->data().GetCheckedState() == ax::mojom::CheckedState::kTrue) {
-        tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
-                                    chrome_pdf::kPDFPrintFieldCheckedAttribute,
-                                    chrome_pdf::kPDFCheckedOnAttribute);
-      }
+      AppendCheckedStateIfTrue(ax_node, tag);
 
-      // Add Desc attribute from accessible name.
       AppendFormFieldDescFromAccessibleName(ax_node, tag);
 
       valid = true;
       break;
-    }
+    case ax::mojom::Role::kToggleButton:
+      // Toggle button has pressed state (aria-pressed) mapped to checked.
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeForm;
+      tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                  chrome_pdf::kPDFPrintFieldRoleAttribute,
+                                  chrome_pdf::kPDFRolePushButtonAttribute);
+
+      AppendCheckedStateIfTrue(ax_node, tag);
+
+      AppendFormFieldDescFromAccessibleName(ax_node, tag);
+
+      valid = true;
+      break;
+    case ax::mojom::Role::kButton:
+    case ax::mojom::Role::kPopUpButton:
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeForm;
+      tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                  chrome_pdf::kPDFPrintFieldRoleAttribute,
+                                  chrome_pdf::kPDFRolePushButtonAttribute);
+
+      AppendFormFieldDescFromAccessibleName(ax_node, tag);
+
+      valid = true;
+      break;
     default:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
       break;
