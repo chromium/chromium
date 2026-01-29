@@ -1179,6 +1179,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.AtRegistration.InstallMode"
+    enum="OptimizationGuideOnDeviceModelInstallMode" expires_after="2026-07-05">
+  <owner>holte@chromium.org</owner>
+  <owner>jingyun@google.com</owner>
+  <summary>
+    Records the mode in which the on-device model was first registered. Recorded
+    shortly after startup, if the on-device model installation is initiated.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.{Event}.{Criteria}"
     enum="Boolean" expires_after="2026-07-05">
   <owner>holte@chromium.org</owner>

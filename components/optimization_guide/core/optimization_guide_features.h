@@ -106,6 +106,10 @@ extern const base::FeatureParam<std::string> kPerformanceClassListForImageInput;
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<std::string> kPerformanceClassListForAudioInput;
 
+// Whether on device models are downloaded in background prior to feature usage.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOnDeviceModelBackgroundDownload);
+
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideIconView);
 
@@ -334,6 +338,12 @@ bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
 // installation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
+    base::ByteCount free_disk_space_bytes);
+
+// Whether there is enough free disk space to allow on-device model
+// installation proactively in background.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
     base::ByteCount free_disk_space_bytes);
 
 // Returns true if unsafe content should be removed.

@@ -135,9 +135,10 @@ class OnDeviceModelComponentState {
 
 enum class ModelInstallMode {
   // Install the model on-demand (foreground download).
-  kOnDemand,
+  kOnDemand = 0,
   // Install the model on regular schedule (background download).
-  kBackground,
+  kBackground = 1,
+  kMaxValue = kBackground,
 };
 
 // The attributes selected when registering an on-device model component.
@@ -207,6 +208,13 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   };
 
   struct RegistrationCriteria {
+    RegistrationCriteria();
+    ~RegistrationCriteria();
+    RegistrationCriteria(const RegistrationCriteria&);
+    RegistrationCriteria& operator=(const RegistrationCriteria&);
+    RegistrationCriteria(RegistrationCriteria&&);
+    RegistrationCriteria& operator=(RegistrationCriteria&&);
+
     // Requirements for install. Please update `LogInstallCriteria()` when
     // updating this.
     bool device_capable = false;
@@ -214,6 +222,8 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     bool enabled_by_feature = false;
     bool enabled_by_enterprise_policy = false;
     bool enabled_by_user_setting = false;
+    // Criteria for background download.
+    bool is_on_external_power = false;
 
     // Reasons to uninstall. TODO(302327114): Add UMA for uninstall reason.
     bool out_of_retention = false;
@@ -253,8 +263,15 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
       if (on_device_feature_recently_used) {
         return ModelInstallMode::kOnDemand;
       }
-      if (background_download_requested) {
-        return ModelInstallMode::kBackground;
+      if (background_download_requested &&
+          base::FeatureList::IsEnabled(
+              features::kOnDeviceModelBackgroundDownload)) {
+        if (is_on_external_power &&
+            features::
+                IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
+                    disk_space_free)) {
+          return ModelInstallMode::kBackground;
+        }
       }
       return std::nullopt;
     }

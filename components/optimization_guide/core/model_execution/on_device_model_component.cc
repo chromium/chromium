@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -33,6 +34,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "net/base/network_change_notifier.h"
 #include "services/on_device_model/public/cpp/cpu.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -42,6 +44,13 @@ namespace {
 
 // Delay to give consumers time to unload the model before it's deleted.
 constexpr base::TimeDelta kUninstallDelay = base::Seconds(1);
+
+void LogInstallInitiated(ModelInstallMode mode) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.InstallMode",
+      mode);
+}
 
 void LogInstallCriteria(std::string_view event_name,
                         std::string_view criteria_name,
@@ -220,6 +229,21 @@ OnDeviceModelRegistrationAttributes::operator=(
 OnDeviceModelRegistrationAttributes::~OnDeviceModelRegistrationAttributes() =
     default;
 
+OnDeviceModelComponentStateManager::RegistrationCriteria::
+    RegistrationCriteria() = default;
+OnDeviceModelComponentStateManager::RegistrationCriteria::
+    ~RegistrationCriteria() = default;
+OnDeviceModelComponentStateManager::RegistrationCriteria::RegistrationCriteria(
+    const RegistrationCriteria&) = default;
+OnDeviceModelComponentStateManager::RegistrationCriteria&
+OnDeviceModelComponentStateManager::RegistrationCriteria::operator=(
+    const RegistrationCriteria&) = default;
+OnDeviceModelComponentStateManager::RegistrationCriteria::RegistrationCriteria(
+    RegistrationCriteria&&) = default;
+OnDeviceModelComponentStateManager::RegistrationCriteria&
+OnDeviceModelComponentStateManager::RegistrationCriteria::operator=(
+    RegistrationCriteria&&) = default;
+
 OnDeviceModelComponentStateManager::OnDeviceModelComponentStateManager(
     PrefService* local_state,
     base::SafeRef<PerformanceClassifier> performance_classifier,
@@ -348,7 +372,7 @@ void OnDeviceModelComponentStateManager::UninstallComplete() {
 
 void OnDeviceModelComponentStateManager::OnPerformanceClassAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BeginUpdateRegistration();
+  MaybeBeginBackgroundModelDownload();
 }
 
 void OnDeviceModelComponentStateManager::
@@ -430,6 +454,11 @@ OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
   result.enabled_by_user_setting = local_state_->GetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled);
 
+  // Treat a null PowerMonitor (for some tests) as being on battery power.
+  result.is_on_external_power =
+      base::PowerMonitor::GetInstance()->IsInitialized() &&
+      !base::PowerMonitor::GetInstance()->IsOnBatteryPower();
+
   auto last_time_eligible =
       local_state_->GetTime(model_execution::prefs::localstate::
                                 kLastTimeEligibleForOnDeviceModelDownload);
@@ -469,6 +498,9 @@ void OnDeviceModelComponentStateManager::UpdateRegistrationCriteria(
   if (first_registration_attempt) {
     LogInstallCriteria(criteria, "AtRegistration",
                        disk_space_free.value_or(base::ByteCount(-1)).InGiB());
+    if (criteria.get_install_mode()) {
+      LogInstallInitiated(*criteria.get_install_mode());
+    }
   }
 
   UpdateRegistration();

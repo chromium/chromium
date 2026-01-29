@@ -16,6 +16,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
@@ -86,6 +87,8 @@ class OnDeviceModelComponentTest : public testing::Test {
     broker_.service_settings().performance_class = PerformanceClass::kLow;
     model_execution::prefs::RecordFeatureUsage(
         &broker_.local_state(), mojom::OnDeviceFeature::kCompose);
+    power_monitor_source_.SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   }
 
   void TearDown() override {
@@ -133,6 +136,7 @@ class OnDeviceModelComponentTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedPowerMonitorTestSource power_monitor_source_;
   FakeModelBroker broker_{{
       .performance_class = OnDeviceModelPerformanceClass::kUnknown,
       .preinstall_base_model = false,
@@ -736,20 +740,59 @@ TEST_F(OnDeviceModelComponentTest, GpuCapableDeviceAndCpuOnlyManifest) {
             proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
 }
 
-TEST_F(OnDeviceModelComponentTest, BackgroundDownloadStartsRegistration) {
+TEST_F(OnDeviceModelComponentTest,
+       BackgroundDownloadStartsOnPerformanceClassAvailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
   broker_.local_state().ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
-  manager().MaybeBeginBackgroundModelDownload();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
   EXPECT_FALSE(broker_.component_state().request_update_called());
 }
 
+TEST_F(OnDeviceModelComponentTest, BackgroundDownloadBlockedOnExperimentFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kOnDeviceModelBackgroundDownload);
+  broker_.local_state().ClearPref(kLastUsageByFeature);
+  DoStartup();
+
+  EnsurePerformanceClassAvailable();
+  ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+}
+
+TEST_F(OnDeviceModelComponentTest,
+       BackgroundDownloadBlockedOnInsufficientDiskSpace) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
+  broker_.local_state().ClearPref(kLastUsageByFeature);
+  broker_.component_state().SetFreeDiskSpace(base::GiB(49));
+  DoStartup();
+
+  EnsurePerformanceClassAvailable();
+  ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+}
+
+TEST_F(OnDeviceModelComponentTest, BackgroundDownloadBlockedOnBattery) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
+  broker_.local_state().ClearPref(kLastUsageByFeature);
+  power_monitor_source_.SetBatteryPowerStatus(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  broker_.component_state().SetFreeDiskSpace(base::GiB(51));
+  DoStartup();
+
+  EnsurePerformanceClassAvailable();
+  ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+}
+
 TEST_F(OnDeviceModelComponentTest, FeatureUseUpgradesToOnDemand) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
   broker_.local_state().ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
-  manager().MaybeBeginBackgroundModelDownload();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
 
   broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
@@ -759,10 +802,11 @@ TEST_F(OnDeviceModelComponentTest, FeatureUseUpgradesToOnDemand) {
 }
 
 TEST_F(OnDeviceModelComponentTest, FeatureUseSkipsUpdateIfAlreadyInstalled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
   broker_.local_state().ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
-  manager().MaybeBeginBackgroundModelDownload();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
 
   // Simulate install completion.
@@ -776,10 +820,11 @@ TEST_F(OnDeviceModelComponentTest, FeatureUseSkipsUpdateIfAlreadyInstalled) {
 }
 
 TEST_F(OnDeviceModelComponentTest, UninstallWhileRegistrationPending) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
   DoStartup();
+  // Trigger registration once performance class available.
   EnsurePerformanceClassAvailable();
-  // Trigger registration.
-  manager().MaybeBeginBackgroundModelDownload();
   ASSERT_TRUE(base::test::RunUntil(
       [&] { return broker_.component_state().installer_registered(); }));
 
@@ -793,10 +838,11 @@ TEST_F(OnDeviceModelComponentTest, UninstallWhileRegistrationPending) {
 }
 
 TEST_F(OnDeviceModelComponentTest, RegisterWhileUninstallPending) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
   DoStartup();
   EnsurePerformanceClassAvailable();
   // 1. Complete installation.
-  manager().MaybeBeginBackgroundModelDownload();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
   broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));

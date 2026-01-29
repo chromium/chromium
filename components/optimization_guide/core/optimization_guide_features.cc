@@ -147,6 +147,9 @@ const base::FeatureParam<std::string> kPerformanceClassListForAudioInput{
     &kOnDeviceModelPerformanceParams,
     "compatible_on_device_performance_classes_audio_input", "5,6"};
 
+BASE_FEATURE(kOnDeviceModelBackgroundDownload,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOptimizationGuideIconView, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBrokerModelSessionsForUntrustedProcesses,
@@ -502,6 +505,19 @@ bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
              kOptimizationGuideOnDeviceModel,
              "on_device_model_free_space_mb_required_to_retain",
              base::GiB(5).InMiB())) >= free_disk_space_bytes;
+}
+
+base::ByteCount GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() {
+  return base::MiB(base::GetFieldTrialParamByFeatureAsInt(
+      features::kOnDeviceModelBackgroundDownload,
+      "on_device_model_free_space_mb_required_to_background_install",
+      base::GiB(50).InMiB()));
+}
+
+bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
+    base::ByteCount free_disk_space_bytes) {
+  return GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() <=
+         free_disk_space_bytes;
 }
 
 bool GetOnDeviceModelRetractUnsafeContent() {
