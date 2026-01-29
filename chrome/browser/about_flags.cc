@@ -146,7 +146,6 @@
 #include "components/permissions/features.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/policy/core/common/features.h"
-#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/remote_cocoa/app_shim/features.h"
@@ -10195,10 +10194,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrintingPpdChannelDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
 #endif
-
-    {"power-bookmark-backend", flag_descriptions::kPowerBookmarkBackendName,
-     flag_descriptions::kPowerBookmarkBackendDescription, kOsAll,
-     FEATURE_VALUE_TYPE(power_bookmarks::kPowerBookmarkBackend)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-eol-notification-reset-dismissed-prefs",

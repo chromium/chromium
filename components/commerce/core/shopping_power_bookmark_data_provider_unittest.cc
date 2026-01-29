@@ -29,13 +29,9 @@ class ShoppingPowerBookmarkDataProviderTest : public testing::Test {
  protected:
   void SetUp() override {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
-    ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-    backend_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     power_bookmark_service_ =
         std::make_unique<power_bookmarks::PowerBookmarkService>(
-            bookmark_model_.get(), temp_directory_.GetPath(),
-            task_environment_.GetMainThreadTaskRunner(), backend_task_runner_);
+            bookmark_model_.get());
     shopping_service_ = std::make_unique<MockShoppingService>();
 
     data_provider_ = std::make_unique<ShoppingPowerBookmarkDataProvider>(
@@ -44,8 +40,6 @@ class ShoppingPowerBookmarkDataProviderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  base::ScopedTempDir temp_directory_;
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   std::unique_ptr<power_bookmarks::PowerBookmarkService>
       power_bookmark_service_;
   std::unique_ptr<MockShoppingService> shopping_service_;

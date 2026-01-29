@@ -263,7 +263,6 @@ source_set("browser_tests") {
       "//components/password_manager/content/browser",
       "//components/password_manager/content/common",
       "//components/performance_manager",
-      "//components/power_bookmarks/core:features",
       "//components/privacy_sandbox:features",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
@@ -388,7 +387,6 @@ source_set("interactive_ui_tests") {
       "//components/contextual_tasks/public",
       "//components/history_clusters/core",
       "//components/password_manager/content/common",
-      "//components/power_bookmarks/core:features",
       "//components/search",
     ]
   }

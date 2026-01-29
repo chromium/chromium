@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 
-#import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
-#import "base/task/thread_pool.h"
 #import "components/power_bookmarks/core/power_bookmark_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -42,9 +40,5 @@ PowerBookmarkServiceFactory::BuildServiceInstanceFor(
       ios::BookmarkModelFactory::GetForProfile(profile);
 
   return std::make_unique<power_bookmarks::PowerBookmarkService>(
-      bookmark_model, profile->GetStatePath().AppendASCII("power_bookmarks"),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+      bookmark_model);
 }

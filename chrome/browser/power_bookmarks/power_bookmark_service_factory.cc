@@ -46,10 +46,5 @@ std::unique_ptr<KeyedService>
 PowerBookmarkServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<power_bookmarks::PowerBookmarkService>(
-      BookmarkModelFactory::GetInstance()->GetForBrowserContext(context),
-      context->GetPath().AppendASCII("power_bookmarks"),
-      content::GetUIThreadTaskRunner({}),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+      BookmarkModelFactory::GetInstance()->GetForBrowserContext(context));
 }
