@@ -12,9 +12,11 @@
 #include "base/observer_list.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
+#include "components/skills/internal/skills_downloader.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_type_store.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -36,7 +38,8 @@ class SkillsServiceImpl : public SkillsService {
   SkillsServiceImpl(
       optimization_guide::OptimizationGuideDecider* optimization_guide,
       version_info::Channel channel,
-      syncer::OnceDataTypeStoreFactory create_store_callback);
+      syncer::OnceDataTypeStoreFactory create_store_callback,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~SkillsServiceImpl() override;
 
   // SkillsService implementation.
@@ -65,6 +68,8 @@ class SkillsServiceImpl : public SkillsService {
   void DeleteSkill(std::string_view skill_id,
                    UpdateSource update_source) override;
   const Skill* GetSkillById(std::string_view skill_id) const override;
+  void MaybeFetchDiscoverySkills() override;
+  void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -97,6 +102,9 @@ class SkillsServiceImpl : public SkillsService {
 
   // Sync bridge for skills.
   std::unique_ptr<SkillsSyncBridge> sync_bridge_;
+
+  // Downloader for 1P skills.
+  std::unique_ptr<SkillsDownloader> skills_downloader_;
 
   // Weak pointer factory for posting tasks.
   base::WeakPtrFactory<SkillsServiceImpl> weak_ptr_factory_{this};

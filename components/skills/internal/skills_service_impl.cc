@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/skills/features.h"
+#include "components/skills/internal/skills_downloader.h"
 #include "components/skills/internal/skills_sync_bridge.h"
 #include "components/skills/public/skill.h"
 #include "components/sync/base/data_type.h"
@@ -22,7 +23,8 @@ namespace skills {
 SkillsServiceImpl::SkillsServiceImpl(
     optimization_guide::OptimizationGuideDecider* optimization_guide,
     version_info::Channel channel,
-    syncer::OnceDataTypeStoreFactory create_store_callback) {
+    syncer::OnceDataTypeStoreFactory create_store_callback,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   sync_bridge_ = std::make_unique<SkillsSyncBridge>(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SKILL,
@@ -37,6 +39,8 @@ SkillsServiceImpl::SkillsServiceImpl(
           {optimization_guide::proto::SKILLS});
     }
   }
+  skills_downloader_ =
+      std::make_unique<SkillsDownloader>(std::move(url_loader_factory));
 }
 
 SkillsServiceImpl::~SkillsServiceImpl() = default;
@@ -195,6 +199,19 @@ const Skill* SkillsServiceImpl::AddSkillImpl(std::unique_ptr<Skill> skill,
   skills_.push_back(std::move(skill));
   NotifySkillChanged(skill_ptr->id, update_source);
   return skill_ptr;
+}
+
+void SkillsServiceImpl::MaybeFetchDiscoverySkills() {
+  if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+    return;
+  }
+  skills_downloader_->FetchDiscoverySkills(base::BindOnce(
+      &SkillsServiceImpl::Handle1pSkillsMap, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SkillsServiceImpl::Handle1pSkillsMap(
+    std::unique_ptr<SkillsMap> skills_map) {
+  // TODO(crbug.com/478015957): Call observers with the new map.
 }
 
 Skill* SkillsServiceImpl::GetMutableSkillById(std::string_view skill_id) {

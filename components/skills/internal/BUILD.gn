@@ -10,8 +10,6 @@ source_set("internal") {
   ]
 
   sources = [
-    "skills_downloader.cc",
-    "skills_downloader.h",
     "skills_service_impl.cc",
     "skills_service_impl.h",
     "skills_sync_bridge.cc",
@@ -24,11 +22,26 @@ source_set("internal") {
   ]
 
   deps = [
+    ":downloader",
     "//components/optimization_guide/core",
     "//components/skills:features",
     "//components/skills/proto",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("downloader") {
+  sources = [
+    "skills_downloader.cc",
+    "skills_downloader.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/skills/proto",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -44,6 +57,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":downloader",
     ":internal",
     "//base",
     "//base/test:test_support",

@@ -19,6 +19,8 @@ source_set("public") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/skills/internal:downloader",
+    "//components/skills/proto",
   ]
 }
 

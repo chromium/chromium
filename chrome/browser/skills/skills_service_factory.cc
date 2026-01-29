@@ -19,6 +19,7 @@
 #include "components/skills/features.h"
 #include "components/skills/internal/skills_service_impl.h"
 #include "components/sync/model/data_type_store_service.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace skills {
 
@@ -59,7 +60,9 @@ SkillsServiceFactory::BuildServiceInstanceForBrowserContext(
   // TODO(crbug.com/466802878): Return a nullptr if the feature is disabled.
   return std::make_unique<SkillsServiceImpl>(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      chrome::GetChannel(), std::move(store_factory));
+      chrome::GetChannel(), std::move(store_factory),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 }  // namespace skills
