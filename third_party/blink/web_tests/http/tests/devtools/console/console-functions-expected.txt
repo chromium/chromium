@@ -7,6 +7,8 @@ console-functions.js:30 ƒ simple()
     length: 0
     name: "simple"
     prototype: {}
+    arguments: null
+    caller: null
     [[FunctionLocation]]: console-functions.js:15
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
@@ -47,6 +49,8 @@ console-functions.js:30 ƒ anonymous()
     length: 0
     name: ""
     prototype: {}
+    arguments: null
+    caller: null
     [[FunctionLocation]]: console-functions.js:18
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
@@ -59,6 +63,8 @@ console-functions.js:30 ƒ anonymous(x, y)
     length: 2
     name: ""
     prototype: {}
+    arguments: null
+    caller: null
     [[FunctionLocation]]: console-functions.js:19
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
@@ -71,6 +77,8 @@ console-functions.js:30 ƒ namedArgs(x)
     length: 1
     name: "namedArgs"
     prototype: {}
+    arguments: null
+    caller: null
     [[FunctionLocation]]: console-functions.js:20
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
@@ -83,6 +91,8 @@ console-functions.js:30 ƒ namedArgs2(x, y)
     length: 2
     name: "namedArgs2"
     prototype: {}
+    arguments: null
+    caller: null
     [[FunctionLocation]]: console-functions.js:21
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
@@ -95,6 +105,8 @@ console-functions.js:30 ƒ anonymous({})
     length: 1
     name: ""
     prototype: {}
+    arguments: null
+    caller: null
     [[FunctionLocation]]: console-functions.js:22
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]

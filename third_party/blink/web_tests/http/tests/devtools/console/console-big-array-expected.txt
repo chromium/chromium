@@ -223,13 +223,16 @@ console-big-array.js:65 Uint8Array(64160003)
         [64160000 … 64160002]
     buffer: ArrayBuffer(64160003)
         byteLength: 64160003
+        detached: false
         maxByteLength: 64160003
+        resizable: false
         [[Prototype]]: ArrayBuffer
         [[Int8Array]]: Int8Array(64160003)
         [[Uint8Array]]: Uint8Array(64160003)
         [[ArrayBufferByteLength]]: 64160003
         [[ArrayBufferData]]: 1
     byteLength: 64160003
+    byteOffset: 0
     length: 64160003
     Symbol(Symbol.toStringTag): "Uint8Array"
     [[Prototype]]: TypedArray

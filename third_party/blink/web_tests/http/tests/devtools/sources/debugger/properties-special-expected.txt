@@ -8,6 +8,8 @@ properties-special.js:14 ƒ anonymous(a,b)
     length: 2
     name: ""
     prototype: {}
+    arguments: null
+    caller: null
     [[FunctionLocation]]: properties-special.js:14
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
