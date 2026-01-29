@@ -751,12 +751,11 @@ CanvasResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
     return nullptr;
   }
 
+  // We are about to give the caller read access to this resource (and its
+  // backing SharedImage). Hence, we must make sure that the SI is updated to
+  // reflect the ops made in the current write access (if any) and give up any
+  // such write access.
   FlushCanvas(reason);
-  // Its important to end read access and ref the resource before the WillDraw
-  // call below. Since it relies on resource ref-count to trigger
-  // copy-on-write and asserts that we only have write access when the
-  // provider has the only ref to the resource, to ensure there are no other
-  // readers.
   EndWriteAccess();
 
   return resource_;
