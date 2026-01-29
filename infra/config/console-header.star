@@ -237,6 +237,11 @@ def get_header():
                         alt = "Chromium GPU console",
                     ),
                     headers.link(
+                        text = "gpu.fyi",
+                        url = "/p/{}/g/chromium.gpu.fyi".format(settings.project),
+                        alt = "Chromium GPU FYI console",
+                    ),
+                    headers.link(
                         text = "infra",
                         url = "/p/{}/g/chromium.infra".format(settings.project),
                         alt = "Chromium Infra console",
