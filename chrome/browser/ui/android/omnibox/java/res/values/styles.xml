@@ -43,18 +43,16 @@ found in the LICENSE file.
     <style
         name="Fusebox.PopupMenu.Item"
         parent="@style/Fusebox.PopupMenu.Header">
-
         <item name="android:textAppearance">
             @style/TextAppearance.TextMedium.Primary
         </item>
-
     </style>
 
     <style name="Fusebox.PopupMenu.Divider">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
         <item name="android:background">?android:attr/listDivider</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="layout_constraintEnd_toEndOf">parent</item>

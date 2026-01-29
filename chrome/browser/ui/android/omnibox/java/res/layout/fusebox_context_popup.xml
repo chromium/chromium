@@ -27,7 +27,8 @@ found in the LICENSE file.
             android:id="@+id/fusebox_add_current_tab"
             android:visibility="gone"
             android:text="@string/fusebox_add_current_tab"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/fusebox_paste_from_clipboard_button"/>
 
         <!--
         TODO(crbug.com/436888404): either drop clipboard or use proper strings.
@@ -38,7 +39,8 @@ found in the LICENSE file.
             android:visibility="gone"
             android:drawableStart="@drawable/ic_content_copy"
             android:text="@string/clipboard_permission_title"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_add_current_tab"/>
+            app:layout_constraintTop_toBottomOf="@id/fusebox_add_current_tab"
+            app:layout_constraintBottom_toTopOf="@id/fusebox_pick_tabs_button"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
@@ -47,7 +49,8 @@ found in the LICENSE file.
             android:drawableStart="@drawable/ic_tabs_24dp"
             android:text="@string/omnibox_navattach_tabs"
             android:contentDescription="@string/accessibility_omnibox_add_tabs"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_paste_from_clipboard_button"/>
+            app:layout_constraintTop_toBottomOf="@id/fusebox_paste_from_clipboard_button"
+            app:layout_constraintBottom_toTopOf="@id/fusebox_camera_button"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
@@ -55,7 +58,8 @@ found in the LICENSE file.
             android:drawableStart="@drawable/ic_photo_camera"
             android:text="@string/photo_picker_camera"
             android:contentDescription="@string/accessibility_omnibox_add_camera_picture"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_tabs_button"/>
+            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_tabs_button"
+            app:layout_constraintBottom_toTopOf="@id/fusebox_pick_picture_button"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
@@ -63,7 +67,8 @@ found in the LICENSE file.
             android:drawableStart="@drawable/ic_photo_library_fill_24dp"
             android:text="@string/omnibox_navattach_gallery"
             android:contentDescription="@string/accessibility_omnibox_add_images"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_camera_button"/>
+            app:layout_constraintTop_toBottomOf="@id/fusebox_camera_button"
+            app:layout_constraintBottom_toTopOf="@id/fusebox_pick_file_button"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
@@ -71,12 +76,14 @@ found in the LICENSE file.
             android:drawableStart="@drawable/ic_attach_file_24dp"
             android:text="@string/omnibox_navattach_files"
             android:contentDescription="@string/accessibility_omnibox_add_files"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_picture_button"/>
+            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_picture_button"
+            app:layout_constraintBottom_toTopOf="@id/fusebox_request_type_divider"/>
 
         <View
             style="@style/Fusebox.PopupMenu.Divider"
             android:id="@+id/fusebox_request_type_divider"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_file_button"/>
+            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_file_button"
+            app:layout_constraintBottom_toTopOf="@id/fusebox_ai_mode_button"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
@@ -84,7 +91,8 @@ found in the LICENSE file.
             android:drawableStart="@drawable/search_spark_black_24dp"
             android:text="@string/ai_mode_entrypoint_label"
             android:contentDescription="@string/accessibility_omnibox_enable_ai_mode"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_request_type_divider"/>
+            app:layout_constraintTop_toBottomOf="@id/fusebox_request_type_divider"
+            app:layout_constraintBottom_toTopOf="@id/fusebox_create_image_button"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
@@ -92,7 +100,8 @@ found in the LICENSE file.
             android:drawableStart="@drawable/create_image_24dp"
             android:text="@string/omnibox_create_image"
             android:contentDescription="@string/accessibility_omnibox_create_image"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_ai_mode_button"/>
+            app:layout_constraintTop_toBottomOf="@id/fusebox_ai_mode_button"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
