@@ -163,11 +163,24 @@ EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
     }
     // If the page name propagated from the child differs from what we already
     // have, we need to break before the child.
-    if (box_fragment->PageName() != current_name) {
+    AtomicString child_page_name =
+        PageNameForChildFragment(builder, *box_fragment);
+    if (child_page_name != current_name) {
       return EBreakBetween::kPage;
     }
   }
   return break_before;
+}
+
+AtomicString PageNameForChildFragment(const BoxFragmentBuilder& builder,
+                                      const PhysicalBoxFragment& child) {
+  if (const AtomicString propagated_name = child.PropagatedPageName()) {
+    return propagated_name;
+  }
+  if (const AtomicString& local_name = child.Style().Page()) {
+    return local_name;
+  }
+  return builder.GetConstraintSpace().PageName();
 }
 
 bool ShouldAvoidBreakInside(const ConstraintSpace& space,
@@ -596,13 +609,6 @@ BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
     // node is concerned.
     space_left = std::max(
         space_left, desired_intrinsic_block_size - subtractable_border_padding);
-  }
-
-  if (space.IsPaginated()) {
-    // Descendants take precedence, but if none of them propagated a page name,
-    // use the one specified on this element (or on something in the ancestry)
-    // now, if any.
-    builder->SetPageNameIfNeeded(space.PageName());
   }
 
   if (builder->FoundColumnSpanner())

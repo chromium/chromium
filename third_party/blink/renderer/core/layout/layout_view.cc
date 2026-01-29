@@ -765,7 +765,7 @@ AtomicString LayoutView::NamedPageAtIndex(wtf_size_t page_index) const {
     return AtomicString();
   }
   const auto& page_fragment = To<PhysicalBoxFragment>(*children[page_index]);
-  return page_fragment.PageName();
+  return page_fragment.PropagatedPageName();
 }
 
 PhysicalRect LayoutView::DocumentRect() const {

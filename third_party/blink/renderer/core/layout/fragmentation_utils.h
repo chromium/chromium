@@ -97,6 +97,14 @@ EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
                                          const LayoutResult&,
                                          const BoxFragmentBuilder&);
 
+// Get the page name that the specified child fragment belongs to.
+//
+// Names propagated from descendants take precedence, but if none of them
+// propagate a page name, use the one specified on the child, or if the child
+// doesn't set a page name either, use whatever is inherited from the ancestry.
+AtomicString PageNameForChildFragment(const BoxFragmentBuilder&,
+                                      const PhysicalBoxFragment& child);
+
 // Return true if breaking inside this child is discouraged (break-inside:avoid)
 // or impossible (monolithic).
 bool ShouldAvoidBreakInside(const ConstraintSpace&, const LayoutResult&);

@@ -637,7 +637,9 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
       child_layout_result.FinalBreakAfter(), child_style.BreakAfter());
   SetPreviousBreakAfter(break_after);
 
-  SetPageNameIfNeeded(To<PhysicalBoxFragment>(fragment).PageName());
+  AtomicString child_page_name =
+      PageNameForChildFragment(*this, To<PhysicalBoxFragment>(fragment));
+  SetPageNameIfNeeded(child_page_name);
 }
 
 void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {

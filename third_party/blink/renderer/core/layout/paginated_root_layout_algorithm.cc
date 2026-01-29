@@ -61,7 +61,7 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
                             counters_context.DeepClone(), page_area_params);
     // Lay out one page. Each page will become a fragment.
 
-    if (page_name != result.fragment->PageName()) {
+    if (page_name != result.fragment->PropagatedPageName()) {
       // The page name changed. This may mean that the page size has changed as
       // well. We need to re-match styles and try again.
       //
@@ -73,10 +73,10 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
       // in all cases where named pages are involved, rather than having two
       // separate mechanisms. We could revisit this approach if it turns out to
       // be a performance problem (although that seems very unlikely).
-      page_name = result.fragment->PageName();
+      page_name = result.fragment->PropagatedPageName();
       result = LayoutPageContainer(page_index, total_page_count, page_name,
                                    counters_context, page_area_params);
-      DCHECK_EQ(page_name, result.fragment->PageName());
+      DCHECK_EQ(page_name, result.fragment->PropagatedPageName());
     }
 
     // Each page container establishes its own coordinate system, without any
@@ -136,12 +136,12 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
           *To<PhysicalBoxFragment>(old_container.fragment.Get());
 
       // At least this time we know the page name up-front.
-      const AtomicString& name = old_fragment.PageName();
+      const AtomicString& name = old_fragment.PropagatedPageName();
 
       PageContainerResult result = LayoutPageContainer(
           page_index, total_page_count, name, counters_context,
           page_area_params, &old_fragment);
-      DCHECK_EQ(result.fragment->PageName(), name);
+      DCHECK_EQ(result.fragment->PropagatedPageName(), name);
 
       // We went on this mission for one reason only: to provide the total page
       // count. So the algorithm should have its needs satisfied this time.
@@ -180,7 +180,7 @@ const PhysicalBoxFragment& PaginatedRootLayoutAlgorithm::CreateEmptyPage(
   // keep track of whether someone needs to know the total.
   PageContainerResult result = LayoutPageContainer(
       node, parent_space, page_index, /*total_page_count=*/0,
-      previous_fragmentainer.PageName(), dummy_counters_context,
+      previous_fragmentainer.PropagatedPageName(), dummy_counters_context,
       page_area_params);
   *needs_total_page_count = result.needs_total_page_count;
   return *result.fragment;
