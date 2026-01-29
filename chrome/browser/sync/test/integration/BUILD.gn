@@ -20,6 +20,7 @@ source_set("sync_integration_tests_impl") {
     ":sync_integration_test_support",
     "//chrome/browser/autofill",
     "//chrome/browser/history",
+    "//chrome/browser/metrics:test_support",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
