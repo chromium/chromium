@@ -52,6 +52,8 @@ BOOL IsInputValid(NSString* input) {
   /// Current input values.
   NSString* _name;
   NSString* _URL;
+  /// URL validation result.
+  BOOL _urlValidationFailed;
 }
 
 - (instancetype)initWithAction:(PinnedSiteAction)action
@@ -106,22 +108,44 @@ BOOL IsInputValid(NSString* input) {
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
-  if (_action == PinnedSiteAction::kCreate) {
+  NSMutableAttributedString* attributedString;
+  if (_urlValidationFailed) {
+    NSDictionary* attributes = @{
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+      NSForegroundColorAttributeName : [UIColor colorNamed:kRedColor]
+    };
+    attributedString = [[NSMutableAttributedString alloc]
+        initWithString:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED)
+            attributes:attributes];
+  }
+  if (_action == PinnedSiteAction::kModify) {
+    NSDictionary* attributes = @{
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+      NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+    };
+    NSMutableAttributedString* disclaimer = [[NSMutableAttributedString alloc]
+        initWithString:l10n_util::GetNSString(
+                           IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_FOOTER)
+            attributes:attributes];
+    if (attributedString) {
+      [attributedString appendAttributedString:[[NSAttributedString alloc]
+                                                   initWithString:@"\n"]];
+      [attributedString appendAttributedString:disclaimer];
+    } else if (disclaimer) {
+      attributedString = disclaimer;
+    }
+  }
+  if (!attributedString) {
     return nil;
   }
   TableViewAttributedStringHeaderFooterView* footer =
       DequeueTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
           tableView);
-  NSDictionary* attributes = @{
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
-  };
-  NSMutableAttributedString* attributedText = [[NSMutableAttributedString alloc]
-      initWithString:l10n_util::GetNSString(
-                         IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_FOOTER)
-          attributes:attributes];
-  [footer setAttributedString:attributedText];
+  [footer setAttributedString:attributedString];
   return footer;
 }
 
@@ -156,6 +180,9 @@ BOOL IsInputValid(NSString* input) {
   TableViewTextEditCell* cell =
       DequeueTableViewCell<TableViewTextEditCell>(self.tableView);
   cell.textField.enabled = YES;
+  [cell.textField removeTarget:self
+                        action:nil
+              forControlEvents:UIControlEventEditingChanged];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.identifyingIconButton.hidden = YES;
   switch (static_cast<ItemIdentifier>(identifier.integerValue)) {
@@ -207,7 +234,10 @@ BOOL IsInputValid(NSString* input) {
   if (success) {
     [self dismissModal];
   } else {
-    /// TODO(crbug.com/474064813): Show reason.
+    _urlValidationFailed = YES;
+    NSDiffableDataSourceSnapshot* snapshot = [_dataSource snapshot];
+    [snapshot reloadSectionsWithIdentifiers:@[ @(kSection) ]];
+    [_dataSource applySnapshot:snapshot animatingDifferences:NO];
   }
 }
 
