@@ -329,8 +329,8 @@ INSTANTIATE_TEST_SUITE_P(
                                       : "_DisabledForCustomPassphrase");
     });
 
-// TODO(crbug.com/336993637): Flaky on Android, ASan.
-#if BUILDFLAG(IS_ANDROID) || defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/336993637): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Passphrase DISABLED_Passphrase
 #else
 #define MAYBE_Passphrase Passphrase
