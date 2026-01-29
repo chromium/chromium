@@ -268,7 +268,8 @@ class ClientManager {
         private static @Nullable String getPackageName(Context context, int uid) {
             PackageManager packageManager = context.getPackageManager();
             String[] packageList = assumeNonNull(packageManager.getPackagesForUid(uid));
-            if (packageList.length != 1 || TextUtils.isEmpty(packageList[0])) return null;
+            if (packageList.length == 0 || TextUtils.isEmpty(packageList[0])) return null;
+            // Return the first package name if more than 1 is found when sharedUserId is used
             return packageList[0];
         }
 
