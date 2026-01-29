@@ -137,6 +137,6 @@ function retrieveDOMFeatures(): void {
   sendWebKitMessage('ReaderModeMessageHandler', result);
 }
 
-const readerModeApi = new CrWebApi();
+const readerModeApi = new CrWebApi('readerMode');
 readerModeApi.addFunction('retrieveDOMFeatures', retrieveDOMFeatures);
-gCrWeb.registerApi('readerMode', readerModeApi);
+gCrWeb.registerApi(readerModeApi);

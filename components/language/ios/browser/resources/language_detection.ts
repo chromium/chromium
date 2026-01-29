@@ -158,9 +158,9 @@ function retrieveBufferedTextContent(): string|null {
   return textContent;
 }
 
-const languageDetectionApi = new CrWebApi();
+const languageDetectionApi = new CrWebApi('languageDetection');
 
 languageDetectionApi.addFunction('detectLanguage', detectLanguage);
 languageDetectionApi.addFunction('retrieveBufferedTextContent', retrieveBufferedTextContent);
 
-gCrWeb.registerApi('languageDetection', languageDetectionApi);
+gCrWeb.registerApi(languageDetectionApi);

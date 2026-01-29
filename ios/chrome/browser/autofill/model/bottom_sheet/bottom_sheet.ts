@@ -248,11 +248,11 @@ function detachListeners(rendererIds: number[], refocus: boolean): void {
   }
 }
 
-const bottomSheetApi = new CrWebApi();
+const bottomSheetApi = new CrWebApi('bottomSheet');
 
 bottomSheetApi.addFunction('attachListeners', attachListeners);
 bottomSheetApi.addFunction('detachListeners', detachListeners);
 bottomSheetApi.addFunction(
     'refocusLastBlurredElement', refocusLastBlurredElement);
 
-gCrWeb.registerApi('bottomSheet', bottomSheetApi);
+gCrWeb.registerApi(bottomSheetApi);

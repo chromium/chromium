@@ -15,7 +15,7 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
 * functions to native-side tests.
 */
 
-const fillApi = new CrWebApi();
+const fillApi = new CrWebApi('fill_test_api');
 
 // go/keep-sorted start block=yes
 fillApi.addFunction(
@@ -64,4 +64,4 @@ fillApi.addFunction('webFormElementToFormData', webFormElementToFormData);
 // go/keep-sorted end
 
 
-gCrWeb.registerApi('fill_test_api', fillApi);
+gCrWeb.registerApi(fillApi);

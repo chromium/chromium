@@ -847,13 +847,13 @@ function resolveAttestationRequest(
   resolveCredentialPromise(requestId, id64, response, extensions);
 }
 
-const passkey = new CrWebApi();
+const passkey = new CrWebApi('passkey');
 
 passkey.addFunction('deferToRenderer', deferToRenderer);
 passkey.addFunction('resolveAssertionRequest', resolveAssertionRequest);
 passkey.addFunction('resolveAttestationRequest', resolveAttestationRequest);
 
-gCrWeb.registerApi('passkey', passkey);
+gCrWeb.registerApi(passkey);
 
 // Override PublicKeyCredential's behaviour to expose browser capabilities.
 publicKeyCredentialOverrider.override();

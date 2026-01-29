@@ -180,8 +180,8 @@ function resolveRequest(resolvedRequestId: number, isAllowed: boolean): void {
   }
 }
 
-const clipboardApi = new CrWebApi();
+const clipboardApi = new CrWebApi('clipboard');
 clipboardApi.addFunction('resolveRequest', resolveRequest);
-gCrWeb.registerApi('clipboard', clipboardApi);
+gCrWeb.registerApi(clipboardApi);
 
 installClipboardOverrides();

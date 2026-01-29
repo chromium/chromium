@@ -28,8 +28,8 @@ function findElementAtPoint(requestId: string, x: number, y: number) {
       .getFunction('findElementAtPointInPageCoordinates')(requestId, x, y);
 }
 
-const contextMenu = new CrWebApi();
+const contextMenu = new CrWebApi('contextMenu');
 
 contextMenu.addFunction('findElementAtPoint', findElementAtPoint);
 
-gCrWeb.registerApi('contextMenu', contextMenu);
+gCrWeb.registerApi(contextMenu);

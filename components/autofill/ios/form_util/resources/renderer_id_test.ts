@@ -5,9 +5,9 @@
 import {getElementByUniqueID, setUniqueIDIfNeeded} from '//components/autofill/ios/form_util/resources/renderer_id.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
-const rendererIdAPI = new CrWebApi();
+const rendererIdAPI = new CrWebApi('renderer_id_test');
 
 rendererIdAPI.addFunction('setUniqueIDIfNeeded', setUniqueIDIfNeeded);
 rendererIdAPI.addFunction('getElementByUniqueID', getElementByUniqueID);
 
-gCrWeb.registerApi('renderer_id_test', rendererIdAPI);
+gCrWeb.registerApi(rendererIdAPI);

@@ -387,7 +387,7 @@ function hasPreviousNextElements(
   };
 }
 
-const suggestionApi = new CrWebApi();
+const suggestionApi = new CrWebApi('suggestion');
 
 suggestionApi.addFunction('getNextElementInTabOrder', getNextElementInTabOrder);
 suggestionApi.addFunction('getPreviousElementInTabOrder', getPreviousElementInTabOrder);
@@ -397,4 +397,4 @@ suggestionApi.addFunction('hasNextElement', hasNextElement);
 suggestionApi.addFunction('hasPreviousElement', hasPreviousElement);
 suggestionApi.addFunction('hasPreviousNextElements', hasPreviousNextElements);
 
-gCrWeb.registerApi('suggestion', suggestionApi);
+gCrWeb.registerApi(suggestionApi);

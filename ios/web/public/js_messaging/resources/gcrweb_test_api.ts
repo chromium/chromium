@@ -6,15 +6,17 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
 
 const stringProperty = 'Set a property with test purpose.';
 const arrayProperty: number[] = [];
+const testWebApi = new CrWebApi('test_api');
 
 function addNum(a: number, b: number): number {
   return a + b;
 }
 
-const testApi = new CrWebApi();
+const testApi = new CrWebApi('unit_tests');
 
 testApi.addProperty('stringProperty', stringProperty);
 testApi.addFunction('addNum', addNum);
 testApi.addProperty('arrayProperty', arrayProperty);
+testApi.addProperty('testWebApi', testWebApi);
 
-gCrWeb.registerApi('unit_tests', testApi);
+gCrWeb.registerApi(testApi);

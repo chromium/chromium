@@ -207,7 +207,7 @@ function isAutofillCountFormSubmissionInRendererEnabled(): boolean {
 
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
-const autofillFormFeatures = new CrWebApi();
+const autofillFormFeatures = new CrWebApi('autofill_form_features');
 
 autofillFormFeatures.addFunction(
     'setAutofillAcrossIframes', setAutofillAcrossIframes);
@@ -259,4 +259,4 @@ autofillFormFeatures.addFunction(
     'isAutofillCountFormSubmissionInRendererEnabled',
     isAutofillCountFormSubmissionInRendererEnabled);
 
-gCrWeb.registerApi('autofill_form_features', autofillFormFeatures);
+gCrWeb.registerApi(autofillFormFeatures);

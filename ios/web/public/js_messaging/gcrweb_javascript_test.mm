@@ -64,13 +64,21 @@ TEST_F(CrWebJavaScriptTest, PropertyAsArray) {
 
 // Tests if an exception is thrown when trying to override an API.
 TEST_F(CrWebJavaScriptTest, ThrowExceptionInAPICollision) {
-  NSError* execution_error = nil;
-  web::test::ExecuteJavaScriptInWebView(
-      web_view(),
-      @"__gCrWeb.registerApi('unit_tests');", &execution_error);
+  NSString* register_api = [NSString
+      stringWithFormat:@"__gCrWeb.registerApi(%@.getProperty('testWebApi'))",
+                       unit_tests_api_];
 
+  // Register the api once.
+  NSError* execution_error = nil;
+  web::test::ExecuteJavaScriptInWebView(web_view(), register_api,
+                                        &execution_error);
+  ASSERT_FALSE(execution_error);
+
+  // Attempt to register the api again.
+  web::test::ExecuteJavaScriptInWebView(web_view(), register_api,
+                                        &execution_error);
   ASSERT_TRUE(execution_error);
-  EXPECT_NSEQ(@"CrWebError: API unit_tests already registered.",
+  EXPECT_NSEQ(@"CrWebError: API test_api already registered.",
               execution_error.userInfo[@"WKJavaScriptExceptionMessage"]);
 }
 

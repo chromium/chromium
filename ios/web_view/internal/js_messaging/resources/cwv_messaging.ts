@@ -10,6 +10,6 @@ function messageHost(messageName: string, payload: Object): void {
   sendWebKitMessage('CWVWebViewMessage', message);
 }
 
-const cwvMessagingApi = new CrWebApi();
+const cwvMessagingApi = new CrWebApi('cwvMessaging');
 cwvMessagingApi.addFunction('messageHost', messageHost);
-gCrWeb.registerApi('cwvMessaging', cwvMessagingApi);
+gCrWeb.registerApi(cwvMessagingApi);

@@ -166,8 +166,8 @@ function extractPageContext(
       includeAnchors, keepCrossOriginFrameData);
 }
 
-const pageExtractorApi = new CrWebApi();
+const pageExtractorApi = new CrWebApi('pageContextExtractor');
 
 pageExtractorApi.addFunction('extractPageContext', extractPageContext);
 
-gCrWeb.registerApi('pageContextExtractor', pageExtractorApi);
+gCrWeb.registerApi(pageExtractorApi);

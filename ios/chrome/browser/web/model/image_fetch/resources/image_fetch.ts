@@ -116,8 +116,8 @@ function getImageDataByXMLHttpRequest(
   xhr.send();
 }
 
-const imageFetch = new CrWebApi();
+const imageFetch = new CrWebApi('imageFetch');
 
 imageFetch.addFunction('getImageData', getImageData);
 
-gCrWeb.registerApi('imageFetch', imageFetch);
+gCrWeb.registerApi(imageFetch);

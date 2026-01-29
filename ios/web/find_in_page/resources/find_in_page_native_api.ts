@@ -666,7 +666,7 @@ function escapeHTML(text: string): string {
 }
 
 
-const findInPage = new CrWebApi();
+const findInPage = new CrWebApi('findInPage');
 
 findInPage.addFunction('findString', findString);
 findInPage.addFunction('pumpSearch', pumpSearch);
@@ -676,4 +676,4 @@ findInPage.addFunction('stop', stop);
 
 findInPage.addProperty('matches', matches_);
 
-gCrWeb.registerApi('findInPage', findInPage);
+gCrWeb.registerApi(findInPage);

@@ -60,10 +60,10 @@ function revertTranslation() {
 }
 
 // Mark: Public API
-const translateApi = new CrWebApi();
+const translateApi = new CrWebApi('translate');
 
 translateApi.addFunction('installCallbacks', installCallbacks);
 translateApi.addFunction('startTranslation', startTranslation);
 translateApi.addFunction('revertTranslation', revertTranslation);
 
-gCrWeb.registerApi('translate', translateApi);
+gCrWeb.registerApi(translateApi);

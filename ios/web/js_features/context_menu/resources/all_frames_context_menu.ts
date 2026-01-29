@@ -644,11 +644,11 @@ window.addEventListener('message', function(message) {
   }
 });
 
-const contextMenuAllFrames = new CrWebApi();
+const contextMenuAllFrames = new CrWebApi('contextMenuAllFrames');
 
 contextMenuAllFrames.addFunction(
     'findElementAtPointInPageCoordinates', findElementAtPointInPageCoordinates);
 // For testing only
 contextMenuAllFrames.addFunction('getSurroundingText', getSurroundingText);
 
-gCrWeb.registerApi('contextMenuAllFrames', contextMenuAllFrames);
+gCrWeb.registerApi(contextMenuAllFrames);

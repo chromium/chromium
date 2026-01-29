@@ -143,7 +143,7 @@ function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
   // TODO: crbug.com/464542835 - Remove gCrWeb injections and utilizations
   // from shared library and utility files.
   if (!gCrWeb.hasRegisteredApi('remoteFrameRegistration')) {
-    gCrWeb.registerApi('remoteFrameRegistration', new CrWebApi());
+    gCrWeb.registerApi(new CrWebApi('remoteFrameRegistration'));
   }
 
   const remoteFrameRegistration =

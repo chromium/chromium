@@ -34,8 +34,8 @@ function adjustFontSize(size: number): void {
   } catch (error) {}
 }
 
-const fontSizeApi = new CrWebApi();
+const fontSizeApi = new CrWebApi('font_size');
 
 fontSizeApi.addFunction('adjustFontSize', adjustFontSize);
 
-gCrWeb.registerApi('font_size', fontSizeApi);
+gCrWeb.registerApi(fontSizeApi);

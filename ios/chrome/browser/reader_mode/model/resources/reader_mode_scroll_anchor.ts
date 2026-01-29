@@ -41,6 +41,6 @@ function findScrollAnchor(): void {
   }
 }
 
-const readerModeScrollAnchorApi = new CrWebApi();
+const readerModeScrollAnchorApi = new CrWebApi('readerModeScrollAnchor');
 readerModeScrollAnchorApi.addFunction('findScrollAnchor', findScrollAnchor);
-gCrWeb.registerApi('readerModeScrollAnchor', readerModeScrollAnchorApi);
+gCrWeb.registerApi(readerModeScrollAnchorApi);

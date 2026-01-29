@@ -11,11 +11,11 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
 * functions to native-side tests.
 */
 
-const formApi = new CrWebApi();
+const formApi = new CrWebApi('form_test_api');
 
 // go/keep-sorted start block=yes
 formApi.addFunction('formSubmitted', formSubmitted);
 formApi.addFunction('getIframeElements', getIframeElements);
 // go/keep-sorted end
 
-gCrWeb.registerApi('form_test_api', formApi);
+gCrWeb.registerApi(formApi);

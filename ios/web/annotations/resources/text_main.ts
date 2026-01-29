@@ -175,7 +175,7 @@ function removeHighlight(): void {
   decorator?.removeHighlight();
 }
 
-const annotations = new CrWebApi();
+const annotations = new CrWebApi('annotations');
 
 annotations.addFunction('start', start);
 annotations.addFunction('stop', stop);
@@ -184,4 +184,4 @@ annotations.addFunction('removeDecorations', removeDecorations);
 annotations.addFunction('removeDecorationsWithType', removeDecorationsWithType);
 annotations.addFunction('removeHighlight', removeHighlight);
 
-gCrWeb.registerApi('annotations', annotations);
+gCrWeb.registerApi(annotations);

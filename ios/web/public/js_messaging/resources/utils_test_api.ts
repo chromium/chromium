@@ -5,9 +5,9 @@
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, sendWebKitMessage, sendWebKitMessageWithReply, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
-const utils_tests = new CrWebApi();
+const utils_tests = new CrWebApi('utils_tests');
 
-gCrWeb.registerApi('utils_tests', utils_tests);
+gCrWeb.registerApi(utils_tests);
 
 utils_tests.addFunction(
     'removeQueryAndReferenceFromURL', removeQueryAndReferenceFromURL);

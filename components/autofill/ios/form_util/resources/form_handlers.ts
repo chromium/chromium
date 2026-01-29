@@ -478,8 +478,8 @@ function trackFormMutations(delay: number): void {
   formMutationObserver.observe(document, {childList: true, subtree: true});
 }
 
-const formHandlersApi = new CrWebApi();
+const formHandlersApi = new CrWebApi('formHandlers');
 
 formHandlersApi.addFunction('trackFormMutations', trackFormMutations);
 
-gCrWeb.registerApi('formHandlers', formHandlersApi);
+gCrWeb.registerApi(formHandlersApi);

@@ -667,7 +667,7 @@ function sanitizedFieldIsEmpty(value) {
   return trim(value.replace(/[-_()/|]/g, '')) === '';
 }
 
-const autofillAPI = new CrWebApi();
+const autofillAPI = new CrWebApi('autofill');
 
 autofillAPI.addFunction('clearAutofilledFields', clearAutofilledFields);
 autofillAPI.addFunction(
@@ -681,4 +681,4 @@ autofillAPI.addFunction('fillPredictionData', fillPredictionData);
 autofillAPI.addFunction('fillSpecificFormField', fillSpecificFormField);
 autofillAPI.addFunction('sanitizedFieldIsEmpty', sanitizedFieldIsEmpty);
 
-gCrWeb.registerApi('autofill', autofillAPI);
+gCrWeb.registerApi(autofillAPI);

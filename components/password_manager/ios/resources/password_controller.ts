@@ -420,7 +420,7 @@ function getPasswordFormData(
   return ok ? formData : null;
 }
 
-const passwordsApi = new CrWebApi();
+const passwordsApi = new CrWebApi('passwords');
 
 passwordsApi.addFunction('findPasswordForms', findPasswordForms);
 passwordsApi.addFunction('fillPasswordForm', fillPasswordForm);
@@ -431,4 +431,4 @@ passwordsApi.addFunction('getPasswordFormData', getPasswordFormData);
 passwordsApi.addFunction(
     'getPasswordFormDataAsString', getPasswordFormDataAsString);
 
-gCrWeb.registerApi('passwords', passwordsApi);
+gCrWeb.registerApi(passwordsApi);

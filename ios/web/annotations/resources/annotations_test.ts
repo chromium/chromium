@@ -90,10 +90,10 @@ function clickAnnotation(index: number, viewport: boolean): boolean {
   return ''.concat(...parts);
 }
 
-const annotationsTest = new CrWebApi();
+const annotationsTest = new CrWebApi('annotationsTest');
 
 annotationsTest.addFunction('getPageTaggedText', getPageTaggedText);
 annotationsTest.addFunction('countAnnotations', countAnnotations);
 annotationsTest.addFunction('clickAnnotation', clickAnnotation);
 
-gCrWeb.registerApi('annotationsTest', annotationsTest);
+gCrWeb.registerApi(annotationsTest);

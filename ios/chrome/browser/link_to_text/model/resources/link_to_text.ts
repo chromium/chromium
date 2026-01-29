@@ -42,6 +42,6 @@ function getLinkToText() {
   };
 }
 
-const linkToTextApi = new CrWebApi();
+const linkToTextApi = new CrWebApi('linkToText');
 linkToTextApi.addFunction('getLinkToText', getLinkToText);
-gCrWeb.registerApi('linkToText', linkToTextApi);
+gCrWeb.registerApi(linkToTextApi);

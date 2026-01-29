@@ -11,12 +11,12 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
  * PageContextWrapper features.
  */
 
-const pageContextWrapperTestApi = new CrWebApi();
+const pageContextWrapperTestApi = new CrWebApi('pageContextWrapperTest');
 
 pageContextWrapperTestApi.addFunction(
     'registerAllRemoteFrames', registerAllChildFrames);
 
-gCrWeb.registerApi('pageContextWrapperTest', pageContextWrapperTestApi);
+gCrWeb.registerApi(pageContextWrapperTestApi);
 
 // Listen to process registration messages to complete the remote=>local token
 // registration.

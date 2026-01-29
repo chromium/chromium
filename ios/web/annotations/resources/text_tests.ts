@@ -31,8 +31,8 @@ function testAll() {
   ];
 }
 
-const textTests = new CrWebApi();
+const textTests = new CrWebApi('textTests');
 
 textTests.addFunction('testAll', testAll);
 
-gCrWeb.registerApi('textTests', textTests);
+gCrWeb.registerApi(textTests);

@@ -10,7 +10,7 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
 
 let webViewScrollViewIsDragging = false;
 
-const scrollHelperApi = new CrWebApi();
+const scrollHelperApi = new CrWebApi('scrollHelper');
 
 /**
  * Tracks whether user is in the middle of scrolling/dragging. If user is
@@ -21,7 +21,7 @@ scrollHelperApi.addFunction(
       webViewScrollViewIsDragging = state;
     });
 
-gCrWeb.registerApi('scrollHelper', scrollHelperApi);
+gCrWeb.registerApi(scrollHelperApi);
 
 const originalWindowScrollTo_: Function = window.scrollTo;
 

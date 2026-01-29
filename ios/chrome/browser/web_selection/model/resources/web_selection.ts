@@ -73,8 +73,8 @@ window.addEventListener('message', function(message) {
   getSelectedTextWithOffset(x, y);
 });
 
-const webSelection = new CrWebApi();
+const webSelection = new CrWebApi('webSelection');
 
 webSelection.addFunction('getSelectedText', getSelectedText);
 
-gCrWeb.registerApi('webSelection', webSelection);
+gCrWeb.registerApi(webSelection);
