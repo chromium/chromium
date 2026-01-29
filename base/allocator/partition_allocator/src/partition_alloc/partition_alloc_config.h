@@ -260,7 +260,4 @@ constexpr bool kUseFewerMemoryRegions =
 #define PA_CONFIG_IS_NONCLANG_MSVC() 0
 #endif
 
-static_assert(__cplusplus >= 202002L,
-              "PartitionAlloc targets C++20 or higher.");
-
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_
