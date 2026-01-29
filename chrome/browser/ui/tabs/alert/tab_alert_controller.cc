@@ -171,24 +171,22 @@ std::u16string TabAlertController::GetTabAlertStateText(
     case TabAlert::kVrPresentingInHeadset:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
-    // TODO(crbug.com/461457730) Create new resources for ACTOR_ACCESSING of
-    // relying on GLIC_ACCESSING resources below.
     case TabAlert::kActorAccessing:
     case TabAlert::kActorWaitingOnUser:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_ACTOR_ACCESSING);
     case TabAlert::kGlicAccessing:
 #if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING);
-#else
-      return u"";
 #endif
+      NOTREACHED();
     case TabAlert::kGlicSharing:
 #if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING);
-#else
-      return u"";
 #endif
+      NOTREACHED();
   }
   NOTREACHED();
 }

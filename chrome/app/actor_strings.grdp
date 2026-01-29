@@ -50,4 +50,7 @@
   <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task has failed." translateable="true">
    Something went wrong
   </message>
+  <message name="IDS_TOOLTIP_TAB_ALERT_STATE_ACTOR_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini" translateable="true">
+    Gemini is working on your task...
+  </message>
 </grit-part>
