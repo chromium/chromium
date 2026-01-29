@@ -180,9 +180,9 @@
     "devtools-protocol": "*"
   },
   "devDependencies": {
-    "@actions/core": "2.0.2",
+    "@actions/core": "3.0.0",
     "@eslint/js": "9.39.2",
-    "@puppeteer/browsers": "2.11.1",
+    "@puppeteer/browsers": "2.11.2",
     "@rollup/plugin-node-resolve": "16.0.3",
     "@rollup/wasm-node": "4.57.0",
     "@types/chai": "4.3.17",
