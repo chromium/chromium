@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -114,9 +113,8 @@ TEST_P(BrowserWebStateListDelegateTest, InsertionPolicy) {
   }
 }
 
-// Tests that BrowserWebStateListDelegateTest respects the InsertionPolicy and
-// the kCreateTabHelperOnlyForRealizedWebStates feature when an unrealized
-// WebState is inserted.
+// Tests that BrowserWebStateListDelegateTest respects the InsertionPolicy when
+// an unrealized WebState is inserted.
 TEST_P(BrowserWebStateListDelegateTest, InsertionPolicy_UnrealizedWebState) {
   const BrowserWebStateListDelegateTestParam param = GetParam();
   BrowserWebStateListDelegate delegate(
@@ -128,43 +126,30 @@ TEST_P(BrowserWebStateListDelegateTest, InsertionPolicy_UnrealizedWebState) {
   ASSERT_FALSE(web_state->IsRealized());
   ASSERT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
 
-  // Check that both kCreateTabHelperOnlyForRealizedWebStates feature
-  // and InsertionPolicy controls whether the tab helpers are attached
-  // to a tab on insertion when the WebState is unrealized.
+  // Check that the tab helpers are not attached to a tab on insertion when the
+  // WebState is unrealized, even if InsertionPolicy is kAttachTabHelpers.
   delegate.WillAddWebState(web_state.get());
-  switch (std::get<BrowserWebStateListDelegate::InsertionPolicy>(param)) {
-    case BrowserWebStateListDelegate::InsertionPolicy::kDoNothing:
-      EXPECT_FALSE(web_state->IsRealized());
-      EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
-      break;
+  EXPECT_FALSE(web_state->IsRealized());
+  EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
 
-    case BrowserWebStateListDelegate::InsertionPolicy::kAttachTabHelpers:
-      EXPECT_FALSE(web_state->IsRealized());
-      EXPECT_EQ(web::features::CreateTabHelperOnlyForRealizedWebStates(),
-                ExpectedTabHelper::FromWebState(web_state.get()) == nullptr);
-      break;
-  }
-
-  // If the kCreateTabHelperOnlyForRealizedWebStates is enabled, then the
-  // tab helpers are only created when the WebState is realized, so check
-  // that it is created on realization.
+  // Check that only the InsertionPolicy controls whether the tab helpers
+  // are attached when the WebState is realized after insertion.
   web_state->ForceRealized();
+  EXPECT_TRUE(web_state->IsRealized());
+
   switch (std::get<BrowserWebStateListDelegate::InsertionPolicy>(param)) {
     case BrowserWebStateListDelegate::InsertionPolicy::kDoNothing:
-      EXPECT_TRUE(web_state->IsRealized());
       EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
       break;
 
     case BrowserWebStateListDelegate::InsertionPolicy::kAttachTabHelpers:
-      EXPECT_TRUE(web_state->IsRealized());
       EXPECT_TRUE(ExpectedTabHelper::FromWebState(web_state.get()));
       break;
   }
 }
 
-// Tests that BrowserWebStateListDelegateTest respects the InsertionPolicy and
-// the kCreateTabHelperOnlyForRealizedWebStates feature when an unrealized
-// WebState is inserted and removed before being realized.
+// Tests that BrowserWebStateListDelegateTest respects the InsertionPolicy when
+// an unrealized WebState is inserted and removed before being realized.
 TEST_P(BrowserWebStateListDelegateTest, InsertionPolicy_RemovedBeforeRealized) {
   const BrowserWebStateListDelegateTestParam param = GetParam();
   BrowserWebStateListDelegate delegate(
@@ -176,41 +161,18 @@ TEST_P(BrowserWebStateListDelegateTest, InsertionPolicy_RemovedBeforeRealized) {
   ASSERT_FALSE(web_state->IsRealized());
   ASSERT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
 
-  // Check that both kCreateTabHelperOnlyForRealizedWebStates feature
-  // and InsertionPolicy controls whether the tab helpers are attached
-  // to a tab on insertion when the WebState is unrealized.
+  // Check that the tab helpers are not attached to a tab on insertion when the
+  // WebState is unrealized, even if InsertionPolicy is kAttachTabHelpers.
   delegate.WillAddWebState(web_state.get());
-  switch (std::get<BrowserWebStateListDelegate::InsertionPolicy>(param)) {
-    case BrowserWebStateListDelegate::InsertionPolicy::kDoNothing:
-      EXPECT_FALSE(web_state->IsRealized());
-      EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
-      break;
+  EXPECT_FALSE(web_state->IsRealized());
+  EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
 
-    case BrowserWebStateListDelegate::InsertionPolicy::kAttachTabHelpers:
-      EXPECT_FALSE(web_state->IsRealized());
-      EXPECT_EQ(web::features::CreateTabHelperOnlyForRealizedWebStates(),
-                ExpectedTabHelper::FromWebState(web_state.get()) == nullptr);
-      break;
-  }
-
-  // If the kCreateTabHelperOnlyForRealizedWebStates is enabled, then the
-  // tab helpers are only created when the WebState is realized, but they
-  // must not be created if the WebState is removed before being realized.
+  // Check that the tab helpers are not attached to a tab if if is realized
+  // after being removed, even if the InsertionPolicy is kAttachTabHelpers.
   delegate.WillRemoveWebState(web_state.get());
   web_state->ForceRealized();
-
-  switch (std::get<BrowserWebStateListDelegate::InsertionPolicy>(param)) {
-    case BrowserWebStateListDelegate::InsertionPolicy::kDoNothing:
-      EXPECT_TRUE(web_state->IsRealized());
-      EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
-      break;
-
-    case BrowserWebStateListDelegate::InsertionPolicy::kAttachTabHelpers:
-      EXPECT_TRUE(web_state->IsRealized());
-      EXPECT_EQ(web::features::CreateTabHelperOnlyForRealizedWebStates(),
-                ExpectedTabHelper::FromWebState(web_state.get()) == nullptr);
-      break;
-  }
+  EXPECT_TRUE(web_state->IsRealized());
+  EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
 }
 
 // Tests that BrowserWebStateListDelegateTest respects the ActivationPolicy
@@ -233,13 +195,11 @@ TEST_P(BrowserWebStateListDelegateTest, ActivationPolicy) {
   switch (std::get<BrowserWebStateListDelegate::ActivationPolicy>(param)) {
     case BrowserWebStateListDelegate::ActivationPolicy::kDoNothing:
       EXPECT_FALSE(web_state->IsRealized());
-      EXPECT_EQ(
-          std::get<BrowserWebStateListDelegate::InsertionPolicy>(param) ==
-                  BrowserWebStateListDelegate::InsertionPolicy::kDoNothing ||
-              web::features::CreateTabHelperOnlyForRealizedWebStates(),
-          ExpectedTabHelper::FromWebState(web_state.get()) == nullptr);
+      EXPECT_FALSE(ExpectedTabHelper::FromWebState(web_state.get()));
       break;
 
+    // Check that InsertionPolicy is repected when the WebState is realized
+    // after insertion.
     case BrowserWebStateListDelegate::ActivationPolicy::kForceRealization:
       EXPECT_TRUE(web_state->IsRealized());
       EXPECT_EQ(std::get<BrowserWebStateListDelegate::InsertionPolicy>(param) ==
