@@ -169,6 +169,7 @@ public class FuseboxMediator {
     /** Called when the user stops interacting with the Omnibox. */
     /* package */ void endInput() {
         if (mInput == null) return;
+        mModelList.clear();
         setAutocompleteRequestTypeChangeable(false);
         setToolbarVisible(false);
         mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
