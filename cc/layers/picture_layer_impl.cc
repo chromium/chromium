@@ -143,9 +143,10 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->has_non_animated_image_update_rect_ =
       has_non_animated_image_update_rect_;
 
-  // This hs to be cached before calling LayerImpl::PushPropertiesTo because it
+  // This has to be cached before calling LayerImpl::PushPropertiesTo because it
   // reset the flag.
   bool changed_other_props = GetChangeFlag(kChangedGeneralProperty);
+  bool changed_tiles = GetChangeFlag(kChangedTile);
 
   LayerImpl::PushPropertiesTo(base_layer);
 
@@ -163,7 +164,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     // Move tile updates over to the active layer so they get pushed to the
     // display tree. Note that the active layer after this point can also
     // accumulate their own tile updates into its |updated_tiles_|.
-    {
+    if (changed_tiles) {
       // Deep merge logic.
       auto& dst = layer_impl->updated_tiles_;
       auto& src = updated_tiles_;
@@ -179,6 +180,8 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
         }
       }
       src.clear();
+    } else {
+      DCHECK(updated_tiles_.empty()) << "kChangedTile flag should be set!";
     }
 
     // Since the layer has been activated, all the active tree tile updates
