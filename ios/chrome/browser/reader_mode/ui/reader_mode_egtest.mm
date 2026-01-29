@@ -1118,19 +1118,16 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   ExpectFontSize(1.0 * kReaderModeBaseFontSize);
 }
 
-// Tests that the contextual chip is visible in Incognito.
-// TODO(crbug.com/438763264): Failing on device and flaky on simulator.
-- (void)DISABLED_testContextualChipVisibleInIncognito {
+// Tests that the Reader mode badge is visible in Incognito.
+- (void)testReaderModeBadgeVisibleInIncognito {
   // Open a web page in Incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
-  // Tap on the contextual panel entrypoint.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ContextualPanelEntrypointImageViewMatcher()];
-  [[EarlGrey
-      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
-      performAction:grey_tap()];
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   // Reader mode and the incognito badge should be visible.
   [self assertReaderModePageIsVisible];
