@@ -200,12 +200,11 @@ void ModelContext::clearContext() {
   OnToolsChanged();
 }
 
-std::optional<uint32_t> ModelContext::ExecuteTool(
+void ModelContext::ExecuteTool(
     const String& name,
     const String& input_arguments,
     WebDocument::ScriptToolExecutedCallback tool_executed_cb) {
   auto it = tool_map_.find(name);
-  std::optional<uint32_t> execution_id;
 
   if (it == tool_map_.end()) {
     task_runner_->PostTask(
@@ -213,33 +212,16 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
         blink::BindOnce(
             std::move(tool_executed_cb),
             base::unexpected(WebDocument::ScriptToolError::kInvalidToolName)));
-    return execution_id;
-  }
-
-  if (it->value->v8_tool_function) {
-    execution_id = ExecuteV8Tool(it->value->v8_tool_function, name,
-                                 input_arguments, std::move(tool_executed_cb));
-  } else {
-    // TODO: crbug.com/479598776 - Add support for tracking execution of
-    // declarative tools, so that they can be cancelled.
-    ExecuteDeclarativeTool(it->value->declarative_tool, input_arguments,
-                           std::move(tool_executed_cb));
-  }
-  return execution_id;
-}
-
-void ModelContext::CancelTool(uint32_t execution_id) {
-  auto pending_execution = pending_executions_.find(execution_id);
-  if (pending_execution == pending_executions_.end()) {
     return;
   }
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      blink::BindOnce(
-          std::move(pending_execution->value),
-          base::unexpected(WebDocument::ScriptToolError::kToolCancelled)));
-  pending_executions_.erase(pending_execution);
+  if (it->value->v8_tool_function) {
+    ExecuteV8Tool(it->value->v8_tool_function, name, input_arguments,
+                  std::move(tool_executed_cb));
+  } else {
+    ExecuteDeclarativeTool(it->value->declarative_tool, input_arguments,
+                           std::move(tool_executed_cb));
+  }
 }
 
 void ModelContext::GetCrossDocumentScriptToolResult(
@@ -293,7 +275,7 @@ void ModelContext::ExecuteDeclarativeTool(
 // argument string to a JSON object, calls the function, receives a Promise,
 // waits for the promise to resolve, JSON-stringifies the result, and passes
 // it to OnToolExecuted().
-std::optional<uint32_t> ModelContext::ExecuteV8Tool(
+void ModelContext::ExecuteV8Tool(
     V8ToolFunction* tool_function,
     const String& name,
     const String& input_arguments,
@@ -303,7 +285,6 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
 
   auto script_object = JSONStringToScriptObject(script_state, input_arguments);
   ScriptValue script_value = script_object;
-  std::optional<uint32_t> execution_id;
   if (script_value.IsEmpty()) {
     task_runner_->PostTask(
         FROM_HERE,
@@ -311,7 +292,7 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
             std::move(tool_executed_cb),
             base::unexpected(
                 WebDocument::ScriptToolError::kInvalidInputArguments)));
-    return execution_id;
+    return;
   }
 
   v8::Maybe<ScriptPromise<IDLAny>> maybe_result =
@@ -328,15 +309,14 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
     result = maybe_result.FromJust();
   }
 
-  execution_id = ++next_execution_id_;
-  pending_executions_.insert(execution_id.value(), std::move(tool_executed_cb));
+  uint32_t execution_id = ++next_execution_id_;
+  pending_executions_.insert(execution_id, std::move(tool_executed_cb));
 
   result.Then(script_state,
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
-                  this, execution_id.value(), true),
+                  this, execution_id, true),
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
-                  this, execution_id.value(), false));
-  return execution_id;
+                  this, execution_id, false));
 }
 
 bool ModelContext::RegisterTool(ScriptState* script_state,
@@ -409,9 +389,7 @@ void ModelContext::RegisterDeclarativeTool(String name,
 void ModelContext::OnToolExecuted(uint32_t execution_id,
                                   std::optional<String> result) {
   auto it = pending_executions_.find(execution_id);
-  if (it == pending_executions_.end()) {
-    return;
-  }
+  CHECK(it != pending_executions_.end());
 
   if (result) {
     std::move(it->value).Run(*result);
