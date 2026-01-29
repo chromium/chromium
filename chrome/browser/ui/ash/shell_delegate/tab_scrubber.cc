@@ -158,9 +158,7 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
     return;
   }
 
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(&browser->GetBrowser());
-  if (browser_view->tab_strip_view()->IsAnimating()) {
+  if (tab_strip_ && tab_strip_->IsAnimatingInTabStrip()) {
     if (FinishScrub(false)) {
       event->SetHandled();
     }
@@ -178,6 +176,8 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
 
   // The event's x_offset doesn't change in an RTL layout. Negative value means
   // left, positive means right.
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(&browser->GetBrowser());
   float x_offset = event->x_offset();
   if (!scrubbing_) {
     BeginScrub(browser_view, x_offset);
