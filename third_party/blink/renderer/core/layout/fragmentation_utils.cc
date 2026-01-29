@@ -917,20 +917,24 @@ BreakStatus BreakBeforeChildIfNeeded(
     FlexColumnBreakInfo* flex_column_break_info) {
   DCHECK(space.HasBlockFragmentation());
 
-  // Break-before and break-after are handled at the row level.
-  if (has_container_separation && !is_row_item) {
-    EBreakBetween break_between =
-        CalculateBreakBetweenValue(child, layout_result, *builder);
-    if (IsForcedBreakValue(space, break_between)) {
-      BreakBeforeChild(space, child, &layout_result, fragmentainer_block_offset,
-                       fragmentainer_block_size, kBreakAppealPerfect,
-                       /*is_forced_break=*/true, builder);
-      return BreakStatus::kBrokeBefore;
+  BreakAppeal appeal_before = kBreakAppealPerfect;
+  if (builder) {
+    // Break-before and break-after are handled at the row level.
+    if (has_container_separation && !is_row_item) {
+      EBreakBetween break_between =
+          CalculateBreakBetweenValue(child, layout_result, *builder);
+      if (IsForcedBreakValue(space, break_between)) {
+        BreakBeforeChild(space, child, &layout_result,
+                         fragmentainer_block_offset, fragmentainer_block_size,
+                         kBreakAppealPerfect,
+                         /*is_forced_break=*/true, builder);
+        return BreakStatus::kBrokeBefore;
+      }
     }
-  }
 
-  BreakAppeal appeal_before = CalculateBreakAppealBefore(
-      space, child, layout_result, *builder, has_container_separation);
+    appeal_before = CalculateBreakAppealBefore(
+        space, child, layout_result, *builder, has_container_separation);
+  }
 
   // Attempt to move past the break point, and if we can do that, also assess
   // the appeal of breaking there, even if we didn't.

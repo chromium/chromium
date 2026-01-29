@@ -1522,9 +1522,11 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       // necessary.
       LayoutUnit fragmentainer_block_offset =
           FragmentainerOffsetForChildren() + offset.block_offset;
-      break_status = BreakBeforeChildIfNeeded(grouped_children.footer, *result,
-                                              fragmentainer_block_offset,
-                                              has_container_separation);
+      break_status = ::blink::BreakBeforeChildIfNeeded(
+          GetConstraintSpace(), grouped_children.footer, *result,
+          fragmentainer_block_offset, FragmentainerCapacityForChildren(),
+          has_container_separation,
+          /*container_builder=*/nullptr);
     }
     if (break_status == BreakStatus::kContinue) {
       container_builder_.AddResult(*result, offset);
