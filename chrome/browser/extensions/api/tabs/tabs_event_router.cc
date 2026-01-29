@@ -34,6 +34,7 @@ constexpr char kMutedInfoKey[] = "mutedInfo";
 constexpr char kNewPositionKey[] = "newPosition";
 constexpr char kNewWindowIdKey[] = "newWindowId";
 constexpr char kPinnedKey[] = "pinned";
+constexpr char kTabIdKey[] = "tabId";
 constexpr char kToIndexKey[] = "toIndex";
 
 // Callback for the event dispatch system. Computes which tab properties have
@@ -372,6 +373,40 @@ void TabsEventRouter::OnTabAdded(tabs::TabInterface* tab, int index) {
 
   // Otherwise, dispatch the `onCreated` event.
   DispatchTabCreatedEvent(contents, tab->IsActivated());
+}
+
+void TabsEventRouter::OnActiveTabChanged(tabs::TabInterface* tab) {
+  content::WebContents* tab_contents = tab->GetContents();
+  CHECK(tab_contents);
+
+  base::ListValue args;
+  int tab_id = ExtensionTabUtil::GetTabId(tab_contents);
+  args.Append(tab_id);
+
+  base::DictValue object_args;
+  object_args.Set(tabs_constants::kWindowIdKey,
+                  ExtensionTabUtil::GetWindowIdOfTab(tab_contents));
+  args.Append(object_args.Clone());
+
+  // The onActivated event replaced onActiveChanged and onSelectionChanged. The
+  // deprecated events take two arguments: tabId, {windowId}.
+  Profile* profile =
+      Profile::FromBrowserContext(tab_contents->GetBrowserContext());
+
+  DispatchEvent(profile, events::TABS_ON_SELECTION_CHANGED,
+                api::tabs::OnSelectionChanged::kEventName, args.Clone(),
+                EventRouter::UserGestureState::kUnknown);
+  DispatchEvent(profile, events::TABS_ON_ACTIVE_CHANGED,
+                api::tabs::OnActiveChanged::kEventName, std::move(args),
+                EventRouter::UserGestureState::kUnknown);
+
+  // The onActivated event takes one argument: {windowId, tabId}.
+  base::ListValue on_activated_args;
+  object_args.Set(kTabIdKey, tab_id);
+  on_activated_args.Append(std::move(object_args));
+  DispatchEvent(
+      profile, events::TABS_ON_ACTIVATED, api::tabs::OnActivated::kEventName,
+      std::move(on_activated_args), EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouter::OnTabMoved(tabs::TabInterface* tab,

@@ -57,7 +57,6 @@ constexpr char kOldPositionKey[] = "oldPosition";
 constexpr char kOldWindowIdKey[] = "oldWindowId";
 constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
-constexpr char kTabIdKey[] = "tabId";
 constexpr char kTabIdsKey[] = "tabIds";
 
 }  // namespace
@@ -148,10 +147,6 @@ void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
 
   if (tab_strip_model->empty()) {
     return;
-  }
-
-  if (selection.active_tab_changed()) {
-    DispatchActiveTabChanged(selection.old_contents, selection.new_contents);
   }
 
   if (selection.selection_changed()) {
@@ -303,40 +298,6 @@ void TabsEventRouterPlatformDelegate::DispatchTabDetachedAt(
   router_->DispatchEvent(profile, events::TABS_ON_DETACHED,
                          api::tabs::OnDetached::kEventName, std::move(args),
                          EventRouter::UserGestureState::kUnknown);
-}
-
-void TabsEventRouterPlatformDelegate::DispatchActiveTabChanged(
-    WebContents* old_contents,
-    WebContents* new_contents) {
-  base::ListValue args;
-  int tab_id = ExtensionTabUtil::GetTabId(new_contents);
-  args.Append(tab_id);
-
-  base::DictValue object_args;
-  object_args.Set(tabs_constants::kWindowIdKey,
-                  ExtensionTabUtil::GetWindowIdOfTab(new_contents));
-  args.Append(object_args.Clone());
-
-  // The onActivated event replaced onActiveChanged and onSelectionChanged. The
-  // deprecated events take two arguments: tabId, {windowId}.
-  Profile* profile =
-      Profile::FromBrowserContext(new_contents->GetBrowserContext());
-
-  router_->DispatchEvent(profile, events::TABS_ON_SELECTION_CHANGED,
-                         api::tabs::OnSelectionChanged::kEventName,
-                         args.Clone(), EventRouter::UserGestureState::kUnknown);
-  router_->DispatchEvent(profile, events::TABS_ON_ACTIVE_CHANGED,
-                         api::tabs::OnActiveChanged::kEventName,
-                         std::move(args),
-                         EventRouter::UserGestureState::kUnknown);
-
-  // The onActivated event takes one argument: {windowId, tabId}.
-  base::ListValue on_activated_args;
-  object_args.Set(kTabIdKey, tab_id);
-  on_activated_args.Append(std::move(object_args));
-  router_->DispatchEvent(
-      profile, events::TABS_ON_ACTIVATED, api::tabs::OnActivated::kEventName,
-      std::move(on_activated_args), EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouterPlatformDelegate::DispatchTabSelectionChanged(
