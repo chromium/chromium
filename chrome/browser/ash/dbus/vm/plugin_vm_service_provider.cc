@@ -8,12 +8,11 @@
 #include <utility>
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -34,7 +33,10 @@ constexpr char kShowSettingsPageSharedPaths[] = "pluginVm/sharedPaths";
 
 namespace ash {
 
-PluginVmServiceProvider::PluginVmServiceProvider() = default;
+PluginVmServiceProvider::PluginVmServiceProvider(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    : browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)) {
+}
 
 PluginVmServiceProvider::~PluginVmServiceProvider() = default;
 
@@ -88,9 +90,7 @@ void PluginVmServiceProvider::GetLicenseData(
     payload.set_device_id(kFakeUUID);
     payload.set_license_key(plugin_vm::GetFakeLicenseKey());
   } else {
-    payload.set_device_id(g_browser_process->platform_part()
-                              ->browser_policy_connector_ash()
-                              ->GetDirectoryApiID());
+    payload.set_device_id(browser_policy_connector_ash_->GetDirectoryApiID());
   }
   dbus::MessageWriter writer(response.get());
   writer.AppendProtoAsArrayOfBytes(payload);

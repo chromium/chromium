@@ -15,6 +15,10 @@ namespace dbus {
 class MethodCall;
 }  // namespace dbus
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace ash {
 
 // This class exports D-Bus methods for querying PluginVm information,
@@ -63,7 +67,9 @@ namespace ash {
 class PluginVmServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
-  PluginVmServiceProvider();
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  explicit PluginVmServiceProvider(
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
 
   PluginVmServiceProvider(const PluginVmServiceProvider&) = delete;
   PluginVmServiceProvider& operator=(const PluginVmServiceProvider&) = delete;
@@ -101,6 +107,9 @@ class PluginVmServiceProvider
   // response.
   void GetPermissions(dbus::MethodCall* method_call,
                       dbus::ExportedObject::ResponseSender response_sender);
+
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.

@@ -396,7 +396,9 @@ class DBusServices {
         system_bus, chromeos::kPluginVmServiceName,
         dbus::ObjectPath(chromeos::kPluginVmServicePath),
         CrosDBusService::CreateServiceProviderList(
-            std::make_unique<PluginVmServiceProvider>()));
+            std::make_unique<PluginVmServiceProvider>(
+                g_browser_process->platform_part()
+                    ->browser_policy_connector_ash())));
 
     screen_lock_service_ = CrosDBusService::Create(
         system_bus, chromeos::kScreenLockServiceName,
