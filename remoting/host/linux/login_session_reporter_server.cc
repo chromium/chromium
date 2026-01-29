@@ -17,6 +17,7 @@ named_mojo_ipc_server::EndpointOptions CreateEndpointOptions() {
   named_mojo_ipc_server::EndpointOptions options;
   options.server_name = GetLoginSessionReporterServerName();
   options.message_pipe_id = kLoginSessionReporterMessagePipeId;
+  options.require_same_peer_user = false;
   return options;
 }
 

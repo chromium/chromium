@@ -5,6 +5,7 @@
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include <memory>
@@ -72,7 +73,8 @@ void NamedMojoServerEndpointConnectorLinux::OnSocketReady() {
   int fd = server_endpoint_.platform_handle().GetFD().get();
 
   base::ScopedFD connection_fd;
-  bool success = mojo::AcceptSocketConnection(fd, &connection_fd);
+  bool success = mojo::AcceptSocketConnection(fd, &connection_fd,
+                                              options_.require_same_peer_user);
   if (!success) {
     LOG(ERROR) << "AcceptSocketConnection failed.";
     return;
@@ -111,6 +113,14 @@ bool NamedMojoServerEndpointConnectorLinux::TryStart() {
   }
 
   server_endpoint_ = std::move(server_endpoint);
+  if (!options_.require_same_peer_user) {
+    // Allow any user to write to the UDS. fchmod doesn't work after bind(), so
+    // we need to call chmod on the socket filename, which is the server name.
+    if (chmod(options_.server_name.c_str(), 0o666) != 0) {
+      PLOG(ERROR) << "chmod failed";
+      return false;
+    }
+  }
   read_watcher_controller_ = base::FileDescriptorWatcher::WatchReadable(
       server_endpoint_.platform_handle().GetFD().get(),
       base::BindRepeating(&NamedMojoServerEndpointConnectorLinux::OnSocketReady,

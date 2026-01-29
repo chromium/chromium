@@ -4,6 +4,10 @@
 
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include <sys/stat.h>
+#endif
+
 #include <memory>
 #include <string>
 #include <string_view>
@@ -106,13 +110,15 @@ class NamedMojoIpcServerTest : public testing::TestWithParam<MessagePipeType>,
   void TearDown() override;
 
  protected:
-  void CreateIpcServer();
+  void CreateIpcServer(EndpointOptions extra_options = {});
   base::Process LaunchClientProcess(std::string_view extra_switch = {});
   int WaitForProcessExit(base::Process& process);
   void WaitForServerEndpointCreated();
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
+
+  mojo::NamedPlatformChannel::ServerName test_server_name_;
 
   // Helper thread to wait for process exit without blocking the main thread.
   base::Thread wait_for_process_exit_thread_{"wait_for_process_exit"};
@@ -135,7 +141,6 @@ class NamedMojoIpcServerTest : public testing::TestWithParam<MessagePipeType>,
   void OnServerEndpointCreated();
 
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
-  mojo::NamedPlatformChannel::ServerName test_server_name_;
 
   // Run loops that wait for NamedMojoIpcServerBase::ObserverForTesting methods
   // to be called.
@@ -168,8 +173,7 @@ void NamedMojoIpcServerTest::TearDown() {
   task_environment_.RunUntilIdle();
 }
 
-void NamedMojoIpcServerTest::CreateIpcServer() {
-  EndpointOptions options;
+void NamedMojoIpcServerTest::CreateIpcServer(EndpointOptions options) {
   options.server_name = test_server_name_;
   switch (GetParam()) {
     case MessagePipeType::ISOLATED:
@@ -400,6 +404,36 @@ TEST_P(NamedMojoIpcServerTest, IpcServerRestarted_NewIpcsCanBeMade) {
   child_process = LaunchClientProcess();
   WaitForProcessExit(child_process);
 }
+
+#if BUILDFLAG(IS_LINUX)
+
+TEST_P(NamedMojoIpcServerTest,
+       NotRequireSamePeerUser_SocketFilePermissionIs666) {
+  EndpointOptions options;
+  options.require_same_peer_user = false;
+  CreateIpcServer(std::move(options));
+  ipc_server_->StartServer();
+  WaitForServerEndpointCreated();
+
+  struct stat st;
+  ASSERT_EQ(0, stat(test_server_name_.c_str(), &st));
+  ASSERT_EQ(static_cast<int>(S_IFSOCK | 0o666), static_cast<int>(st.st_mode));
+}
+
+TEST_P(NamedMojoIpcServerTest,
+       RequireSamePeerUser_SocketFilePermissionIsNot666) {
+  EndpointOptions options;
+  options.require_same_peer_user = true;
+  CreateIpcServer(std::move(options));
+  ipc_server_->StartServer();
+  WaitForServerEndpointCreated();
+
+  struct stat st;
+  ASSERT_EQ(0, stat(test_server_name_.c_str(), &st));
+  ASSERT_NE(static_cast<int>(S_IFSOCK | 0o666), static_cast<int>(st.st_mode));
+}
+
+#endif  // BUILDFLAG(IS_LINUX)
 
 // Client process main function. The default behavior is to send "test string"
 // to the EchoString() interface and verify that the server returns the same

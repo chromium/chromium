@@ -64,6 +64,12 @@ struct EndpointOptions {
   // empty, a default security descriptor will be used.
   std::wstring security_descriptor;
 #endif
+
+#if BUILDFLAG(IS_LINUX)
+  // Iff this is true, connecting clients running as a different user from the
+  // server (i.e. the calling process) will be rejected.
+  bool require_same_peer_user = true;
+#endif
 };
 
 }  // namespace named_mojo_ipc_server
