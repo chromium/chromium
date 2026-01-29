@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -36,6 +37,9 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderCoordinator;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderDelegate;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate;
+import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -44,10 +48,15 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.toolbar.AppThemeColorProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
+import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
@@ -55,6 +64,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 @NullMarked
@@ -66,6 +76,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     public static final String WINDOW_OPTIONS_KEY =
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.WindowOptions";
     private WebContents mWebContents;
+    private WebContents mParentWebContents;
     private Tab mInitiatorTab;
     private @MonotonicNonNull ThinWebView mThinWebView;
     private @MonotonicNonNull TabObserver mInitiatorTabObserver;
@@ -95,6 +106,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             finish();
             return;
         }
+        mParentWebContents = parentWebContents;
 
         Bundle windowOptionsBundle = intent.getBundleExtra(WINDOW_OPTIONS_KEY);
         if (windowOptionsBundle == null) {
@@ -110,9 +122,9 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     /**
      * @return Whether the document pip WebContents and the initiator tab are both initialized.
      */
-    @EnsuresNonNullIf({"mWebContents", "mInitiatorTab"})
+    @EnsuresNonNullIf({"mWebContents", "mInitiatorTab", "mParentWebContents"})
     private boolean isContentsInitialized() {
-        return mWebContents != null && mInitiatorTab != null;
+        return mWebContents != null && mInitiatorTab != null && mParentWebContents != null;
     }
 
     @Override
@@ -121,13 +133,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         super.onStart();
         assert isContentsInitialized();
 
-        if (mInitiatorTab.getWebContents() == null) {
-            finish();
-            return;
-        }
-
-        DocumentPictureInPictureActivityJni.get()
-                .onActivityStart(mInitiatorTab.getWebContents(), mWebContents);
+        DocumentPictureInPictureActivityJni.get().onActivityStart(mParentWebContents, mWebContents);
 
         mInitiatorTabObserver =
                 new EmptyTabObserver() {
@@ -241,10 +247,15 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         assumeNonNull(mAppHeaderCoordinator),
                         assumeNonNull(mAppThemeColorProvider),
                         /* delegate= */ this,
-                        !assumeNonNull(mWindowOptions).disallowReturnToOpener);
+                        !assumeNonNull(mWindowOptions).disallowReturnToOpener,
+                        // TODO(crbug.com/479456911): Dynamically set the security level and
+                        // malicious content status if they can change in the same document pip
+                        // session.
+                        SecurityStateModel.getSecurityLevelForWebContents(mParentWebContents),
+                        SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents));
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID)) {
-            WebContents webContents = mInitiatorTab.getWebContents();
+            WebContents webContents = mParentWebContents;
             if (webContents != null
                     && AutoPictureInPicturePermissionController.isAutoPictureInPictureInUse(
                             webContents)) {
@@ -304,6 +315,18 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     }
 
     @Override
+    protected ModalDialogManager createModalDialogManager() {
+        // EdgeToEdgeStateProvider is set in ChromeBaseAppCompatActivity#onCreate.
+        assert getEdgeToEdgeStateProvider() != null;
+
+        return new ModalDialogManager(
+                new AppModalPresenter(this),
+                ModalDialogManager.ModalDialogType.APP,
+                getEdgeToEdgeStateProvider().getSupplier(),
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
+    }
+
+    @Override
     @SuppressWarnings("NullAway")
     protected final void onDestroy() {
         if (mThinWebView != null) {
@@ -338,6 +361,28 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     @Override
     public void onBackToTab() {
         DocumentPictureInPictureActivityJni.get().onBackToTab();
+    }
+
+    @Override
+    public void onSecurityIconClicked() {
+        // TODO(crbug.com/479732663): Move the click handling to the coordinator.
+        PageInfoController.show(
+                this,
+                mParentWebContents,
+                /* contentPublisher= */ null,
+                OpenedFromSource.TOOLBAR,
+                new ChromePageInfoControllerDelegate(
+                        this,
+                        mParentWebContents,
+                        () -> getModalDialogManagerSupplier().get(),
+                        new WebContentsOfflinePageLoadUrlDelegate(mParentWebContents),
+                        /* storeInfoActionHandlerSupplier= */ null,
+                        /* ephemeralTabCoordinatorSupplier= */ null,
+                        ChromePageInfoHighlight.noHighlight(),
+                        /* tabCreator= */ null,
+                        /* packageName= */ null),
+                ChromePageInfoHighlight.noHighlight(),
+                Gravity.TOP);
     }
 
     private class DocumentPictureInPictureWebContentsDelegate extends WebContentsDelegateAndroid {

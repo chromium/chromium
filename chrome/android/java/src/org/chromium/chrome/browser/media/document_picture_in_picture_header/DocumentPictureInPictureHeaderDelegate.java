@@ -11,4 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 public interface DocumentPictureInPictureHeaderDelegate {
     /** Called when the back to tab button is clicked. */
     void onBackToTab();
+
+    /** Called when the security icon is clicked. */
+    void onSecurityIconClicked();
 }

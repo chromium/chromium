@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.StringRes;
 import androidx.core.graphics.Insets;
 import androidx.core.widget.ImageViewCompat;
 
@@ -68,13 +69,46 @@ public class DocumentPictureInPictureHeaderViewBinder {
                             model.get(DocumentPictureInPictureHeaderProperties.IS_BACK_TO_TAB_SHOWN)
                                     ? View.VISIBLE
                                     : View.GONE);
+        } else if (key == DocumentPictureInPictureHeaderProperties.SECURITY_ICON) {
+            ImageView icon =
+                    view.findViewById(R.id.document_picture_in_picture_header_security_icon);
+            icon.setImageResource(
+                    model.get(DocumentPictureInPictureHeaderProperties.SECURITY_ICON));
+        } else if (key
+                == DocumentPictureInPictureHeaderProperties
+                        .SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID) {
+            updateSecurityIconContentDescription(
+                    view,
+                    model.get(
+                            DocumentPictureInPictureHeaderProperties
+                                    .SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID));
+        } else if (key
+                == DocumentPictureInPictureHeaderProperties.ON_SECURITY_ICON_CLICK_LISTENER) {
+            view.findViewById(R.id.document_picture_in_picture_header_security_icon)
+                    .setOnClickListener(
+                            model.get(
+                                    DocumentPictureInPictureHeaderProperties
+                                            .ON_SECURITY_ICON_CLICK_LISTENER));
         }
     }
 
     private static void updateTintColorList(View view, ColorStateList tintColorList) {
         ImageView backToTab =
                 view.findViewById(R.id.document_picture_in_picture_header_back_to_tab);
+        ImageView securityIcon =
+                view.findViewById(R.id.document_picture_in_picture_header_security_icon);
 
         ImageViewCompat.setImageTintList(backToTab, tintColorList);
+        ImageViewCompat.setImageTintList(securityIcon, tintColorList);
+    }
+
+    private static void updateSecurityIconContentDescription(
+            View view, @StringRes int descriptionResId) {
+        ImageView securityIcon =
+                view.findViewById(R.id.document_picture_in_picture_header_security_icon);
+
+        if (descriptionResId != 0) {
+            securityIcon.setContentDescription(view.getResources().getString(descriptionResId));
+        }
     }
 }

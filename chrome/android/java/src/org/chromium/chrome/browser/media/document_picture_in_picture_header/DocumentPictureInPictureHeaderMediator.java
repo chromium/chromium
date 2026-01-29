@@ -19,6 +19,9 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.omnibox.SecurityStatusIcon;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ public class DocumentPictureInPictureHeaderMediator
     private final ThemeColorProvider mThemeColorProvider;
     private final DocumentPictureInPictureHeaderDelegate mDelegate;
     private final Rect mBackToTabRect = new Rect();
+    private final Rect mSecurityIconRect = new Rect();
     private final List<Rect> mNonDraggableAreas = new ArrayList<>();
 
     public DocumentPictureInPictureHeaderMediator(
@@ -48,7 +52,9 @@ public class DocumentPictureInPictureHeaderMediator
             DesktopWindowStateManager desktopWindowStateManager,
             ThemeColorProvider themeColorProvider,
             DocumentPictureInPictureHeaderDelegate delegate,
-            boolean isBackToTabShown) {
+            boolean isBackToTabShown,
+            @ConnectionSecurityLevel int securityLevel,
+            @ConnectionMaliciousContentStatus int maliciousContentStatus) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
         mDelegate = delegate;
@@ -58,6 +64,9 @@ public class DocumentPictureInPictureHeaderMediator
                 DocumentPictureInPictureHeaderProperties.ON_BACK_TO_TAB_CLICK_LISTENER,
                 v -> onBackToTab());
         mModel.set(
+                DocumentPictureInPictureHeaderProperties.ON_SECURITY_ICON_CLICK_LISTENER,
+                v -> onSecurityIconClicked());
+        mModel.set(
                 DocumentPictureInPictureHeaderProperties.ON_LAYOUT_CHANGE_LISTENER,
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
                         updateNonDraggableAreas(v));
@@ -65,6 +74,18 @@ public class DocumentPictureInPictureHeaderMediator
         mDesktopWindowStateManager = desktopWindowStateManager;
         mDesktopWindowStateManager.addObserver(this);
         onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
+
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.SECURITY_ICON,
+                SecurityStatusIcon.getSecurityIconResource(
+                        securityLevel,
+                        () -> maliciousContentStatus,
+                        /* isSmallDevice= */ false,
+                        /* skipIconForNeutralState= */ false,
+                        /* useLockIconForSecureState= */ false));
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID,
+                SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(securityLevel));
 
         mThemeColorProvider.addThemeColorObserver(this);
         mThemeColorProvider.addTintObserver(this);
@@ -120,6 +141,10 @@ public class DocumentPictureInPictureHeaderMediator
         mDelegate.onBackToTab();
     }
 
+    private void onSecurityIconClicked() {
+        mDelegate.onSecurityIconClicked();
+    }
+
     private void updateNonDraggableAreas(View view) {
         // TODO(crbug.com/478159763): Create a supplier for the non-draggable areas to not leak
         // Android views to the mediator.
@@ -129,6 +154,14 @@ public class DocumentPictureInPictureHeaderMediator
             backToTab.getHitRect(mBackToTabRect);
             mNonDraggableAreas.add(mBackToTabRect);
         }
+
+        View securityIcon =
+                view.findViewById(R.id.document_picture_in_picture_header_security_icon);
+        if (securityIcon != null) {
+            securityIcon.getHitRect(mSecurityIconRect);
+            mNonDraggableAreas.add(mSecurityIconRect);
+        }
+
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.NON_DRAGGABLE_AREAS, mNonDraggableAreas);
     }

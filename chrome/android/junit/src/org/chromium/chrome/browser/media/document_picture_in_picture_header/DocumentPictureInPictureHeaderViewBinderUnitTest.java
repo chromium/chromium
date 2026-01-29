@@ -43,6 +43,7 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     private Context mContext;
     private ViewGroup mHeaderView;
     private ImageView mBackToTabButton;
+    private ImageView mSecurityIcon;
     private PropertyModel mModel;
 
     @Before
@@ -52,7 +53,11 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
         mHeaderView.setLayoutParams(
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
 
+        mSecurityIcon = mock(ImageView.class);
         mBackToTabButton = mock(ImageView.class);
+        doReturn(mSecurityIcon)
+                .when(mHeaderView)
+                .findViewById(R.id.document_picture_in_picture_header_security_icon);
         doReturn(mBackToTabButton)
                 .when(mHeaderView)
                 .findViewById(R.id.document_picture_in_picture_header_back_to_tab);
@@ -92,6 +97,7 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
         mModel.set(DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST, tint);
 
         verify(mBackToTabButton).setImageTintList(tint);
+        verify(mSecurityIcon).setImageTintList(tint);
     }
 
     @Test
@@ -146,5 +152,22 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
 
         mModel.set(DocumentPictureInPictureHeaderProperties.IS_BACK_TO_TAB_SHOWN, false);
         verify(mBackToTabButton).setVisibility(View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    public void testSecurityIcon() {
+        int iconRes = 123;
+        mModel.set(DocumentPictureInPictureHeaderProperties.SECURITY_ICON, iconRes);
+        verify(mSecurityIcon).setImageResource(iconRes);
+    }
+
+    @Test
+    @SmallTest
+    public void testSecurityIconClickListener() {
+        View.OnClickListener listener = v -> {};
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.ON_SECURITY_ICON_CLICK_LISTENER, listener);
+        verify(mSecurityIcon).setOnClickListener(listener);
     }
 }

@@ -18,6 +18,17 @@ by DocumentPictureInPictureHeaderViewBinder.
     android:gravity="center_vertical"
     android:orientation="horizontal" >
 
+    <!-- src & content description are set programmatically by the mediator. -->
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/document_picture_in_picture_header_security_icon"
+        android:tooltipText="@string/accessibility_menu_info"
+        android:background="@drawable/default_icon_background"
+        android:layout_width=
+            "@dimen/document_picture_in_picture_header_icon_size"
+        android:layout_height=
+            "@dimen/document_picture_in_picture_header_icon_size"
+        android:scaleType="center" />
+
     <!-- TODO(crbug.com/470284885): Remove this when adding the URL view. -->
     <View
         android:layout_width="0dp"

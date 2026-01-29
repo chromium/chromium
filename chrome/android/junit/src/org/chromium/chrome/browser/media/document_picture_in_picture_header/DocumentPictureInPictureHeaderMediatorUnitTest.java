@@ -41,6 +41,9 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.omnibox.SecurityStatusIcon;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -85,7 +88,9 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         mDesktopWindowStateManager,
                         mThemeColorProvider,
                         mDelegate,
-                        isBackToTabShown);
+                        isBackToTabShown,
+                        ConnectionSecurityLevel.SECURE,
+                        ConnectionMaliciousContentStatus.NONE);
     }
 
     @Test
@@ -109,6 +114,10 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                 mModel.get(DocumentPictureInPictureHeaderProperties.ON_BACK_TO_TAB_CLICK_LISTENER));
         assertNotNull(
                 mModel.get(DocumentPictureInPictureHeaderProperties.ON_LAYOUT_CHANGE_LISTENER));
+        assertNotNull(
+                mModel.get(
+                        DocumentPictureInPictureHeaderProperties.ON_SECURITY_ICON_CLICK_LISTENER));
+        assertTrue(mModel.containsKey(DocumentPictureInPictureHeaderProperties.SECURITY_ICON));
     }
 
     @Test
@@ -138,25 +147,42 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testOnSecurityIconClickListener() {
+        createMediator();
+        View.OnClickListener listener =
+                mModel.get(
+                        DocumentPictureInPictureHeaderProperties.ON_SECURITY_ICON_CLICK_LISTENER);
+        listener.onClick(new View(mContext));
+        verify(mDelegate).onSecurityIconClicked();
+    }
+
+    @Test
+    @SmallTest
     public void testOnLayoutChangeListener() {
         createMediator();
         View.OnLayoutChangeListener listener =
                 mModel.get(DocumentPictureInPictureHeaderProperties.ON_LAYOUT_CHANGE_LISTENER);
 
-        // Create a view hierarchy with the button.
+        // Create a view hierarchy with the buttons.
         FrameLayout parent = new FrameLayout(mContext);
-        View button = new View(mContext);
-        button.setId(R.id.document_picture_in_picture_header_back_to_tab);
-        // Set layout so getHitRect works.
-        button.layout(10, 10, 30, 30);
-        parent.addView(button);
+
+        View backButton = new View(mContext);
+        backButton.setId(R.id.document_picture_in_picture_header_back_to_tab);
+        backButton.layout(10, 10, 30, 30);
+        parent.addView(backButton);
+
+        View securityIcon = new View(mContext);
+        securityIcon.setId(R.id.document_picture_in_picture_header_security_icon);
+        securityIcon.layout(40, 10, 60, 30);
+        parent.addView(securityIcon);
 
         listener.onLayoutChange(parent, 0, 0, 100, 100, 0, 0, 0, 0);
 
         List<Rect> rects = mModel.get(DocumentPictureInPictureHeaderProperties.NON_DRAGGABLE_AREAS);
         assertNotNull(rects);
-        assertEquals(1, rects.size());
+        assertEquals(2, rects.size());
         assertEquals(new Rect(10, 10, 30, 30), rects.get(0));
+        assertEquals(new Rect(40, 10, 60, 30), rects.get(1));
     }
 
     @Test
@@ -239,5 +265,33 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                 .set(eq(DocumentPictureInPictureHeaderProperties.HEADER_HEIGHT), anyInt());
         verify(mModel, never())
                 .set(eq(DocumentPictureInPictureHeaderProperties.HEADER_SPACING), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testSecurityIconUpdates() {
+        int securityLevel = ConnectionSecurityLevel.DANGEROUS;
+        int maliciousContentStatus = ConnectionMaliciousContentStatus.NONE;
+        mMediator =
+                new DocumentPictureInPictureHeaderMediator(
+                        mModel,
+                        mDesktopWindowStateManager,
+                        mThemeColorProvider,
+                        mDelegate,
+                        /* isBackToTabShown= */ true,
+                        securityLevel,
+                        maliciousContentStatus);
+
+        int expectedIcon =
+                SecurityStatusIcon.getSecurityIconResource(
+                        securityLevel,
+                        () -> maliciousContentStatus,
+                        /* isSmallDevice= */ false,
+                        /* skipIconForNeutralState= */ false,
+                        /* useLockIconForSecureState= */ false);
+
+        assertEquals(
+                expectedIcon,
+                (int) mModel.get(DocumentPictureInPictureHeaderProperties.SECURITY_ICON));
     }
 }
