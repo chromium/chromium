@@ -27,6 +27,17 @@ namespace skills {
 
 namespace {
 
+constexpr int kSchemaVersion = 1;
+
+base::Time FromWindowsEpochMicros(int64_t windows_epoch_micros) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(windows_epoch_micros));
+}
+
+int64_t ToWindowsEpochMicros(base::Time time) {
+  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
 sync_pb::SkillSpecifics SkillToSpecifics(const Skill& skill) {
   // Skill ID must be a valid GUID.
   CHECK(base::Uuid::ParseLowercase(skill.id).is_valid());
@@ -36,7 +47,11 @@ sync_pb::SkillSpecifics SkillToSpecifics(const Skill& skill) {
   specifics.set_name(skill.name);
   specifics.set_icon(skill.icon);
   specifics.mutable_simple_skill()->set_prompt(skill.prompt);
-  // TODO(crbug.com/471795213): support other fields once available.
+  specifics.set_creation_time_windows_epoch_micros(
+      ToWindowsEpochMicros(skill.creation_time));
+  specifics.set_last_update_time_windows_epoch_micros(
+      ToWindowsEpochMicros(skill.last_update_time));
+  specifics.set_schema_version(kSchemaVersion);
   return specifics;
 }
 
@@ -44,10 +59,17 @@ std::unique_ptr<Skill> SpecificsToSkill(
     const sync_pb::SkillSpecifics& specifics) {
   CHECK(base::Uuid::ParseLowercase(specifics.guid()).is_valid());
 
-  return std::make_unique<Skill>(/*id=*/specifics.guid(),
-                                 /*name=*/specifics.name(),
-                                 /*icon=*/specifics.icon(),
-                                 /*prompt=*/specifics.simple_skill().prompt());
+  auto skill =
+      std::make_unique<Skill>(/*id=*/specifics.guid(),
+                              /*name=*/specifics.name(),
+                              /*icon=*/specifics.icon(),
+                              /*prompt=*/specifics.simple_skill().prompt());
+
+  skill->creation_time =
+      FromWindowsEpochMicros(specifics.creation_time_windows_epoch_micros());
+  skill->last_update_time =
+      FromWindowsEpochMicros(specifics.last_update_time_windows_epoch_micros());
+  return skill;
 }
 
 syncer::EntityData SpecificsToEntityData(
@@ -115,19 +137,14 @@ std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         const sync_pb::SkillSpecifics& skill_specifics =
             entity_change->data().specifics.skill();
-        const Skill* skill =
-            skills_service_->GetSkillById(entity_change->storage_key());
-        if (skill) {
-          // Skill already exists locally.
-          skill = skills_service_->UpdateSkill(
-              skill_specifics.guid(), skill_specifics.name(),
-              skill_specifics.icon(), skill_specifics.simple_skill().prompt(),
-              SkillsService::UpdateSource::kSync);
-        } else {
-          skill = skills_service_->AddSkillFromSync(
-              skill_specifics.guid(), skill_specifics.name(),
-              skill_specifics.icon(), skill_specifics.simple_skill().prompt());
-        }
+
+        const Skill* skill = skills_service_->AddOrUpdateSkillFromSync(
+            skill_specifics.guid(), skill_specifics.name(),
+            skill_specifics.icon(), skill_specifics.simple_skill().prompt(),
+            FromWindowsEpochMicros(
+                skill_specifics.creation_time_windows_epoch_micros()),
+            FromWindowsEpochMicros(
+                skill_specifics.last_update_time_windows_epoch_micros()));
         CHECK(skill);
 
         StoreSkill(*skill, *write_batch);
@@ -291,7 +308,8 @@ void SkillsSyncBridge::OnSkillUpdated(
     // Skill was deleted locally.
     std::string skill_id_str(skill_id.data());
     batch->DeleteData(skill_id_str);
-    change_processor()->Delete(skill_id_str, syncer::DeletionOrigin::Unspecified(),
+    change_processor()->Delete(skill_id_str,
+                               syncer::DeletionOrigin::Unspecified(),
                                batch->GetMetadataChangeList());
   } else {
     // Skill was created or updated locally.

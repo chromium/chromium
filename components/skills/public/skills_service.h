@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/proto/skill.pb.h"
@@ -64,7 +65,7 @@ class SkillsService : public KeyedService {
   virtual void LoadInitialSkills(
       std::vector<std::unique_ptr<Skill>> initial_skills) = 0;
 
-  // Adds a new skill.
+  // Adds a new skill locally.
   // Generates a unique ID for the skill.
   // Returns a const pointer to the newly added skill.
   // Must only be called after IsInitialized() returns true.
@@ -72,24 +73,26 @@ class SkillsService : public KeyedService {
                                 const std::string& icon,
                                 const std::string& prompt) = 0;
 
-  // Adds a new skill received from sync. Returns the newly created skill. The
-  // difference from AddSkill is that this method takes a `skill_id` for the
-  // created skill ID.
-  // Must only be called after IsInitialized() returns true.
-  virtual const Skill* AddSkillFromSync(std::string_view skill_id,
-                                        std::string_view name,
-                                        std::string_view icon,
-                                        std::string_view prompt) = 0;
+  // Adds a new or updates an existing skill received from sync. Returns the
+  // newly created or updated skill. The difference from AddSkill() is that this
+  // method takes a `skill_id` for the created skill ID. Must only be called
+  // after IsInitialized() returns true.
+  virtual const Skill* AddOrUpdateSkillFromSync(
+      std::string_view skill_id,
+      std::string_view name,
+      std::string_view icon,
+      std::string_view prompt,
+      base::Time creation_time,
+      base::Time last_update_time) = 0;
 
-  // Updates an existing skill. Returns a skill if exists, nullptr otherwise.
-  // Must only be called after IsInitialized() returns true.
+  // Updates an existing skill locally. Returns a skill if exists, nullptr
+  // otherwise. Must only be called after IsInitialized() returns true.
   virtual const Skill* UpdateSkill(std::string_view skill_id,
                                    std::string_view name,
                                    std::string_view icon,
-                                   std::string_view prompt,
-                                   UpdateSource update_source) = 0;
+                                   std::string_view prompt) = 0;
 
-  // Deletes a skill if exists.
+  // Deletes a skill if exists (locally or from sync).
   // Must only be called after IsInitialized() returns true.
   virtual void DeleteSkill(std::string_view skill_id,
                            UpdateSource update_source) = 0;

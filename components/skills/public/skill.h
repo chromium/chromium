@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/time/time.h"
+
 namespace skills {
 
 // LINT.IfChange(SkillSource)
@@ -38,6 +40,12 @@ struct Skill {
 
   // The source of the skill which can be 1P or user created.
   SkillSource source = SkillSource::kUserCreated;
+
+  // The time when the skill was created.
+  base::Time creation_time = base::Time::Now();
+
+  // The time when the skill was last updated.
+  base::Time last_update_time = creation_time;
 
   Skill(const std::string& id,
         const std::string& name,
