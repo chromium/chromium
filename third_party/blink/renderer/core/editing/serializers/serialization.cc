@@ -529,7 +529,7 @@ String CreateMarkup(const Node* node,
 }
 
 static void FillContainerFromString(ContainerNode* paragraph,
-                                    const String& string) {
+                                    const StringView& string) {
   Document& document = paragraph->GetDocument();
 
   if (string.empty()) {
@@ -539,13 +539,12 @@ static void FillContainerFromString(ContainerNode* paragraph,
 
   DCHECK_EQ(string.find('\n'), kNotFound) << string;
 
-  Vector<String> tab_list;
-  string.Split('\t', true, tab_list);
+  Vector<StringView> tab_list = string.Split('\t');
   StringBuilder tab_text;
   bool first = true;
   wtf_size_t num_entries = tab_list.size();
   for (wtf_size_t i = 0; i < num_entries; ++i) {
-    const String& s = tab_list[i];
+    const StringView& s = tab_list[i];
 
     // append the non-tab textual part
     if (!s.empty()) {
@@ -645,11 +644,11 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
       block && !IsA<HTMLBodyElement>(block) && !IsA<HTMLHtmlElement>(block) &&
       block != RootEditableElementOf(context.StartPosition());
 
-  Vector<String> list;
-  string.Split('\n', true, list);  // true gets us empty strings in the list
+  // `list` will contain empty strings.
+  Vector<StringView> list = StringView(string).Split('\n');
   wtf_size_t num_lines = list.size();
   for (wtf_size_t i = 0; i < num_lines; ++i) {
-    const String& s = list[i];
+    const StringView& s = list[i];
 
     Element* element = nullptr;
     if (s.empty() && i + 1 == num_lines) {

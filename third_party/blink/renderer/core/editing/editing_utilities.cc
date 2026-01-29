@@ -114,7 +114,7 @@ std::string_view ToString(PositionMoveType type) {
   return kTexts[static_cast<size_t>(type)];
 }
 
-UChar WhitespaceRebalancingCharToAppend(const String& string,
+UChar WhitespaceRebalancingCharToAppend(const StringView& string,
                                         bool start_is_start_of_paragraph,
                                         bool should_emit_nbsp_before_end,
                                         wtf_size_t index,
@@ -935,7 +935,7 @@ const ComputedStyle* GetComputedStyleForElementOrLayoutObject(
   return nullptr;
 }
 
-String StringWithRebalancedWhitespace(const String& string,
+String StringWithRebalancedWhitespace(const StringView& string,
                                       bool start_is_start_of_paragraph,
                                       bool should_emit_nbs_pbefore_end) {
   unsigned length = string.length();
