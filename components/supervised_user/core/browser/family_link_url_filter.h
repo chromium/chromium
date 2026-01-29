@@ -8,29 +8,21 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include <optional>
 #include <set>
 #include <string>
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
+#include "base/callback_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 class PrefService;
-
-namespace version_info {
-enum class Channel;
-}
 
 namespace supervised_user {
 

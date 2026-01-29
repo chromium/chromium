@@ -39,6 +39,10 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
+
 namespace supervised_user {
 class FamilyLinkSettingsService;
 
