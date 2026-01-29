@@ -36,9 +36,10 @@ suite('CrComponentsRealboxMatchTest', () => {
 
     matchEl.dispatchEvent(new MouseEvent('mousedown'));
     const args = await testProxy.handler.whenCalled('onNavigationLikely');
-    assertEquals(matchIndex, args.line);
-    assertEquals(destinationUrl, args.url);
-    assertEquals(NavigationPredictor.kMouseDown, args.navigationPredictor);
+    assertEquals(matchIndex, /*input=*/ args[0]);
+    assertEquals(destinationUrl, /*url=*/ args[1]);
+    assertEquals(
+        NavigationPredictor.kMouseDown, /*navigationPredictor=*/ args[2]);
   });
 
   test('ClickNavigates', async () => {
@@ -71,14 +72,14 @@ suite('CrComponentsRealboxMatchTest', () => {
           clickEvent.shiftKey,
         ],
         [
-          clickArgs.line,
-          clickArgs.url,
-          clickArgs.areMatchesShowing,
-          clickArgs.mouseButton,
-          clickArgs.altKey,
-          clickArgs.ctrlKey,
-          clickArgs.metaKey,
-          clickArgs.shiftKey,
+          clickArgs[0],
+          clickArgs[1],
+          clickArgs[2],
+          clickArgs[3],
+          clickArgs[4],
+          clickArgs[5],
+          clickArgs[6],
+          clickArgs[7],
         ]);
     testProxy.handler.reset();
 
@@ -96,9 +97,9 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertTrue(middleClickEvent.defaultPrevented);
     const middleClickArgs =
         await testProxy.handler.whenCalled('openAutocompleteMatch');
-    assertEquals(matchIndex, middleClickArgs.line);
-    assertDeepEquals(destinationUrl, middleClickArgs.url);
-    assertEquals(1, middleClickArgs.mouseButton);
+    assertEquals(matchIndex, /*line=*/ middleClickArgs[0]);
+    assertDeepEquals(destinationUrl, /*url=*/ middleClickArgs[1]);
+    assertEquals(1, /*mouseButton=*/ middleClickArgs[3]);
   });
 
   test('ClickFiresEvent', async () => {
@@ -134,8 +135,8 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertTrue(keydownEvent.defaultPrevented);
     const keydownArgs =
         await testProxy.handler.whenCalled('deleteAutocompleteMatch');
-    assertEquals(matchIndex, keydownArgs.line);
-    assertEquals(destinationUrl, keydownArgs.url);
+    assertEquals(matchIndex, /*line=*/ keydownArgs[0]);
+    assertEquals(destinationUrl, /*url=*/ keydownArgs[1]);
     assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
     // Pressing 'Enter' the button doesn't accidentally trigger navigation.
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
@@ -144,8 +145,8 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.$.remove.click();
     const clickArgs =
         await testProxy.handler.whenCalled('deleteAutocompleteMatch');
-    assertEquals(matchIndex, clickArgs.line);
-    assertEquals(destinationUrl, clickArgs.url);
+    assertEquals(matchIndex, /*line=*/ clickArgs[0]);
+    assertEquals(destinationUrl, /*url=*/ clickArgs[1]);
     assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
     // Clicking the button doesn't accidentally trigger navigation.
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));

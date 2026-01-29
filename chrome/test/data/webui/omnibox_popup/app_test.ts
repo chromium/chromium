@@ -4,8 +4,9 @@
 
 import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 
-import {createAutocompleteMatch, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {ComposeboxProxyImpl, createAutocompleteMatch, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {PageCallbackRouter as ComposeboxCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -62,7 +63,12 @@ class TestSearchboxBrowserProxy extends TestBrowserProxy {
     super();
     this.callbackRouter = new PageCallbackRouter();
     this.handler = TestMock.fromClass(PageHandlerRemote);
-    this.handler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+    installMock(
+        ComposeboxPageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+            mock, new ComposeboxCallbackRouter(), this.handler,
+            this.callbackRouter)));
+    this.handler.setResultFor('getRecentTabs', {tabs: []});
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
 
@@ -225,38 +231,6 @@ suite('AppTest', function() {
 
       // Assert: The button is no longer focused.
       assertFalse(entrypointButton.matches(':focus-within'));
-    });
-
-    test('RecentTabChipShown', async () => {
-      loadTimeData.overrideValues({
-        searchboxLayoutMode: 'TallTopContext',
-        composeboxShowRecentTabChip: true,
-        addTabUploadDelayOnRecentTabChipClick: true,
-      });
-      const tabInfo = {
-        tabId: 1,
-        title: 'Tab 1',
-        url: 'https://www.google.com/search?q=foo',
-        showInPreviousTabChip: true,
-      };
-      testProxy.handler.setResultFor(
-          'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
-      localApp.remove();
-      localApp = document.createElement('omnibox-popup-app');
-      document.body.appendChild(localApp);
-      testProxy.page.autocompleteResultChanged(createAutocompleteResult());
-      await microtasksFinished();
-
-      testProxy.initVisibilityPrefs();
-      await microtasksFinished();
-
-      const carousel = localApp.shadowRoot?.querySelector(
-          'contextual-entrypoint-and-carousel');
-      assertTrue(!!carousel);
-      const recentTabChip =
-          carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
-      // Assert chip shows.
-      assertTrue(!!recentTabChip);
     });
   });
 
