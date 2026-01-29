@@ -21,13 +21,6 @@ export function getHtml(this: ImmersiveModeHeaderElement) {
       iron-icon="${this.getPinIcon_()}"
       @click="${this.onPinButtonClick_}">
     </cr-icon-button>
-    <cr-icon-button class="toolbar-button"
-      id="close"
-      iron-icon="cr:close"
-      aria-label="$i18n{readingModeLanguageMenuClose}"
-      title="$i18n{readingModeLanguageMenuClose}"
-      @click="${this.onCloseClick_}">
-    </cr-icon-button>
   </div>
 </header>
 <!--_html_template_end_-->`;

@@ -266,4 +266,16 @@ suite('Toolbar Settings Menu', () => {
     assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
     timer.uninstall();
   });
+
+  test('close button appears in immersive mode', async () => {
+    toolbar.isImmersiveMode = true;
+    await microtasksFinished();
+    const closeButton = getButton('close');
+    assertTrue(!!closeButton);
+  });
+
+  test('close button does not appear in side panel mode', () => {
+    const closeButton = getButton('close');
+    assertFalse(!!closeButton);
+  });
 });

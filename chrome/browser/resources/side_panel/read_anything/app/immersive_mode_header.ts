@@ -62,10 +62,6 @@ export class ImmersiveModeHeaderElement extends ImmersiveModeHeaderElementBase {
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
   }
 
-  protected onCloseClick_() {
-    chrome.readingMode.close();
-  }
-
   protected getPinIcon_(): string {
     return this.isReadAnythingPinned ? UNPIN_ICON : PIN_ICON;
   }

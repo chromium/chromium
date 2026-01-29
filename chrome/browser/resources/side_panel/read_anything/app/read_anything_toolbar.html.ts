@@ -18,6 +18,19 @@ function getRateButtonHtml(this: ReadAnythingToolbarElement) {
     </cr-button>`;
 }
 
+function getCloseButton(this: ReadAnythingToolbarElement) {
+  if (this.isImmersiveMode) {
+    return html`
+  <cr-icon-button id="close" tabindex="0"
+      aria-label="$i18n{readingModeLanguageMenuClose}"
+      title="$i18n{readingModeLanguageMenuClose}"
+      iron-icon="cr:close"
+      @click="${this.onCloseClick_}">
+  </cr-icon-button>`;
+  }
+  return html``;
+}
+
 function getToolbarAudioControlsHtml(this: ReadAnythingToolbarElement) {
   let audioState = 'inactive';
   if (this.isImmersiveEnabled_) {
@@ -197,6 +210,7 @@ ${renderTextStyleOptions.call(this)}
     iron-icon="cr:settings_icon"
     @click="${this.onMoreOptionsClick_}">
 </cr-icon-button>
+${getCloseButton.call(this)}
 <settings-menu
   id="settingsMenu"
   .settingsPrefs="${this.settingsPrefs}"

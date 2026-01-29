@@ -148,6 +148,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       moreOptionsButtons_: {type: Array},
       pageLanguage: {type: String},
       presentationState: {type: Number},
+      isImmersiveMode: {type: Boolean},
     };
   }
 
@@ -171,6 +172,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor selectedVoice: SpeechSynthesisVoice|undefined;
   accessor pageLanguage: string = '';
+  accessor isImmersiveMode: boolean = false;
   protected accessor hideSpinner_: boolean = true;
   protected isReadAloudEnabled_: boolean = true;
   protected isImmersiveEnabled_: boolean = false;
@@ -409,6 +411,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         loadTimeData.getStringF(
             'voiceSpeedOptionTitle', this.speechRate_.toLocaleString()) :
         this.speechRate_.toLocaleString();
+  }
+
+  protected onCloseClick_() {
+    chrome.readingMode.close();
   }
 
   // Loading the fonts stylesheet can take a while, especially with slow
