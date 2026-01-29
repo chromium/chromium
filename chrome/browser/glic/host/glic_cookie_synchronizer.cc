@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/common/chrome_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
@@ -61,8 +62,15 @@ content::StoragePartitionConfig GetGlicMainStoragePartitionConfig(
 content::StoragePartitionConfig GetGlicStoragePartitionConfig(
     content::BrowserContext* browser_context,
     bool use_for_fre) {
-  return use_for_fre ? GetFreStoragePartitionConfig(browser_context)
-                     : GetGlicMainStoragePartitionConfig(browser_context);
+  bool use_main_partition_for_fre =
+      base::FeatureList::IsEnabled(
+          features::kGlicUseMainPartitionForUnifiedFre) &&
+      GlicEnabling::IsUnifiedFreEnabled(
+          Profile::FromBrowserContext(browser_context));
+
+  return (use_for_fre && !use_main_partition_for_fre)
+             ? GetFreStoragePartitionConfig(browser_context)
+             : GetGlicMainStoragePartitionConfig(browser_context);
 }
 
 }  // namespace
