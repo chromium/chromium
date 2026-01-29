@@ -603,11 +603,11 @@ public class TabGroupSyncLocalObserverUnitTest {
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(TITLE_1), anyInt());
 
-        // Null title.
-        when(mTabGroupModelFilter.getTabGroupTitle(TOKEN_1)).thenReturn(null);
-        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, null);
+        // Empty title.
+        when(mTabGroupModelFilter.getTabGroupTitle(TOKEN_1)).thenReturn("");
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, "");
         verify(mTabGroupSyncService, times(1))
-                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(new String()), anyInt());
+                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(""), anyInt());
     }
 
     @Test

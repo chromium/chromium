@@ -186,17 +186,17 @@ public class StubTabGroupModelFilterImpl implements TabGroupModelFilterInternal 
     }
 
     @Override
-    public @Nullable String getTabGroupTitle(Token tabGroupId) {
-        return null;
+    public String getTabGroupTitle(Token tabGroupId) {
+        return "";
     }
 
     @Override
-    public @Nullable String getTabGroupTitle(Tab groupedTab) {
-        return null;
+    public String getTabGroupTitle(Tab groupedTab) {
+        return "";
     }
 
     @Override
-    public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {}
+    public void setTabGroupTitle(Token tabGroupId, String title) {}
 
     @Override
     public void deleteTabGroupTitle(Token tabGroupId) {}

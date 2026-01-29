@@ -530,6 +530,8 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTabListFaviconProvider).isInitialized();
         doReturn(mSavedTabGroup1).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
         doReturn(mSavedTabGroup2).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID2);
+        doReturn("").when(mTabGroupModelFilter).getTabGroupTitle(any(Token.class));
+        doReturn("").when(mTabGroupModelFilter).getTabGroupTitle(any(Tab.class));
 
         mModelList = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);

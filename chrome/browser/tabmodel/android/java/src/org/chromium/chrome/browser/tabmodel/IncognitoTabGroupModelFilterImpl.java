@@ -311,19 +311,19 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public @Nullable String getTabGroupTitle(Token tabGroupId) {
-        if (mCurrentFilter == null) return null;
+    public String getTabGroupTitle(Token tabGroupId) {
+        if (mCurrentFilter == null) return "";
         return mCurrentFilter.getTabGroupTitle(tabGroupId);
     }
 
     @Override
-    public @Nullable String getTabGroupTitle(Tab groupedTab) {
-        if (mCurrentFilter == null) return null;
+    public String getTabGroupTitle(Tab groupedTab) {
+        if (mCurrentFilter == null) return "";
         return mCurrentFilter.getTabGroupTitle(groupedTab);
     }
 
     @Override
-    public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {
+    public void setTabGroupTitle(Token tabGroupId, String title) {
         if (mCurrentFilter == null) return;
         mCurrentFilter.setTabGroupTitle(tabGroupId, title);
     }

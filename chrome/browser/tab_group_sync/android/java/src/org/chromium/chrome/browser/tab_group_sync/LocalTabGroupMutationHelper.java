@@ -323,7 +323,8 @@ public class LocalTabGroupMutationHelper {
     }
 
     private void updateTabGroupVisuals(SavedTabGroup tabGroup, Token tabGroupId) {
-        mTabGroupModelFilter.setTabGroupTitle(tabGroupId, tabGroup.title);
+        mTabGroupModelFilter.setTabGroupTitle(
+                tabGroupId, tabGroup.title == null ? "" : tabGroup.title);
         mTabGroupModelFilter.setTabGroupColor(tabGroupId, tabGroup.color);
     }
 

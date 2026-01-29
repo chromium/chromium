@@ -38,7 +38,7 @@ public class TabGroupMetadata {
     public final int sourceWindowId;
     public final Token tabGroupId;
     public final @ColorInt int tabGroupColor;
-    public final @Nullable String tabGroupTitle;
+    public final String tabGroupTitle;
     public final @Nullable String mhtmlTabTitle;
     public final boolean tabGroupCollapsed;
     public final boolean isGroupShared;
@@ -73,7 +73,7 @@ public class TabGroupMetadata {
             Token tabGroupId,
             ArrayList<Map.Entry<Integer, String>> tabIdsToUrls,
             @ColorInt int tabGroupColor,
-            @Nullable String tabGroupTitle,
+            String tabGroupTitle,
             @Nullable String mhtmlTabTitle,
             boolean tabGroupCollapsed,
             boolean isGroupShared,
@@ -138,7 +138,7 @@ public class TabGroupMetadata {
                 tabGroupIdFromBundle,
                 tabIdsToUrls,
                 bundle.getInt(KEY_TAB_GROUP_COLOR),
-                bundle.getString(KEY_TAB_GROUP_TITLE),
+                bundle.getString(KEY_TAB_GROUP_TITLE, ""),
                 bundle.getString(KEY_MHTML_TAB_TITLE),
                 bundle.getBoolean(KEY_TAB_GROUP_COLLAPSED),
                 bundle.getBoolean(KEY_IS_GROUP_SHARED),

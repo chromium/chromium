@@ -63,7 +63,7 @@ public class TabGroupTitleUtils {
         String explicitTitle =
                 tabGroupExists
                         ? tabGroupModelFilter.getTabGroupTitle(assumeNonNull(tabGroupId))
-                        : null;
+                        : "";
         if (TextUtils.isEmpty(explicitTitle)) {
             int tabCount = 0;
             List<Tab> tabsInGroup = tabGroupModelFilter.getTabsInGroup(assumeNonNull(tabGroupId));

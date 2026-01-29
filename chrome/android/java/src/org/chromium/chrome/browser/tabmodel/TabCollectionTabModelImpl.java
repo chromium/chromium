@@ -938,7 +938,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     protected void setTabGroupVisualData(
             Token tabGroupId,
-            @Nullable String title,
+            String title,
             @TabGroupColorId int colorId,
             boolean isCollapsed,
             boolean animate) {
@@ -1019,7 +1019,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
             if (titleChanged) {
-                observer.didChangeTabGroupTitle(tabGroupId, title);
+                // The title parameter is nullable to support partial updates (null indicates no
+                // change), but titleChanged guarantees it is non-null here. assumeNonNull is
+                // required because static analysis (NullAway) cannot track this dependency.
+                observer.didChangeTabGroupTitle(tabGroupId, assumeNonNull(title));
             }
             if (colorChanged) {
                 observer.didChangeTabGroupColor(tabGroupId, assumeNonNull(sanitizedColorId));
@@ -1352,31 +1355,26 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public @Nullable String getTabGroupTitle(Token tabGroupId) {
+    public String getTabGroupTitle(Token tabGroupId) {
         assertOnUiThread();
-        if (mNativeTabCollectionTabModelImplPtr == 0) return null;
+        if (mNativeTabCollectionTabModelImplPtr == 0) return "";
         return TabCollectionTabModelImplJni.get()
                 .getTabGroupTitle(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
 
     @Override
-    public @Nullable String getTabGroupTitle(Tab groupedTab) {
+    public String getTabGroupTitle(Tab groupedTab) {
         Token tabGroupId = groupedTab.getTabGroupId();
         assert tabGroupId != null;
         return getTabGroupTitle(tabGroupId);
     }
 
     @Override
-    public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {
+    public void setTabGroupTitle(Token tabGroupId, String title) {
         assertOnUiThread();
-        // TODO(crbug.com/477718055): Refactor method signature to prohibit null titles.
-        // A null title was historically used for default titles, but C++ represents this as "".
         updateTabGroupVisualData(
                 tabGroupId,
-                // The internal update helper treats null arguments as "no change" to support
-                // partial updates. We coerce null to an empty string to explicitly trigger an
-                // update that clears the title in the backing store and native model.
-                title == null ? "" : title,
+                title,
                 /* colorId= */ null,
                 /* isCollapsed= */ null,
                 /* animate= */ false);
@@ -2467,8 +2465,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     private void createDetachedTabGroup(Token tabGroupId) {
-        String storedTitle = TabGroupVisualDataStore.getTabGroupTitle(tabGroupId);
-        String title = (storedTitle != null) ? storedTitle : "";
+        String title = TabGroupVisualDataStore.getTabGroupTitle(tabGroupId);
 
         int storedColorId = TabGroupVisualDataStore.getTabGroupColor(tabGroupId);
         @TabGroupColorId int colorId;

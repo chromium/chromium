@@ -680,7 +680,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabGroupModelFilterObserver mTabGroupObserver =
             new TabGroupModelFilterObserver() {
                 @Override
-                public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
+                public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
                     assert mShowingTabs;
 
                     if (!mActionsOnAllRelatedTabs) return;
@@ -2552,8 +2552,7 @@ class TabListMediator implements TabListNotificationHandler {
         if (useDefault) {
             return TabGroupTitleUtils.getDisplayableTitle(mActivity, filter, tabGroupId);
         } else {
-            String storedTitle = filter.getTabGroupTitle(tabGroupId);
-            return TextUtils.isEmpty(storedTitle) ? "" : storedTitle;
+            return filter.getTabGroupTitle(tabGroupId);
         }
     }
 

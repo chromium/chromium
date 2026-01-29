@@ -424,8 +424,8 @@ public class TabUiUtilsUnitTest {
                 .processLeaveGroupAttempt(any(), any());
         mockIdentity(EMAIL2, GAIA_ID2);
         SavedTabGroup group = createSyncGroup(COLLABORATION_ID1);
-        group.title = null;
-        when(mFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(null);
+        group.title = "";
+        when(mFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
         createSharedGroup(GROUP_MEMBER1, GROUP_MEMBER2);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.MEMBER);
@@ -581,6 +581,11 @@ public class TabUiUtilsUnitTest {
         when(mFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
         TabUiUtils.updateTabGroupTitle(mFilter, TAB_GROUP_ID, "C");
         verify(mFilter, never()).setTabGroupTitle(TAB_GROUP_ID, "C");
+
+        when(mFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("A");
+        TabUiUtils.updateTabGroupTitle(mFilter, TAB_GROUP_ID, "");
+        verify(mFilter).setTabGroupTitle(TAB_GROUP_ID, "");
     }
 
     private SavedTabGroup createSyncGroup(String collaborationId) {

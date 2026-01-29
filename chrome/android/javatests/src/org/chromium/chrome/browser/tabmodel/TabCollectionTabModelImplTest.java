@@ -1706,15 +1706,16 @@ public class TabCollectionTabModelImplTest {
                 title,
                 TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, /* title= */ null);
+        mCollectionModel.setTabGroupTitle(tabGroupId, "");
 
         assertEquals(
                 "Native title should be cleared (empty string)",
                 "",
                 mCollectionModel.getTabGroupTitle(tabGroupId));
 
-        assertNull(
-                "Store title should be deleted (null)",
+        assertEquals(
+                "Store title should be deleted (empty string)",
+                "",
                 TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
     }
 
@@ -1829,7 +1830,7 @@ public class TabCollectionTabModelImplTest {
                                     .build());
 
                     assertFalse(mCollectionModel.tabGroupExists(groupId));
-                    assertNull(TabGroupVisualDataStore.getTabGroupTitle(groupId));
+                    assertEquals("", TabGroupVisualDataStore.getTabGroupTitle(groupId));
                     assertEquals(
                             TabGroupColorUtils.INVALID_COLOR_ID,
                             TabGroupVisualDataStore.getTabGroupColor(groupId));

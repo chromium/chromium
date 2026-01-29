@@ -131,7 +131,7 @@ public interface TabGroupModelFilterObserver {
      * @param tabGroupId The tab group id.
      * @param newTitle The new title.
      */
-    default void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {}
+    default void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {}
 
     /**
      * This method is called after a new color is set on a tab group.

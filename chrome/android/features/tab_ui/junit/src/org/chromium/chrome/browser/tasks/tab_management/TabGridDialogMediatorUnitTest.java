@@ -1132,7 +1132,7 @@ public class TabGridDialogMediatorUnitTest {
         // PropertyModel.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(eq(TAB_GROUP_ID));
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB_GROUP_ID), eq(null));
+        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB_GROUP_ID), eq(""));
     }
 
     @Test

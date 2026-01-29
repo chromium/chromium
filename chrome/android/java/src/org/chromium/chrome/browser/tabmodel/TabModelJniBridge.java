@@ -540,7 +540,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract @JniType("std::vector<base::Token>") List<Token> listTabGroups();
 
     @CalledByNative
-    protected abstract @JniType("std::optional<std::u16string>") @Nullable String getTabGroupTitle(
+    protected abstract @JniType("std::u16string") String getTabGroupTitle(
             @JniType("base::Token") Token tabGroupId);
 
     @CalledByNative
@@ -564,7 +564,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     protected abstract void setTabGroupVisualData(
             @JniType("base::Token") Token tabGroupId,
-            @JniType("std::optional<std::u16string>") @Nullable String title,
+            @JniType("std::u16string") String title,
             @TabGroupColorId int colorId,
             boolean isCollapsed,
             boolean animate);

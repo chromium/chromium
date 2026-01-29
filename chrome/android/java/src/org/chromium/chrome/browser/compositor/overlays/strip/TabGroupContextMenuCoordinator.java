@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -118,7 +117,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {
                 @Override
-                public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
+                public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
                     if (isMenuShowing() && mTabGroupId.equals(tabGroupId)) {
                         setExistingOrDefaultTitle(newTitle);
                     }
@@ -597,7 +596,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         String newTitle = mCurrentModifiedTitle;
         if (newTitle == null) {
             return;
-        } else if (TextUtils.isEmpty(newTitle) || newTitle.equals(getDefaultTitle())) {
+        } else if (newTitle.isEmpty() || newTitle.equals(getDefaultTitle())) {
             mTabGroupModelFilter.deleteTabGroupTitle(mTabGroupId);
             RecordUserAction.record("MobileToolbarTabGroupMenu.TitleReset");
             setExistingOrDefaultTitle(getDefaultTitle());
@@ -607,7 +606,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         mCurrentModifiedTitle = null;
     }
 
-    private void setExistingOrDefaultTitle(@Nullable String s) {
+    private void setExistingOrDefaultTitle(String s) {
         // Flip `IsPresetTitleUsed`to prevent `TextWatcher` from treating `#setText` as a title
         // update.
         mIsPresetTitleUsed = true;

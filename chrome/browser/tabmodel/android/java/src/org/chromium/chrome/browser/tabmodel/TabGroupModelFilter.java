@@ -274,10 +274,10 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
             List<Tab> tabsToExclude, boolean includePendingClosures);
 
     /**
-     * Returns the current title of the tab group or null if a title is not set. Prefer {@link
-     * TabGroupTitleUtils#getDisplayableTitle} in most cases.
+     * Returns the current title of the tab group, or an empty string if a title is not set. Prefer
+     * {@link TabGroupTitleUtils#getDisplayableTitle} in most cases.
      */
-    @Nullable String getTabGroupTitle(Token tabGroupId);
+    String getTabGroupTitle(Token tabGroupId);
 
     /**
      * {@see #getTabGroupTitle(Token)}. This looks up the tab group via {@code groupedTab}. This is
@@ -285,10 +285,10 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
      * TabGroupTitleUtils#getDisplayableTitle} or {@link #getTabGroupTitle(Token)} method in most
      * cases.
      */
-    @Nullable String getTabGroupTitle(Tab groupedTab);
+    String getTabGroupTitle(Tab groupedTab);
 
     /** Stores the given title for the tab group. */
-    void setTabGroupTitle(Token tabGroupId, @Nullable String title);
+    void setTabGroupTitle(Token tabGroupId, String title);
 
     /** Deletes the stored title for the tab group, defaulting it back to "N tabs." */
     void deleteTabGroupTitle(Token tabGroupId);

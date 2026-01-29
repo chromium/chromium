@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -276,7 +275,7 @@ public class TabModelNotificationDotManagerUnitTest {
 
     @Test
     public void testFallbackTitle() {
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(null);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
         initializeBothBackends();
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 
@@ -317,7 +316,7 @@ public class TabModelNotificationDotManagerUnitTest {
         TabModelDotInfo tabModelDotInfo =
                 mTabModelNotificationDotManager.getNotificationDotObservableSupplier().get();
         assertFalse(tabModelDotInfo.showDot);
-        assertTrue(TextUtils.isEmpty(tabModelDotInfo.tabGroupTitle));
+        assertTrue(tabModelDotInfo.tabGroupTitle.isEmpty());
     }
 
     private void verifyShown() {

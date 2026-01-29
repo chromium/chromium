@@ -176,7 +176,7 @@ public class TabUiUtils {
      */
     public static boolean updateTabGroupTitle(
             TabGroupModelFilter filter, Token tabGroupId, String newGroupTitle) {
-        assert newGroupTitle != null && !newGroupTitle.isEmpty();
+        assert newGroupTitle != null;
         if (!filter.tabGroupExists(tabGroupId)) return false;
 
         String curGroupTitle = filter.getTabGroupTitle(tabGroupId);

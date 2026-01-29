@@ -212,7 +212,7 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
+            public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didChangeTabGroupTitle, tabGroupId = " + tabGroupId);
                 updateVisualData(

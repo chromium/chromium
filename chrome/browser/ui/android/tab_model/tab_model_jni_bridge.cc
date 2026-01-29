@@ -71,6 +71,9 @@ using tab_groups::TabGroupVisualData;
 
 namespace {
 
+// Represents INVALID_COLOR_ID from TabGroupColorUtils.java.
+constexpr int kInvalidTabGroupColorId = -1;
+
 // Returns a vector of TabAndroid* from a container (e.g. a std::set or a
 // std::vector) of TabHandle.
 template <typename Container>
@@ -640,21 +643,23 @@ std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
 
-  // The JNI method returns nullopt on failure.
-  const std::optional<std::u16string> title =
+  const std::u16string title =
       Java_TabModelJniBridge_getTabGroupTitle(env, jobj, group_id.token());
-  if (!title) {
-    return std::nullopt;
-  }
   const int color =
       Java_TabModelJniBridge_getTabGroupColor(env, jobj, group_id.token());
 
-  // The cast is safe because the enum values are synced across C++ and Java.
-  const TabGroupColorId color_id = static_cast<TabGroupColorId>(color);
+  if (title.empty() && color == kInvalidTabGroupColorId) {
+    return std::nullopt;
+  }
+
   const bool collapsed =
       Java_TabModelJniBridge_getTabGroupCollapsed(env, jobj, group_id.token());
-  TabGroupVisualData visual_data(title.value(), color_id, collapsed);
-  return visual_data;
+
+  const TabGroupColorId color_id = (color == kInvalidTabGroupColorId)
+                                       ? tab_groups::TabGroupColorId::kGrey
+                                       : static_cast<TabGroupColorId>(color);
+
+  return TabGroupVisualData(title, color_id, collapsed);
 }
 
 gfx::Range TabModelJniBridge::GetTabGroupTabIndices(
