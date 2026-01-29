@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +40,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -1024,4 +1027,19 @@ TEST_F(TabTest, HideContentsWhenVeryNarrow) {
   EXPECT_FALSE(tab->showing_icon());
   EXPECT_FALSE(tab->showing_alert_indicator());
   EXPECT_FALSE(tab->showing_close_button());
+}
+
+TEST_F(TabTest, TabCloseButtonSizeInTouchMode) {
+  ui::TouchUiController::TouchUiScoperForTesting scoper(true);
+
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* tab = widget->SetContentsView(
+      std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
+  tab->SizeToPreferredSize();
+
+  TabCloseButton* button = GetCloseButton(tab);
+  EXPECT_EQ(24, GetLayoutConstant(LayoutConstant::kTabCloseButtonSize));
+  EXPECT_EQ(gfx::Size(36, 36), button->GetPreferredSize());
 }

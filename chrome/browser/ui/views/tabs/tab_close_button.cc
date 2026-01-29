@@ -40,7 +40,15 @@
 #endif
 
 namespace {
-constexpr gfx::Size kButtonSize = {28, 28};
+gfx::Size GetButtonSize() {
+  // The close button is larger than the icon inside to provide a larger hit
+  // target.
+  constexpr int kButtonPadding = 12;
+  const int icon_size = GetLayoutConstant(LayoutConstant::kTabCloseButtonSize);
+  const int button_size = icon_size + kButtonPadding;
+  return gfx::Size(button_size, button_size);
+}
+
 }  // namespace
 
 TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
@@ -166,7 +174,7 @@ void TabCloseButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
 
 gfx::Size TabCloseButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return kButtonSize;
+  return GetButtonSize();
 }
 
 views::View* TabCloseButton::TargetForRect(views::View* root,
