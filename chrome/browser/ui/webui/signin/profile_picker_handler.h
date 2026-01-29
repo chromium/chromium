@@ -132,9 +132,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   void DisplayForceSigninErrorDialog(const base::FilePath& profile_path,
                                      const ForceSigninUIError& error);
-  void FireDisplaySigninErrorDialog(const std::u16string& title,
-                                    const std::u16string& body,
-                                    const std::u16string& profile_path);
 
   // Profile switch screen:
   void HandleConfirmProfileSwitch(const base::ListValue& args);

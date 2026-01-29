@@ -27,6 +27,7 @@
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -47,6 +49,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -333,7 +336,8 @@ class FirstRunInteractiveUiTest
 
   void SimulateSignIn(const std::string& account_email,
                       const std::string& account_given_name,
-                      bool with_extended_info = true) {
+                      bool with_extended_info = true,
+                      bool set_primary_account_in_advance = false) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     auto enable_disclaimer_on_primary_account_change_resetter =
         enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
@@ -341,14 +345,21 @@ class FirstRunInteractiveUiTest
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
 
-    // Kombucha note: This function waits on a `base::RunLoop`.
-    AccountInfo account_info = signin::MakeAccountAvailable(
-        identity_manager,
+    auto options_builder =
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
             .WithCookie()
-            .AsPrimary(signin::ConsentLevel::kSignin)
-            .WithAccessPoint(signin_metrics::AccessPoint::kForYouFre)
-            .Build(account_email));
+            .WithAccessPoint(signin_metrics::AccessPoint::kForYouFre);
+    if (set_primary_account_in_advance) {
+      // When this step is skipped, the primary account is set by
+      // `ProcessDiceHeaderDelegateImpl::CompleteChromeSignInAfterGaiaSignin`
+      // below.
+      // TODO(crbug.com/307233905): Consider having the real implementation handle the
+      // signin in all cases. Right now it causes the management rejection tests to crash.
+      options_builder.AsPrimary(signin::ConsentLevel::kSignin);
+    }
+    // Kombucha note: This function waits on a `base::RunLoop`.
+    AccountInfo account_info = signin::MakeAccountAvailable(
+        identity_manager, options_builder.Build(account_email));
 
     if (with_extended_info) {
       account_info =
@@ -544,6 +555,40 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_SignIn) {
                                       4);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       6);
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInError) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, "*@other.org");
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      // Wait for switch to the Gaia sign-in page to complete.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  // Pulled out of the test sequence because it waits using `RunLoop`s.
+  SimulateSignIn(kTestEnterpriseEmail, kTestGivenName);
+
+  // Wait for the picker to be closed and deleted.
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
+  // The error dialog is shown to the user.
+  RunTestSequence(
+      InAnyContext(WaitForShow(SigninViewController::kSigninErrorViewId)));
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    histogram_tester().ExpectUniqueSample(
+        "ProfilePicker.FREFlow.SignInError",
+        SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs,
+        1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, ExitAtSignIn) {
@@ -1254,7 +1299,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 
   // Pulled out of the test sequence because it waits using `RunLoop`s.
   SimulateSignIn(kTestEnterpriseEmail, kTestGivenName,
-                 /*with_extended_info=*/false);
+                 /*with_extended_info=*/false,
+                 /*set_primary_account_in_advance=*/true);
   ASSERT_TRUE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 

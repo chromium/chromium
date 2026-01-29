@@ -1075,6 +1075,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.{ProfilePickerFlowType}.SignInError"
+    enum="SigninUIErrorType" expires_after="2026-08-01">
+  <owner>anthie@google.com</owner>
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the error type when there is an error during the sign-in flow.
+    {ProfilePickerFlowType}
+  </summary>
+</histogram>
+
 <histogram
     name="ProfilePicker.{ProfilePickerFlowType}.{StepFlowDuration}{StepName}"
     units="ms" expires_after="2026-07-01">
