@@ -126,8 +126,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
       std::vector<Suggestion> suggestions,
       AutofillSuggestionTriggerSource trigger_source,
       bool is_update) {
-    AttemptToDisplayAutofillSuggestions(std::move(suggestions),
-                                        trigger_source, is_update);
+    AttemptToDisplayAutofillSuggestions(
+        std::move(suggestions), trigger_source, is_update,
+        AutofillSuggestionsIgnoreFocusLoss(false));
   }
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtrForTest() {
     return GetWeakPtr();
@@ -148,7 +149,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   void AttemptToDisplayAutofillSuggestions(
       std::vector<Suggestion> suggestions,
       AutofillSuggestionTriggerSource trigger_source,
-      bool is_update);
+      bool is_update,
+      AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss);
 
   // Returns a callback that, when run, attempts to update the currently shown
   // suggestions. If the `SuggestionUiSessionId` of the currently showing UI

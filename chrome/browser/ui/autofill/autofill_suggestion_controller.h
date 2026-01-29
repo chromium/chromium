@@ -81,7 +81,8 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   virtual void Show(UiSessionId session_id,
                     std::vector<Suggestion> suggestions,
                     AutofillSuggestionTriggerSource trigger_source,
-                    AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
+                    AutoselectFirstSuggestion autoselect_first_suggestion,
+                    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) = 0;
 
   // Returns the unique session id for the suggestions UI that is showing. If
   // no UI is showing, it returns `std::nullopt`. If there are multiple,

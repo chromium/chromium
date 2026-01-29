@@ -224,7 +224,8 @@ class MockAutofillClient : public TestAutofillClient {
               UpdateAutofillSuggestions,
               (const std::vector<Suggestion>&,
                FillingProduct,
-               AutofillSuggestionTriggerSource),
+               AutofillSuggestionTriggerSource,
+               AutofillSuggestionsIgnoreFocusLoss),
               (override));
   MOCK_METHOD(base::span<const Suggestion>,
               GetAutofillSuggestions,
@@ -1449,9 +1450,11 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
         AllOf(Field(&Suggestion::acceptability,
                     Suggestion::Acceptability::kUnacceptable),
               Field(&Suggestion::is_loading, Suggestion::IsLoading(false)));
-    EXPECT_CALL(autofill_client(),
-                UpdateAutofillSuggestions(_, FillingProduct::kAutofillAi,
-                                          kDefaultSuggestionTriggerSource));
+    EXPECT_CALL(
+        autofill_client(),
+        UpdateAutofillSuggestions(_, FillingProduct::kAutofillAi,
+                                  kDefaultSuggestionTriggerSource,
+                                  AutofillSuggestionsIgnoreFocusLoss(true)));
     EXPECT_CALL(autofill_client(),
                 GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
         .WillOnce(Return(std::move(authenticator)));
@@ -2555,10 +2558,11 @@ TEST_F(AutofillExternalDelegateTest, UpdateSuggestions) {
   {
     InSequence s;
     EXPECT_CALL(autofill_client(), ShowAutofillSuggestions);
-    EXPECT_CALL(autofill_client(),
-                UpdateAutofillSuggestions(
-                    suggestions2, FillingProduct::kAutocomplete,
-                    AutofillSuggestionTriggerSource::kUnspecified));
+    EXPECT_CALL(
+        autofill_client(),
+        UpdateAutofillSuggestions(suggestions2, FillingProduct::kAutocomplete,
+                                  AutofillSuggestionTriggerSource::kUnspecified,
+                                  AutofillSuggestionsIgnoreFocusLoss(false)));
   }
 
   OnSuggestionsReturned(queried_field().global_id(), suggestions1);

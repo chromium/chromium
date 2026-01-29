@@ -88,7 +88,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   void Show(UiSessionId ui_session_id,
             std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
-            AutoselectFirstSuggestion autoselect_first_suggestion) override;
+            AutoselectFirstSuggestion autoselect_first_suggestion,
+            AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) override;
   std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
@@ -176,6 +177,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   void UpdateFilteredSuggestions();
 
   UiSessionId ui_session_id_;
+  AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss_{false};
   base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
   base::WeakPtr<AutofillPopupView> view_;

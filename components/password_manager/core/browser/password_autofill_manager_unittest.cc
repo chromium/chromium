@@ -275,7 +275,8 @@ class MockAutofillClient : public autofill::TestAutofillClient {
               UpdateAutofillSuggestions,
               (const std::vector<Suggestion>&,
                FillingProduct,
-               autofill::AutofillSuggestionTriggerSource),
+               autofill::AutofillSuggestionTriggerSource,
+               autofill::AutofillSuggestionsIgnoreFocusLoss),
               (override));
   MOCK_METHOD(void,
               HideAutofillSuggestions,

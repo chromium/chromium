@@ -221,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest, SuggestionUiSessionId) {
   client()->UpdateAutofillSuggestions(
       {Suggestion(u"other text", SuggestionType::kAutocompleteEntry)},
       FillingProduct::kAutocomplete,
-      AutofillSuggestionTriggerSource::kUnspecified);
+      AutofillSuggestionTriggerSource::kUnspecified,
+      AutofillSuggestionsIgnoreFocusLoss(false));
   EXPECT_GT(suggestion_show_counter(), old_count);
   // It is possible that some external interaction with popup could have led
   // to the suggestions hiding. In that case, updating the suggestions should

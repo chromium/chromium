@@ -701,7 +701,8 @@ void PasswordAutofillManager::UpdatePopup(std::vector<Suggestion> suggestions) {
   }
   autofill_client_->UpdateAutofillSuggestions(
       suggestions, autofill::FillingProduct::kPassword,
-      autofill::AutofillSuggestionTriggerSource::kPasswordManager);
+      autofill::AutofillSuggestionTriggerSource::kPasswordManager,
+      autofill::AutofillSuggestionsIgnoreFocusLoss(false));
   last_popup_open_args_.suggestions = std::move(suggestions);
 }
 

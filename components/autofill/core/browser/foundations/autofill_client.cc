@@ -246,7 +246,8 @@ base::span<const Suggestion> AutofillClient::GetAutofillSuggestions() const {
 void AutofillClient::UpdateAutofillSuggestions(
     const std::vector<Suggestion>& suggestions,
     FillingProduct main_filling_product,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) {
   NOTIMPLEMENTED();
 }
 

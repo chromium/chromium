@@ -32,7 +32,8 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
   void Show(UiSessionId ui_session_id,
             std::vector<autofill::Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
-            AutoselectFirstSuggestion autoselect_first_suggestion) override;
+            AutoselectFirstSuggestion autoselect_first_suggestion,
+            AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) override;
 
   // Updates the data list values currently shown with the popup. Calls
   // -invalidateTouchBar from |touchBarController_|.

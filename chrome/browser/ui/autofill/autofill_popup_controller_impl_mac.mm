@@ -60,7 +60,8 @@ void AutofillPopupControllerImplMac::Show(
     UiSessionId ui_session_id,
     std::vector<autofill::Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
-    AutoselectFirstSuggestion autoselect_first_suggestion) {
+    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) {
   if (!suggestions.empty() && HasCreditCardSuggestions()) {
     touch_bar_controller_ = [WebTextfieldTouchBarController
         controllerForWindow:[container_view().GetNativeNSView() window]];
@@ -68,8 +69,8 @@ void AutofillPopupControllerImplMac::Show(
   }
 
   AutofillPopupControllerImpl::Show(ui_session_id, std::move(suggestions),
-                                    trigger_source,
-                                    autoselect_first_suggestion);
+                                    trigger_source, autoselect_first_suggestion,
+                                    ignore_focus_loss);
   // No code below this line!
   // |Show| may hide the popup and destroy |this|, so |Show| should be the last
   // line.

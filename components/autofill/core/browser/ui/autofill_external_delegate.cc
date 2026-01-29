@@ -289,8 +289,9 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     return;
   }
 #endif
-  AttemptToDisplayAutofillSuggestions(input_suggestions, trigger_source_,
-                                      /*is_update=*/false);
+  AttemptToDisplayAutofillSuggestions(
+      input_suggestions, trigger_source_,
+      /*is_update=*/false, AutofillSuggestionsIgnoreFocusLoss(false));
 }
 
 std::optional<AutofillProfile>
@@ -304,7 +305,10 @@ AutofillExternalDelegate::GetProfileFromAddressSuggestion(
 void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
-    bool is_update) {
+    bool is_update,
+    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) {
+  CHECK(!*ignore_focus_loss || is_update)
+      << "Ignoring focus loss is only supported for updates";
   PossiblyRemoveAutofillWarnings(suggestions);
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be
@@ -348,7 +352,8 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   // Send to display.
   if (is_update) {
     manager_->client().UpdateAutofillSuggestions(
-        suggestions, GetMainFillingProduct(), trigger_source_);
+        suggestions, GetMainFillingProduct(), trigger_source_,
+        ignore_focus_loss);
     return;
   }
 
@@ -399,9 +404,9 @@ AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
                 .value_or(SessionId()) != session_id) {
           return;
         }
-        self->AttemptToDisplayAutofillSuggestions(std::move(suggestions),
-                                                  trigger_source,
-                                                  /*is_update=*/true);
+        self->AttemptToDisplayAutofillSuggestions(
+            std::move(suggestions), trigger_source,
+            /*is_update=*/true, AutofillSuggestionsIgnoreFocusLoss(false));
       },
       GetWeakPtr(), *session_id);
 }
@@ -1417,7 +1422,7 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
             base::ToVector(manager_->client().GetAutofillSuggestions()),
             suggestion),
         trigger_source_,
-        /*is_update=*/true);
+        /*is_update=*/true, AutofillSuggestionsIgnoreFocusLoss(true));
     std::move(popup_closer).Cancel();
   }
 

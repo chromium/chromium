@@ -178,8 +178,10 @@ void AutofillPopupControllerImpl::Show(
     UiSessionId ui_session_id,
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
-    AutoselectFirstSuggestion autoselect_first_suggestion) {
+    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) {
   ui_session_id_ = ui_session_id;
+  ignore_focus_loss_ = ignore_focus_loss;
   suggestions_filling_product_ =
       !suggestions.empty() && IsStandaloneSuggestionType(suggestions[0].type)
           ? GetFillingProductFromSuggestionType(suggestions[0].type)
@@ -338,9 +340,12 @@ bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
 }
 
 void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
-  if ((reason == SuggestionHidingReason::kFocusChanged ||
-       reason == SuggestionHidingReason::kEndEditing) &&
-      view_ && view_->HasFocus()) {
+  const bool ignore_focus_loss =
+      *ignore_focus_loss_ || (view_ && view_->HasFocus());
+  // The end editing signal is sent when the currently focused field in the
+  // renderer loses focus.
+  if (ignore_focus_loss && (reason == SuggestionHidingReason::kFocusChanged ||
+                            reason == SuggestionHidingReason::kEndEditing)) {
     return;
   }
 
@@ -795,7 +800,8 @@ AutofillPopupControllerImpl::OpenSubPopup(
   // pointer before, so that this method returns null when that happens.
   sub_popup_controller_ = controller->weak_ptr_factory_.GetWeakPtr();
   controller->Show(ui_session_id_, std::move(suggestions), trigger_source_,
-                   autoselect_first_suggestion);
+                   autoselect_first_suggestion,
+                   AutofillSuggestionsIgnoreFocusLoss(false));
   return sub_popup_controller_;
 }
 

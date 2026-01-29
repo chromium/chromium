@@ -914,7 +914,8 @@ ChromeAutofillClient::GetSessionIdForCurrentAutofillSuggestions() const {
 void ChromeAutofillClient::UpdateAutofillSuggestions(
     const std::vector<Suggestion>& suggestions,
     FillingProduct main_filling_product,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) {
   const std::optional<SuggestionUiSessionId> session_id =
       GetSessionIdForCurrentAutofillSuggestions();
   if (!session_id) {
@@ -933,7 +934,8 @@ void ChromeAutofillClient::UpdateAutofillSuggestions(
   // Calling show will reuse the existing view automatically.
   suggestion_controller_->Show(
       *session_id, suggestions, trigger_source,
-      ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source));
+      ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source),
+      ignore_focus_loss);
 }
 
 void ChromeAutofillClient::HideAutofillSuggestions(
@@ -1304,7 +1306,8 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
 
   suggestion_controller_->Show(
       session_id, open_args.suggestions, open_args.trigger_source,
-      ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source));
+      ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source),
+      AutofillSuggestionsIgnoreFocusLoss(false));
 
   // When testing, try to keep popup open when the reason to hide is one of:
   // - An external browser frame resize that is extraneous to our testing goals.

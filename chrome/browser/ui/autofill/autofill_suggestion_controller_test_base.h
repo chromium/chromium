@@ -156,27 +156,32 @@ class AutofillSuggestionControllerTestBase
       Manager& manager,
       const std::vector<SuggestionType>& types,
       AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kFormControlElementClicked) {
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss =
+          AutofillSuggestionsIgnoreFocusLoss(false)) {
     std::vector<Suggestion> suggestions;
     suggestions.reserve(types.size());
     for (SuggestionType type : types) {
       suggestions.emplace_back(u"", type);
     }
-    ShowSuggestions(manager, std::move(suggestions), trigger_source);
+    ShowSuggestions(manager, std::move(suggestions), trigger_source,
+                    ignore_focus_loss);
   }
 
   void ShowSuggestions(
       Manager& manager,
       std::vector<Suggestion> suggestions,
       AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kFormControlElementClicked) {
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss =
+          AutofillSuggestionsIgnoreFocusLoss(false)) {
     FocusWebContentsOnFrame(
         static_cast<ContentAutofillDriver&>(manager.driver())
             .render_frame_host());
     client().suggestion_controller(manager).Show(
         AutofillSuggestionController::GenerateSuggestionUiSessionId(),
         std::move(suggestions), trigger_source,
-        AutoselectFirstSuggestion(false));
+        AutoselectFirstSuggestion(false), ignore_focus_loss);
   }
 
   input::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {

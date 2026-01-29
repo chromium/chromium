@@ -334,7 +334,8 @@ class TestAutofillClientTemplate : public T {
   void UpdateAutofillSuggestions(
       const std::vector<Suggestion>& suggestions,
       FillingProduct main_filling_product,
-      AutofillSuggestionTriggerSource trigger_source) override {}
+      AutofillSuggestionTriggerSource trigger_source,
+      AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) override {}
 
   std::optional<AutofillClient::SuggestionUiSessionId>
   GetSessionIdForCurrentAutofillSuggestions() const override {

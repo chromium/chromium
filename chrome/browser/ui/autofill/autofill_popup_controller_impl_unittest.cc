@@ -471,6 +471,22 @@ TEST_F(AutofillPopupControllerImplTest,
   Mock::VerifyAndClearExpectations(client().popup_view());
 }
 
+// Tests that focus loss does not hide the popup if the
+// `AutofillSuggestionsIgnoreFocusLoss` parameter is set to `true`.
+TEST_F(AutofillPopupControllerImplTest,
+       PopupDoesNotHideOnFocusLossIfParameterIsSet) {
+  ShowSuggestions(manager(), {SuggestionType::kFillAutofillAi},
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked,
+                  AutofillSuggestionsIgnoreFocusLoss(true));
+
+  ON_CALL(*client().popup_view(), HasFocus).WillByDefault(Return(false));
+  EXPECT_CALL(*client().popup_view(), Hide).Times(0);
+  client().suggestion_controller(manager()).Hide(
+      SuggestionHidingReason::kFocusChanged);
+
+  Mock::VerifyAndClearExpectations(client().popup_view());
+}
+
 TEST_F(AutofillPopupControllerImplTest,
        PopupDoesntHideOnEndEditingFromRendererIfViewIsFocused) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});

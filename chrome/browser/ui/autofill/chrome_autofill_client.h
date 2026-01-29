@@ -180,7 +180,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void UpdateAutofillSuggestions(
       const std::vector<Suggestion>& suggestions,
       FillingProduct main_filling_product,
-      AutofillSuggestionTriggerSource trigger_source) final;
+      AutofillSuggestionTriggerSource trigger_source,
+      AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) final;
   void HideAutofillSuggestions(SuggestionHidingReason reason) final;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,

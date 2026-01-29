@@ -524,7 +524,8 @@ class AutofillClient {
   virtual void UpdateAutofillSuggestions(
       const std::vector<Suggestion>& suggestions,
       FillingProduct main_filling_product,
-      AutofillSuggestionTriggerSource trigger_source);
+      AutofillSuggestionTriggerSource trigger_source,
+      AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss);
 
   // Hides the Autofill suggestions UI if it is currently showing.
   virtual void HideAutofillSuggestions(SuggestionHidingReason reason) = 0;
