@@ -115,6 +115,12 @@ namespace privacy_sandbox {
 class PrivacySandboxTabObserver;
 }  // namespace privacy_sandbox
 
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+namespace skills {
+class SkillsUpdateObserver;
+}  // namespace skills
+#endif  // BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+
 namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
 }  // namespace sync_sessions
@@ -530,6 +536,10 @@ class TabFeatures {
 
   std::unique_ptr<contextual_tasks::ContextualTasksTabVisitTracker>
       contextual_tasks_tab_visit_tracker_;
+
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<skills::SkillsUpdateObserver> skills_update_observer_;
+#endif  // BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

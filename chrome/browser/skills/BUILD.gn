@@ -48,6 +48,8 @@ source_set("ui") {
     "skills_ui_controller.h",
     "skills_ui_tab_controller.cc",
     "skills_ui_tab_controller.h",
+    "skills_update_observer.cc",
+    "skills_update_observer.h",
   ]
 
   public_deps = [
@@ -57,15 +59,20 @@ source_set("ui") {
 
   deps = [
     ":skills",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/skills",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core",
     "//components/skills:features",
+    "//components/skills/proto",
     "//components/skills/public",
     "//components/web_modal",
+    "//services/service_manager/public/cpp",
     "//ui/base/unowned_user_data",
   ]
 
@@ -100,7 +107,10 @@ source_set("browser_tests") {
 if (enable_glic) {
   source_set("unit_tests") {
     testonly = true
-    sources = [ "skills_ui_tab_controller_unittest.cc" ]
+    sources = [
+      "skills_ui_tab_controller_unittest.cc",
+      "skills_update_observer_unittest.cc",
+    ]
 
     deps = [
       ":skills",
@@ -110,12 +120,16 @@ if (enable_glic) {
       "//chrome/browser/glic",
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/test:test_support",
       "//components/keyed_service/core",
+      "//components/skills:features",
+      "//components/skills/proto",
       "//components/skills/public",
       "//components/tabs:test_support",
       "//content/public/browser",
+      "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base/unowned_user_data",
