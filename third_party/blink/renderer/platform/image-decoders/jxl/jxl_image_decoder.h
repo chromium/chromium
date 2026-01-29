@@ -50,9 +50,10 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
 
   // Decoder state machine.
   enum class DecoderState {
-    kInitial,         // Waiting for basic info
-    kHaveBasicInfo,   // Have basic info, waiting for frame header
-    kHaveFrameHeader  // Have frame header, ready to decode pixels
+    kInitial,          // Waiting for basic info
+    kHaveBasicInfo,    // Have basic info, waiting for frame header
+    kHaveFrameHeader,  // Have frame header, ready to decode pixels
+    kDone              // Decoding is done
   };
 
   // Frame information tracked during decoding.
@@ -83,9 +84,6 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   jxl_rs::JxlRsBasicInfo basic_info_{};
   bool have_basic_info_ = false;
   wtf_size_t num_decoded_frames_ = 0;     // Frames whose pixels we've decoded.
-  wtf_size_t num_discovered_frames_ = 0;  // Frames whose headers we've parsed.
-  bool all_frames_discovered_ =
-      false;                 // True when we know no more frames exist.
   size_t input_offset_ = 0;  // Current position in input stream.
 
   // Animation frame tracking.
