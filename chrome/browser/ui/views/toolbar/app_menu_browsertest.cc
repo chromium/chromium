@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -58,14 +59,21 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view.h"
 
 namespace {
+using testing::AllOf;
+using testing::Contains;
+using testing::Eq;
+using testing::Pointee;
+using testing::Property;
 
 class AppMenuBrowserTest : public UiBrowserTest {
  public:
@@ -291,6 +299,70 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, AppMenuViewAccessibleProperties) {
   ASSERT_TRUE(app_menu_view);
   app_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kMenu);
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonState) {
+  menu_button()->ShowMenu(views::MenuRunner::NO_FLAGS);
+  views::View& zoom_view =
+      CHECK_DEREF(menu_button()->app_menu()->GetZoomAppMenuViewForTest());
+
+  EXPECT_THAT(
+      zoom_view.GetChildrenInZOrder(),
+      Contains(Pointee(AllOf(
+          Property(&views::View::GetTooltipText, Eq(u"Full screen")),
+          Property(&views::View::GetViewAccessibility,
+                   Property(&views::ViewAccessibility::GetCachedName,
+                            ::testing::Truly([](std::u16string_view value) {
+                              return value.starts_with(u"Full screen");
+                            }))),
+          Property(&views::View::GetEnabled, Eq(true))))));
+
+  browser()->GetBrowserView().SetCanFullscreen(false);
+
+  EXPECT_THAT(
+      zoom_view.GetChildrenInZOrder(),
+      Contains(Pointee(AllOf(
+          Property(&views::View::GetTooltipText, Eq(u"Full screen disabled")),
+          Property(&views::View::GetViewAccessibility,
+                   Property(&views::ViewAccessibility::GetCachedName,
+                            ::testing::Truly([](std::u16string_view value) {
+                              return value.starts_with(u"Full screen disabled");
+                            }))),
+          Property(&views::View::GetEnabled, Eq(false))))));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonStateInFullscreen) {
+  chrome::ToggleFullscreenMode(browser());
+  ASSERT_TRUE(browser()->GetBrowserView().IsFullscreen());
+
+  menu_button()->ShowMenu(views::MenuRunner::NO_FLAGS);
+  views::View& zoom_view =
+      CHECK_DEREF(menu_button()->app_menu()->GetZoomAppMenuViewForTest());
+
+  EXPECT_THAT(
+      zoom_view.GetChildrenInZOrder(),
+      Contains(Pointee(AllOf(
+          Property(&views::View::GetTooltipText, Eq(u"Exit full screen")),
+          Property(&views::View::GetViewAccessibility,
+                   Property(&views::ViewAccessibility::GetCachedName,
+                            ::testing::Truly([](std::u16string_view value) {
+                              return value.starts_with(u"Exit full screen");
+                            }))),
+          Property(&views::View::GetEnabled, Eq(true))))));
+
+  // User should not be trapped in fullscreen mode so button is still enabled
+  browser()->GetBrowserView().SetCanFullscreen(false);
+
+  EXPECT_THAT(
+      zoom_view.GetChildrenInZOrder(),
+      Contains(Pointee(AllOf(
+          Property(&views::View::GetTooltipText, Eq(u"Exit full screen")),
+          Property(&views::View::GetViewAccessibility,
+                   Property(&views::ViewAccessibility::GetCachedName,
+                            ::testing::Truly([](std::u16string_view value) {
+                              return value.starts_with(u"Exit full screen");
+                            }))),
+          Property(&views::View::GetEnabled, Eq(true))))));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
