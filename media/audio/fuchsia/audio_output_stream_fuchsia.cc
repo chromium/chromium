@@ -290,20 +290,20 @@ void AudioOutputStreamFuchsia::PumpSamples() {
   }
 
   // Request more samples from |callback_|.
-  int frames_filled = callback_->OnMoreData(delay, now, {}, audio_bus_.get());
-  DCHECK_EQ(frames_filled, audio_bus_->frames());
+  const int frames_filled =
+      callback_->OnMoreData(delay, now, {}, audio_bus_.get());
+  CHECK_EQ(frames_filled, audio_bus_->frames());
 
   audio_bus_->Scale(volume_);
 
   // Save samples to the |payload_buffer_|.
-  size_t packet_size = parameters_.GetBytesPerBuffer(kSampleFormatF32);
-  DCHECK_LE(payload_buffer_pos_ + packet_size, payload_buffer_.size());
+  const size_t packet_size = parameters_.GetBytesPerBuffer(kSampleFormatF32);
+
+  auto dest_span = payload_buffer_.GetMemoryAsSpan<uint8_t>().subspan(
+      payload_buffer_pos_, packet_size);
 
   // We skip clipping since that occurs at the shared memory boundary.
-  audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
-      audio_bus_->frames(),
-      reinterpret_cast<float*>(static_cast<uint8_t*>(payload_buffer_.memory()) +
-                               payload_buffer_pos_));
+  audio_bus_->ToInterleavedBytes<Float32SampleTypeTraitsNoClip>(dest_span);
 
   // Send a new packet.
   fuchsia::media::StreamPacket packet;
