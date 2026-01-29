@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 
 @protocol SceneCommands;
@@ -20,7 +20,7 @@ class WebStateList;
 @protocol GeminiFirstRunMediatorDelegate;
 
 // Gemini First Run Mediator.
-@interface GeminiFirstRunMediator : NSObject <BWGConsentMutator>
+@interface GeminiFirstRunMediator : NSObject <GeminiConsentMutator>
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
                        webStateList:(WebStateList*)webStateList

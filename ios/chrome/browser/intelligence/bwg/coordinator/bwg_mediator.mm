@@ -114,7 +114,7 @@
   [self prepareBWGOverlay];
 }
 
-#pragma mark - BWGConsentMutator
+#pragma mark - GeminiConsentMutator
 
 // Did consent to Gemini.
 - (void)didConsentGemini {

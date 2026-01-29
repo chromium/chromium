@@ -140,7 +140,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
          wouldTriggerIPH;
 }
 
-#pragma mark - BWGConsentMutator
+#pragma mark - GeminiConsentMutator
 
 // Did consent to Gemini.
 - (void)didConsentGemini {

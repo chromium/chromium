@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol BWGConsentMutator;
+@protocol GeminiConsentMutator;
 
 // UIViewController that owns BWGPromo and BWGConsent view controllers and
 // manages their transitions.
@@ -30,7 +30,7 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // The mutator for this view controller to communicate to the mediator.
-@property(nonatomic, weak) id<BWGConsentMutator> mutator;
+@property(nonatomic, weak) id<GeminiConsentMutator> mutator;
 
 @end
 

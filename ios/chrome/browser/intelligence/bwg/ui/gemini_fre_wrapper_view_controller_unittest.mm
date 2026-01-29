@@ -4,11 +4,11 @@
 
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -25,7 +25,8 @@ class GeminiFREWrapperViewControllerTest : public PlatformTest {
     BWGFREWrapperViewController* view_controller =
         [[BWGFREWrapperViewController alloc] initWithPromo:with_promo
                                           isAccountManaged:with_promo];
-    mock_mutator_ = [OCMockObject mockForProtocol:@protocol(BWGConsentMutator)];
+    mock_mutator_ =
+        [OCMockObject mockForProtocol:@protocol(GeminiConsentMutator)];
     view_controller.mutator = mock_mutator_;
     // Force view initialisation since this view controller is never added into
     // the hierarchy in this unit test.

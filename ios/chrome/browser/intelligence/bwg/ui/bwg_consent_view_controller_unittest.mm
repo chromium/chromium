@@ -6,7 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +60,7 @@ class BWGConsentViewControllerTest : public PlatformTest {
   BWGConsentViewController* CreateViewController(BOOL is_account_managed) {
     BWGConsentViewController* controller = [[BWGConsentViewController alloc]
         initWithIsAccountManaged:is_account_managed];
-    mock_mutator_ = OCMProtocolMock(@protocol(BWGConsentMutator));
+    mock_mutator_ = OCMProtocolMock(@protocol(GeminiConsentMutator));
     controller.mutator = mock_mutator_;
     // Force view initialization since this view controller is never added into
     // the hierarchy in this unit test.

@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_view_controller_protocol.h"
 
-@protocol BWGConsentMutator;
+@protocol GeminiConsentMutator;
 
 // BWG consent View Controller (VC).
 @interface BWGConsentViewController
@@ -24,7 +24,7 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // The mutator for this view controller to communicate to the mediator.
-@property(nonatomic, weak) id<BWGConsentMutator> mutator;
+@property(nonatomic, weak) id<GeminiConsentMutator> mutator;
 
 @end
 
