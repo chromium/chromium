@@ -248,7 +248,7 @@ export class PrintPreviewPagesSettingsElement extends
         return;
       }
 
-      const limits = range.split('-');
+      const limits = range.split(/\p{Pd}/v);
       if (limits.length > 2) {
         this.errorState_ = PagesInputErrorState.INVALID_SYNTAX;
         this.onRangeChange_();

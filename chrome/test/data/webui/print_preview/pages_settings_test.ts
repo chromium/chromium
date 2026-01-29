@@ -41,7 +41,7 @@ suite('PagesSettingsTest', function() {
 
   /**
    * @param expectedPages The expected pages value.
-   * @param expectedPages The expected pages value.
+   * @param expectedRanges The expected ranges value.
    * @param expectedError The expected error message.
    * @param invalid Whether the pages setting should be invalid.
    */
@@ -204,7 +204,8 @@ suite('PagesSettingsTest', function() {
     await setCustomInput('-');
     validateState(oneToHundred, [], '', false);
 
-    // https://crbug.com/806165
+    // https://crbug.com/41367185
+    // Validates that usage of U+3001 is equivalent to a comma.
     await setCustomInput('1\u30012\u30013\u30011\u300156');
     validateState(
         [1, 2, 3, 56], [{from: 1, to: 3}, {from: 56, to: 56}], '', false);
@@ -213,7 +214,19 @@ suite('PagesSettingsTest', function() {
     validateState(
         [1, 2, 3, 56], [{from: 1, to: 3}, {from: 56, to: 56}], '', false);
 
-    // https://crbug.com/1015145
+    // https://crbug.com/479721695
+    // Validates that Unicode dashes (class Pd) are equivalent to a hyphen.
+    await setCustomInput('1\u05be2,5\u20136,9\u301c10');
+    validateState(
+        [1, 2, 5, 6, 9, 10],
+        [
+          {from: 1, to: 2},
+          {from: 5, to: 6},
+          {from: 9, to: 10},
+        ],
+        '', false);
+
+    // https://crbug.com/40653569
     // Tests that the pages gets sorted for an unsorted input.
     await setCustomInput('89-91, 3, 6, 46, 1, 4, 2-3');
     validateState(
