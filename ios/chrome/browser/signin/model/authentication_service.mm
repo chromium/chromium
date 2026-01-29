@@ -79,6 +79,18 @@ CoreAccountId SystemIdentityToAccountID(
   return identity_manager->PickAccountIdForAccount(identity.gaiaId, email);
 }
 
+// Same as signin::MultiProfileSignOutForProfile, but does nothing if the
+// profile is deallocated.
+void MultiProfileSignOutForProfile(
+    base::WeakPtr<ProfileIOS> profile,
+    signin_metrics::ProfileSignout signout_source,
+    base::OnceClosure signout_completion_closure) {
+  if (profile) {
+    signin::MultiProfileSignOutForProfile(
+        profile.get(), signout_source, std::move(signout_completion_closure));
+  }
+}
+
 }  // namespace
 
 AuthenticationService::AuthenticationService(
@@ -769,7 +781,7 @@ void AuthenticationService::HandleForgottenIdentity(
       base::BindOnce(&AuthenticationService::HandleForgottenIdentityCallback,
                      weak_pointer_factory_.GetWeakPtr(), account_info);
   base::OnceClosure signout =
-      base::BindOnce(&signin::MultiProfileSignOutForProfile, profile_,
+      base::BindOnce(&MultiProfileSignOutForProfile, profile_->AsWeakPtr(),
                      signout_source, std::move(closure));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(signout));
