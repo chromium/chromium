@@ -979,19 +979,17 @@ public class ChildProcessConnection {
     private void fallbackService() {
         assert mFallbackServiceName != null;
         @ServiceNames int serviceName;
-        switch (mFallbackServiceName.getClassName()) {
-            case "org.chromium.content.app.SandboxedProcessService":
-                serviceName = ServiceNames.JAVA_SANDBOXED;
-                break;
-            case "org.chromium.content.app.NativeOnlySandboxedProcessService":
-                serviceName = ServiceNames.NATIVE_ONLY_SANDBOXED;
-                break;
-            case "org.chromium.content.app.PrivilegedProcessService":
-                serviceName = ServiceNames.PRIVILEGED;
-                break;
-            default:
-                serviceName = ServiceNames.OTHER;
-                break;
+        String className = mFallbackServiceName.getClassName();
+        // Don't use the exact match because service names have a number as a suffix.
+        if (className.startsWith("org.chromium.content.app.SandboxedProcessService")) {
+            serviceName = ServiceNames.JAVA_SANDBOXED;
+        } else if (className.startsWith(
+                "org.chromium.content.app.NativeOnlySandboxedProcessService")) {
+            serviceName = ServiceNames.NATIVE_ONLY_SANDBOXED;
+        } else if (className.startsWith("org.chromium.content.app.PrivilegedProcessService")) {
+            serviceName = ServiceNames.PRIVILEGED;
+        } else {
+            serviceName = ServiceNames.OTHER;
         }
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.ChildProcessConnection.FallbackService",
