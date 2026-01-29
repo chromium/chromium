@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/url_formatter/elide_url.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -27,8 +28,9 @@ std::unique_ptr<views::Label> CreateOriginLabelFromStartUrl(
     const GURL& start_url,
     bool is_primary_text) {
   auto origin_label = std::make_unique<views::Label>(
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          start_url),
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(start_url),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
       CONTEXT_DIALOG_BODY_TEXT_SMALL,
       is_primary_text ? views::style::STYLE_PRIMARY
                       : views::style::STYLE_SECONDARY);
