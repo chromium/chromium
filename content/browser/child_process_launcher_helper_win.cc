@@ -8,8 +8,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -19,10 +21,10 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
-#include "content/public/common/sandbox_init_win.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "sandbox/policy/win/sandbox_win.h"
 
 namespace {
 
@@ -157,11 +159,18 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     return process;
   }
   *is_synchronous_launch = false;
-  *launch_result = StartSandboxedProcess(
-      delegate_.get(), *command_line(), options->handles_to_inherit,
-      base::BindOnce(&ChildProcessLauncherHelper::
-                         FinishStartSandboxedProcessOnLauncherThread,
-                     this));
+
+  {
+    TRACE_EVENT2("startup", "StartProcessWithAccess", "type",
+                 command_line()->GetSwitchValueASCII(switches::kProcessType),
+                 "tag", delegate_->GetSandboxTag());
+
+    *launch_result = sandbox::policy::SandboxWin::StartSandboxedProcess(
+        *command_line(), options->handles_to_inherit, delegate_.get(),
+        base::BindOnce(&ChildProcessLauncherHelper::
+                           FinishStartSandboxedProcessOnLauncherThread,
+                       this));
+  }
   return ChildProcessLauncherHelper::Process();
 }
 

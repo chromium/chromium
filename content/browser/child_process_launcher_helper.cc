@@ -375,6 +375,18 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 #endif
   }
 
+  // Propagate the kWaitForDebugger switch to child process if the
+  // kWaitForDebuggerChildren is specified and matches the child process type.
+  const base::CommandLine& current_command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (current_command_line.HasSwitch(switches::kWaitForDebuggerChildren)) {
+    std::string value = current_command_line.GetSwitchValueASCII(
+        switches::kWaitForDebuggerChildren);
+    if (value.empty() || value == GetProcessType()) {
+      command_line()->AppendSwitch(switches::kWaitForDebugger);
+    }
+  }
+
   // Update the command line and launch options to pass the histogram and
   // field trial shared memory region handles.
   PassHistogramSharedMemoryHandle(

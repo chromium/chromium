@@ -331,7 +331,6 @@ source_set("common") {
     sources += [
       "font_cache_dispatcher_win.cc",
       "font_list_win.cc",
-      "sandbox_init_win.cc",
     ]
   }
 
