@@ -786,7 +786,7 @@ bool FamilyLinkUrlFilter::RunAsyncChecker(
   return async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
       base::BindOnce(&FamilyLinkUrlFilter::CheckCallback,
-                     base::Unretained(this), std::move(callback), url));
+                     weak_factory_.GetWeakPtr(), std::move(callback), url));
 }
 
 void FamilyLinkUrlFilter::SetURLCheckerClientForTesting(

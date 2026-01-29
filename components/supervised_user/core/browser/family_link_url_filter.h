@@ -14,6 +14,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/safe_search_api/url_checker.h"
@@ -244,6 +245,8 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
   base::CallbackListSubscription family_link_settings_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<FamilyLinkUrlFilter> weak_factory_{this};
 };
 
 }  // namespace supervised_user
