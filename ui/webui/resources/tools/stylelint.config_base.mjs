@@ -21,5 +21,13 @@ export default {
     '@stylistic/declaration-block-semicolon-space-before': 'never',
     '@stylistic/declaration-block-trailing-semicolon': 'always',
     '@stylistic/no-extra-semicolons': true,
+
+    // https://google.github.io/styleguide/htmlcssguide.html#Property_Name_Stops
+    '@stylistic/media-feature-colon-space-after': 'always',
+    '@stylistic/media-feature-colon-space-before': 'never',
+    '@stylistic/media-feature-range-operator-space-before': 'always',
+    '@stylistic/media-feature-range-operator-space-after': 'always',
+    '@stylistic/media-feature-parentheses-space-inside': 'never',
+    '@stylistic/media-feature-name-case': 'lower',
   }
 };

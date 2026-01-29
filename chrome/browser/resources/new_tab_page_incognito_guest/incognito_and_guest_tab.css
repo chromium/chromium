@@ -69,13 +69,13 @@ html[hascustombackground='true'] .content {
   display: block;
 }
 
-@media (max-width:700px) {
+@media (max-width: 700px) {
   body {
     margin: 1em 2em 2em;
   }
 }
 
-@media (max-width:400px) {
+@media (max-width: 400px) {
   body {
     margin: 3em 1.5em 2em;
   }
@@ -86,7 +86,7 @@ html[hascustombackground='true'] .content {
   }
 }
 
-@media (max-height:480px) and (max-width:400px) {
+@media (max-height: 480px) and (max-width: 400px) {
   .content {
     margin: auto;
   }

@@ -21,8 +21,8 @@
 :root.boot-animation-enabled {
   --oobe-container-border-radius: 24px;
 }
-@media screen and (min-height:1040px),
-        screen and (min-width:1040px) {
+@media screen and (min-height: 1040px),
+        screen and (min-width: 1040px) {
   :root.jelly-modal-enabled:not([tablet]),
   :root.boot-animation-enabled:not([tablet]) {
     --oobe-container-elevation: var(--cros-sys-app-elevation-3-shadow);
@@ -35,8 +35,8 @@ body {
   height: 100%;
   width: 100%;
 }
-@media screen and (min-height:1040px),
-        screen and (min-width:1040px) {
+@media screen and (min-height: 1040px),
+        screen and (min-width: 1040px) {
   html.jelly-modal-enabled:not([tablet]),
   html.boot-animation-enabled:not([tablet]),
   :root.jelly-modal-enabled:not([tablet]) body,

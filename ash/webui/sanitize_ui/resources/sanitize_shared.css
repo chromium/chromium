@@ -50,7 +50,7 @@ h2.first {
   background-color: var(--cros-sys-scrollbar_hover);
 }
 
-@media (min-width:600px) {
+@media (min-width: 600px) {
   :host {
     --container-padding: 24px;
     --content-container-width: 552px;
@@ -67,7 +67,7 @@ h2.first {
   }
 }
 
-@media (min-width:769px) {
+@media (min-width: 769px) {
   :host {
     --chart-width-nav: 420px;
   }
@@ -115,7 +115,7 @@ h2.first {
   }
 }
 
-@media (min-width:768px) {
+@media (min-width: 768px) {
   :host {
     --container-padding: 64px;
     --content-container-width: 640px;
@@ -124,7 +124,7 @@ h2.first {
   }
 }
 
-@media (min-width:960px) {
+@media (min-width: 960px) {
   :host {
     --container-padding: 160px;
     --content-container-width: 640px;
@@ -134,7 +134,7 @@ h2.first {
   }
 }
 
-@media (min-width:1280px) {
+@media (min-width: 1280px) {
   :host {
     --container-padding: 160px;
     --content-container-width: 680px;
@@ -145,7 +145,7 @@ h2.first {
   }
 }
 
-@media (min-width:1440px) {
+@media (min-width: 1440px) {
   :host {
     --container-padding: 360px;
     --content-container-width: 720px;
