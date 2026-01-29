@@ -824,25 +824,29 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile,
     }
   }
 
-  if (layer_tree_impl()->settings().TreesInVizInClientProcess() &&
-      should_batch_updated_tiles_) {
-    bool update_damage_in_viz = false;
-    if (update_damage && layer_tree_impl()->IsActiveTree()) {
-      update_damage_in_viz = true;
+  if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
+    if (should_batch_updated_tiles_) {
+      bool update_damage_in_viz = false;
+      if (update_damage && layer_tree_impl()->IsActiveTree()) {
+        update_damage_in_viz = true;
+      }
+      // This layer's tile updates are being batched. For a pending layer, this
+      // is always true. For an active layer, this means it was just activated
+      // and is waiting for its state to be sent to Viz via UpdateDisplayTree.
+      // The accumulated updates are pushed to the active tree on activation and
+      // active layer can continue to accumulate the tile updates until
+      // UpdateDisplayTree.
+      auto result = updated_tiles_[tile->contents_scale_key()].emplace(
+          tile->tiling_i_index(), tile->tiling_j_index(), update_damage_in_viz);
+      // If there is {i,j,false} in the set already, we want to switch it to
+      // true if |update_damage_in_viz| is true.
+      if (!result.second && update_damage_in_viz) {
+        result.first->update_damage = true;
+      }
     }
-    // This layer's tile updates are being batched. For a pending layer, this is
-    // always true. For an active layer, this means it was just activated and is
-    // waiting for its state to be sent to Viz via UpdateDisplayTree. The
-    // accumulated updates are pushed to the active tree on activation and
-    // active layer can continue to accumulate the tile updates until
-    // UpdateDisplayTree.
-    auto result = updated_tiles_[tile->contents_scale_key()].emplace(
-        tile->tiling_i_index(), tile->tiling_j_index(), update_damage_in_viz);
-    // If there is {i,j,false} in the set already, we want to switch it to
-    // true if |update_damage_in_viz| is true.
-    if (!result.second && update_damage_in_viz) {
-      result.first->update_damage = true;
-    }
+    // TODO(zmo): Instead of kChangedGeneralProperty, we should have a
+    // kChangedTiles to avoid wiring layer properties to viz.
+    SetNeedsPushProperties(kChangedGeneralProperty);
   }
 }
 
