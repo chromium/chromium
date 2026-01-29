@@ -338,7 +338,6 @@ public class FuseboxMediator {
     }
 
     private void onAddCurrentTab(Tab tab) {
-        if (mComposeBoxQueryControllerBridge == null) return;
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
         Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();

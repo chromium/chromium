@@ -184,7 +184,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 .setComposeboxQueryControllerBridge(mComposeBoxQueryControllerBridge);
         if (mComposeBoxQueryControllerBridge == null) return;
 
-        // Set the bridge for the model list to enable tight coupling
+        // Set the bridge for the model list to enable tight coupling.
         mModelList.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
 
         mModel.set(
@@ -220,8 +220,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mTemplateUrlService != null) {
             mTemplateUrlService.removeObserver(this);
         }
-        // Clear the model list bridge reference to prevent further operations
-        mModelList.setComposeBoxQueryControllerBridge(null);
+        mModelList.destroy();
         if (mComposeBoxQueryControllerBridge != null) {
             mComposeBoxQueryControllerBridge.destroy();
             mComposeBoxQueryControllerBridge = null;
