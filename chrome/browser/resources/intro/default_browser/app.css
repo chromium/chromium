@@ -122,13 +122,10 @@
   gap: 12px;
   justify-content: flex-end;
   padding: 0 var(--btn-margin);
-}
-
 <if expr="is_win">
-#button-container {
   flex-flow: row-reverse;
-}
 </if>
+}
 
 #button-container > cr-button {
   margin-top: var(--btn-margin);

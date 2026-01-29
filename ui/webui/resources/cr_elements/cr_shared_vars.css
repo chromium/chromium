@@ -135,40 +135,10 @@ html {
   --cr-separator-color: rgba(0, 0, 0, .06);
   --cr-title-text-color: rgb(90, 90, 90);
   --cr-scrollable-border-color: var(--google-grey-300);
-}
 
-@media (prefers-color-scheme: dark) {
-  html {
-    --cr-card-background-color: var(--google-grey-900-white-4-percent);
-    --cr-focused-item-color: var(--google-grey-800);
-    --cr-form-field-label-color: var(--dark-secondary-color);
-    --cr-hairline-rgb: 255, 255, 255;
-    --cr-iph-anchor-highlight-color: rgba(var(--google-grey-100-rgb), 0.1);
-    --cr-menu-background-color: var(--google-grey-900);
-    --cr-menu-background-focus-color: var(--google-grey-700);
-    --cr-menu-background-sheen: rgba(255, 255, 255, .06);  /* Only dark mode. */
-    --cr-menu-shadow: rgba(0, 0, 0, .3) 0 1px 2px 0,
-                      rgba(0, 0, 0, .15) 0 3px 6px 2px;
-    --cr-separator-color: rgba(255, 255, 255, .1);
-    --cr-title-text-color: var(--cr-primary-text-color);
-    --cr-scrollable-border-color: var(--google-grey-700);
-  }
-}
+  /* Don't use color values past this point. Instead, create a variable that's
+   * set for both light and dark modes and use a single variable below. */
 
-@media (forced-colors: active) {
-  html {
-    /* In Windows HCM, |box-shadow| is not showing. The suggested workaround
-       is to use |outline| or |border| instead. The color does not matter,
-       since it is forced by the OS so using 'transparent'. */
-    --cr-focus-outline-hcm: 2px solid transparent;
-    --cr-border-hcm: 2px solid transparent;
-  }
-}
-
-/* Don't use color values past this point. Instead, create a variable that's
- * set for both light and dark modes and use a single variable below. */
-
-html {
   --cr-button-edge-spacing: 12px;
 
   /* Spacing between policy (controlledBy) indicator and control. */
@@ -226,9 +196,7 @@ html {
   --cr-form-field-label-font-size: .625rem;
   --cr-form-field-label-height: 1em;
   --cr-form-field-label-line-height: 1;
-}
 
-html {
   /* Colors: These variables should never be overridden and should only be used
      as fallback values for shared cr_elements or in UIs that do not have
      the color pipeline. */
@@ -371,12 +339,33 @@ html {
         var(--cr-fallback-color-state-on-subtle-rgb_), .16);
     --cr-fallback-color-state-ripple-primary-rgb_: 76, 141, 246;
     --cr-fallback-color-base-container: rgba(40, 40, 40, 1);
+
+    --cr-card-background-color: var(--google-grey-900-white-4-percent);
+    --cr-focused-item-color: var(--google-grey-800);
+    --cr-form-field-label-color: var(--dark-secondary-color);
+    --cr-hairline-rgb: 255, 255, 255;
+    --cr-iph-anchor-highlight-color: rgba(var(--google-grey-100-rgb), 0.1);
+    --cr-menu-background-color: var(--google-grey-900);
+    --cr-menu-background-focus-color: var(--google-grey-700);
+    --cr-menu-background-sheen: rgba(255, 255, 255, .06);  /* Only dark mode. */
+    --cr-menu-shadow: rgba(0, 0, 0, .3) 0 1px 2px 0,
+                      rgba(0, 0, 0, .15) 0 3px 6px 2px;
+    --cr-separator-color: rgba(255, 255, 255, .1);
+    --cr-title-text-color: var(--cr-primary-text-color);
+    --cr-scrollable-border-color: var(--google-grey-700);
   }
 }
 
-/* Overrides to ensure disabled elements show up disabled. */
 @media (forced-colors: active) {
   html {
+    /* In Windows HCM, |box-shadow| is not showing. The suggested workaround
+       is to use |outline| or |border| instead. The color does not matter,
+       since it is forced by the OS so using 'transparent'. */
+    --cr-focus-outline-hcm: 2px solid transparent;
+    --cr-border-hcm: 2px solid transparent;
+
+
+    /* Overrides to ensure disabled elements show up disabled. */
     --cr-fallback-color-disabled-background: Canvas;
     --cr-fallback-color-disabled-foreground: GrayText;
   }

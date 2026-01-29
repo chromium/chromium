@@ -122,6 +122,9 @@
   border-radius: var(--composebox-border-radius);
   content: '';
   display: block;
+  /* Expand past the bottom of the composebox.
+   * Requires parent to have overflow hidden.
+   */
   height: 40vh;
   position: absolute;
   width: 100%;
@@ -186,19 +189,6 @@
   #composebox {
     --inset-start-indent_: var(--composebox-start-indent);
   }
-}
-
-:host(:not([is-zero-state])) #composebox::before {
-  background: var(--search-background-color);
-  border-radius: 24px;
-  content: '';
-  display: block;
-  /* Expand past the bottom of the composebox.
-   * Requires parent to have overflow hidden.
-   */
-  height: 40vh;
-  position: absolute;
-  width: 100%;
 }
 
 #composebox::part(thumbnail) {

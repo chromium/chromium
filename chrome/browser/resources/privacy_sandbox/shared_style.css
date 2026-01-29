@@ -68,13 +68,10 @@ privacy-sandbox-dialog-learn-more {
       var(--cr-dialog-button-container-padding-horizontal, 16px);
   padding-top: 16px;
   width: 100%;
-}
-
 <if expr="is_win">
-.buttons-container {
   flex-flow: row-reverse;
-}
 </if>
+}
 
 .buttons-container cr-button {
   margin-inline-start: 8px;
