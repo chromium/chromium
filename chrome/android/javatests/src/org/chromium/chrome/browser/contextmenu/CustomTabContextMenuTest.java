@@ -36,12 +36,16 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -117,6 +121,7 @@ public class CustomTabContextMenuTest {
             R.id.contextmenu_share_link,
             ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting()
         };
+        expectedItems = maybeAddInspectElementItem(expectedItems);
 
         assertMenuItemsAreEqual(menuCoordinator, expectedItems);
     }
@@ -138,6 +143,7 @@ public class CustomTabContextMenuTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link,
         };
+        expectedItems = maybeAddInspectElementItem(expectedItems);
 
         assertMenuItemsAreEqual(menuCoordinator, expectedItems);
     }
@@ -171,5 +177,35 @@ public class CustomTabContextMenuTest {
             }
         }
         return items.toString();
+    }
+
+    /**
+     * Adds items to the baseItems if the given condition is true.
+     *
+     * @param condition The condition to check for whether to add items or not.
+     * @param baseItems The base list of items to add to.
+     * @param additionalItems The additional items to add.
+     * @return An array of items that has the additional items added if the condition is true.
+     */
+    private Integer[] addItemsIf(
+            boolean condition, Integer[] baseItems, Integer[] additionalItems) {
+        List<Integer> variableItems = new ArrayList<>();
+        variableItems.addAll(Arrays.asList(baseItems));
+        if (condition) {
+            for (int i = 0; i < additionalItems.length; i++) variableItems.add(additionalItems[i]);
+        }
+        return variableItems.toArray(baseItems);
+    }
+
+    private Integer[] maybeAddInspectElementItem(Integer[] baseItems) {
+        return addItemsIf(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                ContentFeatureMap.isEnabled(
+                                                ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND)
+                                        && DeviceInput.supportsAlphabeticKeyboard()
+                                        && DeviceInput.supportsPrecisionPointer()),
+                baseItems,
+                new Integer[] {R.id.contextmenu_inspect_element});
     }
 }

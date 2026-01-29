@@ -736,7 +736,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         }
 
-        if (shouldShowDeveloperMenu()) {
+        if (shouldShowDeveloperMenu() && FirstRunStatus.getFirstRunFlowComplete()) {
             ModelList developerGroup = new ModelList();
             if (mParams.isPage()
                     && shouldShowEmptySpaceContextMenu()
