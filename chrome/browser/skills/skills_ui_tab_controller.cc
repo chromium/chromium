@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog.h"
+#include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
+#include "chrome/browser/ui/webui/skills/skills_ui.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -70,7 +72,7 @@ void SkillsUiTabController::ShowDialog(const skills::Skill& skill) {
   CHECK(contents);
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
-  // TODO(crbug.com/476145843): Pass in the skill and a weak pointer to the tab
+  // TODO(crbug.com/476145843): Pass in the skill to the tab
   // controller in the dialog.
   auto delegate = std::make_unique<SkillsDialog>(profile);
   delegate->RegisterOnDialogClosedCallback(base::BindOnce(
@@ -78,17 +80,29 @@ void SkillsUiTabController::ShowDialog(const skills::Skill& skill) {
 
   dialog_delegate_ =
       ShowConstrainedWebDialog(profile, std::move(delegate), contents);
+
+  if (dialog_delegate_) {
+    content::WebContents* dialog_contents = dialog_delegate_->GetWebContents();
+    if (dialog_contents && dialog_contents->GetWebUI()) {
+      auto* controller = dialog_contents->GetWebUI()->GetController();
+      if (auto* skills_ui = controller->GetAs<skills::SkillsUI>()) {
+        skills_ui->SetSkillsDialogDelegate(weak_ptr_factory_.GetWeakPtr());
+      }
+    }
+  }
 }
 
 void SkillsUiTabController::CloseDialog() {
-  if (dialog_delegate_) {
-    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-        dialog_delegate_->GetNativeDialog());
-    if (widget && !widget->IsClosed()) {
-      widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-    }
+  if (!dialog_delegate_) {
     return;
   }
+  // Capture pointer and clear member to prevent re-entrancy during teardown.
+  auto* temp_delegate = dialog_delegate_.get();
+  // Manually fire the callback to ensure the result is processed even if the
+  // widget teardown suppresses the signal.
+  OnDialogClosed(std::string());
+  // Triggers the standard close sequence defined by the delegate.
+  temp_delegate->OnDialogCloseFromWebUI();
 }
 
 void SkillsUiTabController::OnDialogClosed(const std::string& json_retval) {

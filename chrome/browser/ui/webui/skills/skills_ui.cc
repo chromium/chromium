@@ -36,6 +36,11 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   AddDialogStringResources(source);
 }
 
+void SkillsUI::SetSkillsDialogDelegate(
+    base::WeakPtr<SkillsDialogDelegate> delegate) {
+  delegate_ = delegate;
+}
+
 void SkillsUI::BindInterface(
     mojo::PendingReceiver<skills::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
@@ -51,7 +56,7 @@ void SkillsUI::CreatePageHandler(
 void SkillsUI::CreateDialogHandler(
     mojo::PendingReceiver<skills::mojom::DialogHandler> receiver) {
   dialog_handler_ = std::make_unique<SkillsDialogHandler>(
-      std::move(receiver), web_ui()->GetWebContents());
+      std::move(receiver), web_ui()->GetWebContents(), delegate_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SKILLS_SKILLS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SKILLS_SKILLS_UI_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
@@ -15,6 +16,7 @@ namespace skills {
 
 class SkillsPageHandler;
 class SkillsDialogHandler;
+class SkillsDialogDelegate;
 
 // MojoWebUIController for the chrome://skills page.
 class SkillsUI : public ui::MojoWebUIController,
@@ -31,6 +33,12 @@ class SkillsUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<skills::mojom::PageHandlerFactory> receiver);
 
+  void SetSkillsDialogDelegate(base::WeakPtr<SkillsDialogDelegate> delegate);
+
+  base::WeakPtr<SkillsDialogDelegate> GetDelegateForTesting() {
+    return delegate_;
+  }
+
  private:
   void CreatePageHandler(
       mojo::PendingReceiver<skills::mojom::PageHandler> receiver) override;
@@ -40,6 +48,7 @@ class SkillsUI : public ui::MojoWebUIController,
 
   std::unique_ptr<SkillsPageHandler> page_handler_;
   std::unique_ptr<SkillsDialogHandler> dialog_handler_;
+  base::WeakPtr<SkillsDialogDelegate> delegate_;
 
   mojo::Receiver<skills::mojom::PageHandlerFactory> page_factory_receiver_{
       this};

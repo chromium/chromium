@@ -9,6 +9,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
+#include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "components/skills/public/skills_service.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -30,9 +31,11 @@ class GlicKeyedService;
 namespace skills {
 
 struct Skill;
+class SkillsDialogDelegate;
 
 // A controller responsible for managing the skills dialog for the tab.
-class SkillsUiTabController : public SkillsUiTabControllerInterface {
+class SkillsUiTabController : public SkillsUiTabControllerInterface,
+                              public SkillsDialogDelegate {
  public:
   explicit SkillsUiTabController(tabs::TabInterface& tab);
   ~SkillsUiTabController() override;
@@ -41,11 +44,8 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface {
   // Opens the skills dialog.
   void ShowDialog(const skills::Skill& skill) override;
 
-  // Closes the dialog if it is currently open.
+  // SkillsDialogDelegate override:
   void CloseDialog() override;
-
-  // Called by the WebUI when a skill is successfully saved.
-  // Delegates visual feedback to the Window Controller.
   void OnSkillSaved(const std::string& skill_id) override;
 
   void SetOnDialogClosedCallbackForTesting(base::OnceClosure callback) {

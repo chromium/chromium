@@ -17,11 +17,14 @@ class WebContents;
 
 namespace skills {
 
+class SkillsDialogDelegate;
+
 class SkillsDialogHandler : public skills::mojom::DialogHandler {
  public:
   SkillsDialogHandler(
       mojo::PendingReceiver<skills::mojom::DialogHandler> receiver,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      base::WeakPtr<SkillsDialogDelegate> delegate);
 
   SkillsDialogHandler(const SkillsDialogHandler&) = delete;
   SkillsDialogHandler& operator=(const SkillsDialogHandler&) = delete;
@@ -35,6 +38,7 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
  private:
   mojo::Receiver<skills::mojom::DialogHandler> receiver_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+  base::WeakPtr<SkillsDialogDelegate> delegate_;
 };
 
 }  // namespace skills

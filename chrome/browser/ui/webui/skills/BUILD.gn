@@ -21,6 +21,7 @@ mojom("mojo_bindings") {
 source_set("skills") {
   public = [
     "skills_dialog.h",
+    "skills_dialog_delegate.h",
     "skills_ui.h",
   ]
 

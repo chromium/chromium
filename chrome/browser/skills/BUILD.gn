@@ -98,6 +98,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/skills",
     "//chrome/test:test_support",
     "//components/skills:features",
     "//components/skills/public",
