@@ -16,11 +16,11 @@ import org.chromium.net.UrlResponseInfo;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
 
 /**
  * A {@link BidirectionalStream} implementation that allows fallback to an alternative stream if the
  * primary stream is not ready within a certain timeout.
- * TODO(crbug.com/474048542): Add more state gates to this class.
  */
 final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirectionalStream {
     /**
@@ -48,10 +48,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                  */
                 @Override
                 public void onStreamReady(BidirectionalStream stream) {
-                    if (stream != mPrimaryStream && stream != mFallbackStream) {
-                        // We can only handle the primary and fallback stream. Getting any other stream would mean there's a bug.
-                        throw new IllegalArgumentException("Callback stream neither primary nor fallback.");
-                    }
+                    checkValidStream(stream);
                     if (mActiveStream.compareAndSet(null, stream)) {
                         if (stream == mFallbackStream) {
                             // The primary stream was not ready in time, let's cancel it.
@@ -68,6 +65,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                 @Override
                 public void onResponseHeadersReceived(
                         BidirectionalStream stream, UrlResponseInfo info) {
+                    checkValidStream(stream);
                     mBackendCallback.onResponseHeadersReceived(
                             CronetAdaptiveNetworkBidirectionalStream.this, info);
                 }
@@ -78,6 +76,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                         UrlResponseInfo info,
                         ByteBuffer buffer,
                         boolean endOfStream) {
+                    checkValidStream(stream);
                     mBackendCallback.onReadCompleted(
                             CronetAdaptiveNetworkBidirectionalStream.this,
                             info,
@@ -91,6 +90,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                         UrlResponseInfo info,
                         ByteBuffer buffer,
                         boolean endOfStream) {
+                    checkValidStream(stream);
                     mBackendCallback.onWriteCompleted(
                             CronetAdaptiveNetworkBidirectionalStream.this,
                             info,
@@ -103,18 +103,21 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                         BidirectionalStream stream,
                         UrlResponseInfo info,
                         UrlResponseInfo.HeaderBlock trailers) {
+                    checkValidStream(stream);
                     mBackendCallback.onResponseTrailersReceived(
                             CronetAdaptiveNetworkBidirectionalStream.this, info, trailers);
                 }
 
                 @Override
                 public void onSucceeded(BidirectionalStream stream, UrlResponseInfo info) {
+                    checkValidStream(stream);
                     mBackendCallback.onSucceeded(CronetAdaptiveNetworkBidirectionalStream.this, info);
                 }
 
                 @Override
                 public void onFailed(
                         BidirectionalStream stream, UrlResponseInfo info, CronetException error) {
+                    checkValidStream(stream);
                     if (mActiveStream.get() != stream) {
                         return;
                     }
@@ -123,6 +126,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
                 @Override
                 public void onCanceled(BidirectionalStream stream, UrlResponseInfo info) {
+                    checkValidStream(stream);
                     if (mActiveStream.get() != stream) {
                         return;
                     }
@@ -138,19 +142,16 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
     }
 
     void setPrimaryStream(CronetBidirectionalStream primaryStream) {
-        mPrimaryStream = primaryStream;
+        mPrimaryStream = Objects.requireNonNull(primaryStream);
     }
 
     void setFallbackStream(CronetBidirectionalStream fallbackStream) {
-        mFallbackStream = fallbackStream;
+        mFallbackStream = Objects.requireNonNull(fallbackStream);
     }
 
     @Override
     public void start() {
-        if (mPrimaryStream == null) {
-            throw new IllegalStateException("No primary stream!");
-        }
-        mPrimaryStream.start();
+        Objects.requireNonNull(mPrimaryStream).start();
         // If a fallback stream was created, schedule a potential future switch to it.
         if (mFallbackStream != null) {
             mExecutor.schedule(() -> maybeScheduleFastFailover(), READY_FAILOVER_MS, MILLISECONDS);
@@ -165,22 +166,22 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     @Override
     public void read(ByteBuffer buffer) {
-        mActiveStream.get().read(buffer);
+        Objects.requireNonNull(mActiveStream.get()).read(buffer);
     }
 
     @Override
     public void write(ByteBuffer buffer, boolean endOfStream) {
-        mActiveStream.get().write(buffer, endOfStream);
+        Objects.requireNonNull(mActiveStream.get()).write(buffer, endOfStream);
     }
 
     @Override
     public void flush() {
-        mActiveStream.get().flush();
+        Objects.requireNonNull(mActiveStream.get()).flush();
     }
 
     @Override
     public void cancel() {
-        mPrimaryStream.cancel();
+        Objects.requireNonNull(mPrimaryStream).cancel();
         if (mFallbackStream != null) {
             mFallbackStream.cancel();
         }
@@ -196,5 +197,13 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     BidirectionalStream.Callback getCallback() {
         return mRedirectingCallback;
+    }
+
+    private void checkValidStream(BidirectionalStream stream) {
+        if (stream != mPrimaryStream && stream != mFallbackStream) {
+            // We can only handle the primary and fallback stream. Getting any other stream would
+            // mean there's a bug.
+            throw new AssertionError("Callback stream neither primary nor fallback.");
+        }
     }
 }

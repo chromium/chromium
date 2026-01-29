@@ -60,7 +60,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
     public void missingPrimaryStream_throwsException() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-        assertThrows(IllegalStateException.class, () -> mAdaptiveStream.start());
+        assertThrows(NullPointerException.class, () -> mAdaptiveStream.start());
     }
 
     @Test
