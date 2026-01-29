@@ -32,17 +32,13 @@ BASE_FEATURE(kContextualTasksContextLibrary, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksContextLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables context menu settings for contextual tasks.
-BASE_FEATURE(kContextualTasksContextMenu,
-             "ContextualTasksContextMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kContextualTasksContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables suggestions for contextual tasks.
 BASE_FEATURE(kContextualTasksSuggestionsEnabled,
-             "ContextualTasksSuggestionsEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksShowOnboardingTooltip,
-             "ContextualTasksShowOnboardingTooltip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Overrides the value of EntryPointEligibilitymanager::IsEligible to true.

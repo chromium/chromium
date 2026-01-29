@@ -211,7 +211,6 @@ BASE_FEATURE(kEnterpriseRealTimeUrlCheckNewUrl,
 BASE_FEATURE(kEsbAsASyncedSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtendedReportingRemovePrefDependency,
-             "ExtendedReportingRemovePrefDependency",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryConfiguration,
