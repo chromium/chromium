@@ -36,6 +36,18 @@ _ANDROID_ARM64_PROFILE_DIR = os.path.join(_SRC_ROOT, 'chrome', 'android',
 _PGO_PROFILE_DIR = os.path.join(_PGO_DIR, 'pgo_profiles')
 
 
+def _mark_profile_as_used(path):
+  """Updates the access time of a file to delay cleanup while preserving mtime.
+
+  The modified time is preserved because it is used by siso.
+
+  Args:
+    path(str): The file path.
+  """
+  stat_result = os.stat(path)
+  os.utime(path, ns=(time.time_ns(), stat_result.st_mtime_ns))
+
+
 def _read_profile_name(target):
   """Read profile name given a target.
 
@@ -81,7 +93,7 @@ def _update(args):
   profile_name = args.override_filename or _read_profile_name(args.target)
   profile_path = os.path.join(_PGO_PROFILE_DIR, profile_name)
   if os.path.isfile(profile_path):
-    os.utime(profile_path, None)
+    _mark_profile_as_used(profile_path)
     return
 
   gsutil = download_from_google_storage.Gsutil(
@@ -133,10 +145,7 @@ def _get_profile_path(args):
         'your GN arguments.'%
         profile_path)
 
-  # Reset the access time to delay this profile from being cleaned up, but
-  # avoid changing the modified time as that is used by siso.
-  stat_result = os.stat(profile_path)
-  os.utime(profile_path, ns=(time.time_ns(), stat_result.st_mtime_ns))
+  _mark_profile_as_used(profile_path)
   print(gn_helpers.ToGNString(profile_path.rstrip(os.sep)))
 
 
