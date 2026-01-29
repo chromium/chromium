@@ -7,6 +7,7 @@ export default {
 
   rules: {
     'block-no-empty': true,
+    'color-no-invalid-hex': true,
     'declaration-block-no-duplicate-custom-properties': true,
     'declaration-block-no-duplicate-properties': true,
     'no-duplicate-selectors': true,

@@ -47,7 +47,7 @@
 
 :host([dark-mode]) #feedbackToast {
   --color-toast-background: #303134;
-  --color-toast-button: #99C3FF6;
+  --color-toast-button: #99C3FF;
   --color-toast-foreground: #BFBFBF;
   --cr-icon-button-fill-color: #9E9E9E;
 }
