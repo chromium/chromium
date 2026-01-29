@@ -7,7 +7,7 @@ desc: |-
 
   0/unset = users can share page or file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>.
 
-  1 = users cannot share page or file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>. The entry points for sharing context will be disabled or hidden.
+  1 = users cannot share page or file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>. The entry points for sharing context and the side panel will be disabled or hidden.
 
   This policy will be ignored when <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> is not users' default search engine as the feature is disabled.
 
