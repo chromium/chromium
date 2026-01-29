@@ -208,6 +208,8 @@ class ContextualSearchboxHandler
   void RecordTabAddedMetric(tabs::TabInterface* const tab,
                             bool is_tab_suggestion_chip);
 
+  std::unique_ptr<contextual_search::InputStateModel> input_state_model_;
+
  private:
   // Helper to get the correct number of tab suggestions. Virtual so it
   // can be overridden for specific implementations.
@@ -252,8 +254,6 @@ class ContextualSearchboxHandler
 
   // Callback to get the contextual session handle from WebUI controller.
   GetSessionHandleCallback get_session_callback_;
-
-  std::unique_ptr<contextual_search::InputStateModel> input_state_model_;
 
   base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};
 };

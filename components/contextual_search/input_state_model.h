@@ -63,6 +63,9 @@ class InputStateModel {
   // Set a new model.
   void setActiveModel(ModelMode model);
 
+  // Gets additional query params for the current state.
+  std::map<std::string, std::string> GetAdditionalQueryParams();
+
   // Methods for testing.
   void set_state_for_testing(const InputState& state) { state_ = state; }
   const InputState& get_state_for_testing() { return state_; }

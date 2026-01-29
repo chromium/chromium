@@ -199,4 +199,54 @@ TEST_F(InputStateModelCompatibilityTest, SelectTabInput) {
       UnorderedElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR));
 }
 
+TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
+  // No tool or model added.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  input_state_model_->setActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_TRUE(input_state_model_->GetAdditionalQueryParams().empty());
+
+  // Deep Search added.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("dr", "1")));
+
+  // Canvas added.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("rc", "1")));
+
+  // Image Gen added.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("imgn", "1")));
+
+  // Image Gen Upload added.
+  input_state_model_->setActiveTool(
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("imgn", "1")));
+
+  // Reset all tools.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+
+  // Gemini Pro added.
+  input_state_model_->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("m", "1")));
+
+  // Gemini Pro Autoroute added.
+  input_state_model_->setActiveModel(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("m", "2")));
+
+  // Deep Search and Gemini Pro added.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  input_state_model_->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("dr", "1"),
+                                            testing::Pair("m", "1")));
+}
+
 }  // namespace contextual_search

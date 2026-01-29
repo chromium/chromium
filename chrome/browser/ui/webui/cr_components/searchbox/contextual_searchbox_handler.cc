@@ -677,6 +677,13 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     // Upload the cached tab context if it exists.
     UploadSnapshotTabContextIfPresent();
 
+    if (input_state_model_) {
+      for (auto const& [key, val] :
+           input_state_model_->GetAdditionalQueryParams()) {
+        additional_params[key] = val;
+      }
+    }
+
     auto search_url_request_info =
         std::make_unique<contextual_search::ContextualSearchContextController::
                              CreateSearchUrlRequestInfo>();
