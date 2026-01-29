@@ -3316,24 +3316,6 @@ const char kChromeAppStoreUrl[] =
   _BWGCoordinator = nil;
 }
 
-// TODO(crbug.com/476145805): Move function to BWGTabHelper.
-- (void)updateFloatyVisibilityForWebState:(web::WebState*)webState {
-  BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
-  BwgBrowserAgent* geminiBrowserAgent =
-      BwgBrowserAgent::FromBrowser(self.browser);
-  if (!IsGeminiCopresenceEnabled() || !BWGService || !geminiBrowserAgent) {
-    return;
-  }
-
-  if (BWGService->IsBwgAvailableForWebState(webState)) {
-    geminiBrowserAgent->ShowFloatyIfInvoked(/*animated=*/YES);
-  } else {
-    // Removes animation when hiding the floaty as a result of ineligible sites
-    // such as the new tab page.
-    geminiBrowserAgent->HideFloatyIfInvoked(/*animated=*/NO);
-  }
-}
-
 - (void)updateFloatyWithTraitCollection:(UITraitCollection*)traitCollection {
   BwgBrowserAgent* geminiBrowserAgent =
       BwgBrowserAgent::FromBrowser(self.browser);

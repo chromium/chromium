@@ -41,9 +41,6 @@ class WebState;
 // Show Gemini floaty. Used to re-show an invoked Gemini floaty.
 - (void)showFloatyIfInvokedAnimated:(BOOL)animated;
 
-// Updates floaty visibility when persisting across WebStates.
-- (void)updateFloatyVisibilityForWebState:(web::WebState*)webState;
-
 - (void)updateFloatyWithTraitCollection:(UITraitCollection*)traitCollection;
 
 // Starts the FRE flow with a completion block.

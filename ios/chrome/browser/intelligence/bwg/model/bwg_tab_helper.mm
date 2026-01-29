@@ -411,7 +411,7 @@ void BwgTabHelper::WasShown(web::WebState* web_state) {
   }
 
   if (IsGeminiCopresenceEnabled()) {
-    [bwg_commands_handler_ updateFloatyVisibilityForWebState:web_state];
+    [bwg_commands_handler_ showFloatyIfInvokedAnimated:YES];
   }
 }
 
@@ -427,6 +427,12 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
   }
 
   UpdateWebStateSnapshotInStorage();
+
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  [bwg_commands_handler_ hideFloatyIfInvokedAnimated:NO];
 }
 
 void BwgTabHelper::DidStartNavigation(
@@ -484,7 +490,7 @@ void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (IsGeminiCopresenceEnabled()) {
-    [bwg_commands_handler_ updateFloatyVisibilityForWebState:web_state];
+    [bwg_commands_handler_ showFloatyIfInvokedAnimated:YES];
   }
 
   const GURL& current_url = navigation_context->GetUrl().GetWithoutRef();
