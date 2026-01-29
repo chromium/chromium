@@ -6249,11 +6249,6 @@ inline constexpr char kUseWaitableSwapChainDescription[] =
     "likely to drop frames, while 3 has the highest delay but is least likely "
     "to drop frames.";
 
-inline constexpr char kAndroidWebAppHeaderForStandaloneModeName[] =
-    "Use Web App Header for Standalone mode";
-inline constexpr char kAndroidWebAppHeaderForStandaloneModeDescription[] =
-    "For Trusted Web Apps (TWAs), use Web App Header for Standalone mode";
-
 inline constexpr char kUseWinrtMidiApiName[] = "Use Windows Runtime MIDI API";
 inline constexpr char kUseWinrtMidiApiDescription[] =
     "Use Windows Runtime MIDI API for WebMIDI (effective only on Windows 10 or "
