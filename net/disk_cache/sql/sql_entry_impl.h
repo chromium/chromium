@@ -121,6 +121,9 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
                        CompletionOnceCallback callback,
                        bool sparse_reading);
 
+  // Flushes the write buffer to the backend.
+  void FlushBuffer();
+
   base::WeakPtr<SqlBackendImpl> backend_;
 
   // The key for this cache entry.
@@ -156,6 +159,14 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
 
   // True if this entry has been marked for deletion.
   bool doomed_ = false;
+
+  // Buffers data for stream 1 writes.
+  std::vector<scoped_refptr<net::IOBuffer>> write_buffers_;
+  // The total size of data in `write_buffers_`.
+  int write_buffer_size_ = 0;
+  // The start offset of the data in `write_buffers_`. -1 indicates that the
+  // buffer is empty/invalid.
+  int64_t write_buffer_offset_ = -1;
 
   base::WeakPtrFactory<SqlEntryImpl> weak_factory_{this};
 };

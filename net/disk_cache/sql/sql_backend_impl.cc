@@ -1096,6 +1096,7 @@ int SqlBackendImpl::WriteEntryData(
     scoped_refptr<net::IOBuffer> buffer,
     int buf_len,
     bool truncate,
+    bool copy_buffer_for_optimistic_write,
     CompletionOnceCallback callback) {
   if (res_id_or_error->data.has_value() &&
       std::holds_alternative<SqlPersistentStore::Error>(
@@ -1114,7 +1115,7 @@ int SqlBackendImpl::WriteEntryData(
                             can_execute_optimistic_write);
   if (can_execute_optimistic_write) {
     optimistic_write_buffer_total_size_ += buf_len;
-    if (buffer) {
+    if (buffer && copy_buffer_for_optimistic_write) {
       // Note: `buffer` can be nullptr.
       buffer = base::MakeRefCounted<net::VectorIOBuffer>(
           buffer->first(static_cast<size_t>(buf_len)));
@@ -1491,6 +1492,11 @@ void SqlBackendImpl::HandleTriggerEvictionOperation(
 
 void SqlBackendImpl::EnableStrictCorruptionCheckForTesting() {
   store_->EnableStrictCorruptionCheckForTesting();  // IN-TEST
+}
+
+void SqlBackendImpl::ReportWriteBufferChange(int delta) {
+  write_buffer_total_size_ += delta;
+  CHECK_GE(write_buffer_total_size_, 0);
 }
 
 SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(

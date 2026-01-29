@@ -1218,6 +1218,11 @@ TEST_F(SqlBackendImplTest, AbortPendingReadData) {
 // Tests that if a pending WriteData operation is aborted (e.g., due to backend
 // destruction), the callback is invoked with net::ERR_ABORTED.
 TEST_F(SqlBackendImplTest, AbortPendingWriteData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
+
   auto backend = CreateBackendAndInit();
 
   // Create an entry.
@@ -1595,9 +1600,10 @@ TEST_F(SqlBackendImplTest,
       net::ERR_FAILED);
 
   auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  // As WriteData failed, the body size is 0 now. So ReadData returns 0.
   EXPECT_EQ(entry->ReadData(1, 0, read_buffer.get(), read_buffer->size(),
                             base::BindOnce([](int) { NOTREACHED(); })),
-            net::ERR_FAILED);
+            0);
 
   EXPECT_EQ(
       entry
@@ -1642,7 +1648,8 @@ TEST_F(SqlBackendImplTest, OptimisticWriteBufferSize) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
-      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"}});
+      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"},
+       {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
 
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
@@ -1681,7 +1688,8 @@ TEST_F(SqlBackendImplTest, OptimisticWriteBufferLifecycle) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
-      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"}});
+      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"},
+       {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
 
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
@@ -1754,7 +1762,8 @@ TEST_F(SqlBackendImplTest, OptimisticWriteFailure) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
-      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"}});
+      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"},
+       {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
 
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
@@ -1818,6 +1827,11 @@ TEST_F(SqlBackendImplTest, OptimisticWriteFailure) {
 }
 
 TEST_F(SqlBackendImplTest, OptimisticWriteAfterSpeculativeCreateEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
+
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
 
@@ -1874,7 +1888,8 @@ TEST_F(SqlBackendImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
-      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"}});
+      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "100"},
+       {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "0"}});
 
   auto backend = CreateBackendAndInit();
   EXPECT_TRUE(LoadInMemoryIndex(*backend));
@@ -2309,6 +2324,315 @@ TEST_F(SqlBackendImplTest, OptimisticWriteIndexMismatchAfterDoomAllEntries) {
   // Previously, this would trigger an index mismatch error (and a CHECK failure
   // in RecordIndexMismatch).
   FlushQueue(*backend);
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, WriteBuffering) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
+       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
+
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // Write small chunk, should be buffered.
+  auto buffer1 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(100, 'a'));
+  EXPECT_EQ(entry->WriteData(1, 0, buffer1.get(), buffer1->size(),
+                             base::DoNothing(), false),
+            buffer1->size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), buffer1->size());
+
+  // Write another small chunk, should be buffered.
+  auto buffer2 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(100, 'b'));
+  EXPECT_EQ(entry->WriteData(1, 100, buffer2.get(), buffer2->size(),
+                             base::DoNothing(), false),
+            buffer2->size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(),
+            buffer1->size() + buffer2->size());
+
+  // Write exceeding per-entry limit, should trigger flush of previous buffer
+  // and write new data.
+  std::string large_data(2000, 'c');
+  auto buffer3 = base::MakeRefCounted<net::StringIOBuffer>(large_data);
+  net::TestCompletionCallback cb_write;
+  int rv = entry->WriteData(1, 200, buffer3.get(), buffer3->size(),
+                            cb_write.callback(), false);
+  // It should be synchronous because of optimistic writing (2000 + 200 <= 4096
+  // default).
+  EXPECT_EQ(rv, static_cast<int>(buffer3->size()));
+
+  // Buffer should be empty now.
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, WriteBufferingReadFromBuffer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
+       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
+
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // Buffer some data.
+  std::string data = "hello world";
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+  entry->WriteData(1, 0, buffer.get(), buffer->size(), base::DoNothing(),
+                   false);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+
+  // Read it back.
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
+  net::TestCompletionCallback cb_read;
+  int rv_read = entry->ReadData(1, 0, read_buffer.get(), read_buffer->size(),
+                                cb_read.callback());
+  // Should be synchronous
+  EXPECT_EQ(rv_read, static_cast<int>(data.size()));
+  EXPECT_EQ(std::string_view(read_buffer->data(), data.size()), data);
+
+  // Buffer should still be there.
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, WriteBufferingReadOverlapFlush) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
+       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
+
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // Buffer some data.
+  std::string data = "hello world";
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+  // Write at 0 to ensure buffering (sequential).
+  entry->WriteData(1, 0, buffer.get(), buffer->size(), base::DoNothing(),
+                   false);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+
+  // Read range that overlaps but is larger than buffer (e.g. from 0 to 20)
+  // This should force flush.
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(20);
+  net::TestCompletionCallback cb_read;
+  int rv_read = entry->ReadData(1, 0, read_buffer.get(), read_buffer->size(),
+                                cb_read.callback());
+  // Should return data.size() (11).
+  EXPECT_EQ(cb_read.GetResult(rv_read), static_cast<int>(data.size()));
+  EXPECT_EQ(std::string_view(read_buffer->data(), data.size()), data);
+
+  // Buffer should be flushed.
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, WriteBufferingGlobalLimit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "100"},
+       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1000"}});
+
+  auto backend = CreateBackendAndInit();
+
+  // Create entry 1
+  TestEntryResultCompletionCallback cb_create1;
+  disk_cache::EntryResult create_result1 = cb_create1.GetResult(
+      backend->CreateEntry("key1", net::HIGHEST, cb_create1.callback()));
+  ASSERT_THAT(create_result1.net_error(), IsOk());
+  auto* entry1 = create_result1.ReleaseEntry();
+
+  // Create entry 2
+  TestEntryResultCompletionCallback cb_create2;
+  disk_cache::EntryResult create_result2 = cb_create2.GetResult(
+      backend->CreateEntry("key2", net::HIGHEST, cb_create2.callback()));
+  ASSERT_THAT(create_result2.net_error(), IsOk());
+  auto* entry2 = create_result2.ReleaseEntry();
+
+  // Write 60 bytes to entry 1. Buffered.
+  auto buffer1 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(60, 'a'));
+  entry1->WriteData(1, 0, buffer1.get(), buffer1->size(), base::DoNothing(),
+                    false);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 60);
+
+  // Write 60 bytes to entry 2. Should flush entry 2 immediately because global
+  // limit (100) would be exceeded (60+60=120).
+  auto buffer2 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(60, 'b'));
+  net::TestCompletionCallback cb_write;
+  int rv = entry2->WriteData(1, 0, buffer2.get(), buffer2->size(),
+                             cb_write.callback(), false);
+  EXPECT_EQ(cb_write.GetResult(rv), 60);
+
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 60);  // Entry 1 still buffered.
+
+  entry1->Close();
+  entry2->Close();
+}
+
+TEST_F(SqlBackendImplTest, WriteBufferingFlushOnClose) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
+       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
+
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // Buffer some data.
+  std::string data = "hello world";
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+  entry->WriteData(1, 0, buffer.get(), buffer->size(), base::DoNothing(),
+                   false);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+
+  entry->Close();
+  // Closing should flush buffer.
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+
+  // Verify data on disk by opening again.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry("key", net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  entry = open_result.ReleaseEntry();
+
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
+  net::TestCompletionCallback cb_read;
+  int rv_read = entry->ReadData(1, 0, read_buffer.get(), read_buffer->size(),
+                                cb_read.callback());
+  EXPECT_EQ(cb_read.GetResult(rv_read), static_cast<int>(data.size()));
+  EXPECT_EQ(std::string_view(read_buffer->data(), data.size()), data);
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, WriteBufferingOptimisticBoundary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
+       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1000"},
+       {net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "3000"}});
+
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // 1. Write 500 bytes. Should be buffered.
+  auto buffer1 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(500, 'a'));
+  EXPECT_EQ(entry->WriteData(1, 0, buffer1.get(), buffer1->size(),
+                             base::DoNothing(), false),
+            buffer1->size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 500);
+  // Optimistic buffer usage: 0 (buffered in entry, not sent to backend)
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+
+  // 2. Write 600 bytes. 500 + 600 > 1000.
+  // Should flush buffer (500) -> Optimistic (size 500).
+  // Then write new data (600) -> Optimistic (size 600).
+  // Total optimistic usage: 1100.
+  auto buffer2 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(600, 'b'));
+  EXPECT_EQ(entry->WriteData(1, 500, buffer2.get(), buffer2->size(),
+                             base::DoNothing(), false),
+            buffer2->size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 1100);
+
+  // 3. Write 2000 bytes. 2000 > 1000.
+  // Direct write.
+  // Optimistic check: 1100 + 2000 = 3100 > 3000.
+  // Should be pending.
+  auto buffer3 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(2000, 'c'));
+  net::TestCompletionCallback cb_write;
+  int rv = entry->WriteData(1, 1100, buffer3.get(), buffer3->size(),
+                            cb_write.callback(), false);
+  EXPECT_EQ(rv, net::ERR_IO_PENDING);
+  EXPECT_EQ(cb_write.WaitForResult(), buffer3->size());
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, WriteBufferingReadAcrossChunks) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
+       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
+
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // Write chunk 1: "AAAAA"
+  std::string data1 = "AAAAA";
+  auto buffer1 = base::MakeRefCounted<net::StringIOBuffer>(data1);
+  entry->WriteData(1, 0, buffer1.get(), buffer1->size(), base::DoNothing(),
+                   false);
+
+  // Write chunk 2: "BBBBB"
+  std::string data2 = "BBBBB";
+  auto buffer2 = base::MakeRefCounted<net::StringIOBuffer>(data2);
+  entry->WriteData(1, 5, buffer2.get(), buffer2->size(), base::DoNothing(),
+                   false);
+
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data1.size() + data2.size());
+
+  // Read across chunks: Offset 3, Length 4. Should get "AABB".
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  net::TestCompletionCallback cb_read;
+  int rv_read = entry->ReadData(1, 3, read_buffer.get(), read_buffer->size(),
+                                cb_read.callback());
+  EXPECT_EQ(cb_read.GetResult(rv_read), 4);
+  EXPECT_EQ(std::string_view(read_buffer->data(), 4), "AABB");
+
+  // Buffer should still be there.
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data1.size() + data2.size());
 
   entry->Close();
 }
