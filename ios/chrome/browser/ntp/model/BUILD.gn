@@ -49,7 +49,6 @@ source_set("util") {
     "//components/search_engines",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/web/common:features",
     "//ios/web/public",
   ]
 }
