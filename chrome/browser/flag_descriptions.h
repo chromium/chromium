@@ -3702,25 +3702,6 @@ inline constexpr char kReduceIPAddressChangeNotificationDescription[] =
     "Reduce the frequency of IP address change notifications that result in "
     "TCP and QUIC connection resets.";
 
-inline constexpr char kReduceAcceptLanguageHTTPName[] =
-    "Reduce Accept-Language request header only";
-inline constexpr char kReduceAcceptLanguageHTTPDescription[] =
-    "Reduce the amount of information available in the Accept-Language request "
-    "header only. chrome://flags/#reduce-accept-language overrides this flag, "
-    "and if enabled, the changes will take effect for Javascript as well. See "
-    "https://github.com/explainers-by-googlers/reduce-accept-language for more "
-    "information.";
-
-inline constexpr char kReduceAcceptLanguageName[] =
-    "Reduce Accept-Language request header and JavaScript navigator.languages.";
-inline constexpr char kReduceAcceptLanguageDescription[] =
-    "Reduce the amount of information in the Accept-Language request header "
-    "and JavaScript navigator.languages. Enabling this flag overrides the "
-    "behavior of chrome://flags/#reduce-accept-language-http, which by itself "
-    "only reduces the Accept-Language request header when enabled. For more "
-    "information, see "
-    "https://github.com/explainers-by-googlers/reduce-accept-language.";
-
 inline constexpr char kReduceTransferSizeUpdatedIPCName[] =
     "Reduce TransferSizeUpdated IPC";
 inline constexpr char kReduceTransferSizeUpdatedIPCDescription[] =

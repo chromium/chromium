@@ -8084,16 +8084,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "reduce-accept-language",
-    "owners": [ "victortan@chromium.org", "miketaylr@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "reduce-accept-language-http",
-    "owners": [ "victortan@chromium.org", "miketaylr@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "reduce-ip-address-change-notification",
     "owners": [ "horo@chromium.org", "net-dev@chromium.org"],
     "expiry_milestone": 135

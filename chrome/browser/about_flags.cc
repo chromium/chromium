@@ -9883,15 +9883,6 @@ const FeatureEntry kFeatureEntries[] = {
          kIsolateSandboxedIframesGroupingVariations,
          "IsolateSandboxedIframes" /* trial name */)},
 
-    {"reduce-accept-language", flag_descriptions::kReduceAcceptLanguageName,
-     flag_descriptions::kReduceAcceptLanguageDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kReduceAcceptLanguage)},
-
-    {"reduce-accept-language-http",
-     flag_descriptions::kReduceAcceptLanguageHTTPName,
-     flag_descriptions::kReduceAcceptLanguageHTTPDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kReduceAcceptLanguageHTTP)},
-
     {"reduce-transfer-size-updated-ipc",
      flag_descriptions::kReduceTransferSizeUpdatedIPCName,
      flag_descriptions::kReduceTransferSizeUpdatedIPCDescription, kOsAll,

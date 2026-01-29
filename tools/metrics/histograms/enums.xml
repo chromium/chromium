@@ -11223,7 +11223,6 @@ from previous Chrome versions.
   <int value="-1080893507" label="MessagesForAndroidStackingAnimation:enabled"/>
   <int value="-1080700029" label="ShowFeaturedEnterpriseSiteSearch:disabled"/>
   <int value="-1080220553" label="PrinterSettingsRevamp:enabled"/>
-  <int value="-1078892725" label="ReduceAcceptLanguage:enabled"/>
   <int value="-1078746384" label="MemoryUsageInHovercards:enabled"/>
   <int value="-1078093206" label="ash-debug-shortcuts"/>
   <int value="-1077767597" label="IwaKeyDistributionComponent:disabled"/>
@@ -16337,7 +16336,6 @@ from previous Chrome versions.
   <int value="690901353" label="WindowsSystemTracing:enabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691523087" label="GlicPanelResetOnStart:disabled"/>
-  <int value="691913191" label="ReduceAcceptLanguageHTTP:enabled"/>
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
   <int value="693480759" label="PageInfoAboutThisSiteEn:disabled"/>
@@ -16657,7 +16655,6 @@ from previous Chrome versions.
   <int value="788130042" label="PrivacySandboxSettings2:enabled"/>
   <int value="789384500"
       label="AutofillEnableSeparatePixPreferenceItem:enabled"/>
-  <int value="789521140" label="ReduceAcceptLanguageHTTP:disabled"/>
   <int value="789654228" label="ExternalNavigationDebugLogs:disabled"/>
   <int value="789778745" label="EwalletPayments:disabled"/>
   <int value="790411499" label="PageInfoStoreInfo:disabled"/>
@@ -19946,7 +19943,6 @@ from previous Chrome versions.
   <int value="1918410646" label="enable-model-quality-dogfood-logging"/>
   <int value="1918984253"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:disabled"/>
-  <int value="1919380242" label="ReduceAcceptLanguage:disabled"/>
   <int value="1919786756" label="FedCmDisconnect:disabled"/>
   <int value="1919917329" label="ImplicitRootScroller:disabled"/>
   <int value="1919955548" label="GlanceablesTimeManagementTasksView:disabled"/>
