@@ -43,6 +43,7 @@ bool ShouldSerializeEvent(Event event_type) {
   // serialization, so we don't serialize them from views.
   switch (event_type) {
     // TODO(crbug.com/40672441): Add events here as needed.
+    case Event::kActiveDescendantChanged:
     case Event::kChildrenChanged:
       return false;
     default:
@@ -66,7 +67,6 @@ bool ShouldSerializeEvent(Event event_type) {
   // Events fired by views on some platforms but not yet handled. These are
   // being addressed incrementally, one event at a time.
   switch (event_type) {
-    case Event::kActiveDescendantChanged:
     case Event::kAlert:
     case Event::kCheckedStateChanged:
     case Event::kControlsChanged:
