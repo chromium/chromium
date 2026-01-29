@@ -74,6 +74,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     ret = []
     for test_filter in self._test_instance.test_filters:
       ret += ['--gtest-filter', test_filter]
+    for test_filter_file in self._test_instance.test_filter_files:
+      ret += ['--test-launcher-filter-file', test_filter_file]
 
     if self._test_instance.package_filter:
       ret += ['--package-filter', self._test_instance.package_filter]

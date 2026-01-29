@@ -5,8 +5,11 @@
 package org.chromium.testing.local;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Parses command line arguments for JunitTestMain. */
@@ -34,6 +37,8 @@ public class JunitTestArgParser {
                         parsed.mRunnerFilters.add(Class.forName(args[++i]));
                     } else if ("gtest-filter".equals(argName)) {
                         parsed.mGtestFilters.add(args[++i]);
+                    } else if ("test-launcher-filter-file".equals(argName)) {
+                        parsed.mGtestFilters.add(readFilterFile(args[++i]));
                     } else if ("json-results".equals(argName)) {
                         parsed.mJsonOutput = args[++i];
                     } else if ("json-config".equals(argName)) {
@@ -63,5 +68,33 @@ public class JunitTestArgParser {
         }
 
         return parsed;
+    }
+
+    private static String readFilterFile(String path) throws IOException {
+        List<String> lines = Files.readAllLines(Path.of(path));
+        List<String> positive = new ArrayList<>();
+        List<String> negative = new ArrayList<>();
+        for (String line : lines) {
+            int commentIdx = line.indexOf('#');
+            if (commentIdx != -1) {
+                line = line.substring(0, commentIdx);
+            }
+            line = line.trim();
+            if (line.isEmpty()) {
+                continue;
+            }
+            if (line.startsWith("-")) {
+                negative.add(line.substring(1).replace('#', '.'));
+            } else {
+                positive.add(line.replace('#', '.'));
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.join(":", positive));
+        if (!negative.isEmpty()) {
+            sb.append("-");
+            sb.append(String.join(":", negative));
+        }
+        return sb.toString();
     }
 }

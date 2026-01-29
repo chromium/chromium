@@ -26,6 +26,13 @@ class JunitTestInstance(test_instance.TestInstance):
     self._shard_filter = None
     if args.shard_filter:
       self._shard_filter = {int(x) for x in args.shard_filter.split(',')}
+    # Keep a separate list of filter files to pass directly to java so we avoid
+    # long lists of filters overflowing the command line length limit on linux.
+    self._test_filter_files = []
+    if args.test_filter_files:
+      for f in args.test_filter_files:
+        self._test_filter_files.extend(f.split(';'))
+      args.test_filter_files = None
     self._test_filters = test_filter.InitializeFiltersFromArgs(args)
     self._test_suite = args.test_suite
     self._quiet = args.quiet
@@ -83,6 +90,11 @@ class JunitTestInstance(test_instance.TestInstance):
   @property
   def test_filters(self):
     return self._test_filters
+
+  @property
+  def test_filter_files(self):
+    return self._test_filter_files
+
 
   @property
   def json_config(self):
