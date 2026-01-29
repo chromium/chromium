@@ -32,9 +32,13 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_coordinator.h"
+#import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/coordinator/bookmarks_folder_chooser_coordinator.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/coordinator/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/ui/table_view_bookmarks_folder_item.h"
+#import "ios/chrome/browser/bookmarks/folder_editor/coordinator/bookmarks_folder_editor_coordinator.h"
+#import "ios/chrome/browser/bookmarks/folder_editor/coordinator/bookmarks_folder_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
@@ -45,8 +49,6 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_path_cache.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_table_cell_title_edit_delegate.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_consumer.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_mediator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_node_item.h"
@@ -73,6 +75,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
@@ -160,7 +163,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }  // namespace
 
 @interface BookmarksHomeViewController () <
-    BookmarksCoordinatorDelegate,
+    BookmarksEditorCoordinatorDelegate,
+    BookmarksFolderEditorCoordinatorDelegate,
     BookmarksFolderChooserCoordinatorDelegate,
     BookmarksHomeConsumer,
     BookmarkModelBridgeObserver,
@@ -180,6 +184,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 // A reference to the presented folder chooser.
 @property(nonatomic, strong)
     BookmarksFolderChooserCoordinator* folderChooserCoordinator;
+
+// A reference to the potentially presented single bookmark editor.
+@property(nonatomic, strong)
+    BookmarksEditorCoordinator* bookmarkEditorCoordinator;
+
+// A reference to the potentially presented folder editor.
+@property(nonatomic, strong)
+    BookmarksFolderEditorCoordinator* folderEditorCoordinator;
 
 // FaviconLoader is a keyed service that uses LargeIconService to retrieve
 // favicon images.
@@ -222,8 +234,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) AlertCoordinator* actionSheetCoordinator;
-
-@property(nonatomic, strong) BookmarksCoordinator* bookmarksCoordinator;
 
 @property(nonatomic, assign) WebStateList* webStateList;
 
@@ -285,8 +295,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [self stopSigninCoordinator];
   [self.editingFolderCell stopEdit];
   [self stopFolderChooserCoordinator];
-  [self.bookmarksCoordinator stop];
-  self.bookmarksCoordinator = nil;
+  [self stopBookmarksEditorCoordinator];
+  [self stopBookmarksFolderEditorCoordinator];
   [self.mediator disconnect];
   self.mediator.consumer = nil;
   self.mediator = nil;
@@ -307,7 +317,12 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       ![self.folderChooserCoordinator canDismiss]) {
     return NO;
   }
-  if (self.bookmarksCoordinator && ![self.bookmarksCoordinator canDismiss]) {
+  if (self.bookmarkEditorCoordinator &&
+      ![self.bookmarkEditorCoordinator canDismiss]) {
+    return NO;
+  }
+  if (self.folderEditorCoordinator &&
+      ![self.folderEditorCoordinator canDismiss]) {
     return NO;
   }
   return YES;
@@ -713,8 +728,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 - (void)showAccountSettings {
-  [self ensureBookmarksCoordinator];
-  [self.bookmarksCoordinator showAccountSettings];
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsHandler showSyncSettingsFromViewController:self];
 }
 
 #pragma mark - BookmarksHomeConsumer Helper
@@ -894,16 +910,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [self setTableViewEditing:NO];
 }
 
-// Ensures bookmarkInteractionController is set.
-- (void)ensureBookmarksCoordinator {
-  if (!self.bookmarksCoordinator) {
-    self.bookmarksCoordinator =
-        [[BookmarksCoordinator alloc] initWithBrowser:_browser.get()];
-    self.bookmarksCoordinator.baseViewController = self;
-    self.bookmarksCoordinator.delegate = self;
-  }
-}
-
 // Opens the editor for `nodeID` node, if it still exists. The node has to be
 // a bookmark node.
 - (void)editBookmarkNodeWithID:(int64_t)nodeID {
@@ -916,8 +922,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   DCHECK_EQ(bookmarkNode->type(), BookmarkNode::URL);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarkManagerEditBookmark"));
-  [self ensureBookmarksCoordinator];
-  [self.bookmarksCoordinator presentEditorForURLNode:bookmarkNode];
+  [self stopBookmarksEditorCoordinator];
+  self.bookmarkEditorCoordinator = [[BookmarksEditorCoordinator alloc]
+      initWithBaseViewController:self.navigationController
+                         browser:_browser.get()
+                            node:bookmarkNode
+         snackbarCommandsHandler:self.snackbarCommandsHandler];
+  self.bookmarkEditorCoordinator.delegate = self;
+  [self.bookmarkEditorCoordinator start];
 }
 
 // Opens the editor for `nodeID` node, if it still exists. The node has to be
@@ -932,8 +944,13 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   DCHECK_EQ(bookmarkNode->type(), BookmarkNode::FOLDER);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarkManagerEditFolder"));
-  [self ensureBookmarksCoordinator];
-  [self.bookmarksCoordinator presentEditorForFolderNode:bookmarkNode];
+  [self stopBookmarksFolderEditorCoordinator];
+  self.folderEditorCoordinator = [[BookmarksFolderEditorCoordinator alloc]
+      initWithBaseViewController:self.navigationController
+                         browser:_browser.get()
+                      folderNode:bookmarkNode];
+  self.folderEditorCoordinator.delegate = self;
+  [self.folderEditorCoordinator start];
 }
 
 - (void)openAllURLs:(std::vector<GURL>)urls
@@ -1287,10 +1304,40 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [self setTableViewEditing:NO];
 }
 
-#pragma mark - BookmarksCoordinatorDelegate
+#pragma mark - BookmarksEditorCoordinatorDelegate
 
-- (void)bookmarksCoordinatorWillCommitTitleOrURLChange:
-    (BookmarksCoordinator*)coordinator {
+- (void)bookmarksEditorCoordinatorShouldStop:
+    (BookmarksEditorCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.bookmarkEditorCoordinator);
+  [self stopBookmarksEditorCoordinator];
+}
+
+- (void)bookmarkEditorWillCommitTitleOrURLChange:
+    (BookmarksEditorCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.bookmarkEditorCoordinator);
+  [self setTableViewEditing:NO];
+}
+
+#pragma mark - BookmarksFolderEditorCoordinatorDelegate
+
+- (void)bookmarksFolderEditorCoordinator:
+            (BookmarksFolderEditorCoordinator*)folderEditor
+              didFinishEditingFolderNode:
+                  (const bookmarks::BookmarkNode*)folder {
+  CHECK_EQ(folderEditor, self.folderEditorCoordinator);
+  CHECK(folder, base::NotFatalUntil::M152);
+  [self stopBookmarksFolderEditorCoordinator];
+}
+
+- (void)bookmarksFolderEditorCoordinatorShouldStop:
+    (BookmarksFolderEditorCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.folderEditorCoordinator);
+  [self stopBookmarksFolderEditorCoordinator];
+}
+
+- (void)bookmarksFolderEditorWillCommitTitleChange:
+    (BookmarksFolderEditorCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.folderEditorCoordinator);
   [self setTableViewEditing:NO];
 }
 
@@ -1566,6 +1613,20 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [_folderChooserCoordinator stop];
   _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
+}
+
+// Stops the bookmark editor coordinator.
+- (void)stopBookmarksEditorCoordinator {
+  [self.bookmarkEditorCoordinator stop];
+  self.bookmarkEditorCoordinator.delegate = nil;
+  self.bookmarkEditorCoordinator = nil;
+}
+
+// Stops the folder editor coordinator.
+- (void)stopBookmarksFolderEditorCoordinator {
+  [self.folderEditorCoordinator stop];
+  self.folderEditorCoordinator.delegate = nil;
+  self.folderEditorCoordinator = nil;
 }
 
 - (BOOL)isDisplayingBookmarkRoot {
