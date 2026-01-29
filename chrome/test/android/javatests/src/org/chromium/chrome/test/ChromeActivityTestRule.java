@@ -6,7 +6,9 @@ package org.chromium.chrome.test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -23,6 +25,7 @@ import org.junit.runners.model.Statement;
 import org.mockito.Mockito;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Holder;
 import org.chromium.base.Log;
@@ -131,6 +134,13 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                         + " prevent any IPH from showing. See crbug.com/342240475.");
         Tracker tracker = Mockito.mock(Tracker.class);
         when(tracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
+        doAnswer(
+                        invocation -> {
+                            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
+                            return null;
+                        })
+                .when(tracker)
+                .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(tracker);
         ResettersForTesting.register(() -> Mockito.reset(tracker));
     }

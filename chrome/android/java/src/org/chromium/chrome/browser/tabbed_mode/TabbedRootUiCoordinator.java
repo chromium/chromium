@@ -263,7 +263,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
     private ReadAloudIphController mReadAloudIphController;
-    private ReadLaterIphController mReadLaterIphController;
+    private @Nullable ReadLaterIphController mReadLaterIphController;
     private DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
     private PdfPageIphController mPdfPageIphController;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
@@ -317,6 +317,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable SideUiCoordinator mSideUiCoordinator;
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
     private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final OneshotSupplierImpl<Boolean> mTrackerInitializedOneshotSupplier =
+            new OneshotSupplierImpl<>();
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -645,6 +647,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity,
                         modalDialogManagerSupplier,
                         snackbarManagerSupplier);
+
+        new OneShotCallback<>(mProfileSupplier, this::waitForTrackerInit);
 
         try {
             PackageManager packageManager = mActivity.getPackageManager();
@@ -1032,7 +1036,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mIntentMetadataOneshotSupplier.get().getIsIntentWithEffect());
                         }),
                 mIntentMetadataOneshotSupplier,
-                mProfileSupplier);
+                mProfileSupplier,
+                mTrackerInitializedOneshotSupplier);
 
         // TODO(crbug.com/40736706): Investigate switching to per-Activity coordinator that
         // uses signals from the current Tab to decide when to show the PWA install bottom sheet
@@ -1836,6 +1841,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /** Called when a link is copied through context menu. */
     public void onContextMenuCopyLink() {
+        // The iph controller will be null before tracker fully initialized.
+        if (mReadLaterIphController == null) return;
         // TODO(crbug.com/40732234): Find a better way of passing event for IPH.
         mReadLaterIphController.onCopyContextMenuItemClicked();
     }
@@ -2151,6 +2158,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onDailyRefreshThemeCollectionApplied() {
         if (mNtpSyncedThemeManager != null) {
             mNtpSyncedThemeManager.fetchNextThemeCollectionImageAfterDailyRefreshApplied();
+        }
+    }
+
+    private void waitForTrackerInit(Profile profile) {
+        Tracker trackerForProfile = TrackerFactory.getTrackerForProfile(profile);
+        if (trackerForProfile.isInitialized()) {
+            mTrackerInitializedOneshotSupplier.set(true);
+        } else {
+            trackerForProfile.addOnInitializedCallback(
+                    result -> {
+                        mTrackerInitializedOneshotSupplier.set(true);
+                    });
         }
     }
 }
