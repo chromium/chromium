@@ -452,8 +452,6 @@ const CGFloat kPlaceholderLeadingPadding = 4.0;
                           range:NSMakeRange(0, self.attributedText.length)];
   self.attributedText = attributedText;
 
-  // clearsOnInsertion calls selectAll which remove preEditing.
-  self.clearsOnInsertion = YES;
   self.preEditing = YES;
   [self.heightDelegate textViewContentChanged:self];
 }
@@ -464,7 +462,6 @@ const CGFloat kPlaceholderLeadingPadding = 4.0;
     return;
   }
   self.preEditing = NO;
-  self.clearsOnInsertion = NO;
 
   NSMutableDictionary<NSAttributedStringKey, id>* attributes =
       self.typingAttributes.mutableCopy;
@@ -473,15 +470,20 @@ const CGFloat kPlaceholderLeadingPadding = 4.0;
                 forKey:NSBackgroundColorAttributeName];
   self.typingAttributes = attributes;
 
-  // Also apply the attributes to the whole text.
-  if (!self.clearingPreEditText) {
+  if (self.clearingPreEditText) {
+    // Clear pre-edit text manually instead of relying on clearsOnInsertion.
+    // clearsOnInsertion calls selectAll: which can can crash when called on
+    // begin editing (crbug.com/479185287).
+    self.attributedText = [[NSAttributedString alloc] init];
+  } else {
+    // Also apply the attributes to the whole text.
     NSMutableAttributedString* attributedText =
         [self.attributedText mutableCopy];
     [attributedText addAttributes:attributes
                             range:NSMakeRange(0, self.attributedText.length)];
     self.attributedText = attributedText;
-    [self.heightDelegate textViewContentChanged:self];
   }
+  [self.heightDelegate textViewContentChanged:self];
 }
 
 #pragma mark - UITextView
