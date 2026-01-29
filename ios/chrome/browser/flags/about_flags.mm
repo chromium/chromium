@@ -2466,12 +2466,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillBottomSheetNewBlurName,
      flag_descriptions::kAutofillBottomSheetNewBlurDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAutofillBottomSheetNewBlur)},
-    {"enable-cross-device-pref-tracker",
-     flag_descriptions::kEnableCrossDevicePrefTrackerName,
-     flag_descriptions::kEnableCrossDevicePrefTrackerDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         sync_preferences::features::kEnableCrossDevicePrefTracker)},
     {"ios-app-bundle-promo-magic-stack",
      flag_descriptions::kIOSAppBundlePromoEphemeralCardName,
      flag_descriptions::kIOSAppBundlePromoEphemeralCardDescription,

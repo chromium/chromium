@@ -14434,7 +14434,6 @@
                         "SyncedSetUpImpressionLimit": "1"
                     },
                     "enable_features": [
-                        "EnableCrossDevicePrefTracker",
                         "IOSSyncedSetUp"
                     ]
                 }

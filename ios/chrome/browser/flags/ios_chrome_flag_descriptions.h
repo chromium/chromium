@@ -315,9 +315,6 @@ extern const char kEnableClipboardDataControlsIOSDescription[];
 extern const char kEnableCompromisedPasswordsMutingName[];
 extern const char kEnableCompromisedPasswordsMutingDescription[];
 
-extern const char kEnableCrossDevicePrefTrackerName[];
-extern const char kEnableCrossDevicePrefTrackerDescription[];
-
 extern const char kEnableFamilyLinkControlsName[];
 extern const char kEnableFamilyLinkControlsDescription[];
 
