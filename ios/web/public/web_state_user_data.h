@@ -37,15 +37,12 @@ class WebStateUserData : public base::SupportsUserData::Data {
     CHECK(web_state);
     CHECK(!web_state->IsBeingDestroyed());
 
-    // Fail if a tab helper is created for an unrealized WebState and
-    // the feature kCreateTabHelperOnlyForRealizedWebStates is enabled.
-    // If this CHECK(...) fails, the issue is in the code creating the
-    // tab helper, not in the WebStateUserData<T> implementation (i.e.
+    // Fail if a TabHelper is created for an unrealized WebState. If
+    // this CHECK(...) fails, the issue is in the code creating the
+    // TabHelper, not in the WebStateUserData<T> implementation (i.e.
     // look at the caller of this method to determine who should debug
     // this crash).
-    if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
-      CHECK(web_state->IsRealized(), base::NotFatalUntil::M160);
-    }
+    CHECK(web_state->IsRealized(), base::NotFatalUntil::M160);
 
     if (!FromWebState(web_state)) {
       web_state->SetUserData(UserDataKey(),
