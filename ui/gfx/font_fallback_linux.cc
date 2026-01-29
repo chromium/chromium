@@ -8,7 +8,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <string_view>
 
@@ -20,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/font_utils.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -368,7 +368,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
     FcResult result;
     FcFontSet* fonts = FcFontSort(config, pattern, FcTrue, nullptr, &result);
     if (fonts) {
-      std::set<std::string> fallback_names;
+      absl::flat_hash_set<std::string> fallback_names;
       for (int i = 0; i < fonts->nfont; ++i) {
         std::string name_str = GetFontName(UNSAFE_TODO(fonts->fonts[i]));
         if (name_str.empty())
@@ -377,7 +377,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
         // FontConfig returns multiple fonts with the same family name and
         // different configurations. Check to prevent duplicate family names.
         if (fallback_names.insert(name_str).second)
-          fallback_fonts.push_back(Font(name_str, 13));
+          fallback_fonts.emplace_back(std::move(name_str), 13);
       }
       FcFontSetDestroy(fonts);
     }
