@@ -5,3 +5,7 @@ sophiechang@chromium.org
 tiborg@chromium.org
 
 file://components/lens/OWNERS
+
+# Android only OWNERS.
+per-file *.java=file://components/omnibox/browser/android/OWNERS
+per-file BUILD.gn=file://components/omnibox/browser/android/OWNERS
