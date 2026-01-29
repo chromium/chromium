@@ -1384,14 +1384,12 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
 
   const base::optional_ref<const EntityInstance> entity =
       GetEntityInstance(suggestion);
-  if (!entity) {
+  auto [form_structure, autofill_field] = GetQueriedFormAndField();
+  if (!entity || !autofill_field) {
     return;
   }
-
-  auto [form_structure, autofill_field] = GetQueriedFormAndField();
   const AutofillTriggerSource trigger_source = GetTriggerSource();
-  if (!autofill_field ||
-      !ShouldReauthBeforeFilling(*entity,
+  if (!ShouldReauthBeforeFilling(*entity,
                                  RationalizeAndDetermineAttributeTypes(
                                      form_structure->fields(),
                                      autofill_field->section(), entity->type()),
