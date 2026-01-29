@@ -60,6 +60,7 @@
 }
 
 - (void)disconnect {
+  [super disconnect];
   _fullscreenController = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
