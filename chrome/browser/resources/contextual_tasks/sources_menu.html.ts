@@ -10,10 +10,6 @@ export function getHtml(this: SourcesMenuElement) {
   return html`<!--_html_template_start_-->
     <cr-action-menu id="menu">
       <div class="header">$i18n{sourcesMenuTitle}</div>
-
-      ${this.attachedTabs.length > 0 ? html`
-        <div class="header">$i18n{sourcesMenuTabsHeader}</div>
-      ` : ''}
       ${this.attachedTabs.map((item, index) => html`
         <button class="dropdown-item" @click="${this.onTabClick_}"
             data-index="${index}">
@@ -28,13 +24,6 @@ export function getHtml(this: SourcesMenuElement) {
           </div>
         </button>
       `)}
-
-      ${this.shouldShowDividerBeforeImagesSection_() ? html`
-        <div class="divider"></div>
-      ` : ''}
-      ${this.attachedImages.length > 0  ? html`
-        <div class="header">$i18n{sourcesMenuImagesHeader}</div>
-      ` : ''}
       ${this.attachedImages.map((item, index) => html`
         <button class="dropdown-item" @click="${this.onImageClick_}"
             data-index="${index}">
@@ -45,18 +34,11 @@ export function getHtml(this: SourcesMenuElement) {
           <div class="image-title">${item.title}</div>
         </button>
       `)}
-
-      ${this.shouldShowFileDividerBeforeTabsSection_() ? html`
-        <div class="divider"></div>
-      ` : ''}
-      ${this.attachedFiles.length > 0 ? html`
-        <div class="header">$i18n{sourcesMenuFilesHeader}</div>
-      ` : ''}
       ${this.attachedFiles.map((item, index) => html`
         <button class="dropdown-item" @click="${this.onFileClick_}"
             data-index="${index}">
           <div class="icon-container">
-            <cr-icon icon="composebox:fileUpload" class="file-icon">
+            <cr-icon icon="thumbnail:pdf" class="file-icon">
             </cr-icon>
           </div>
           <div class="file-name">${item.name}</div>
