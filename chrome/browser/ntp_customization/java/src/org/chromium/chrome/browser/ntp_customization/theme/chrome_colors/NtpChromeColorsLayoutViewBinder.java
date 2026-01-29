@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED;
-import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.PRIMARY_COLOR_CIRCLE_VIEW_COLOR;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.RECYCLER_VIEW_ADAPTER;
@@ -45,9 +44,6 @@ public class NtpChromeColorsLayoutViewBinder {
         if (propertyKey == BACK_BUTTON_CLICK_LISTENER) {
             View backButton = view.findViewById(R.id.back_button);
             backButton.setOnClickListener(model.get(BACK_BUTTON_CLICK_LISTENER));
-        } else if (propertyKey == LEARN_MORE_BUTTON_CLICK_LISTENER) {
-            ImageView learnMoreButton = view.findViewById(R.id.learn_more_button);
-            learnMoreButton.setOnClickListener(model.get(LEARN_MORE_BUTTON_CLICK_LISTENER));
         } else if (propertyKey == SAVE_BUTTON_CLICK_LISTENER) {
             ImageView saveButton = view.findViewById(R.id.save_button);
             if (saveButton != null) {

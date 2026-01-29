@@ -43,7 +43,6 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
 
     @Mock private View mLayoutView;
     @Mock private View mBackButton;
-    @Mock private ImageView mLearnMoreButton;
     @Mock private ImageView mSaveButton;
     @Mock private EditText mBackgroundColorInput;
     @Mock private EditText mPrimaryColorInput;
@@ -69,7 +68,6 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
                 mModel, mLayoutView, NtpChromeColorsLayoutViewBinder::bind);
 
         when(mLayoutView.findViewById(R.id.back_button)).thenReturn(mBackButton);
-        when(mLayoutView.findViewById(R.id.learn_more_button)).thenReturn(mLearnMoreButton);
         when(mLayoutView.findViewById(R.id.save_button)).thenReturn(mSaveButton);
         when(mLayoutView.findViewById(R.id.background_color_input))
                 .thenReturn(mBackgroundColorInput);
@@ -95,12 +93,6 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
     public void testSetBackClickListener() {
         mModel.set(NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER, mOnClickListener);
         verify(mBackButton).setOnClickListener(eq(mOnClickListener));
-    }
-
-    @Test
-    public void testSetLearnMoreClickListener() {
-        mModel.set(NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER, mOnClickListener);
-        verify(mLearnMoreButton).setOnClickListener(eq(mOnClickListener));
     }
 
     @Test

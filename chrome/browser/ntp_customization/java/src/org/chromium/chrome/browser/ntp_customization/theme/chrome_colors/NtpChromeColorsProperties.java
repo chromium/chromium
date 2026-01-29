@@ -20,8 +20,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class NtpChromeColorsProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener> BACK_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<View.OnClickListener>
-            LEARN_MORE_BUTTON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener> SAVE_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<TextWatcher> BACKGROUND_COLOR_INPUT_TEXT_WATCHER =
@@ -60,7 +58,6 @@ public class NtpChromeColorsProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BACK_BUTTON_CLICK_LISTENER,
-                LEARN_MORE_BUTTON_CLICK_LISTENER,
                 SAVE_BUTTON_CLICK_LISTENER,
                 BACKGROUND_COLOR_INPUT_TEXT_WATCHER,
                 PRIMARY_COLOR_INPUT_TEXT_WATCHER,

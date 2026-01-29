@@ -107,8 +107,6 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
         assertNotNull(mPropertyModel.get(NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER));
         assertNotNull(
-                mPropertyModel.get(NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER));
-        assertNotNull(
                 mPropertyModel.get(NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER));
         assertNotNull(
                 mPropertyModel.get(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER));
@@ -142,8 +140,6 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
         assertNotNull(mPropertyModel.get(NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER));
         assertNotNull(
-                mPropertyModel.get(NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER));
-        assertNotNull(
                 mPropertyModel.get(NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER));
         assertNotNull(
                 mPropertyModel.get(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER));
@@ -155,7 +151,6 @@ public class NtpChromeColorsCoordinatorUnitTest {
         mCoordinator.destroy();
 
         assertNull(mPropertyModel.get(NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER));
-        assertNull(mPropertyModel.get(NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER));
         assertNull(
                 mPropertyModel.get(NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER));
         assertNull(mPropertyModel.get(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER));

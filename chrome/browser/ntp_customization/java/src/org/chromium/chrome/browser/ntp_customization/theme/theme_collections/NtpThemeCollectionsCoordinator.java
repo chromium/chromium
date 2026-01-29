@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
 import static org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsAdapter.ThemeCollectionsItemType.THEME_COLLECTIONS_ITEM;
 
 import android.content.ComponentCallbacks;
@@ -15,7 +14,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,9 +34,6 @@ import java.util.List;
 /** Coordinator for the NTP appearance theme collections bottom sheet in the NTP customization. */
 @NullMarked
 public class NtpThemeCollectionsCoordinator {
-    // TODO(crbug.com/423579377): Update the url for learn more button.
-    private static final String LEARN_MORE_CLICK_URL =
-            "https://support.google.com/chrome/?p=new_tab";
     private static final int RECYCLE_VIEW_SPAN_COUNT = 3;
 
     private final List<BackgroundCollection> mThemeCollectionsList;
@@ -46,7 +41,6 @@ public class NtpThemeCollectionsCoordinator {
     private final Context mContext;
     private final View mNtpThemeCollectionsBottomSheetView;
     private final View mBackButton;
-    private final ImageView mLearnMoreButton;
     private final RecyclerView mThemeCollectionsBottomSheetRecyclerView;
     private final NtpThemeCollectionManager mNtpThemeCollectionManager;
     private final ImageFetcher mImageFetcher;
@@ -107,10 +101,6 @@ public class NtpThemeCollectionsCoordinator {
         mBackButton = mNtpThemeCollectionsBottomSheetView.findViewById(R.id.back_button);
         mBackButton.setOnClickListener(v -> mBottomSheetDelegate.showBottomSheet(THEME));
 
-        // Manage the learn more button in the theme collections bottom sheet.
-        mLearnMoreButton = mNtpThemeCollectionsBottomSheetView.findViewById(R.id.learn_more_button);
-        mLearnMoreButton.setOnClickListener(this::handleLearnMoreClick);
-
         // Build the RecyclerView containing theme collections in the bottom sheet.
         mThemeCollectionsBottomSheetRecyclerView =
                 mNtpThemeCollectionsBottomSheetView.findViewById(
@@ -157,7 +147,6 @@ public class NtpThemeCollectionsCoordinator {
         mImageFetcher.destroy();
 
         mBackButton.setOnClickListener(null);
-        mLearnMoreButton.setOnClickListener(null);
 
         if (mNtpThemeCollectionsAdapter != null) {
             mNtpThemeCollectionsAdapter.clearOnClickListeners();
@@ -247,10 +236,6 @@ public class NtpThemeCollectionsCoordinator {
 
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.SINGLE_THEME_COLLECTION);
         NtpCustomizationMetricsUtils.recordThemeCollectionShow(themeCollectionHash);
-    }
-
-    private void handleLearnMoreClick(View view) {
-        launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
     }
 
     void setNtpThemeCollectionsAdapterForTesting(NtpThemeCollectionsAdapter adapter) {
