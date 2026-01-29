@@ -11562,6 +11562,34 @@
             ]
         }
     ],
+    "GlicButtonPressedState": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "glic-button-container-background": "false",
+                        "glic-button-pressed-force-solid-icon": "true"
+                    },
+                    "enable_features": [
+                        "GlicButtonPressedState"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "GlicButtonPressedState"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicClientResponsivenessCheckExtension": [
         {
             "platforms": [
