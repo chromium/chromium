@@ -43,6 +43,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -80,6 +81,23 @@ class WebUIToolbarInternalWebView : public views::WebView {
 
     views::WebView::RendererUnresponsive(source, render_widget_host,
                                          std::move(hang_monitor_restarter));
+  }
+
+  void OnFocus() override {
+    // The default OnFocus() implementation calls WebContents::Focus(), which
+    // restores focus to the last focused element. If the focus was
+    // never established, WebContents::Focus() will focus the <body>, which
+    // doesn't show a focus ring.
+    views::WebView::OnFocus();
+
+    // For a programmatic focus (kDirectFocusChange), focuses the first
+    // focusable element in the HTML document by calling
+    // WebContents::FocusThroughTabTraversal().
+    if (GetFocusManager()->focus_change_reason() ==
+            views::FocusManager::FocusChangeReason::kDirectFocusChange &&
+        IsWebContentsAlive()) {
+      web_contents()->FocusThroughTabTraversal(/*reverse=*/false);
+    }
   }
 };
 

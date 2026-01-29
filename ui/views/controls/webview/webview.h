@@ -225,6 +225,8 @@ class WEBVIEW_EXPORT WebView : public View,
   // WidgetAXManagerObserver:
   void OnWidgetAXManagerEnabled() override;
 
+  bool IsWebContentsAlive() const;
+
  private:
   friend class WebViewUnitTest;
   bool IsObservingAXModeForTesting();

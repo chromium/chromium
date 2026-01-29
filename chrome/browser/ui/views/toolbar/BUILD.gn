@@ -320,6 +320,7 @@ if (!is_android && !is_chromeos_device) {
         "toolbar_action_hover_card_bubble_view_interactive_uitest.cc",
         "toolbar_controller_interactive_uitest.cc",
         "toolbar_view_interactive_uitest.cc",
+        "webui_toolbar_web_view_uitest.cc",
       ]
     }
 
@@ -338,6 +339,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/waap",
       "//chrome/browser/user_education",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

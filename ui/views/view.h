@@ -55,6 +55,7 @@
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/actions/action_view_interface.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/paint_info.h"
@@ -1446,6 +1447,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Request keyboard focus. The receiving view will become the focused view.
   virtual void RequestFocus();
+
+  // Request focus on this View with a reason.
+  void RequestFocusWithReason(FocusManager::FocusChangeReason reason);
 
   // Invoked when a view is about to be requested for focus due to the focus
   // traversal. Reverse is this request was generated going backward

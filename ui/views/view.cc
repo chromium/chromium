@@ -2088,15 +2088,27 @@ const FocusManager* View::GetFocusManager() const {
 }
 
 void View::RequestFocus() {
+  auto focus_reason =
+      GetFocusManager() && GetFocusManager()->is_restoring_focused_view()
+          ? FocusManager::FocusChangeReason::kFocusRestore
+          : FocusManager::FocusChangeReason::kDirectFocusChange;
+  RequestFocusWithReason(focus_reason);
+}
+
+void View::RequestFocusWithReason(FocusManager::FocusChangeReason reason) {
   FocusManager* focus_manager = GetFocusManager();
-  if (focus_manager) {
-    bool focusable = focus_manager->keyboard_accessible()
-                         ? GetViewAccessibility().IsAccessibilityFocusable()
-                         : IsFocusable();
-    if (focusable) {
-      focus_manager->SetFocusedView(this);
-    }
+  if (!focus_manager) {
+    return;
   }
+
+  bool focusable = focus_manager->keyboard_accessible()
+                       ? GetViewAccessibility().IsAccessibilityFocusable()
+                       : IsFocusable();
+  if (!focusable) {
+    return;
+  }
+
+  focus_manager->SetFocusedViewWithReason(this, reason);
 }
 
 bool View::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
