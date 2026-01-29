@@ -138,7 +138,6 @@ source_set("page_placeholder") {
     "//ios/chrome/browser/snapshots/model:features",
     "//ios/chrome/common/ui/util",
     "//ios/net",
-    "//ios/web/common:features",
   ]
   public_deps = [ "//ios/web/public" ]
 }
