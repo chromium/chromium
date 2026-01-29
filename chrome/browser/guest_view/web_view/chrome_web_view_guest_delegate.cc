@@ -76,7 +76,12 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
 
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(web_contents);
-  DCHECK(menu_delegate);
+#if BUILDFLAG(IS_ANDROID)
+  if (!menu_delegate) {  // TODO(b/479602478): May be null on Android.
+    return false;
+  }
+#endif
+  CHECK(menu_delegate);
   pending_menu_ = menu_delegate->BuildMenu(render_frame_host, params);
   // It's possible for the returned menu to be null, so early out to avoid
   // a crash. TODO(wjmaclean): find out why it's possible for this to happen
