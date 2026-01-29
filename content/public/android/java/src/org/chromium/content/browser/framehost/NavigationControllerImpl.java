@@ -175,9 +175,16 @@ import org.chromium.url.Origin;
                     params.getInputStartTimestamp() == 0
                             ? params.getIntentReceivedTimestamp()
                             : params.getInputStartTimestamp();
-            RecordHistogram.recordTimesHistogram(
-                    "Android.Omnibox.InputToNavigationControllerStart",
-                    SystemClock.uptimeMillis() - inputStart);
+            // This UMA metric tracks the time between the user input that triggered an Omnibox
+            // navigation and the start of the navigation in the native code. We filter out
+            // cases where inputStart is 0. This happens for some browser-initiated navigations
+            // (e.g. opening URL in a new tab via WebContentsDelegateAndroid::OpenURLFromTab)
+            // where the timestamp is not propagated to Java.
+            if (inputStart > 0) {
+                RecordHistogram.recordTimesHistogram(
+                        "Android.Omnibox.InputToNavigationControllerStart2",
+                        SystemClock.uptimeMillis() - inputStart);
+            }
             navigationHandle =
                     NavigationControllerImplJni.get()
                             .loadUrl(

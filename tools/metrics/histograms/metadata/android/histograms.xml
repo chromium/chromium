@@ -3714,14 +3714,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Omnibox.InputToNavigationControllerStart" units="ms"
+<histogram name="Android.Omnibox.InputToNavigationControllerStart2" units="ms"
     expires_after="2026-05-31">
   <owner>spelchat@chromium.org</owner>
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Records time between the user input that triggered an Omnibox navigation on
     Android to the time the Omnibox code calls into the shared C++ navigation
-    code (NavigationController).
+    code (NavigationController). The UMA is recorded each time a URL is loaded
+    in the NavigationController with a valid input start timestamp.
+
+    Compared to InputToNavigationControllerStart2, this metric filters out cases
+    where the input start timestamp is 0, which can happen for some
+    browser-initiated navigations (e.g. opening URL in a new tab).
   </summary>
 </histogram>
 
