@@ -9,6 +9,7 @@ export default {
     'block-no-empty': true,
     'declaration-block-no-duplicate-custom-properties': true,
     'declaration-block-no-duplicate-properties': true,
+    'no-duplicate-selectors': true,
 
     '@stylistic/no-missing-end-of-source-newline': true,
 
