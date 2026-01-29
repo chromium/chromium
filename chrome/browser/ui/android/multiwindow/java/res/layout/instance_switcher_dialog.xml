@@ -5,13 +5,15 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.chromium.components.browser_ui.widget.BoundedLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/instance_switcher_dialog_content_padding"
-    android:paddingTop="@dimen/instance_switcher_dialog_content_padding">
+    android:paddingTop="@dimen/instance_switcher_dialog_content_padding"
+    app:maxHeight="@dimen/instance_switcher_dialog_max_height">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
@@ -66,4 +68,4 @@ found in the LICENSE file.
 
     <include layout="@layout/instance_switcher_cmd_item" />
 
-</LinearLayout>
+</org.chromium.components.browser_ui.widget.BoundedLinearLayout>

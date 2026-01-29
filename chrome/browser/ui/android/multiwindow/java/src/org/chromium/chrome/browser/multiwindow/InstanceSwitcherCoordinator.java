@@ -11,6 +11,7 @@ import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSim
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.util.TimeTextResolver;
+import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -77,6 +80,7 @@ public class InstanceSwitcherCoordinator {
     private final ModalDialogManager mModalDialogManager;
     private final int mMaxInstanceCount;
     private final int mMinCommandItemHeightPx;
+    private final int mItemPaddingHeightPx;
 
     private final ModelList mActiveModelList = new ModelList();
     private final ModelList mInactiveModelList = new ModelList();
@@ -143,6 +147,9 @@ public class InstanceSwitcherCoordinator {
         mMinCommandItemHeightPx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.instance_switcher_dialog_list_item_height);
+        mItemPaddingHeightPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.instance_switcher_dialog_list_item_padding);
         mIsIncognitoWindow = isIncognitoWindow;
         mSelectedItems = new HashSet<>();
 
@@ -150,6 +157,13 @@ public class InstanceSwitcherCoordinator {
         var inactiveListAdapter = getInstanceListAdapter(/* active= */ false);
 
         mDialogView = LayoutInflater.from(context).inflate(R.layout.instance_switcher_dialog, null);
+        int screenSize =
+                mContext.getResources().getConfiguration().screenLayout
+                        & Configuration.SCREENLAYOUT_SIZE_MASK;
+        boolean isFullScreen = screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE;
+        ((BoundedLinearLayout) mDialogView).setIgnoreConstraints(false, isFullScreen);
+
+        mTabHeaderRow = mDialogView.findViewById(R.id.tabs);
         mInstanceListContainer = mDialogView.findViewById(R.id.instance_list_container);
         mMaxInfoView = mDialogView.findViewById(R.id.max_instance_info);
         mInactiveListEmptyStateView = mDialogView.findViewById(R.id.inactive_list_empty_state_view);
@@ -159,11 +173,8 @@ public class InstanceSwitcherCoordinator {
             newWindowTextView.setText(R.string.menu_new_incognito_window);
         }
 
-        int itemVerticalSpacing =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.instance_switcher_dialog_list_item_padding);
-        mActiveListItemDecoration = new DialogListItemDecoration(itemVerticalSpacing);
-        var inactiveListItemDecoration = new DialogListItemDecoration(itemVerticalSpacing);
+        mActiveListItemDecoration = new DialogListItemDecoration(mItemPaddingHeightPx);
+        var inactiveListItemDecoration = new DialogListItemDecoration(mItemPaddingHeightPx);
 
         mActiveInstancesList = mDialogView.findViewById(R.id.active_instance_list);
         mActiveInstancesList.setLayoutManager(
@@ -178,14 +189,16 @@ public class InstanceSwitcherCoordinator {
         mInactiveInstancesList.addItemDecoration(inactiveListItemDecoration);
 
         addInstanceListGlobalLayoutListener(
+                mDialogView,
+                mTabHeaderRow,
                 mInstanceListContainer,
                 mActiveInstancesList,
                 mInactiveInstancesList,
                 mIsInactiveListShowing,
                 mNewWindowLayout,
-                mMinCommandItemHeightPx);
+                mMinCommandItemHeightPx,
+                mItemPaddingHeightPx);
 
-        mTabHeaderRow = mDialogView.findViewById(R.id.tabs);
         mTabHeaderRow.addOnTabSelectedListener(
                 new OnTabSelectedListener() {
                     @Override
@@ -196,12 +209,15 @@ public class InstanceSwitcherCoordinator {
                                 isActiveTab ? View.GONE : View.VISIBLE);
                         mIsInactiveListShowing = !isActiveTab;
                         addInstanceListGlobalLayoutListener(
+                                mDialogView,
+                                mTabHeaderRow,
                                 mInstanceListContainer,
                                 mActiveInstancesList,
                                 mInactiveInstancesList,
                                 mIsInactiveListShowing,
                                 mNewWindowLayout,
-                                mMinCommandItemHeightPx);
+                                mMinCommandItemHeightPx,
+                                mItemPaddingHeightPx);
                         updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
                         unselectItems(/* hideVisibleList= */ false);
                         updateMoreMenu();
@@ -230,12 +246,15 @@ public class InstanceSwitcherCoordinator {
 
     // Adds a listener to layout the command item correctly relative to the instance list view.
     /* package */ static OnGlobalLayoutListener addInstanceListGlobalLayoutListener(
+            View dialogView,
+            TabLayout tabHeaderRow,
             View instanceListContainer,
             RecyclerView activeInstancesList,
             RecyclerView inactiveInstancesList,
             boolean isInactiveListShowing,
             View newWindowLayout,
-            int minCommandItemHeightPx) {
+            int minCommandItemHeightPx,
+            int itemPaddingHeightPx) {
         var listener =
                 new OnGlobalLayoutListener() {
                     @Override
@@ -244,12 +263,15 @@ public class InstanceSwitcherCoordinator {
                                 .getViewTreeObserver()
                                 .removeOnGlobalLayoutListener(this);
                         maybeUpdateInstanceListContainerParams(
+                                dialogView,
+                                tabHeaderRow,
                                 instanceListContainer,
                                 activeInstancesList,
                                 inactiveInstancesList,
                                 isInactiveListShowing,
                                 newWindowLayout,
-                                minCommandItemHeightPx);
+                                minCommandItemHeightPx,
+                                itemPaddingHeightPx);
                     }
                 };
         instanceListContainer.getViewTreeObserver().addOnGlobalLayoutListener(listener);
@@ -257,33 +279,50 @@ public class InstanceSwitcherCoordinator {
     }
 
     private static void maybeUpdateInstanceListContainerParams(
+            View dialogView,
+            TabLayout tabHeaderRow,
             View instanceListContainer,
             RecyclerView activeInstancesList,
             RecyclerView inactiveInstancesList,
             boolean isInactiveListShowing,
             View newWindowLayout,
-            int minCommandItemHeightPx) {
-        LinearLayout.LayoutParams params =
-                (LinearLayout.LayoutParams) instanceListContainer.getLayoutParams();
+            int minCommandItemHeightPx,
+            int itemPaddingHeightPx) {
+        LayoutParams params = (LayoutParams) instanceListContainer.getLayoutParams();
 
-        int newWindowLayoutHeight =
-                (newWindowLayout != null && newWindowLayout.getVisibility() == View.VISIBLE)
-                        ? newWindowLayout.getMeasuredHeight()
-                        : 0;
+        int nonLastItemHeightPx = minCommandItemHeightPx + itemPaddingHeightPx;
+        int activeListItemCount = assumeNonNull(activeInstancesList.getAdapter()).getItemCount();
+        int inactiveListItemCount =
+                assumeNonNull(inactiveInstancesList.getAdapter()).getItemCount();
+        // We always add minCommandItemHeight even though +New Window may not always be shown
+        // because if it isn't shown, the instance switcher will expand to the max height
+        // anyways, making this calculation inapplicable.
+        int activeListHeightPx = activeListItemCount * nonLastItemHeightPx + minCommandItemHeightPx;
+        // The padding decoration is not applied to the last item of each list
+        int inactiveListHeightPx =
+                (inactiveListItemCount - 1) * nonLastItemHeightPx + minCommandItemHeightPx;
+        int maxListHeightPx = Math.max(activeListHeightPx, inactiveListHeightPx);
+        int overheadPx =
+                tabHeaderRow.getMeasuredHeight() + dialogView.getPaddingTop() + itemPaddingHeightPx;
+
+        int maxDialogHeightPx = maxListHeightPx + overheadPx;
+        if (dialogView.getMinimumHeight() != maxDialogHeightPx) {
+            dialogView.setMinimumHeight(maxDialogHeightPx);
+        }
 
         boolean shouldFillVerticalSpace;
 
         if (isInactiveListShowing) {
-            boolean isInactiveListEmpty =
-                    inactiveInstancesList.getAdapter() == null
-                            || inactiveInstancesList.getAdapter().getItemCount() == 0;
-            shouldFillVerticalSpace = !isInactiveListEmpty;
+            shouldFillVerticalSpace = inactiveListItemCount != 0;
         } else {
             boolean isActiveListScrollable =
                     activeInstancesList.getMeasuredHeight()
                             < activeInstancesList.computeVerticalScrollRange();
+            int newWindowLayoutHeight =
+                    (newWindowLayout != null && newWindowLayout.getVisibility() == View.VISIBLE)
+                            ? newWindowLayout.getMeasuredHeight()
+                            : 0;
             boolean isCommandLayoutCompressed = newWindowLayoutHeight < minCommandItemHeightPx;
-
             shouldFillVerticalSpace = isActiveListScrollable || isCommandLayoutCompressed;
         }
 
@@ -311,7 +350,7 @@ public class InstanceSwitcherCoordinator {
             // - For the empty inactive list: It ensures the "No inactive windows" message sits
             //   right below the tabs.
             params.weight = 0f;
-            params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            params.height = LayoutParams.WRAP_CONTENT;
         }
         instanceListContainer.setLayoutParams(params);
     }
@@ -654,12 +693,15 @@ public class InstanceSwitcherCoordinator {
     private void removeInstances(List<Integer> instanceIds) {
         for (Integer instanceId : instanceIds) {
             addInstanceListGlobalLayoutListener(
+                    assumeNonNull(mDialogView),
+                    assumeNonNull(mTabHeaderRow),
                     assumeNonNull(mInstanceListContainer),
                     assumeNonNull(mActiveInstancesList),
                     assumeNonNull(mInactiveInstancesList),
                     mIsInactiveListShowing,
                     assumeNonNull(mNewWindowLayout),
-                    mMinCommandItemHeightPx);
+                    mMinCommandItemHeightPx,
+                    mItemPaddingHeightPx);
             assert mDialog != null;
             mSelectedItems.remove(instanceId);
             updateActionButtons();

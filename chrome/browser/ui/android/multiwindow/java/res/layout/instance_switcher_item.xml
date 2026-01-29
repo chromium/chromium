@@ -19,7 +19,7 @@ found in the LICENSE file.
         android:layout_alignParentStart="true"
         android:layout_marginStart="@dimen/instance_switcher_dialog_favicon_start_margin"
         android:layout_marginEnd="16dp"
-        android:layout_marginVertical="22dp"
+        android:layout_marginVertical="20dp"
         android:scaleType="fitCenter"
         android:layout_gravity="center_vertical"
         android:importantForAccessibility="no" />

@@ -19,6 +19,8 @@ import android.widget.LinearLayout.LayoutParams;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.tabs.TabLayout;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,21 +34,28 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class InstanceSwitcherCoordinatorUnitTest {
+    @Mock private View mDialogView;
+    @Mock private TabLayout mTabHeaderRow;
     @Mock private FrameLayout mInstanceListContainer;
     @Mock private RecyclerView mActiveInstancesList;
     @Mock private RecyclerView mInactiveInstancesList;
     @Mock private View mCommandItem;
-    @Mock private RecyclerView.Adapter mAdapter;
+    @Mock private RecyclerView.Adapter mActiveListAdapter;
+    @Mock private RecyclerView.Adapter mInactiveListAdapter;
 
-    private static final int MIN_COMMAND_ITEM_HEIGHT_PX = 173;
+    private static final int MIN_COMMAND_ITEM_HEIGHT_PX = 64;
+    private static final int ITEM_PADDING_HEIGHT_PX = 2;
 
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        when(mDialogView.getPaddingTop()).thenReturn(16);
+        when(mTabHeaderRow.getMeasuredHeight()).thenReturn(50);
         when(mInstanceListContainer.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
         when(mCommandItem.getVisibility()).thenReturn(View.VISIBLE);
-        when(mCommandItem.getMeasuredHeight()).thenReturn(200);
-        when(mInactiveInstancesList.getAdapter()).thenReturn(mAdapter);
+        when(mCommandItem.getMeasuredHeight()).thenReturn(64);
+        when(mActiveInstancesList.getAdapter()).thenReturn(mActiveListAdapter);
+        when(mInactiveInstancesList.getAdapter()).thenReturn(mInactiveListAdapter);
     }
 
     @Test
@@ -63,12 +72,15 @@ public class InstanceSwitcherCoordinatorUnitTest {
         // Run the GlobalLayoutListener callback.
         var listener =
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
+                        mDialogView,
+                        mTabHeaderRow,
                         mInstanceListContainer,
                         mActiveInstancesList,
                         mInactiveInstancesList,
                         /* isInactiveListShowing= */ false,
                         mCommandItem,
-                        MIN_COMMAND_ITEM_HEIGHT_PX);
+                        MIN_COMMAND_ITEM_HEIGHT_PX,
+                        ITEM_PADDING_HEIGHT_PX);
         listener.onGlobalLayout();
 
         // Verify there is no update to layout params, since the layout should use the default spec.
@@ -89,12 +101,15 @@ public class InstanceSwitcherCoordinatorUnitTest {
         // Run the GlobalLayoutListener callback.
         var listener =
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
+                        mDialogView,
+                        mTabHeaderRow,
                         mInstanceListContainer,
                         mActiveInstancesList,
                         mInactiveInstancesList,
                         /* isInactiveListShowing= */ false,
                         mCommandItem,
-                        MIN_COMMAND_ITEM_HEIGHT_PX);
+                        MIN_COMMAND_ITEM_HEIGHT_PX,
+                        ITEM_PADDING_HEIGHT_PX);
         listener.onGlobalLayout();
 
         // Verify layout params.
@@ -119,12 +134,15 @@ public class InstanceSwitcherCoordinatorUnitTest {
         // Run the GlobalLayoutListener callback.
         var listener =
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
+                        mDialogView,
+                        mTabHeaderRow,
                         mInstanceListContainer,
                         mActiveInstancesList,
                         mInactiveInstancesList,
                         /* isInactiveListShowing= */ false,
                         mCommandItem,
-                        MIN_COMMAND_ITEM_HEIGHT_PX);
+                        MIN_COMMAND_ITEM_HEIGHT_PX,
+                        ITEM_PADDING_HEIGHT_PX);
         listener.onGlobalLayout();
         // Verify layout params.
         ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
@@ -136,15 +154,18 @@ public class InstanceSwitcherCoordinatorUnitTest {
         when(mInstanceListContainer.getLayoutParams()).thenReturn(capturedParams);
 
         // Simulate switching to the inactive instances list, that adds the listener again.
-        when(mAdapter.getItemCount()).thenReturn(5);
+        when(mInactiveListAdapter.getItemCount()).thenReturn(5);
         listener =
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
+                        mDialogView,
+                        mTabHeaderRow,
                         mInstanceListContainer,
                         mActiveInstancesList,
                         mInactiveInstancesList,
                         /* isInactiveListShowing= */ true,
                         mCommandItem,
-                        MIN_COMMAND_ITEM_HEIGHT_PX);
+                        MIN_COMMAND_ITEM_HEIGHT_PX,
+                        ITEM_PADDING_HEIGHT_PX);
         listener.onGlobalLayout();
 
         // Verify layout params.
@@ -161,17 +182,20 @@ public class InstanceSwitcherCoordinatorUnitTest {
         when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
 
         // Simulate an empty inactive instances list.
-        when(mAdapter.getItemCount()).thenReturn(0);
+        when(mInactiveListAdapter.getItemCount()).thenReturn(0);
 
         // Run the GlobalLayoutListener callback
         var listener =
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
+                        mDialogView,
+                        mTabHeaderRow,
                         mInstanceListContainer,
                         mActiveInstancesList,
                         mInactiveInstancesList,
                         /* isInactiveListShowing= */ true,
                         mCommandItem,
-                        MIN_COMMAND_ITEM_HEIGHT_PX);
+                        MIN_COMMAND_ITEM_HEIGHT_PX,
+                        ITEM_PADDING_HEIGHT_PX);
         listener.onGlobalLayout();
 
         // Verify layout params
@@ -180,5 +204,46 @@ public class InstanceSwitcherCoordinatorUnitTest {
         assertEquals(
                 "Height is incorrect.", LayoutParams.WRAP_CONTENT, paramsCaptor.getValue().height);
         assertEquals("Weight is incorrect.", 0, paramsCaptor.getValue().weight, 0);
+    }
+
+    @Test
+    public void testInstanceListGlobalLayoutListener_SetsMinimumDialogHeight() {
+        // Simulate XML spec.
+        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
+        initialLayoutParams.weight = 1;
+        when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
+
+        // Simulate an active list with 5 items and an inactive list with 2 items
+        int activeCount = 5;
+        int inactiveCount = 2;
+        when(mActiveListAdapter.getItemCount()).thenReturn(activeCount);
+        when(mInactiveListAdapter.getItemCount()).thenReturn(inactiveCount);
+
+        // Calculate expected height:
+        // nonLastItemHeight = 66 (MIN_COMMAND_ITEM_HEIGHT_PX + ITEM_PADDING_HEIGHT_PX)
+        // activeListHeight = 394 (activeCount * nonLastItemHeight + MIN_COMMAND_ITEM_HEIGHT_PX)
+        // inactiveListHeight = 240 ((inactiveCount - 1) * nonLastItemHeight +
+        // MIN_COMMAND_ITEM_HEIGHT_PX)
+        // maxListHeight = 394 (max(activeListHeight, inactiveListHeight))
+        // overheadHeight = 68 (tabHeight + paddingTop + ITEM_PADDING_HEIGHT_PX)
+        // expectedHeight = 462 (maxListHeight + overheadHeight)
+        int expectedHeight = 462;
+
+        // Run the GlobalLayoutListener callback.
+        var listener =
+                InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
+                        mDialogView,
+                        mTabHeaderRow,
+                        mInstanceListContainer,
+                        mActiveInstancesList,
+                        mInactiveInstancesList,
+                        /* isInactiveListShowing= */ false,
+                        mCommandItem,
+                        MIN_COMMAND_ITEM_HEIGHT_PX,
+                        ITEM_PADDING_HEIGHT_PX);
+        listener.onGlobalLayout();
+
+        // Verify minimum height is set correctly
+        verify(mDialogView).setMinimumHeight(expectedHeight);
     }
 }
