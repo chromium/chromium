@@ -34,6 +34,12 @@ class WaapUIMetricsService : public KeyedService {
   // May return nullptr.
   static WaapUIMetricsService* Get(Profile* profile);
 
+  // Called when the browser window is created.
+  void OnBrowserWindowCreated();
+
+  // Called when the ReloadButton is created.
+  void OnReloadButtonCreated();
+
   // Called when the browser window is presented onto the screen for the first
   // time.
   void OnBrowserWindowFirstPresentation(base::TimeTicks time);

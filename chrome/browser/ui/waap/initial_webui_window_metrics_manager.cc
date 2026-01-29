@@ -54,6 +54,18 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
   }
 }
 
+void InitialWebUIWindowMetricsManager::OnBrowserWindowCreated() {
+  if (waap_service_) {
+    waap_service_->OnBrowserWindowCreated();
+  }
+}
+
+void InitialWebUIWindowMetricsManager::OnReloadButtonCreated() {
+  if (waap_service_) {
+    waap_service_->OnReloadButtonCreated();
+  }
+}
+
 void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
     base::TimeTicks timestamp) {
   // Ensures only one startup reload button is recorded per browser process.

@@ -141,6 +141,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserInteractionType) -->
 
+<!-- LINT.IfChange(InitialWebUIView) -->
+
+<enum name="InitialWebUIView">
+  <int value="0" label="BrowserWindow"/>
+  <int value="1" label="ReloadButton"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/waap/waap_ui_metrics_service.cc:InitialWebUIView) -->
+
 <enum name="OpenLinkAs">
   <int value="0" label="Open Link as Profile displayed."/>
   <int value="1" label="Open Link as Profile clicked."/>

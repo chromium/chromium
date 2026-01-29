@@ -62,6 +62,16 @@ std::string BuildReloadButtonHistogramName(std::string_view base,
   return base::StrCat({"InitialWebUI.ReloadButton.", base, slice});
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(InitialWebUIView)
+enum class InitialWebUIView {
+  kBrowserWindow = 0,
+  kReloadButton = 1,
+  kMaxValue = kReloadButton,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:InitialWebUIView)
+
 // Emits a WaaP trace event asynchronously onto a perfetto::Track and records a
 // UMA histogram with the same event name.
 void EmitHistogramWithTraceEvent(const char* event_name,
@@ -176,6 +186,16 @@ WaapUIMetricsService::~WaapUIMetricsService() = default;
 // static
 WaapUIMetricsService* WaapUIMetricsService::Get(Profile* profile) {
   return WaapUIMetricsServiceFactory::GetForProfile(profile);
+}
+
+void WaapUIMetricsService::OnBrowserWindowCreated() {
+  base::UmaHistogramEnumeration("InitialWebUI.View.Creation",
+                                InitialWebUIView::kBrowserWindow);
+}
+
+void WaapUIMetricsService::OnReloadButtonCreated() {
+  base::UmaHistogramEnumeration("InitialWebUI.View.Creation",
+                                InitialWebUIView::kReloadButton);
 }
 
 void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
