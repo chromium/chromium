@@ -414,6 +414,7 @@ public class SensitiveContentTest {
     // This test also tests if metrics are recorded properly.
     @Test
     @LargeTest
+    @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testSwipingBetweenTabsIsSensitive() {
         CtaPageStation page = mPage;

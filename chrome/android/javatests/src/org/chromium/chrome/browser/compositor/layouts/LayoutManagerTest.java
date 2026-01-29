@@ -334,7 +334,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipeOnlyTab() {
@@ -346,7 +346,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipeOnlyTabIncognito() {
@@ -358,7 +358,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipeNextTab() {
@@ -369,7 +369,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipePrevTab() {
@@ -380,7 +380,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipeNextTabNone() {
@@ -391,7 +391,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipePrevTabNone() {
@@ -402,7 +402,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipeNextTabIncognito() {
@@ -413,7 +413,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipePrevTabIncognito() {
@@ -424,7 +424,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipeNextTabNoneIncognito() {
@@ -435,7 +435,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
     public void testToolbarSideSwipePrevTabNoneIncognito() {
@@ -532,6 +532,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     // TODO(crbug.com/40141330): Update the test to use assertThat for better failure message.
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testLayoutObserverNotification_ShowAndHide_ToolbarSwipe() throws TimeoutException {
         LayoutObserverCallbackHelper startedShowingCallback = new LayoutObserverCallbackHelper();
         LayoutObserverCallbackHelper finishedShowingCallback = new LayoutObserverCallbackHelper();
