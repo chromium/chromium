@@ -877,7 +877,7 @@ message ScriptToolAnnotations {
 }
 
 // Result of executing a script tool.
-// Next ID: 5
+// Next ID: 6
 // TODO(khushalsagar): Move this to actions_data.proto.
 message ScriptToolResult {
   // The index of the ScriptToolAction in the Actions proto. This is used to
@@ -892,6 +892,9 @@ message ScriptToolResult {
   string tool_name = 3 [features = { field_presence: EXPLICIT }];
 
   string input_arguments = 4 [features = { field_presence: EXPLICIT }];
+
+  // The tool that was executed.
+  ScriptTool tool = 5 [features = { field_presence: EXPLICIT }];
 }
 
 message TableRowData {
