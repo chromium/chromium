@@ -26,8 +26,8 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {InputState, ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ToolMode, ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -543,7 +543,8 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected initializeState_(
       text: string = '', files: ContextualUpload[] = [],
-      mode: ToolMode = ToolMode.kUnspecified) {
+      mode: ToolMode = ToolMode.kUnspecified,
+      model: ModelMode = ModelMode.kUnspecified) {
     if (text) {
       this.input_ = text;
       this.lastQueriedInput_ = text;
@@ -556,6 +557,9 @@ export class ComposeboxElement extends I18nMixinLit
     }
     if (mode !== ToolMode.kUnspecified) {
       this.$.context.setInitialMode(mode);
+    }
+    if (model !== ModelMode.kUnspecified) {
+      this.searchboxHandler_.setActiveModelMode(model);
     }
   }
 
@@ -1162,6 +1166,8 @@ export class ComposeboxElement extends I18nMixinLit
 
   private closeComposebox_() {
     this.resetModes();
+    this.searchboxHandler_.setActiveToolMode(ToolMode.kUnspecified);
+    this.searchboxHandler_.setActiveModelMode(ModelMode.kUnspecified);
     this.fire('close-composebox', {composeboxText: this.input_});
 
     if (this.isCollapsible) {
