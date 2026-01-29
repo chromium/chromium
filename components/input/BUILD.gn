@@ -199,10 +199,7 @@ source_set("unit_tests") {
     "//ui/events/blink",
   ]
   if (is_android) {
-    sources += [
-      "utils_unittest.cc",
-      "web_input_event_builders_android_unittest.cc",
-    ]
+    sources += [ "web_input_event_builders_android_unittest.cc" ]
     deps += [ "//ui/events:motionevent_jni_headers" ]
   }
   if (is_mac) {

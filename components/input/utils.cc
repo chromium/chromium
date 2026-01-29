@@ -24,31 +24,8 @@ using blink::mojom::InputEventResultState;
 using perfetto::protos::pbzero::ChromeLatencyInfo2;
 
 #if BUILDFLAG(IS_ANDROID)
-bool InputUtils::initialized_ = false;
-bool InputUtils::has_security_update_ = false;
-
 static bool JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
   return InputUtils::IsTransferInputToVizSupported();
-}
-
-// Check whether the fix for `CVE-2025-0097` is present, which went in Feb 2025
-// security update: https://source.android.com/docs/security/bulletin/2025-02-01
-// static
-bool InputUtils::HasSecurityUpdate(const std::string& security_patch,
-                                   int sdk_int) {
-  if (sdk_int >= base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
-    // Security patch is present on Android 16+.
-    return true;
-  }
-  base::Time min_security_patch_date;
-  CHECK(base::Time::FromString("2025-02-05", &min_security_patch_date));
-
-  base::Time security_patch_date;
-  if (!base::Time::FromString(security_patch.c_str(), &security_patch_date)) {
-    return false;
-  }
-
-  return security_patch_date >= min_security_patch_date;
 }
 #endif
 
@@ -61,22 +38,17 @@ bool InputUtils::IsTransferInputToVizSupported() {
     // were introduced in Android V.
     return false;
   }
-  // Thread safety: In normal operation (GPU out of process) only a single
-  // thread per process calls this function. In the --in-process-gpu or
-  // --single-process case two threads technically could race to initialize
-  // however the HasSecurityUpdate will resolve to the same value and thus the
-  // data race is benign (behaviour of the program remains unchanged just
-  // potentially wasted effort).
-  if (!initialized_) {
-    has_security_update_ =
-        HasSecurityUpdate(base::android::android_info::security_patch(),
-                          base::android::android_info::sdk_int());
-    initialized_ = true;
+
+  if (base::android::android_info::sdk_int() ==
+      base::android::android_info::SdkVersion::SDK_VERSION_V) {
+    // Allow enabling on userdebug builds to have test coverage on older Android
+    // 15 bots.
+    return base::android::android_info::is_debug_android() &&
+           base::FeatureList::IsEnabled(input::features::kInputOnViz);
   }
-  // Enable on user debug builds to have test coverage on older Android 15 bots.
-  return (has_security_update_ ||
-          base::android::android_info::is_debug_android()) &&
-         base::FeatureList::IsEnabled(input::features::kInputOnViz);
+
+  // Android 16+.
+  return base::FeatureList::IsEnabled(input::features::kInputOnViz);
 #else
   return false;
 #endif

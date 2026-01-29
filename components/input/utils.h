@@ -16,25 +16,11 @@ namespace input {
 // The class contains utility methods related to input handling.
 class COMPONENT_EXPORT(INPUT) InputUtils {
  public:
-  // Check whether input thandling on Viz is supported. Currently it's supported
-  // only on Android V+ which contain security fix for `CVE-2025-0097`.
+  // Check whether input handling on Viz is supported. Currently it's supported
+  // only on Android 16+.
   static bool IsTransferInputToVizSupported();
 #if BUILDFLAG(IS_ANDROID)
   static void RunGarbageCollection();
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(UtilsTest,
-                           InputToVizNotSupportedOnOlderSecurityPatchLevel);
-  FRIEND_TEST_ALL_PREFIXES(UtilsTest, AndroidBaklavaPlusHasSecurityPatch);
-  static bool HasSecurityUpdate(const std::string& security_patch, int sdk_int);
-
-  // Checks if other static member variables has been initialized.
-  static bool initialized_;
-
-  // Caches the result of whether security patch contains the fix for
-  // `CVE-2025-0097`. We are caching this instead of parsing the security patch
-  // strings each time for comparison.
-  static bool has_security_update_;
 #endif
 };
 
