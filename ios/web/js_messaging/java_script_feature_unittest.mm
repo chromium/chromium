@@ -84,8 +84,9 @@ TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorOnce) {
                                         feature_script.GetScriptString());
 
   // Ensure __gCrWeb was injected.
-  ASSERT_TRUE(web::test::ExecuteJavaScript(
-      web_view, @"try { !!window.__gCrWeb; } catch (err) {false;}"));
+  ASSERT_NSEQ(@(TRUE), web::test::ExecuteJavaScript(
+                           web_view,
+                           @"try { !!window.__gCrWeb; } catch (err) {false;}"));
 
   // Store a value within `window.__gCrWeb`.
   web::test::ExecuteJavaScriptInWebView(web_view,
