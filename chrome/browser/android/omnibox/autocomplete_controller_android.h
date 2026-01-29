@@ -71,6 +71,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaRef<jstring>& j_current_title);
   void Stop(JNIEnv* env, bool clear_result);
   void ResetSession(JNIEnv* env);
+  void StartPrewarm(JNIEnv* env,
+                    const base::android::JavaRef<jobject>& j_web_contents);
 
   void OnSuggestionSelected(
       JNIEnv* env,

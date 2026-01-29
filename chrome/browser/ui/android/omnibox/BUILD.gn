@@ -195,6 +195,7 @@ android_library("java") {
     "//chrome/browser/locale:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/prefetch/android:java",
+    "//chrome/browser/preloading/android:java",
     "//chrome/browser/privacy:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/quick_delete:java",

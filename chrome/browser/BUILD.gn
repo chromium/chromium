@@ -3200,6 +3200,7 @@ static_library("browser") {
       "policy/policy_service_factory_android.cc",
       "prefetch/android/preload_pages_settings_bridge.cc",
       "preloading/android/preloading_data_bridge.cc",
+      "preloading/android/preloading_feature_map.cc",
       "privacy/secure_dns_bridge.cc",
       "privacy_sandbox/android/privacy_sandbox_bridge.cc",
       "privacy_sandbox/android/tracking_protection_settings_bridge.cc",

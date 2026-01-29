@@ -213,18 +213,6 @@ void AutocompleteControllerAndroid::StartPrefetch(
                              : ConvertJavaStringToUTF16(env, j_current_url);
   }
 
-  // If the Prewarm feature is enabled, we trigger them from the omnibox focus,
-  // so we check them here.
-  if (features::kPrewarmZeroSuggestTrigger.Get()) {
-    if (auto* web_contents =
-            content::WebContents::FromJavaWebContents(j_web_contents)) {
-      auto* prerender_manager =
-          PrerenderManager::GetOrCreateForWebContents(web_contents);
-      CHECK(prerender_manager);
-      prerender_manager->MaybeStartPrewarmSearchResult();
-    }
-  }
-
   AutocompleteInput input(auto_complete_text, page_classification,
                           ChromeAutocompleteSchemeClassifier(profile_));
   input.set_current_url(current_url);
@@ -336,6 +324,18 @@ void AutocompleteControllerAndroid::Stop(JNIEnv* env, bool clear_results) {
 
 void AutocompleteControllerAndroid::ResetSession(JNIEnv* env) {
   autocomplete_controller_->ResetSession();
+}
+
+void AutocompleteControllerAndroid::StartPrewarm(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_web_contents) {
+  if (auto* web_contents =
+          content::WebContents::FromJavaWebContents(j_web_contents)) {
+    auto* prerender_manager =
+        PrerenderManager::GetOrCreateForWebContents(web_contents);
+    CHECK(prerender_manager);
+    prerender_manager->MaybeStartPrewarmSearchResult();
+  }
 }
 
 void AutocompleteControllerAndroid::OnSuggestionSelected(
