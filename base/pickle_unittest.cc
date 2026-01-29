@@ -441,6 +441,110 @@ TEST(PickleTest, GetReadPointerAndAdvance) {
   EXPECT_FALSE(PickleIterator(pickle).GetReadPointerAndAdvance(INT_MIN));
 }
 
+TEST(PickleTest, ReadingTooMuchPreventsFutureReads) {
+  Pickle pickle;
+  pickle.WriteUInt32(1);
+
+  // TODO(https://crbug.com/479458085): Ideally this would be checked for all of
+  // the `PickleIterator::Read*()` methods. For now only the two *categories* of
+  // reads are checked: scalar (via `ReadBuiltinTypeAndAlign()`) and array (via
+  // `ReadArray()`).
+
+  // Scalar
+  {
+    PickleIterator iter(pickle);
+
+    uint64_t result_uint64;
+    // 8 bytes cannot be read from the 4-byte pickle.
+    EXPECT_FALSE(iter.ReadUInt64(&result_uint64));
+
+    // But future calls should also fail, even if there would have been
+    // sufficient bytes.
+    EXPECT_EQ(iter.RemainingBytes(), 0);
+
+    uint32_t result_uint32;
+    EXPECT_FALSE(iter.ReadUInt32(&result_uint32));
+
+    // But zero-sized reads still work, perhaps surprisingly.
+    const char* data = nullptr;
+    EXPECT_TRUE(iter.ReadBytes(&data, 0));
+    EXPECT_TRUE(data);
+
+    EXPECT_TRUE(iter.ReadBytes(0));
+  }
+
+  // Array
+  {
+    PickleIterator iter(pickle);
+
+    // 8 bytes cannot be read from the 4-byte pickle.
+    EXPECT_FALSE(iter.ReadBytes(8));
+
+    // But future calls should also fail, even if there would have been
+    // sufficient bytes.
+    EXPECT_EQ(iter.RemainingBytes(), 0);
+
+    EXPECT_FALSE(iter.ReadBytes(4));
+
+    // But zero-sized reads still work, perhaps surprisingly.
+    const char* data = nullptr;
+    EXPECT_TRUE(iter.ReadBytes(&data, 0));
+    EXPECT_TRUE(data);
+
+    EXPECT_TRUE(iter.ReadBytes(0));
+  }
+}
+
+// This test documents the current behavior, which is being reconsidered in
+// https://crbug.com/479458085.
+TEST(PickleTest, NegativeLengthDoesNotPreventFutureReads) {
+  Pickle pickle;
+  pickle.WriteInt(-1);
+  pickle.WriteInt(456);
+
+  PickleIterator iter(pickle);
+
+  size_t len;
+  EXPECT_FALSE(iter.ReadLength(&len));
+
+  EXPECT_EQ(iter.RemainingBytes(), 4);
+
+  int v;
+  EXPECT_TRUE(iter.ReadInt(&v));
+  EXPECT_EQ(v, 456);
+}
+
+// This test documents the current behavior, which is being reconsidered in
+// https://crbug.com/479458085.
+TEST(PickleTest, LongOverflowDoesNotPreventFutureReads) {
+  Pickle pickle;
+  pickle.WriteInt64(std::numeric_limits<int64_t>::max());
+  pickle.WriteInt(456);
+
+  PickleIterator iter(pickle);
+
+  // Longs are always read as 64-bit integers. But how overflow is handled while
+  // reading into a long varies by platform: On 32-bit platforms, it's possible
+  // to keep reading despite the failure.
+  //
+  // Ideally this discrepancy would be avoided.
+
+  if (sizeof(long) < sizeof(int64_t)) {
+    long v;
+    EXPECT_FALSE(iter.ReadLong(&v));
+  } else {
+    long v;
+    EXPECT_TRUE(iter.ReadLong(&v));
+    EXPECT_EQ(v, std::numeric_limits<long>::max());
+  }
+
+  EXPECT_EQ(iter.RemainingBytes(), 4);
+
+  int v;
+  EXPECT_TRUE(iter.ReadInt(&v));
+  EXPECT_EQ(v, 456);
+}
+
 TEST(PickleTest, Resize) {
   size_t unit = Pickle::kPayloadUnit;
   auto data = base::HeapArray<char>::Uninit(unit);
