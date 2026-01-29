@@ -300,9 +300,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_APPLE)
   if (__builtin_available(macOS 14.4, *)) {
     bool is_incognito = provider_receivers_.current_context();
-    if (base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML)
+    if (base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML) &&
+        !is_incognito
 #if BUILDFLAG(IS_MAC)
-        && base::mac::GetCPUType() == base::mac::CPUType::kArm && !is_incognito
+        && base::mac::GetCPUType() == base::mac::CPUType::kArm
 #endif  // BUILDFLAG(IS_MAC)
     ) {
       // Using mojo data pipe is not yet implemented in CoreML backend.
