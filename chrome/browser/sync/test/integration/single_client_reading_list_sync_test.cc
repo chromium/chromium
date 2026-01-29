@@ -65,23 +65,6 @@ class SingleClientReadingListSyncTest
 
   ~SingleClientReadingListSyncTest() override = default;
 
-  void TearDownOnMainThread() override {
-    // On Android, the browser process is not shut down after the test run, so
-    // backend tasks (like TrySyncCycleJob) can keep running and cause the
-    // ParallelExecutionFence to time out. Explicitly stopping the sync service
-    // avoids this.
-#if BUILDFLAG(IS_ANDROID)
-    if (GetProfile(0)) {
-      if (auto* service = GetSyncService(0)) {
-        service->OnActionableProtocolError(
-            {.error_type = syncer::NOT_MY_BIRTHDAY,
-             .action = syncer::DISABLE_SYNC_ON_CLIENT});
-      }
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-    SyncTest::TearDownOnMainThread();
-  }
-
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
