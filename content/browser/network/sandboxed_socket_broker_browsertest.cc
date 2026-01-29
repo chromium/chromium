@@ -5,9 +5,9 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/network/socket_broker_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
@@ -21,11 +21,13 @@
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_errors.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "sandbox/policy/features.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/socket_broker_impl.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
@@ -197,14 +199,25 @@ IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
 }
 
 // Implementation of network::mojom::SocketBroker that tracks the number of
-// times CreateTcpSocket has been called.
-class CountingSocketBrokerImpl : public SocketBrokerImpl {
+// times Create*Socket has been called.
+class CountingSocketBrokerImpl : public network::SocketBrokerImpl {
  public:
-  void CreateTcpSocket(net::AddressFamily address_family,
-                       CreateTcpSocketCallback callback) override {
-    ++tcp_socket_count_;
-    SocketBrokerImpl::CreateTcpSocket(address_family, std::move(callback));
+  CountingSocketBrokerImpl() {
+    // This use of base::Unretained() is safe because we clear the callback in
+    // the destructor before `tcp_socket_count_` becomes invalid.
+    set_socket_creation_interceptor_for_testing(base::BindRepeating(
+        [](int* tcp_socket_count) -> int {
+          ++*tcp_socket_count;
+          return net::OK;
+        },
+        base::Unretained(&tcp_socket_count_)));
   }
+
+  ~CountingSocketBrokerImpl() override {
+    set_socket_creation_interceptor_for_testing(
+        network::SocketBrokerImpl::SocketCreationInterceptor());
+  }
+
   int tcp_socket_count() { return tcp_socket_count_; }
 
  private:

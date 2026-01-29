@@ -2763,7 +2763,6 @@ test("content_unittests") {
     "../browser/network/cross_origin_embedder_policy_reporter_unittest.cc",
     "../browser/network/network_quality_observer_impl_unittest.cc",
     "../browser/network/reporting_service_proxy_unittest.cc",
-    "../browser/network/socket_broker_impl_unittest.cc",
     "../browser/network_context_client_base_impl_unittest.cc",
     "../browser/network_service_instance_impl_unittest.cc",
     "../browser/notifications/blink_notification_service_impl_unittest.cc",

@@ -77,8 +77,13 @@ class TransferableSocketBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// This test creates a socket in the browser process and connects it to the
+// EmbeddedTestServer. It then transfers the socket to the
+// NetworkServiceTestImpl mojo service running in the network service process,
+// which verifies that it can send a basic HTTP/1.0 request method over the
+// socket.
 IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
-  size_t request_attempts = 0;
+  std::atomic<size_t> request_attempts = 0;
   base::RunLoop server_loop;
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&request_attempts,
@@ -86,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
           -> std::unique_ptr<net::test_server::HttpResponse> {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
-        request_attempts++;
+        ++request_attempts;
         server_loop.Quit();
         return response;
       }));
@@ -137,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
   }
   ASSERT_TRUE(network_process.IsValid());
   network::TransferableSocket transferable(
-      socket->ReleaseSocketDescriptorForTesting(), network_process);
+      socket->ReleaseSocketDescriptorForTesting(), network_process.Pid());
 #else
   base::test::TestFuture<net::SocketDescriptor> socket_descriptor;
   GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
@@ -159,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
     network_service_runloop.Run();
   }
   server_loop.Run();
-  EXPECT_EQ(1U, request_attempts);
+  EXPECT_EQ(1U, request_attempts.load());
 }
 
 }  // namespace

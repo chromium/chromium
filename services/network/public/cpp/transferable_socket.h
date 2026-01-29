@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) TransferableSocket {
   // process that the TransferableSocket will be transmitted to using IPC.
 #if BUILDFLAG(IS_WIN)
   TransferableSocket(net::SocketDescriptor socket,
-                     const base::Process& destination_process);
+                     base::ProcessId destination_process_id);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   explicit TransferableSocket(net::SocketDescriptor socket);
 #else

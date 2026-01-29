@@ -44,7 +44,6 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
-#include "content/browser/network/socket_broker_impl.h"
 #include "content/browser/network_sandbox_grant_result.h"
 #include "content/browser/network_service_client.h"
 #include "content/public/browser/browser_task_traits.h"

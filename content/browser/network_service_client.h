@@ -11,12 +11,12 @@
 
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/browser/network/socket_broker_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_database.h"
+#include "services/network/public/cpp/socket_broker_impl.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -154,7 +154,7 @@ class NetworkServiceClient
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
-  SocketBrokerImpl socket_broker_;
+  network::SocketBrokerImpl socket_broker_;
 #endif  // BUILDFLAG(IS_WIN)
 
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver>

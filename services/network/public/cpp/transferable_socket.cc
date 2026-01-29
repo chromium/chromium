@@ -26,10 +26,8 @@ TransferableSocket::TransferableSocket() = default;
 
 #if BUILDFLAG(IS_WIN)
 TransferableSocket::TransferableSocket(net::SocketDescriptor socket,
-                                       const base::Process& destination_process)
+                                       base::ProcessId destination_process_id)
     : wsa_info_buffer_(sizeof(WSAPROTOCOL_INFOW), 0) {
-  DCHECK(destination_process.IsValid());
-
   if (socket == net::kInvalidSocket) {
     // Send across an empty buffer if invalid socket.
     wsa_info_buffer_.clear();
@@ -39,7 +37,7 @@ TransferableSocket::TransferableSocket(net::SocketDescriptor socket,
   // If the duplicate fails, the network service process has likely died
   // asynchronously, or the caller does not have the ability to duplicate a
   // socket to that process.
-  if (::WSADuplicateSocketW(socket, destination_process.Pid(),
+  if (::WSADuplicateSocketW(socket, destination_process_id,
                             reinterpret_cast<LPWSAPROTOCOL_INFOW>(
                                 wsa_info_buffer_.data())) != 0) {
     wsa_info_buffer_.clear();

@@ -29,7 +29,7 @@ namespace network {
 
 BrokeredClientSocketFactory::BrokeredClientSocketFactory(
     mojo::PendingRemote<mojom::SocketBroker> pending_remote)
-    : socket_broker_(std::move(pending_remote)) {}
+    : socket_broker_client_(std::move(pending_remote)) {}
 BrokeredClientSocketFactory::~BrokeredClientSocketFactory() = default;
 
 std::unique_ptr<net::DatagramClientSocket>
@@ -73,13 +73,13 @@ BrokeredClientSocketFactory::CreateSSLClientSocket(
 void BrokeredClientSocketFactory::BrokerCreateTcpSocket(
     net::AddressFamily address_family,
     mojom::SocketBroker::CreateTcpSocketCallback callback) {
-  socket_broker_->CreateTcpSocket(address_family, std::move(callback));
+  socket_broker_client_.CreateTcpSocket(address_family, std::move(callback));
 }
 
 void BrokeredClientSocketFactory::BrokerCreateUdpSocket(
     net::AddressFamily address_family,
     mojom::SocketBroker::CreateUdpSocketCallback callback) {
-  socket_broker_->CreateUdpSocket(address_family, std::move(callback));
+  socket_broker_client_.CreateUdpSocket(address_family, std::move(callback));
 }
 
 bool BrokeredClientSocketFactory::ShouldBroker(

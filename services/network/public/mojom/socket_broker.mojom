@@ -11,14 +11,29 @@ import "services/network/public/mojom/transferable_socket.mojom";
 // Used on Windows and Android as a sandboxed network service
 // cannot directly create sockets.
 interface SocketBroker {
-  // Creates an unconnected TCP socket. Returns the
-  // SocketDescriptor and the net::Error.
+  // Creates an unconnected TCP socket. Returns the SocketDescriptor and the
+  // net::Error. The process ID of the calling process is required on Windows to
+  // create the TransferableSocket.
+  [EnableIf=is_win]
+  CreateTcpSocket(AddressFamily address_family, uint32 process_id)
+      => (TransferableSocket created_socket, int32 rv);
+
+  // Creates an unconnected TCP socket. Returns the SocketDescriptor and the
+  // net::Error.
+  [EnableIfNot=is_win]
   CreateTcpSocket(AddressFamily address_family)
       => (TransferableSocket created_socket, int32 rv);
 
-  // Creates a UDP socket. Returns the
-  // SocketDescriptor and the net::Error.
-  CreateUdpSocket(AddressFamily address_family)
+  // Creates an unconnected UDP socket. Returns the SocketDescriptor and the
+  // net::Error. The process ID of the calling process is required on Windows to
+  // create the TransferableSocket.
+  [EnableIf=is_win]
+  CreateUdpSocket(AddressFamily address_family, uint32 process_id)
       => (TransferableSocket created_socket, int32 rv);
 
+  // Creates an unconnected UDP socket. Returns the SocketDescriptor and the
+  // net::Error.
+  [EnableIfNot=is_win]
+  CreateUdpSocket(AddressFamily address_family)
+      => (TransferableSocket created_socket, int32 rv);
 };

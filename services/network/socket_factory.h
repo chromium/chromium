@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_SOCKET_FACTORY_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -27,7 +28,7 @@
 #include "services/network/tls_socket_factory.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "services/network/public/mojom/socket_broker.mojom.h"
+#include "services/network/public/cpp/socket_broker_client.h"
 #endif
 
 namespace net {
@@ -40,7 +41,7 @@ namespace network {
 class SimpleHostResolver;
 
 // Helper class that handles socket requests. It takes care of destroying
-// socket implementation instances when mojo  pipes are broken.
+// socket implementation instances when mojo pipes are broken.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
     : public TCPServerSocket::Delegate {
  public:
@@ -152,7 +153,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
   mojo::UniqueReceiverSet<mojom::TCPBoundSocket> tcp_bound_socket_receivers_;
 
 #if BUILDFLAG(IS_WIN)
-  mojo::Remote<mojom::SocketBroker> socket_broker_;
+  std::optional<SocketBrokerClient> socket_broker_client_;
 #endif
 
   base::WeakPtrFactory<SocketFactory> weak_ptr_factory_{this};

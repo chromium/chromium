@@ -96,8 +96,8 @@ void SocketFactory::CreateTCPServerSocket(
     mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
     mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
 #if BUILDFLAG(IS_WIN)
-  if (socket_broker_) {
-    socket_broker_->CreateTcpSocket(
+  if (socket_broker_client_) {
+    socket_broker_client_->CreateTcpSocket(
         local_addr.GetFamily(),
         base::BindOnce(&SocketFactory::DidCompleteCreate,
                        weak_ptr_factory_.GetWeakPtr(), local_addr,
@@ -140,7 +140,7 @@ void SocketFactory::DidCompleteCreate(
 
 void SocketFactory::BindSocketBroker(
     mojo::PendingRemote<mojom::SocketBroker> pending_remote) {
-  socket_broker_.Bind(std::move(pending_remote));
+  socket_broker_client_.emplace(std::move(pending_remote));
 }
 #endif
 

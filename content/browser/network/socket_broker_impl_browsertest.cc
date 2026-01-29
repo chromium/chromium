@@ -2,7 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/network/socket_broker_impl.h"
+// Browser test that network::SocketBrokerImpl continues working correctly after
+// a crash of the network service. This has to go in //content because the
+// network service can't implement browser tests.
+
+#include "services/network/public/cpp/socket_broker_impl.h"
+
+#include <stdint.h>
+
+#include <functional>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -10,9 +18,15 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "net/base/address_family.h"
+#include "services/network/public/cpp/socket_broker_client.h"
 #include "services/network/public/cpp/transferable_socket.h"
 #include "services/network/public/mojom/socket_broker.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace content {
 
@@ -28,24 +42,25 @@ class SocketBrokerImplBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUp();
   }
 
-  mojo::Remote<network::mojom::SocketBroker> GetSocketBroker() {
-    return mojo::Remote<network::mojom::SocketBroker>(
-        socket_broker_.BindNewRemote());
+  mojo::PendingRemote<network::mojom::SocketBroker> GetSocketBroker() {
+    return socket_broker_.BindNewRemote();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  SocketBrokerImpl socket_broker_;
+  network::SocketBrokerImpl socket_broker_;
 };
 
 // Regression test for https://crbug.com/475587477.
 IN_PROC_BROWSER_TEST_F(SocketBrokerImplBrowserTest,
                        CreateTCPSocketAfterNetworkServiceCrash) {
-  SimulateNetworkServiceCrash();
+  network::SocketBrokerClient socket_broker_client(GetSocketBroker());
 
-  auto remote = GetSocketBroker();
+  SimulateNetworkServiceCrash();
   base::test::TestFuture<network::TransferableSocket, int> future;
-  remote->CreateTcpSocket(net::ADDRESS_FAMILY_IPV4, future.GetCallback());
+  socket_broker_client.CreateTcpSocket(net::ADDRESS_FAMILY_IPV4,
+                                       future.GetCallback());
+
   auto [socket, rv] = future.Take();
   EXPECT_NE(socket.TakeSocket(), net::kInvalidSocket);
   EXPECT_EQ(rv, net::OK);
@@ -54,11 +69,13 @@ IN_PROC_BROWSER_TEST_F(SocketBrokerImplBrowserTest,
 // Same as above, but for UDP.
 IN_PROC_BROWSER_TEST_F(SocketBrokerImplBrowserTest,
                        CreateUDPSocketAfterNetworkServiceCrash) {
+  network::SocketBrokerClient socket_broker_client(GetSocketBroker());
+
   SimulateNetworkServiceCrash();
 
-  auto remote = GetSocketBroker();
   base::test::TestFuture<network::TransferableSocket, int> future;
-  remote->CreateUdpSocket(net::ADDRESS_FAMILY_IPV4, future.GetCallback());
+  socket_broker_client.CreateUdpSocket(net::ADDRESS_FAMILY_IPV4,
+                                       future.GetCallback());
   auto [socket, rv] = future.Take();
   EXPECT_NE(socket.TakeSocket(), net::kInvalidSocket);
   EXPECT_EQ(rv, net::OK);

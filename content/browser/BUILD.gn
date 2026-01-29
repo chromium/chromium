@@ -1494,8 +1494,6 @@ source_set("browser") {
     "network/reporting_service_proxy.h",
     "network/shared_dictionary_util.cc",
     "network/shared_dictionary_util.h",
-    "network/socket_broker_impl.cc",
-    "network/socket_broker_impl.h",
     "network_context_client_base_impl.cc",
     "network_context_client_base_impl.h",
     "network_sandbox_grant_result.h",

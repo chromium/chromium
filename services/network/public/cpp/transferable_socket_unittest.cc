@@ -36,7 +36,7 @@ TEST_F(TransferableSocketTest, MojoTraits) {
   TransferableSocket transferable(socket_desc
 #if BUILDFLAG(IS_WIN)
                                   ,
-                                  base::Process::Current()
+                                  base::GetCurrentProcId()
 #endif
   );
   TransferableSocket roundtripped;
@@ -51,7 +51,7 @@ TEST_F(TransferableSocketTest, InvalidSocketMojoTraits) {
   TransferableSocket transferable(socket_desc
 #if BUILDFLAG(IS_WIN)
                                   ,
-                                  base::Process::Current()
+                                  base::GetCurrentProcId()
 #endif
   );
   TransferableSocket roundtripped;

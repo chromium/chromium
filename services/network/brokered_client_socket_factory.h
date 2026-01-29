@@ -13,6 +13,7 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/transport_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/socket_broker_client.h"
 #include "services/network/public/mojom/socket_broker.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -91,7 +92,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredClientSocketFactory
 #endif
 
  private:
-  mojo::Remote<mojom::SocketBroker> socket_broker_;
+  SocketBrokerClient socket_broker_client_;
 #if BUILDFLAG(IS_WIN)
   BrokerHelperWin broker_helper_;
 #endif
