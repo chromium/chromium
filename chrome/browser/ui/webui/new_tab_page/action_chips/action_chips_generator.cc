@@ -25,6 +25,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-shared.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
@@ -113,7 +114,7 @@ ChipsGenerationScenario GetScenario(
   // Check if deep dive parameter is enabled, and tab is in deep
   // dive vertical.
   if (ntp_features::kNtpNextShowDeepDiveSuggestionsParam.Get() &&
-      tab.has_value() && IsDeepDiveTab(*tab, optimization_guide_decider)) {
+      IsDeepDiveTab(*tab, optimization_guide_decider)) {
     return ChipsGenerationScenario::kDeepDive;
   }
   return ChipsGenerationScenario::kSteady;
@@ -198,7 +199,7 @@ std::vector<ActionChipPtr> CreateDeepDiveChips(
     const TabInfoPtr& tab,
     const SearchSuggestionParser::SuggestResults& suggestions) {
   std::vector<ActionChipPtr> chips;
-  chips.push_back(CreateRecentTabChip(tab->Clone(), ""));
+  chips.push_back(CreateRecentTabChip(tab->Clone(), /*suggestion=*/""));
   for (const auto& suggestion : suggestions) {
     if (chips.size() == 3) {
       break;
@@ -259,34 +260,32 @@ TabInfoPtr CreateTabInfo(const TabIdGenerator& tab_id_generator,
   return tab_info;
 }
 
-struct CreateChipsForSteadyStateOptions {
-  std::string recent_tab_suggestion;
-  std::string deep_search_suggestion;
-  std::string image_creation_suggestion;
-};
+TabInfoPtr CreateTabInfo(const TabIdGenerator& tab_id_generator,
+                         base::optional_ref<const TabInterface> tab) {
+  return tab.has_value() ? CreateTabInfo(tab_id_generator, *tab) : nullptr;
+}
 
 std::vector<ActionChipPtr> CreateChipsForSteadyState(
     TabInfoPtr tab,
-    const AimEligibilityService* aim_eligibility_service,
-    const CreateChipsForSteadyStateOptions& options) {
+    const AimEligibilityService* aim_eligibility_service) {
   std::vector<ActionChipPtr> chips;
   if (!tab.is_null() &&
       ntp_features::kNtpNextShowStaticRecentTabChipParam.Get()) {
-    chips.push_back(
-        CreateRecentTabChip(std::move(tab), options.recent_tab_suggestion));
-  }
-  std::optional<ActionChipPtr> deep_search_chip =
-      CreateDeepSearchChipIfEligible(options.deep_search_suggestion,
-                                     aim_eligibility_service);
-  if (deep_search_chip.has_value()) {
-    chips.push_back(*std::move(deep_search_chip));
+    chips.push_back(CreateRecentTabChip(std::move(tab), /*suggestion=*/""));
   }
 
-  std::optional<ActionChipPtr> image_creation_chip =
-      CreateImageCreationChipIfEligible(options.image_creation_suggestion,
-                                        aim_eligibility_service);
-  if (image_creation_chip.has_value()) {
-    chips.push_back(*std::move(image_creation_chip));
+  if (std::optional<ActionChipPtr> deep_search_chip =
+          CreateDeepSearchChipIfEligible(
+              /*suggestion=*/"", aim_eligibility_service);
+      deep_search_chip.has_value()) {
+    chips.push_back(std::move(*deep_search_chip));
+  }
+
+  if (std::optional<ActionChipPtr> image_creation_chip =
+          CreateImageCreationChipIfEligible(
+              /*suggestion=*/"", aim_eligibility_service);
+      image_creation_chip.has_value()) {
+    chips.push_back(std::move(*image_creation_chip));
   }
   return chips;
 }
@@ -350,9 +349,7 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
 
   if (ntp_features::kNtpNextShowStaticTextParam.Get()) {
     std::move(callback).Run(CreateChipsForSteadyState(
-        tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
-        aim_eligibility_service_,
-        /*options=*/{}));
+        CreateTabInfo(*tab_id_generator_, tab), aim_eligibility_service_));
     return;
   }
 
@@ -371,9 +368,7 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
         callback) {
   if (!client_->IsPersonalizedUrlDataCollectionActive()) {
     std::move(callback).Run(CreateChipsForSteadyState(
-        tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
-        aim_eligibility_service_,
-        /*options=*/{}));
+        CreateTabInfo(*tab_id_generator_, tab), aim_eligibility_service_));
     return;
   }
 
@@ -389,8 +384,8 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
       base::BindOnce(
           &ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse,
           this->weak_factory_.GetWeakPtr(),
-          tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
-          std::move(page_vertical), std::move(callback)));
+          CreateTabInfo(*tab_id_generator_, tab), std::move(page_vertical),
+          std::move(callback)));
 }
 
 void ActionChipsGeneratorImpl::GenerateActionChipsFromScenario(
@@ -408,16 +403,14 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromScenario(
               base::BindOnce(&ActionChipsGeneratorImpl::
                                  GenerateDeepDiveChipsFromRemoteResponse,
                              this->weak_factory_.GetWeakPtr(),
-                             CreateTabInfo(*tab_id_generator_, *tab),
+                             CreateTabInfo(*tab_id_generator_, tab),
                              std::move(callback)));
       break;
     }
     case ChipsGenerationScenario::kStaticChipsOnly:
     case ChipsGenerationScenario::kSteady: {
       std::move(callback).Run(CreateChipsForSteadyState(
-          tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
-          aim_eligibility_service_,
-          /*options=*/{}));
+          CreateTabInfo(*tab_id_generator_, tab), aim_eligibility_service_));
       break;
     }
   }
@@ -429,9 +422,8 @@ void ActionChipsGeneratorImpl::GenerateDeepDiveChipsFromRemoteResponse(
         callback,
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
   if (!result.has_value() || result->size() <= 1) {
-    std::move(callback).Run(CreateChipsForSteadyState(std::move(tab),
-                                                      aim_eligibility_service_,
-                                                      /*options=*/{}));
+    std::move(callback).Run(
+        CreateChipsForSteadyState(std::move(tab), aim_eligibility_service_));
     return;
   }
   std::vector<ActionChipPtr> chips = CreateDeepDiveChips(tab, *result);
@@ -446,9 +438,8 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
   RecordActionChipsRequestStatus(result);
   if (!result.has_value()) {
-    std::move(callback).Run(CreateChipsForSteadyState(std::move(tab),
-                                                      aim_eligibility_service_,
-                                                      /*options=*/{}));
+    std::move(callback).Run(
+        CreateChipsForSteadyState(std::move(tab), aim_eligibility_service_));
     return;
   }
 
