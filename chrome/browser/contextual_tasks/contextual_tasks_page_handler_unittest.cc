@@ -66,9 +66,7 @@ class MockPage : public mojom::Page {
               (override));
   MOCK_METHOD(void,
               OnContextUpdated,
-              (std::vector<mojom::TabPtr> context_tabs,
-               std::vector<mojom::UploadedFilePtr> context_files,
-               std::vector<mojom::ImagePtr> context_images),
+              (std::vector<mojom::ContextInfoPtr> context),
               (override));
   MOCK_METHOD(void, HideInput, (), (override));
   MOCK_METHOD(void, RestoreInput, (), (override));
@@ -559,22 +557,18 @@ TEST_F(ContextualTasksPageHandlerTest, OnContextUpdated_TabsImagesAndFiles) {
           });
 
   base::RunLoop run_loop;
-  EXPECT_CALL(page_, OnContextUpdated(_, _, _))
-      .WillOnce([&](std::vector<mojom::TabPtr> context_tabs,
-                    std::vector<mojom::UploadedFilePtr> context_files,
-                    std::vector<mojom::ImagePtr> context_images) {
-        EXPECT_EQ(context_tabs.size(), 1u);
-        EXPECT_EQ(context_tabs[0]->title, "Example Tab");
-        EXPECT_EQ(context_tabs[0]->url, GURL(kQueryUrl));
-        EXPECT_EQ(context_tabs[0]->tab_id, tab_resource.tab_id->id());
+  EXPECT_CALL(page_, OnContextUpdated(_))
+      .WillOnce([&](std::vector<mojom::ContextInfoPtr> context) {
+        EXPECT_EQ(context.size(), 3u);
+        EXPECT_EQ(context[0]->title, tab_resource.title);
+        EXPECT_EQ(context[0]->url, GURL(kQueryUrl));
+        EXPECT_EQ(context[0]->tab_id, tab_resource.tab_id->id());
 
-        EXPECT_EQ(context_images.size(), 1u);
-        EXPECT_EQ(context_images[0]->title, "Example Image");
-        EXPECT_EQ(context_images[0]->url, GURL(kExampleUrl));
+        EXPECT_EQ(context[1]->title, image_resource.title);
+        EXPECT_EQ(context[1]->url, GURL(kExampleUrl));
 
-        EXPECT_EQ(context_files.size(), 1u);
-        EXPECT_EQ(context_files[0]->name, "Example PDF");
-        EXPECT_EQ(context_files[0]->url, GURL(kExamplePdfUrl));
+        EXPECT_EQ(context[2]->title, pdf_resource.title);
+        EXPECT_EQ(context[2]->url, GURL(kExamplePdfUrl));
 
         run_loop.Quit();
       });
