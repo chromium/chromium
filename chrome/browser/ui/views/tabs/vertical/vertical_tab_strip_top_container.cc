@@ -61,7 +61,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   if (state_controller_->IsCollapsed()) {
     // If the vertical tab strip is collapsed, then lay out the buttons
     // vertically in reverse order from top-to-bottom.
-    int total_height = exclusion_width_ == 0 ? 0 : toolbar_height_;
+    int total_height = caption_button_width_ == 0 ? 0 : toolbar_height_;
     for (views::LabelButton* container_button : container_buttons) {
       total_height += container_button->GetPreferredSize().height();
     }
@@ -89,7 +89,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // If the vertical tab strip is uncollapsed, then lay out the buttons
     // horizontally. The exact y-level of the buttons depends on if they can lay
     // on one line or not.
-    int total_width = exclusion_width_;
+    int total_width = caption_button_width_;
     int min_height = 0;
     for (views::LabelButton* container_button : container_buttons) {
       const auto preferred = container_button->GetPreferredSize();
@@ -114,7 +114,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // If there is not enough space for the buttons on a single line with
     // caption buttons, shift them below.
     const bool wrapped_due_to_overflow = size_bounds.width().is_bounded() &&
-                                         exclusion_width_ > 0 &&
+                                         caption_button_width_ > 0 &&
                                          total_width > available_width;
 
     if (wrapped_due_to_overflow) {
@@ -209,7 +209,7 @@ bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
 }
 
 void VerticalTabStripTopContainer::SetToolbarHeightForLayout(
-    const int toolbar_height) {
+    int toolbar_height) {
   if (toolbar_height_ == toolbar_height) {
     return;
   }
@@ -217,12 +217,12 @@ void VerticalTabStripTopContainer::SetToolbarHeightForLayout(
   InvalidateLayout();
 }
 
-void VerticalTabStripTopContainer::SetExclusionWidthForLayout(
-    const int exclusion_width) {
-  if (exclusion_width_ == exclusion_width) {
+void VerticalTabStripTopContainer::SetCaptionButtonWidthForLayout(
+    int caption_button_width) {
+  if (caption_button_width_ == caption_button_width) {
     return;
   }
-  exclusion_width_ = exclusion_width;
+  caption_button_width_ = caption_button_width;
   InvalidateLayout();
 }
 

@@ -101,7 +101,7 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
 };
 
 TEST_F(VerticalTabStripTopContainerTest, LayoutWithoutExclusionZone) {
-  top_container()->SetExclusionWidthForLayout(1);
+  top_container()->SetCaptionButtonWidthForLayout(1);
   top_container()->SetToolbarHeightForLayout(1);
   LayoutView();
 
@@ -122,13 +122,13 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithoutExclusionZone) {
 }
 
 TEST_F(VerticalTabStripTopContainerTest, LayoutWithFullWidthExclusionZone) {
-  top_container()->SetExclusionWidthForLayout(1);
+  top_container()->SetCaptionButtonWidthForLayout(1);
   top_container()->SetToolbarHeightForLayout(1);
   LayoutView();
 
   const gfx::Rect initial_search_bounds = tab_search_button()->bounds();
 
-  top_container()->SetExclusionWidthForLayout(kTopContainerWidth);
+  top_container()->SetCaptionButtonWidthForLayout(kTopContainerWidth);
   constexpr int kExclusionHeight = 50;
   top_container()->SetToolbarHeightForLayout(kExclusionHeight);
   LayoutView();
@@ -152,7 +152,7 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithFullWidthExclusionZone) {
 }
 
 TEST_F(VerticalTabStripTopContainerTest, LayoutWithPartialWidthExclusionZone) {
-  top_container()->SetExclusionWidthForLayout(50);
+  top_container()->SetCaptionButtonWidthForLayout(50);
   top_container()->SetToolbarHeightForLayout(50);
   LayoutView();
 

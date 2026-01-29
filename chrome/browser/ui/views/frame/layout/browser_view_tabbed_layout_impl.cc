@@ -871,27 +871,26 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         views().vertical_tab_strip_region_view, views().browser_view);
     CHECK(tabstrip_bounds);
 
-    // Calculate the toolbar height adjacent to the tabstrip. This will be zero
-    // if the toolbar is in e.g. an immersive mode overlay, or is not aligned
-    // with the tabstrip (which can happen in collapsed mode with leading
-    // caption buttons).
-    const int toolbar_height =
-        toolbar_bounds
-            ? std::max(0, toolbar_bounds->bottom() - tabstrip_bounds->y())
-            : 0;
-    views().vertical_tab_strip_region_view->SetToolbarHeightForLayout(
-        toolbar_height);
+    int toolbar_height = 0;
+    int caption_button_width = 0;
 
     // If the toolbar is not in the browser, then the exclusion isn't either.
-    const int exclusion_width =
-        toolbar_bounds
-            ? std::max(0, base::ClampCeil(browser_params.leading_exclusion
-                                              .ContentWithPadding()
-                                              .width()) -
-                              tabstrip_bounds->x())
-            : 0;
-    views().vertical_tab_strip_region_view->SetExclusionWidthForLayout(
-        exclusion_width);
+    if (toolbar_bounds) {
+      // Calculate the toolbar height adjacent to the tabstrip. This will be
+      // zero if the toolbar is in e.g. an immersive mode overlay, or is not
+      // aligned with the tabstrip (which can happen in collapsed mode with
+      // leading caption buttons).
+      toolbar_height = toolbar_bounds->bottom() - tabstrip_bounds->y();
+
+      caption_button_width =
+          base::ClampCeil(browser_params.leading_exclusion.content.width()) -
+          tabstrip_bounds->x();
+    }
+
+    views().vertical_tab_strip_region_view->SetToolbarHeightForLayout(
+        std::max(0, toolbar_height));
+    views().vertical_tab_strip_region_view->SetCaptionButtonWidthForLayout(
+        std::max(0, caption_button_width));
   }
 
   return layout;

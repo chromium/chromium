@@ -434,15 +434,13 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
   return true;
 }
 
-void VerticalTabStripRegionView::SetToolbarHeightForLayout(
-    const int toolbar_height) {
+void VerticalTabStripRegionView::SetToolbarHeightForLayout(int toolbar_height) {
   top_button_container_->SetToolbarHeightForLayout(toolbar_height);
 }
 
-void VerticalTabStripRegionView::SetExclusionWidthForLayout(
-    const int exclusion_width) {
-  exclusion_width_ = exclusion_width;
-  top_button_container_->SetExclusionWidthForLayout(exclusion_width);
+void VerticalTabStripRegionView::SetCaptionButtonWidthForLayout(
+    int caption_button_width) {
+  top_button_container_->SetCaptionButtonWidthForLayout(caption_button_width);
 }
 
 VerticalPinnedTabContainerView*
