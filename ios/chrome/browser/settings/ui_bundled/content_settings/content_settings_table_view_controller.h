@@ -30,10 +30,6 @@ class PrefService;
 - (void)contentSettingsTableViewControllerSelectedWebInspector:
     (ContentSettingsTableViewController*)controller;
 
-// Called when the Reading Mode option is selected.
-- (void)contentSettingsTableViewControllerSelectedReaderMode:
-    (ContentSettingsTableViewController*)controller;
-
 @end
 
 // Controller for the UI that allows the user to change content settings like

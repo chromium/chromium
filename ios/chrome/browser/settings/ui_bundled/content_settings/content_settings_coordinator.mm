@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/default_page_mode_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/content_settings/reader_mode_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/web_inspector_state_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -28,9 +27,6 @@
 
   // The coordinator showing the view to enable or disable Web Inspector.
   WebInspectorStateCoordinator* _webInspectorStateViewCoordinator;
-
-  // The coordinator showing the Reading Mode settings.
-  ReaderModeSettingsCoordinator* _readerModeSettingsCoordinator;
 
   // Bridge for browser observation, to make sure any references are cut when
   // the browser is destroyed.
@@ -81,9 +77,6 @@
   [_webInspectorStateViewCoordinator stop];
   _webInspectorStateViewCoordinator = nil;
 
-  [_readerModeSettingsCoordinator stop];
-  _readerModeSettingsCoordinator = nil;
-
   [_viewController disconnect];
   _viewController = nil;
 }
@@ -117,16 +110,6 @@
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser];
   [_webInspectorStateViewCoordinator start];
-}
-
-- (void)contentSettingsTableViewControllerSelectedReaderMode:
-    (ContentSettingsTableViewController*)controller {
-  [_readerModeSettingsCoordinator stop];
-
-  _readerModeSettingsCoordinator = [[ReaderModeSettingsCoordinator alloc]
-      initWithBaseNavigationController:_baseNavigationController
-                               browser:self.browser];
-  [_readerModeSettingsCoordinator start];
 }
 
 #pragma mark - BrowserObserving

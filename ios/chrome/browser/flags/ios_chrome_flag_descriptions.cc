@@ -1325,12 +1325,6 @@ const char kRcapsDynamicProfileCountryDescription[] =
     "When enabled, Chrome updates the country associated with "
     "the profile on open";
 
-const char kReaderModeContentSettingsForLinksName[] =
-    "Enables Content Settings options for Reading Mode";
-const char kReaderModeContentSettingsForLinksDescription[] =
-    "Enables Content Settings options for disabling/enabling links in Reading "
-    "Mode.";
-
 const char kReaderModeOmniboxEntrypointInUSName[] =
     "Reader Mode Omnibox Entrypoint In US";
 const char kReaderModeOmniboxEntrypointInUSDescription[] =

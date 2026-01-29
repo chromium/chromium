@@ -2040,7 +2040,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Font scale"/>
   <int value="1" label="Font family"/>
   <int value="2" label="Theme"/>
-  <int value="3" label="Enable/Disable Links"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeCustomizationType) -->

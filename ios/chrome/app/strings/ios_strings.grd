@@ -5616,9 +5616,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_READER_MODE_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for a button which opens the Reading mode options view.">
         Open Reading mode options
       </message>
-      <message name="IDS_IOS_READER_MODE_CONTENT_SETTINGS_TITLE" translateable="false" desc="Title of the Reading Mode Content Settings options.">
-        Reading mode
-      </message>
       <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_DARK" desc="Label of a Reading mode options button which changes the Reading mode dark color scheme.">
         Black background color
       </message>
@@ -5777,15 +5774,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_READING_MODE_SETTING_TITLE" desc="Title of the setting to enable the 'Reading mode available' message [iOS only]" meaning="Title of the setting to enable the 'Reading mode available' message [iOS only]">
         Show Reading Mode
-      </message>
-      <message name="IDS_IOS_READING_MODE_SHOW_HYPERLINKS_DESCRIPTION" translateable="false" desc="Description of the setting to enable hyperlinks in Reader Mode [iOS only]">
-        Show links once Reading Mode is on
-      </message>
-      <message name="IDS_IOS_READING_MODE_SHOW_HYPERLINKS_TITLE" translateable="false" desc="Title of the setting to enable hyperlinks in Reading Mode [iOS only]">
-        Show hyperlinks
-      </message>
-      <message name="IDS_IOS_READING_MODE_SHOW_SUGGESTION_TITLE" translateable="false" desc="Title of the setting to enable the 'Reading mode available' message [iOS only]">
-        Show suggestion
       </message>
       <message name="IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION" desc="This message is shown in the Other Devices section of the Recent Tabs view if browser sign-in is disabled via policy by the device's administrator / organization.">
         Turned off by your organization

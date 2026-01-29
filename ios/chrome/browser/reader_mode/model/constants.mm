@@ -37,8 +37,6 @@ const char kReaderModeFontFamilyCustomizationHistogram[] =
 const char kReaderModeFontScaleCustomizationHistogram[] =
     "IOS.ReaderMode.FontScale";
 
-const char kReaderModeLinksEnabledHistogram[] = "IOS.ReaderMode.LinksEnabled";
-
 const char kReaderModeCustomizationHistogram[] = "IOS.ReaderMode.Customization";
 
 const char kReaderModeTimeSpentHistogram[] = "IOS.ReaderMode.TimeSpent";

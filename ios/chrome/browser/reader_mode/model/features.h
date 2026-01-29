@@ -24,9 +24,6 @@ BASE_DECLARE_FEATURE(kEnableReadabilityHeuristic);
 // Feature to enable optimization guide eligibility check.
 BASE_DECLARE_FEATURE(kEnableReaderModeOptimizationGuideEligibility);
 
-// Feature to enable disabling links in Reading Mode from Content Settings.
-BASE_DECLARE_FEATURE(kEnableContentSettingsOptionForLinks);
-
 // Returns whether the Reader Mode feature is available.
 bool IsReaderModeAvailable();
 
@@ -35,8 +32,5 @@ bool IsReaderModeOmniboxEntryPointEnabled();
 
 // Returns whether optimization guide eligibility check is enabled.
 bool IsReaderModeOptimizationGuideEligibilityAvailable();
-
-// Returns whether option to disable links in Content Settings is enabled.
-bool IsReaderModeContentSettingsForLinkEnabled();
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_FEATURES_H_
