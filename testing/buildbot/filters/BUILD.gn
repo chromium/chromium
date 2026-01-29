@@ -335,6 +335,7 @@ source_set("services_unittests_filters") {
     "//testing/buildbot/filters/fuchsia.services_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.services_unittests.filter",
     "//testing/buildbot/filters/win.win_arm64.services_webnn_unittests.filter",
+    "//testing/buildbot/filters/win.nvidia.gtx.1660.x86.services_webnn_unittests.filter",
     "//testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.services_webnn_unittests.filter",
   ]
 }

@@ -108,7 +108,8 @@
       {
         "args": [
           "--gtest_filter=WebNN*",
-          "--use-gpu-in-tests"
+          "--use-gpu-in-tests",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/win.nvidia.gtx.1660.x86.services_webnn_unittests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
