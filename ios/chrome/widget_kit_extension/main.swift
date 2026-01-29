@@ -42,22 +42,3 @@ struct ChromeWidgetsForMIM: WidgetBundle {
     #endif
   }
 }
-
-struct ChromeWidgets: WidgetBundle {
-  @WidgetBundleBuilder
-  var body: some Widget {
-    QuickActionsWidget()
-    SearchWidget()
-    ShortcutsWidget()
-    SearchPasswordsWidget()
-    DinoGameWidget()
-    #if IOS_ENABLE_LOCKSCREEN_WIDGET
-      #if IOS_AVAILABLE_LOCKSCREEN_WIDGET
-        LockscreenLauncherSearchWidget()
-        LockscreenLauncherIncognitoWidget()
-        LockscreenLauncherVoiceSearchWidget()
-        LockscreenLauncherGameWidget()
-      #endif
-    #endif
-  }
-}
