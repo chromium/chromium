@@ -1,6 +1,6 @@
 {
-  "version": "82.5",
-  "log_list_timestamp": "2026-01-28T12:53:32Z",
+  "version": "83.1",
+  "log_list_timestamp": "2026-01-29T12:53:20Z",
   "operators": [
     {
       "name": "Google",
@@ -155,38 +155,6 @@
       ],
       "logs": [
         {
-          "description": "DigiCert Yeti2025 Log",
-          "log_id": "fVkeEuF4KnscYWd8Xv340IdcFKBOlZ65Ay/ZDowuebg=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE35UAXhDBAfc34xB00f+yypDtMplfDDn+odETEazRs3OTIMITPEy1elKGhj3jlSR82JGYSDvw8N8h8bCBWlklQw==",
-          "url": "https://yeti2025.ct.digicert.com/log/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2025-07-24T00:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2025-01-01T00:00:00Z",
-            "end_exclusive": "2026-01-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "DigiCert Nessie2025 Log",
-          "log_id": "5tIxY0B3jMEQQQbXcbnOwdJA9paEhvu6hzId/R43jlA=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8vDwp4uBLgk5O59C2jhEX7TM7Ta72EN/FklXhwR/pQE09+hoP7d4H2BmLWeadYC3U6eF1byrRwZV27XfiKFvOA==",
-          "url": "https://nessie2025.ct.digicert.com/log/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2025-04-15T23:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2025-01-01T00:00:00Z",
-            "end_exclusive": "2026-01-01T00:00:00Z"
-          }
-        },
-        {
           "description": "DigiCert 'Wyvern2026h1'",
           "log_id": "ZBHEbKQS7KeJHKICLgC8q08oB9QeNSer6v7VA8l9zfA=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7Lw0OeKajbeZepHxBXJS2pOJXToHi5ntgKUW2nMhIOuGlofFxtkXum65TBNY1dGD+HrfHge8Fc3ASs0qMXEHVQ==",
@@ -323,46 +291,6 @@
         "ctops@sectigo.com"
       ],
       "logs": [
-        {
-          "description": "Sectigo 'Sabre2025h2'",
-          "log_id": "GgT/SdBUHUCv9qDDv/HYxGcvTuzuI0BomGsXQC7ciX0=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhRMRLXvzk4HkuXzZZDvntYOZZnlZR2pCXta9Yy63kUuuvFbExW4JoNdkGsjBr4mL9VjYuut7g1Lp9OClzc2SzA==",
-          "url": "https://sabre2025h2.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "readonly": {
-              "timestamp": "2025-09-18T17:20:00Z",
-              "final_tree_head": {
-                "sha256_root_hash": "eJj4IHvdYpljVsW/YCery+QsSRHbuYBME7H912a5P2Y=",
-                "tree_size": 1213760846
-              }
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2025-07-01T00:00:00Z",
-            "end_exclusive": "2026-01-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "Sectigo 'Mammoth2025h2'",
-          "log_id": "rxgaKNaMo+CpikycZ6sJ+Lu8IrquvLE4o6Gd0/m2Aw0=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEiOLHs9c3o5HXs8XaB1EEK4HtwkQ7daDmZeFKuhuxnKkqhDEprh2L8TOfEi6QsRVnZqB8C1tif2yaajCbaAIWbw==",
-          "url": "https://mammoth2025h2.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "readonly": {
-              "timestamp": "2025-08-29T20:40:00Z",
-              "final_tree_head": {
-                "sha256_root_hash": "aLJ1GqZiobxICL7qQFPCZzdkjU/TKvnA/CIVqU+LDy4=",
-                "tree_size": 865235446
-              }
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2025-07-01T00:00:00Z",
-            "end_exclusive": "2026-01-01T00:00:00Z"
-          }
-        },
         {
           "description": "Sectigo 'Mammoth2026h1'",
           "log_id": "JS+Uwisp6W6fQRpyBytpXFtS/5epDSVAu/zcUexN7gs=",
@@ -580,26 +508,6 @@
         "sre@letsencrypt.org"
       ],
       "logs": [
-        {
-          "description": "Let's Encrypt 'Oak2025h2'",
-          "log_id": "DeHyMCvTDcFAYhIJ6lUu/Ed0fLHX6TDvDkIetH5OqjQ=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEtXYwB63GyNLkS9L1vqKNnP10+jrW+lldthxg090fY4eG40Xg1RvANWqrJ5GVydc9u8H3cYZp9LNfkAmqrr2NqQ==",
-          "url": "https://oak.ct.letsencrypt.org/2025h2/",
-          "mmd": 86400,
-          "state": {
-            "readonly": {
-              "timestamp": "2025-12-12T22:30:00Z",
-              "final_tree_head": {
-                "sha256_root_hash": "fn06m+bnTrDRl01hT1F1TdZPYfxciFZZn7NAayeGOVQ=",
-                "tree_size": 1958525022
-              }
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2025-06-20T00:00:00Z",
-            "end_exclusive": "2026-01-20T00:00:00Z"
-          }
-        },
         {
           "description": "Let's Encrypt 'Oak2026h1'",
           "log_id": "GYbUxyiqb/66A294Kk0BkarOLXIxD67OXXBBLSVMx9Q=",
