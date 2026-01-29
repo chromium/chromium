@@ -354,6 +354,28 @@ bool VerticalTabView::OnMouseDragged(const ui::MouseEvent& event) {
   return controller->GetDragHandler().ContinueDrag(*this, event);
 }
 
+void VerticalTabView::OnGestureEvent(ui::GestureEvent* event) {
+  auto* controller = collection_node_->GetController();
+  CHECK(controller);
+
+  switch (event->type()) {
+    case ui::EventType::kGestureTapDown: {
+      // TAP_DOWN is only dispatched for the first touch point.
+      CHECK_EQ(1, event->details().touch_points());
+
+      if (!selected_) {
+        controller->SelectTab(GetTabInterface(), GetGestureDetail(*event));
+      }
+
+      event->SetHandled();
+      break;
+    }
+
+    default:
+      break;
+  }
+}
+
 void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
   std::optional<SkColor> background_color = GetBackgroundColor();
   // Split pinned tabs have a merged background that is rendered in
