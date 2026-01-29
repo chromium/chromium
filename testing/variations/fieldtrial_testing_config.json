@@ -26986,9 +26986,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8Flag_disable_eager_allocation_failures"
+                    "name": "Disabled",
+                    "disable_features": [
+                        "V8Flag_enable_allocation_failures_optimize_memory",
+                        "V8Flag_enable_allocation_failures_optimize_memory_ignoring_priority"
                     ]
                 }
             ]
