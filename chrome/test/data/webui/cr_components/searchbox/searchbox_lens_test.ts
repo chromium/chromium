@@ -5,7 +5,8 @@
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {BrowserProxyImpl, createAutocompleteMatch, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -96,12 +97,11 @@ suite('Lens search', () => {
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     const matches = [createAutocompleteMatch()];
-    testProxy.callbackRouterRemote.autocompleteResultChanged({
-      input: realbox.$.input.value.trimStart(),
-      matches,
-      suggestionGroupsMap: {},
-      smartComposeInlineHint: '',
-    });
+    testProxy.callbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: realbox.$.input.value.trimStart(),
+          matches,
+        }));
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertTrue(await areMatchesShowing());
 

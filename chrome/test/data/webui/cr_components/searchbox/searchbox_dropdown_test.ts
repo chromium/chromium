@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
+import 'chrome://new-tab-page/strings.m.js';
+
+import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
-
-import {createAutocompleteResult, createSearchMatch} from './searchbox_test_utils.js';
 
 // TODO(crbug.com/455876602): Move dropdown-specific tests in searchbox_test.ts
 //  into this file.
@@ -22,12 +24,12 @@ suite('SearchboxDropdown', () => {
   test('hides matches that have `isHidden` field set to true', async () => {
     // Arrange.
     const matches = [
-      createSearchMatch({contents: 'bar', isHidden: true}),
-      createSearchMatch({contents: 'foo'}),
+      createSearchMatchForTesting({contents: 'bar', isHidden: true}),
+      createSearchMatchForTesting({contents: 'foo'}),
     ];
 
     // Act.
-    dropdown.result = createAutocompleteResult({matches});
+    dropdown.result = createAutocompleteResultForTesting({matches});
     await microtasksFinished();
 
     // Assert.
