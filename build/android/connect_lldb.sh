@@ -736,6 +736,13 @@ readonly COMMANDS=$TMPDIR/lldb.init
 log "Generating LLDB initialization commands file: $COMMANDS"
 cat > "$COMMANDS" <<EOF
 settings append target.exec-search-paths $SYMBOL_DIR $SOLIB_DIRS $PULL_LIBS_DIR
+# Required because .dwo paths are resolved relative to the .so, but we've
+# nested the .so in lib.unstripped.
+settings set target.debug-file-search-paths $CHROMIUM_OUTPUT_DIR
+# When -gno-pubnames is used, lldb must create its own index (about 20s)
+# This tells it to cache the index for subsequent uses. By default, this
+# caches for 7 days.
+settings set symbols.enable-lldb-index-cache true
 settings set target.source-map ../.. $CHROMIUM_SRC
 target create '$TMPDIR/$LLDBEXEC'
 target modules search-paths add / $TMPDIR/$LLDBEXEC/
