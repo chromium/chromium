@@ -11611,6 +11611,13 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     ui::AXLocationAndScrollUpdates changes,
     uint32_t reset_token,
     mojo::ReportBadMessageCallback report_bad_message_callback) {
+  if (!render_accessibility_) {
+    // This message arrived from `RenderAccessibilityHost` posting a task to the
+    // UI thread but our mojo connection has been reset. An example of where
+    // this occurs is `SwapOuterDelegateFrame`.
+    return;
+  }
+
   if (tree_id != GetAXTreeID()) {
     // The message has arrived after the frame has navigated which means its
     // changes are no longer relevant and can be discarded.
