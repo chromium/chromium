@@ -5124,6 +5124,258 @@
             ]
         }
     ],
+    "ChromeIdentitySurveyAddressBubbleSignin": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "QLEtVmyw80ugnJ3q1cK0UGdNayod",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveyAddressBubbleSignin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveyDiceWebSigninAccepted": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "xEt7e5g7R0ugnJ3q1cK0VZ7N4MUU",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveyDiceWebSigninAccepted"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveyDiceWebSigninDeclined": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "2LBpsLxW40ugnJ3q1cK0YRjYGpmV",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveyDiceWebSigninDeclined"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveyFirstRunSignin": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "RyaBY3Nkt0ugnJ3q1cK0NsYdHNN6",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveyFirstRunSignin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveyPasswordBubbleSignin": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "Y6Y4fzSar0ugnJ3q1cK0WNKdFDWW",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveyPasswordBubbleSignin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveyProfileMenuDismissed": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "AHS3hpM2h0ugnJ3q1cK0TTUsr4mM",
+                        "probability": "0.008"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveyProfileMenuDismissed"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveyProfileMenuSignin": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "5BV1ygFHd0ugnJ3q1cK0WVqeKyud",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveyProfileMenuSignin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveyProfilePickerAddProfileSignin": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "dQhvVytAT0ugnJ3q1cK0WmcCsZxn",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveyProfilePickerAddProfileSignin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveySigninInterceptProfileSeparation": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "EpkbgSho80ugnJ3q1cK0XfvvYoum",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveySigninInterceptProfileSeparation"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveySigninPromoBubbleDismissed": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "LSwnpVNg60ugnJ3q1cK0Uj5JGisJ",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveySigninPromoBubbleDismissed"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveySwitchProfileFromProfileMenu": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "buPSkStWM0ugnJ3q1cK0RmiQgzK1",
+                        "probability": "0.008"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveySwitchProfileFromProfileMenu"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeIdentitySurveySwitchProfileFromProfilePicker": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "b5zoUGRaf0ugnJ3q1cK0RaxK8yrp",
+                        "probability": "0.08"
+                    },
+                    "enable_features": [
+                        "ChromeIdentitySurveySwitchProfileFromProfilePicker"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSARCVMLmkPerceptibleMinState": [
         {
             "platforms": [

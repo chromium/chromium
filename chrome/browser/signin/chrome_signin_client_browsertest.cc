@@ -207,6 +207,14 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
 // even if the user signs in through an eligible access point.
 IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
                        HatsSurveyNotLaunchedOnSigninUnsupportedLocale) {
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list &&
+      feature_list->IsFeatureOverridden(
+          switches::kChromeIdentitySurveyPasswordBubbleSignin.name)) {
+    GTEST_SKIP() << "Feature is overridden by the field trial config,"
+                    "bypassing the embedded locale check.";
+  }
+
   // Set up the pseudo locale.
   auto locale = std::make_unique<ScopedBrowserLocale>("en-XA");
 
