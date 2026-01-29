@@ -1,0 +1,125 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#top-section {
+  --space-gap: 36px;
+  display: flex;
+  padding: var(--space-gap) 56px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-gap);
+}
+
+#text-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+  align-items: center;
+}
+
+:host([use-settings-illustration]) #text-content {
+  align-items: flex-start;
+}
+
+#icon-container {
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+#header-background {
+  grid-area: 1 / 1;
+  width: 277px;
+  height: 217px;
+  content: url(header_background.svg);
+  object-fit: contain;
+}
+
+#icon {
+  --icon-size: 40px;
+  height: var(--icon-size);
+  object-fit: contain;
+  width: var(--icon-size);
+  z-index: 1;
+}
+
+:host(:not([use-settings-illustration])) #icon {
+  --icon-size: 74px;
+  grid-area: 1/1;
+}
+
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  word-wrap: break-word;
+}
+
+#body-text {
+  color: var(--cr-secondary-text-color);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+:host(:not([use-settings-illustration])) #title,
+:host(:not([use-settings-illustration])) #body-text {
+  text-align: center;
+}
+
+#illustration {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: var(--cr-fallback-color-inverse-primary);
+  border-radius: 8px 8px 8px 0px;
+}
+
+#illustration img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  box-shadow: 0 6px 10px 4px rgba(0, 0, 0, 0.15),
+    0 2px 3px 0 rgba(0, 0, 0, 0.30);
+}
+
+:host(:not([use-settings-illustration])) #illustration img {
+  padding-top: 45px;
+  padding-right: 32px;
+}
+
+#bottom-section {
+  --space-gap: 24px;
+  display: flex;
+  padding: 16px var(--space-gap) var(--space-gap) 56px;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-gap);
+  align-self: stretch;
+}
+
+#button-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 16px;
+  align-self: stretch;
+}
+
+cr-button {
+  font-weight: 500;
+}

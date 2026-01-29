@@ -13618,6 +13618,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_DEFAULT_BROWSER_CHANGED_NO_THANKS_BUTTON" desc="Label of the no button on the notification shown when the default browser setting changes.">
         No, thanks
       </message>
+      <message name="IDS_DEFAULT_BROWSER_MODAL_CONFIRM_BUTTON" desc="Label for the button to confirm setting the default browser.">
+        Open settings
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_MODAL_CANCEL_BUTTON" desc="Label for the button to cancel setting the default browser.">
+        Set later
+      </message>
 
       <!-- chrome://help -->
       <if expr="not is_android">

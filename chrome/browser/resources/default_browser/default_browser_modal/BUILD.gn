@@ -10,6 +10,8 @@ build_webui("build") {
   static_files = [
     "default_browser_modal.css",
     "default_browser_modal.html",
+    "header_background.svg",
+    "settings_illustration.svg",
   ]
 
   ts_files = [
@@ -17,8 +19,13 @@ build_webui("build") {
     "app.html.ts",
   ]
 
+  css_files = [ "app.css" ]
+
+  ts_composite = true
+
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 

@@ -16,31 +16,49 @@
 namespace default_browser {
 
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
-constexpr char kScreenshotBaselineCL[] = "7206051";
+constexpr char kScreenshotBaselineCL[] = "7511657";
 
 class DefaultBrowserModalPixelTest : public InteractiveBrowserTest {
  public:
   DefaultBrowserModalPixelTest() = default;
   ~DefaultBrowserModalPixelTest() override = default;
 
-  void ShowUi() {
+  void ShowUi(bool use_settings_illustration) {
     DefaultBrowserModalDialog::Show(
         browser()->profile(),
-        browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView());
+        browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView(),
+        use_settings_illustration);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DefaultBrowserModalPixelTest, ShowAndVerifyUi) {
+IN_PROC_BROWSER_TEST_F(DefaultBrowserModalPixelTest,
+                       ShowAndVerifyUiWithoutSettingsIllustration) {
   RunTestSequence(
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshots not supported in all testing environments."),
-      Do([this]() { ShowUi(); }),
+      Do([this]() { ShowUi(/*use_settings_illustration=*/false); }),
       InAnyContext(
           WaitForShow(DefaultBrowserModalDialog::kDefaultBrowserModalDialogId)),
       InSameContext(ScreenshotSurface(
           DefaultBrowserModalDialog::kDefaultBrowserModalDialogId,
-          /*screenshot_name=*/"DefaultBrowserModal", kScreenshotBaselineCL)));
+          /*screenshot_name=*/"DefaultBrowserModalWithoutSettingsIllustration",
+          kScreenshotBaselineCL)));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserModalPixelTest,
+                       ShowAndVerifyUiWithSettingsIllustration) {
+  RunTestSequence(
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      Do([this]() { ShowUi(/*use_settings_illustration=*/true); }),
+      InAnyContext(
+          WaitForShow(DefaultBrowserModalDialog::kDefaultBrowserModalDialogId)),
+      InSameContext(ScreenshotSurface(
+          DefaultBrowserModalDialog::kDefaultBrowserModalDialogId,
+          /*screenshot_name=*/"DefaultBrowserModalWithSettingsIllustration",
+          kScreenshotBaselineCL)));
 }
 
 }  // namespace default_browser

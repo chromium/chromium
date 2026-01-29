@@ -308,8 +308,10 @@ source_set("browser_tests") {
   }
 
   if (!is_android && !is_chromeos) {
+    sources += [ "default_browser/default_browser_browsertest.cc" ]
     deps += [
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/webui/default_browser:default_browser_modal",
       "//chrome/browser/ui/webui/signin:signin_utils",
     ]
   }
@@ -661,6 +663,11 @@ generate_grd("build_grd") {
       "$target_gen_dir/tab_group_home/resources.grdp",
       "$target_gen_dir/tab_search/resources.grdp",
     ]
+
+    if (!is_chromeos) {
+      deps += [ "default_browser:build_grdp" ]
+      grdp_files += [ "$target_gen_dir/default_browser/resources.grdp" ]
+    }
   }
 
   if (enable_extensions_core) {
