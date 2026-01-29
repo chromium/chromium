@@ -798,6 +798,8 @@ void AppInstallControllerImpl::StateChange(
                 update_state.total_bytes),
             pos >= 0 ? pos : 0);
       } else {
+        install_progress_observer_ipc_->OnDownloading(app_id_, app_name_,
+                                                      base::Seconds(0), pos);
         install_progress_observer_ipc_->OnWaitingToInstall(app_id_, app_name_);
       }
       break;

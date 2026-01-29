@@ -309,6 +309,7 @@ void ProgressWnd::OnWaitingToDownload(const std::string& app_id,
     return;
   }
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
+  SetMarqueeMode(true);
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT, L"");
   ChangeControlState();
 }
@@ -376,6 +377,7 @@ void ProgressWnd::OnWaitingRetryDownload(const std::string& app_id,
   }
 
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
+  SetMarqueeMode(true);
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT, L"");
   ChangeControlState();
 }
@@ -389,6 +391,7 @@ void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
 
   if (States::STATE_WAITING_TO_INSTALL != cur_state_) {
     cur_state_ = States::STATE_WAITING_TO_INSTALL;
+    SetMarqueeMode(true);
     SetDlgItemText(
         IDC_INSTALLER_STATE_TEXT,
         GetLocalizedString(IDS_WAITING_TO_INSTALL_BASE, lang()).c_str());
