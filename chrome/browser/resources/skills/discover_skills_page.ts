@@ -11,6 +11,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './discover_skills_page.css.js';
 import {getHtml} from './discover_skills_page.html.js';
 import type {Skill} from './skill.mojom-webui.js';
+import {SkillSource} from './skill.mojom-webui.js';
 
 export class DiscoverSkillsPageElement extends CrLitElement {
   static get is() {
@@ -35,10 +36,46 @@ export class DiscoverSkillsPageElement extends CrLitElement {
   /* TODO(b/475594870): Instead of hardcoding, fetch from backend */
   /* key: category, value: skill */
   protected accessor skills_: Map<string, Skill[]> = new Map<string, Skill[]>([
-    ['Planning', [{id: '1', name: 'test1', icon: '', prompt: ''}]],
-    ['Shopping', [{id: '2', name: 'test2', icon: '', prompt: ''}]],
-    ['Learning', [{id: '3', name: 'test3', icon: '', prompt: ''}]],
-    ['Top', [{id: '4', name: 'test4', icon: '', prompt: ''}]],
+    [
+      'Planning',
+      [{
+        id: '1',
+        name: 'test1',
+        icon: '',
+        prompt: '',
+        source: SkillSource.kFirstParty,
+      }],
+    ],
+    [
+      'Shopping',
+      [{
+        id: '2',
+        name: 'test2',
+        icon: '',
+        prompt: '',
+        source: SkillSource.kFirstParty,
+      }],
+    ],
+    [
+      'Learning',
+      [{
+        id: '3',
+        name: 'test3',
+        icon: '',
+        prompt: '',
+        source: SkillSource.kFirstParty,
+      }],
+    ],
+    [
+      'Top',
+      [{
+        id: '4',
+        name: 'test4',
+        icon: '',
+        prompt: '',
+        source: SkillSource.kFirstParty,
+      }],
+    ],
   ]);
   protected accessor selectedCategory_: string =
       this.skills_.keys().next().value || '';

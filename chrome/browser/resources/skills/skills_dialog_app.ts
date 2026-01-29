@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
+import {SkillSource} from './skill.mojom-webui.js';
 import {getCss} from './skills_dialog.css.js';
 import {getHtml} from './skills_dialog_app.html.js';
 import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
@@ -39,6 +40,8 @@ export class SkillsDialogAppElement extends CrLitElement {
     name: '',
     icon: '',
     prompt: '',
+    // Default to user created since these are added by the user via the UI.
+    source: SkillSource.kUserCreated,
   };
 
   protected get isSaveButtonDisabled() {
