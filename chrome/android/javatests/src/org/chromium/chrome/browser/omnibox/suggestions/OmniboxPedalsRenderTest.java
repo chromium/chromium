@@ -19,6 +19,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -38,6 +39,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -137,6 +139,7 @@ public class OmniboxPedalsRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/479724464
     public void testPlayChromeDinoGamePedal() throws IOException, InterruptedException {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
