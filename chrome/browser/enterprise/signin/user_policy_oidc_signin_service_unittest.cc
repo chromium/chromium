@@ -14,10 +14,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
+#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service_factory.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -41,6 +46,7 @@
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/signin/public/base/consent_level.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -55,29 +61,53 @@ using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 
-using policy::CloudPolicyStore;
 using policy::DeviceManagementService;
-using policy::MockProfileCloudPolicyStore;
-using policy::MockUserCloudPolicyStore;
 using policy::ProfileCloudPolicyManager;
 using policy::UserCloudPolicyManager;
 
+namespace policy {
 namespace {
 
 const ProfileManagementOidcTokens kExampleOidcTokens =
-    ProfileManagementOidcTokens{"example_auth_token", "example_id_token",
-                                u"Test User"};
+    ProfileManagementOidcTokens{"example_encrypted_user_info"};
 constexpr char kExampleUserEmail[] = "user@test.com";
 constexpr char kExampleDmToken[] = "example_dm_token";
 constexpr char kExampleClientId[] = "example_client_id";
 constexpr GaiaId::Literal kExampleGaiaId("123");
 
+std::unique_ptr<KeyedService> BuildFakeUserPolicySigninService(
+    bool is_managed,
+    DeviceManagementService* device_management_service,
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  // Non-empty dm token & client id will indicate to PolicyFetchCallback that
+  // the account is managed.
+  IdentityTestEnvironmentProfileAdaptor(profile)
+      .identity_test_env()
+      ->MakePrimaryAccountAvailable("123", signin::ConsentLevel::kSignin);
+
+  auto fake_service = std::make_unique<policy::UserPolicySigninService>(
+      profile, TestingBrowserProcess::GetGlobal()->local_state(),
+      device_management_service, profile->GetUserCloudPolicyManager(),
+      IdentityManagerFactory::GetForProfile(profile),
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+
+  fake_service->set_profile_can_be_managed_for_testing(is_managed);
+
+  return fake_service;
+}
+
 // Customized profile manager that ensures the created profiles are properly set
 // up for testing.
 class UnittestProfileManager : public FakeProfileManager {
  public:
-  explicit UnittestProfileManager(const base::FilePath& user_data_dir)
-      : FakeProfileManager(user_data_dir) {}
+  explicit UnittestProfileManager(
+      const base::FilePath& user_data_dir,
+      bool is_managed,
+      DeviceManagementService* device_management_service)
+      : FakeProfileManager(user_data_dir),
+        is_managed_(is_managed),
+        device_management_service_(device_management_service) {}
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
@@ -90,6 +120,10 @@ class UnittestProfileManager : public FakeProfileManager {
 
     if (std::holds_alternative<std::unique_ptr<UserCloudPolicyManager>>(
             policy_manager_)) {
+      builder.AddTestingFactory(
+          policy::UserPolicySigninServiceFactory::GetInstance(),
+          base::BindRepeating(&BuildFakeUserPolicySigninService, is_managed_,
+                              device_management_service_));
       builder.SetUserCloudPolicyManager(std::move(
           std::get<std::unique_ptr<UserCloudPolicyManager>>(policy_manager_)));
     } else {
@@ -109,6 +143,8 @@ class UnittestProfileManager : public FakeProfileManager {
   }
 
  private:
+  bool is_managed_ = false;
+  raw_ptr<DeviceManagementService> device_management_service_;
   std::variant<std::unique_ptr<UserCloudPolicyManager>,
                std::unique_ptr<ProfileCloudPolicyManager>>
       policy_manager_;
@@ -116,12 +152,13 @@ class UnittestProfileManager : public FakeProfileManager {
 
 }  // namespace
 
-class UserPolicyOidcSigninServiceTest
+class UserPolicyOidcSigninServiceTestBase
     : public BrowserWithTestWindowTest,
-      public testing::WithParamInterface<bool>,
       public ProfileAttributesStorageObserver {
  public:
-  ~UserPolicyOidcSigninServiceTest() override = default;
+  UserPolicyOidcSigninServiceTestBase() = default;
+
+  ~UserPolicyOidcSigninServiceTestBase() override = default;
 
   void SetUp() override {
     device_management_service_.ScheduleInitialization(0);
@@ -129,8 +166,8 @@ class UserPolicyOidcSigninServiceTest
         test_url_loader_factory_.GetSafeWeakWrapper());
     auto path = base::MakeAbsoluteFilePath(
         base::CreateUniqueTempDirectoryScopedToTest());
-    auto profile_manager_unique =
-        std::make_unique<UnittestProfileManager>(path);
+    auto profile_manager_unique = std::make_unique<UnittestProfileManager>(
+        path, is_managed_, &device_management_service_);
     unit_test_profile_manager_ = profile_manager_unique.get();
     SetUpProfileManager(path, std::move(profile_manager_unique));
 
@@ -169,26 +206,28 @@ class UserPolicyOidcSigninServiceTest
 
   // If the 3P identity is not synced to Google, the interceptor should follow
   // the Dasherless workflow.
-  bool is_3p_identity_synced() { return GetParam(); }
+  bool is_3p_identity_synced() { return is_3p_identity_synced_; }
+
+  // GAIA service cannot apply policies if profile is unmanaged.
+  bool is_managed() { return is_managed_; }
+
+  bool has_policy() { return has_policy_; }
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   void SetPolicyData() {
-    auto* profile = unit_test_profile_manager_->GetProfileByPath(profile_path_);
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_gaia_id(kExampleGaiaId.ToString());
     policy_data->set_command_invalidation_topic("fake-topic");
     policy_data->set_cec_enabled(true);
-    if (profile->GetProfileCloudPolicyManager()) {
-      static_cast<MockProfileCloudPolicyStore*>(
-          profile->GetProfileCloudPolicyManager()->core()->store())
-          ->set_policy_data_for_testing(std::move(policy_data));
+    if (mock_profile_cloud_policy_store_) {
+      mock_profile_cloud_policy_store_->set_policy_data_for_testing(
+          std::move(policy_data));
     } else {
-      static_cast<MockUserCloudPolicyStore*>(
-          profile->GetUserCloudPolicyManager()->core()->store())
-          ->set_policy_data_for_testing(std::move(policy_data));
+      mock_user_cloud_policy_store_->set_policy_data_for_testing(
+          std::move(policy_data));
     }
   }
 
@@ -200,16 +239,14 @@ class UserPolicyOidcSigninServiceTest
         std::make_unique<MockUserCloudPolicyStore>();
     mock_user_cloud_policy_store_ = mock_user_cloud_policy_store.get();
 
-    mock_user_cloud_policy_store->status_ = store_status;
-    if (is_store_initialized &&
-        store_status == CloudPolicyStore::Status::STATUS_OK) {
-      mock_user_cloud_policy_store->NotifyStoreLoaded();
-    } else if (is_store_initialized) {
-      mock_user_cloud_policy_store->NotifyStoreError();
-    }
+    ConfigureMockStore(mock_user_cloud_policy_store_.get(),
+                       is_store_initialized, store_status);
 
-    EXPECT_CALL(*mock_user_cloud_policy_store, Load())
-        .Times(testing::AnyNumber());
+    ON_CALL(*mock_user_cloud_policy_store_, Clear()).WillByDefault([this]() {
+      mock_user_cloud_policy_store_->set_policy_data_for_testing(nullptr);
+      mock_user_cloud_policy_store_->NotifyStoreLoaded();
+    });
+
     std::unique_ptr<MockUserCloudPolicyStore>
         mock_user_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -218,6 +255,10 @@ class UserPolicyOidcSigninServiceTest
     EXPECT_CALL(*mock_user_cloud_policy_extension_install_store, Load())
         .Times(testing::AnyNumber());
 #endif
+
+    if (has_policy()) {
+      SetPolicyData();
+    }
 
     return std::make_unique<UserCloudPolicyManager>(
         std::move(mock_user_cloud_policy_store),
@@ -235,16 +276,8 @@ class UserPolicyOidcSigninServiceTest
         std::make_unique<MockProfileCloudPolicyStore>();
     mock_profile_cloud_policy_store_ = mock_profile_cloud_policy_store.get();
 
-    mock_profile_cloud_policy_store_->status_ = store_status;
-    if (is_store_initialized &&
-        store_status == CloudPolicyStore::Status::STATUS_OK) {
-      mock_profile_cloud_policy_store_->NotifyStoreLoaded();
-    } else if (is_store_initialized) {
-      mock_profile_cloud_policy_store_->NotifyStoreError();
-    }
-
-    EXPECT_CALL(*mock_profile_cloud_policy_store, Load())
-        .Times(testing::AnyNumber());
+    ConfigureMockStore(mock_profile_cloud_policy_store_.get(),
+                       is_store_initialized, store_status);
 
     std::unique_ptr<MockProfileCloudPolicyStore>
         mock_profile_cloud_policy_extension_install_store;
@@ -254,6 +287,8 @@ class UserPolicyOidcSigninServiceTest
     EXPECT_CALL(*mock_profile_cloud_policy_extension_install_store, Load())
         .Times(testing::AnyNumber());
 #endif
+
+    SetPolicyData();
 
     return std::make_unique<ProfileCloudPolicyManager>(
         std::move(mock_profile_cloud_policy_store),
@@ -287,7 +322,6 @@ class UserPolicyOidcSigninServiceTest
 
     std::visit([&](auto* manager) { manager->Init(&schema_registry_); },
                policy_manager);
-    SetPolicyData();
 
     oidc_signin_service_ =
         std::make_unique<policy::UserPolicyOidcSigninService>(
@@ -318,7 +352,30 @@ class UserPolicyOidcSigninServiceTest
     entry->SetDasherlessManagement(!is_3p_identity_synced());
   }
 
+  void OnPolicyFetchCompleteInNewProfile() {
+    oidc_signin_service_->OnPolicyFetchCompleteInNewProfile(
+        "123", base::TimeTicks(), false, base::BindOnce([](bool) {}), true);
+  }
+
+  template <typename MockStore>
+  void ConfigureMockStore(MockStore* store,
+                          bool is_store_initialized,
+                          CloudPolicyStore::Status store_status) {
+    store->status_ = store_status;
+    if (is_store_initialized &&
+        store_status == CloudPolicyStore::Status::STATUS_OK) {
+      store->NotifyStoreLoaded();
+    } else if (is_store_initialized) {
+      store->NotifyStoreError();
+    }
+
+    EXPECT_CALL(*store, Load()).Times(testing::AnyNumber());
+  }
+
  protected:
+  bool is_3p_identity_synced_ = true;
+  bool has_policy_ = true;
+  bool is_managed_ = true;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<UnittestProfileManager> unit_test_profile_manager_;
   raw_ptr<MockProfileCloudPolicyStore> mock_profile_cloud_policy_store_;
@@ -336,17 +393,73 @@ class UserPolicyOidcSigninServiceTest
       profile_observation_{this};
 };
 
+class UserPolicyOidcSigninServiceTest
+    : public UserPolicyOidcSigninServiceTestBase,
+      public testing::WithParamInterface<std::tuple<bool>> {
+ public:
+  UserPolicyOidcSigninServiceTest() {
+    is_3p_identity_synced_ = std::get<0>(GetParam());
+  }
+
+  ~UserPolicyOidcSigninServiceTest() override = default;
+
+  void SetupPolicyRecoveryExpectations(
+      DeviceManagementService::JobConfiguration::JobType* job_type_1,
+      DeviceManagementService::JobConfiguration::JobType* job_type_2,
+      DeviceManagementService::JobForTesting* job,
+      base::RunLoop* run_loop) {
+    if (is_3p_identity_synced()) {
+      EXPECT_CALL(job_creation_handler_, OnJobCreation)
+          .WillOnce(DoAll(
+              device_management_service_.CaptureJobType(job_type_1),
+              Invoke(this, &UserPolicyOidcSigninServiceTestBase::SetPolicyData),
+              Invoke(this, &UserPolicyOidcSigninServiceTestBase::
+                               OnPolicyFetchCompleteInNewProfile),
+              SaveArg<0>(job)))
+          .WillOnce(DoAll(device_management_service_.CaptureJobType(job_type_2),
+                          SaveArg<0>(job),
+                          testing::Invoke(run_loop, &base::RunLoop::Quit)));
+    } else {
+      EXPECT_CALL(job_creation_handler_, OnJobCreation)
+          .WillOnce(DoAll(device_management_service_.CaptureJobType(job_type_1),
+                          SaveArg<0>(job)))
+          .WillOnce(DoAll(
+              device_management_service_.CaptureJobType(job_type_2),
+              Invoke(this, &UserPolicyOidcSigninServiceTestBase::SetPolicyData),
+              Invoke(this, &UserPolicyOidcSigninServiceTestBase::
+                               OnPolicyFetchCompleteInNewProfile),
+              SaveArg<0>(job),
+              testing::Invoke(run_loop, &base::RunLoop::Quit)));
+    }
+  }
+
+  void VerifyPolicyRecoveryJobTypes(
+      DeviceManagementService::JobConfiguration::JobType job_type_1,
+      DeviceManagementService::JobConfiguration::JobType job_type_2) {
+    if (is_3p_identity_synced()) {
+      EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+                job_type_1);
+      EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
+                job_type_2);
+    } else {
+      EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
+                job_type_1);
+      EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+                job_type_2);
+    }
+  }
+};
+
 TEST_P(UserPolicyOidcSigninServiceTest, UninitializedStorePolicyRecovery) {
   DeviceManagementService::JobConfiguration::JobType job_type_1 =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobConfiguration::JobType job_type_2 =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobForTesting job;
 
   base::RunLoop run_loop;
 
-  EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
-                      SaveArg<0>(&job),
-                      testing::Invoke(&run_loop, &base::RunLoop::Quit)));
+  SetupPolicyRecoveryExpectations(&job_type_1, &job_type_2, &job, &run_loop);
 
   is_3p_identity_synced()
       ? unit_test_profile_manager_->SetPolicyManagerForNextProfile(
@@ -367,8 +480,8 @@ TEST_P(UserPolicyOidcSigninServiceTest, UninitializedStorePolicyRecovery) {
 
   run_loop.Run();
 
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
-            job_type_1);
+  VerifyPolicyRecoveryJobTypes(job_type_1, job_type_2);
+
   ConfirmHasPolicy();
 }
 
@@ -381,12 +494,7 @@ TEST_P(UserPolicyOidcSigninServiceTest, InitializedStorePolicyRecovery) {
 
   base::RunLoop run_loop;
 
-    EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
-                        SaveArg<0>(&job)))
-        .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_2),
-                        SaveArg<0>(&job),
-                        testing::Invoke(&run_loop, &base::RunLoop::Quit)));
+  SetupPolicyRecoveryExpectations(&job_type_1, &job_type_2, &job, &run_loop);
 
   is_3p_identity_synced()
       ? unit_test_profile_manager_->SetPolicyManagerForNextProfile(
@@ -402,10 +510,7 @@ TEST_P(UserPolicyOidcSigninServiceTest, InitializedStorePolicyRecovery) {
 
   run_loop.Run();
 
-    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
-              job_type_1);
-    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-              job_type_2);
+  VerifyPolicyRecoveryJobTypes(job_type_1, job_type_2);
 
   ConfirmHasPolicy();
 }
@@ -450,4 +555,59 @@ TEST_P(UserPolicyOidcSigninServiceTest, UninitializedSuccessLoad) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UserPolicyOidcSigninServiceTest,
-                         /*is_3p_identity_synced=*/testing::Bool());
+                         testing::Combine(
+                             /*is_3p_identity_synced=*/testing::Bool()));
+
+class UserPolicySigninServicesInteractionTest
+    : public UserPolicyOidcSigninServiceTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  UserPolicySigninServicesInteractionTest() {
+    is_managed_ = std::get<0>(GetParam());
+    has_policy_ = std::get<1>(GetParam());
+  }
+
+  ~UserPolicySigninServicesInteractionTest() override = default;
+};
+
+TEST_P(UserPolicySigninServicesInteractionTest, RecoverPolicyIfMissing) {
+  DeviceManagementService::JobConfiguration::JobType job_type =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobForTesting job;
+
+  base::RunLoop run_loop;
+
+  if (!is_managed() || !has_policy()) {
+    EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
+
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(
+            device_management_service_.CaptureJobType(&job_type),
+            SaveArg<0>(&job),
+            Invoke(this, &UserPolicyOidcSigninServiceTestBase::SetPolicyData),
+            testing::Invoke(&run_loop, &base::RunLoop::Quit)));
+  }
+
+  unit_test_profile_manager_->SetPolicyManagerForNextProfile(
+      BuildUserCloudPolicyManager(
+          /*is_store_initialized=*/true, CloudPolicyStore::Status::STATUS_OK));
+
+  CreateProfileAndInitializeSigninService();
+
+  if (!is_managed() || !has_policy()) {
+    run_loop.Run();
+
+    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+              job_type);
+  }
+
+  ConfirmHasPolicy();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserPolicySigninServicesInteractionTest,
+                         testing::Combine(
+                             /*is_managed=*/testing::Bool(),
+                             /*has_policy=*/testing::Bool()));
+
+}  // namespace policy

@@ -265,6 +265,23 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Policy fetched for OIDC profile " << success_string;
 
+  // Restart potentially broken remote command service (due to policy removal)
+  // for dasher-based profiles after policy fetch.
+  if (dasher_based && success) {
+    auto* remote_command_service =
+        enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+            profile_);
+    if (remote_command_service) {
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Restarting remote command services after OIDC policy fetch.";
+      remote_command_service->Shutdown();
+      remote_command_service->Init();
+    } else {
+      VLOG_POLICY(2, OIDC_ENROLLMENT) << "Failed to start the remote commands "
+                                         "service after OIDC policy fetch.";
+    }
+  }
+
   if (success && dasher_based && !switch_to_entry) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
 
