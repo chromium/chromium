@@ -8,6 +8,9 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
+class VerticalTabStripFlatEdgeButton;
+class BrowserWindowInterface;
+
 namespace gfx {
 class Point;
 }  // namespace gfx
@@ -16,9 +19,14 @@ namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
 
+namespace tab_groups {
+class STGEverythingMenu;
+}
+
 namespace views {
 class ActionViewController;
 class LabelButton;
+class MenuButtonController;
 }  // namespace views
 
 // Top container of the vertical tab strip, manages the collapse and tab search
@@ -30,17 +38,24 @@ class VerticalTabStripTopContainer : public views::View,
  public:
   VerticalTabStripTopContainer(
       tabs::VerticalTabStripStateController* state_controller,
-      actions::ActionItem* root_action_item);
+      actions::ActionItem* root_action_item,
+      BrowserWindowInterface* browser);
   ~VerticalTabStripTopContainer() override;
 
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
-  // Creates a TopContainerButton based on an ActionId.
-  views::LabelButton* AddChildButtonFor(actions::ActionId action_id);
+  // Creates a TopContainerButton (Collapse Button).
+  views::LabelButton* AddTopContainerChildButtonFor(
+      actions::ActionId action_id);
+  // Creates FlatEdgeButton (Tab Groups & Tab Search).
+  VerticalTabStripFlatEdgeButton* AddFlatEdgeChildButtonFor(
+      actions::ActionId action_id);
 
-  views::LabelButton* GetTabSearchButton() { return tab_search_button_; }
+  VerticalTabStripFlatEdgeButton* GetTabSearchButton() {
+    return tab_search_button_;
+  }
   views::LabelButton* GetCollapseButton() { return collapse_button_; }
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
@@ -54,11 +69,26 @@ class VerticalTabStripTopContainer : public views::View,
   void SetCaptionButtonWidthForLayout(int caption_button_width);
 
  private:
+  void ShowEverythingMenu();
+
+  void OnCollapsedStateChanged(
+      tabs::VerticalTabStripStateController* controller);
+
+  // This method updates the flat edges of the tab search and tab group buttons
+  // according to the collapsed state.
+  void UpdateButtonStyles(tabs::VerticalTabStripStateController* controller);
+
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_ = nullptr;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
-  raw_ptr<views::LabelButton> tab_search_button_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+  raw_ptr<VerticalTabStripFlatEdgeButton> tab_search_button_ = nullptr;
+  raw_ptr<VerticalTabStripFlatEdgeButton> tab_group_button_ = nullptr;
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
 
+  raw_ptr<views::MenuButtonController> everything_menu_controller_ = nullptr;
+
+  base::CallbackListSubscription collapsed_state_changed_subscription_;
+  std::unique_ptr<tab_groups::STGEverythingMenu> everything_menu_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 
   // This represents the toolbar (element containing toolbar buttons, omnibox,

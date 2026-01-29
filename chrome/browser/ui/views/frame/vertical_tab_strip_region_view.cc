@@ -82,13 +82,13 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   // Create child views.
   top_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripTopContainer>(
-          state_controller_, root_action_item));
+          state_controller_, root_action_item, browser_view->browser()));
 
   top_button_separator_ = AddChildView(std::make_unique<views::Separator>());
 
   bottom_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
-          state_controller_, root_action_item, browser_view->browser()));
+          state_controller_, root_action_item));
 
   gemini_button_ = AddChildView(std::make_unique<views::View>());
 
