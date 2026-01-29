@@ -208,9 +208,21 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
     return this.fileNum >= this.maxFileCount_;
   }
 
+  // Checks if the browser tab item in the context menu should be visible.
+  protected get browserTabAllowed_(): boolean {
+    if (this.inputState) {
+      return this.inputState.allowedInputTypes.includes(InputType.kBrowserTab);
+    }
+    return false;
+  }
+
   // Checks if a tab item in the context menu should be disabled.
   protected isTabDisabled_(tab: TabInfo): boolean {
-    const noNewContextAllowed = this.fileNum >= this.maxFileCount_;
+    let noNewContextAllowed = this.fileNum >= this.maxFileCount_;
+    if (this.inputState) {
+      noNewContextAllowed =
+          this.inputState.disabledInputTypes.includes(InputType.kBrowserTab);
+    }
     const isTabInContext = this.disabledTabIds.has(tab.tabId);
     // If multi-tab selection is enabled, we only want to disable a tab if
     // no more context can be added and the tab has not yet been added as
