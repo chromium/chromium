@@ -113,16 +113,9 @@ bool ExtensionsToolbarViewModel::AreActionsInitialized() {
 
 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
 ExtensionsToolbarViewModel::GetButtonState(
-    content::WebContents* web_contents) const {
-  // TODO(crbug.com/461983701): Refactor WebContents handling. Callers of
-  // GetButtonState and GetRequestAccessButtonParams should be responsible for
-  // handling potential nullptr WebContents and only call these methods with
-  // valid WebContents instances.
-  if (!web_contents) {
-    return ExtensionsToolbarButtonState::kDefault;
-  }
+    content::WebContents& web_contents) const {
   Profile* profile = browser_->GetProfile();
-  const GURL& url = web_contents->GetLastCommittedURL();
+  const GURL& url = web_contents.GetLastCommittedURL();
 
   if (actions_model_->IsRestrictedUrl(url)) {
     return ExtensionsToolbarButtonState::kAllExtensionsBlocked;
@@ -323,9 +316,9 @@ void ExtensionsToolbarViewModel::OnTabListDestroyed(
 }
 
 bool ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess(
-    content::WebContents* web_contents) const {
+    content::WebContents& web_contents) const {
   for (const auto& [action_id, model] : actions_) {
-    if (model->GetSiteInteraction(web_contents) ==
+    if (model->GetSiteInteraction(&web_contents) ==
         extensions::SitePermissionsHelper::SiteInteraction::kGranted) {
       return true;
     }

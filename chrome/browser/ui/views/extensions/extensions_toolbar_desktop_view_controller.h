@@ -47,9 +47,6 @@ class ExtensionsToolbarDesktopViewController final
   // Maybe displays the In-Product-Help with a specific priority order.
   void MaybeShowIPH();
 
-  // Updates the request access button in the toolbar.
-  void UpdateRequestAccessButton();
-
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,

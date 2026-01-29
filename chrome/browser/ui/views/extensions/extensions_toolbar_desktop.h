@@ -104,12 +104,6 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   // visibility, reordering views if necessary.
   void UpdatePinnedActions();
 
-  // Updates `extensions_button_` icon given `web_contents`.
-  void UpdateExtensionsButton(content::WebContents* web_contents);
-
-  // Updates the `request_access_button_` given the current `web_contents`.
-  void UpdateRequestAccessButton(
-      content::WebContents* web_contents);
 
   // Updates the container visibility and animation as needed.
   void UpdateContainerVisibility();
@@ -327,6 +321,12 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   // the default vector icon is used. When the side panel should open to the
   // left side of the browser the flipped vector icon is used.
   void UpdateCloseSidePanelButtonIcon();
+
+  // Updates `extensions_button_` icon given `web_contents`.
+  void UpdateExtensionsButton(content::WebContents& web_contents);
+
+  // Updates the `request_access_button_` given the current `web_contents`.
+  void UpdateRequestAccessButton(content::WebContents& web_contents);
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<ToolbarActionsModel> model_;

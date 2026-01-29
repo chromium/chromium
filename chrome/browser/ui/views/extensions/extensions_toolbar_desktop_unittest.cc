@@ -79,7 +79,7 @@ class ExtensionsToolbarDesktopUnitTest : public ExtensionsToolbarUnitTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     CHECK(web_contents);
     return extensions_container()->GetToolbarViewModel()->GetButtonState(
-        web_contents);
+        *web_contents);
   }
 };
 

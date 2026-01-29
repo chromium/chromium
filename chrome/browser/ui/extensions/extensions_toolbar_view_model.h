@@ -147,7 +147,7 @@ class ExtensionsToolbarViewModel
 
   // Returns the state of the extensions toolbar button based on 'web_contents'.
   ExtensionsToolbarButtonState GetButtonState(
-      content::WebContents* web_contents) const;
+      content::WebContents& web_contents) const;
 
   // Executes the default behavior associated with the action. This should only
   // be called as a result of a user action.
@@ -204,7 +204,7 @@ class ExtensionsToolbarViewModel
 
  private:
   // Returns whether any of `actions` given have access to the `web_contents`.
-  bool AnyActionHasCurrentSiteAccess(content::WebContents* web_contents) const;
+  bool AnyActionHasCurrentSiteAccess(content::WebContents& web_contents) const;
 
   // Creates and appends an action model to `actions_` vector.
   void AppendActionModel(const ToolbarActionsModel::ActionId& action_id);

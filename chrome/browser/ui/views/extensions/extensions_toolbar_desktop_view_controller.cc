@@ -80,6 +80,12 @@ void ExtensionsToolbarDesktopViewController::
 void ExtensionsToolbarDesktopViewController::MaybeShowIPH() {
   // Extensions menu IPH, with priority order. These depend on the new access
   // control feature.
+  content::WebContents* web_contents =
+      extensions_container_->GetCurrentWebContents();
+  if (!web_contents) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     ExtensionsRequestAccessButton* request_access_button =
@@ -94,10 +100,8 @@ void ExtensionsToolbarDesktopViewController::MaybeShowIPH() {
           std::move(params));
     }
 
-    content::WebContents* web_contents =
-        extensions_container_->GetCurrentWebContents();
     if (extensions_container_->GetToolbarViewModel()->GetButtonState(
-            web_contents) ==
+            *web_contents) ==
         ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
             kAnyExtensionHasAccess) {
       BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
@@ -122,18 +126,6 @@ void ExtensionsToolbarDesktopViewController::MaybeShowIPH() {
           feature_engagement::kIPHExtensionsZeroStatePromoFeature);
     }
   }
-}
-
-void ExtensionsToolbarDesktopViewController::UpdateRequestAccessButton() {
-  CHECK(extensions_container_);
-
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    return;
-  }
-
-  auto* web_contents = extensions_container_->GetCurrentWebContents();
-  extensions_container_->UpdateRequestAccessButton(web_contents);
 }
 
 void ExtensionsToolbarDesktopViewController::OnTabStripModelChanged(
