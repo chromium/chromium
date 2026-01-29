@@ -9,6 +9,10 @@ source_set("delegate") {
   sources = [
     "actor_login_delegate_impl.cc",
     "actor_login_delegate_impl.h",
+    "actor_login_siwg_controller.cc",
+    "actor_login_siwg_controller.h",
+    "siwg_button_finder.cc",
+    "siwg_button_finder.h",
   ]
 
   visibility = [
@@ -21,6 +25,7 @@ source_set("delegate") {
     "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
     "//chrome/common:buildflags",
+    "//components/autofill/content/common/mojom",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/actor_login:common",
@@ -28,6 +33,7 @@ source_set("delegate") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/tabs:public",
     "//content/public/browser",
+    "//third_party/re2",
   ]
 
   if (enable_glic) {
@@ -37,13 +43,21 @@ source_set("delegate") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "actor_login_delegate_impl_unittest.cc" ]
+  sources = [
+    "actor_login_delegate_impl_unittest.cc",
+    "actor_login_siwg_controller_unittest.cc",
+    "siwg_button_finder_unittest.cc",
+  ]
 
   deps = [
     ":delegate",
     "//base/test:test_support",
     "//chrome/browser/ui/tabs:test_support",
+    "//chrome/common:mojo_bindings",
     "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/content/common/mojom",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/test:test_support",
     "//components/password_manager/core/browser/features:password_features",
