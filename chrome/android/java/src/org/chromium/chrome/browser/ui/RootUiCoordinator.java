@@ -1440,7 +1440,7 @@ public class RootUiCoordinator
      * This method is meant to be overridden for sub-classes which needs to provide an incognito
      * re-auth view.
      *
-     * @return {@link IncognitoReauthCoordiantorFactory} instance.
+     * @return {@link IncognitoReauthCoordinatorFactory} instance.
      */
     protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory(
             Profile profile) {
@@ -1499,14 +1499,14 @@ public class RootUiCoordinator
     }
 
     /**
-     * Triggered when the share menu item is selected.
-     * This creates and shows a share intent picker dialog or starts a share intent directly.
+     * Triggered when the share menu item is selected. This creates and shows a share intent picker
+     * dialog or starts a share intent directly.
+     *
      * @param shareDirectly Whether it should share directly with the activity that was most
-     *                      recently used to share.
-     * @param isIncognito Whether currentTab is incognito.
+     *     recently used to share.
      */
     @VisibleForTesting
-    public void onShareMenuItemSelected(final boolean shareDirectly, final boolean isIncognito) {
+    public void onShareMenuItemSelected(final boolean shareDirectly) {
         ShareDelegate shareDelegate = mShareDelegateSupplier.get();
         Tab tab = mActivityTabProvider.get();
 
@@ -1556,9 +1556,7 @@ public class RootUiCoordinator
             }
             return true;
         } else if (id == R.id.share_menu_id || id == R.id.direct_share_menu_id) {
-            onShareMenuItemSelected(
-                    id == R.id.direct_share_menu_id,
-                    mTabModelSelectorSupplier.get().isIncognitoSelected());
+            onShareMenuItemSelected(id == R.id.direct_share_menu_id);
             return true;
         } else if (id == R.id.paint_preview_show_id) {
             DemoPaintPreview.showForTab(mActivityTabProvider.get());
