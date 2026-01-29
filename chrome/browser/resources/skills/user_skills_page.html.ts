@@ -12,7 +12,7 @@ export function getHtml(this: UserSkillsPageElement) {
   // clang-format off
   return html`
 <div id="header">
-  <h1 id="title">Your skills</h1>
+  <h1 id="skills-title" class="page-title">Your skills</h1>
   <p id="subtitle">Skills help simplify and automate repetitive tasks</p>
 </div>
 <div id="empty-state">

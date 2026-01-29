@@ -6,8 +6,9 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./shared_style.css.js
  * #scheme=relative
- * #include=cr-shared-style-lit
+ * #include=cr-shared-style-lit shared-style
  * #css_wrapper_metadata_end */
 
 :host {
@@ -40,14 +41,6 @@
   line-height: 20px;
   color: var(--color-sys-on-surface-subtle);
   margin: 8px;
-}
-
-#title {
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 20px;
-  margin: 0;
-  color: var(--color-sys-on-surface-subtle);
 }
 
 #subtitle {

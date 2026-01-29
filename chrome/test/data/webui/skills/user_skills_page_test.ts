@@ -22,7 +22,7 @@ suite('UserSkillsPage', function() {
   });
 
   test('InitialPageLoadsCorrectly', function() {
-    const title = page.shadowRoot.querySelector('#title');
+    const title = page.shadowRoot.querySelector('#skills-title');
     assertTrue(!!title);
     assertEquals('Your skills', title.textContent.trim());
 

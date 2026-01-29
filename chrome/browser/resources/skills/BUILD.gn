@@ -36,6 +36,8 @@ build_webui("build") {
 
   css_files = [
     "app.css",
+    "discover_skills_page.css",
+    "shared_style.css",
     "sidebar.css",
     "skills_dialog.css",
     "user_skills_page.css",
