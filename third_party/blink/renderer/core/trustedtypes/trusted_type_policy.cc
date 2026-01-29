@@ -154,15 +154,15 @@ TrustedScriptURL* TrustedTypePolicy::createScriptURLInternal(
   return MakeGarbageCollected<TrustedScriptURL>(script_url);
 }
 
-bool TrustedTypePolicy::HasCreateHTML() {
+bool TrustedTypePolicy::HasCreateHTML() const {
   return policy_options_->hasCreateHTML();
 }
 
-bool TrustedTypePolicy::HasCreateScript() {
+bool TrustedTypePolicy::HasCreateScript() const {
   return policy_options_->hasCreateScript();
 }
 
-bool TrustedTypePolicy::HasCreateScriptURL() {
+bool TrustedTypePolicy::HasCreateScriptURL() const {
   return policy_options_->hasCreateScriptURL();
 }
 

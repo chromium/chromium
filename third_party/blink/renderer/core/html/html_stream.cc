@@ -8,16 +8,21 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -25,7 +30,7 @@ namespace {
 class HTMLSink : public UnderlyingSinkBase {
  public:
   explicit HTMLSink(ContainerNode& new_target,
-                    SetHTMLUnsafeOptions* new_options)
+                    const SetHTMLUnsafeOptions* new_options)
       : target(new_target), options(new_options) {
     CHECK(target->IsElementNode() || target->IsShadowRoot());
   }
@@ -101,16 +106,25 @@ class HTMLSink : public UnderlyingSinkBase {
 
   Member<ContainerNode> target;
   Member<DocumentParser> parser;
-  Member<SetHTMLUnsafeOptions> options;
+  Member<const SetHTMLUnsafeOptions> options;
 };
 }  // namespace
 
 // static
 WritableStream* HTMLStream::Create(ScriptState* script_state,
                                    ContainerNode* target,
-                                   SetHTMLUnsafeOptions* options,
+                                   const SetHTMLUnsafeOptions* options,
+                                   const AtomicString& property_name,
                                    ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+  options = TrustedTypesCheckForParserOptions(
+      options, target->GetExecutionContext(), target->InterfaceName(),
+      property_name, exception_state);
+  if (!options) {
+    CHECK(exception_state.HadException());
+    return nullptr;
+  }
+
   HTMLSink* sink = MakeGarbageCollected<HTMLSink>(*target, options);
   return WritableStream::CreateWithCountQueueingStrategy(script_state, sink, 1);
 }

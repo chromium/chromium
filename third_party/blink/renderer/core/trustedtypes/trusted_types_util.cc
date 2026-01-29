@@ -54,6 +54,7 @@ enum TrustedTypeViolationKind {
   kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL,
   kScriptExecution,
   kScriptExecutionAndDefaultPolicyFailed,
+  kTrustedHTMLParserOptionsTransform,
 };
 
 // Strings to support building a sample, used in:
@@ -120,6 +121,10 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
       return "This document requires 'TrustedScript' assignment. "
              "This script element was modified without use of TrustedScript "
              "assignment and the 'default' policy failed to execute.";
+    case kTrustedHTMLParserOptionsTransform:
+      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      return "This document requires 'TrustedParserOptions' assignment and no "
+             "'default' policy for 'TrustedParserOptions' has been defined.";
   }
   NOTREACHED();
 }
@@ -605,6 +610,30 @@ String TrustedTypesCheckForHTML(const V8UnionStringOrTrustedHTML* value,
       return value->GetAsTrustedHTML()->toString();
   }
   NOTREACHED();
+}
+
+[[nodiscard]] CORE_EXPORT const SetHTMLUnsafeOptions*
+TrustedTypesCheckForParserOptions(const SetHTMLUnsafeOptions* options,
+                                  const ExecutionContext* execution_context,
+                                  const AtomicString& interface_name,
+                                  const AtomicString& property_name,
+                                  ExceptionState& exception_state) {
+  if (!RequireTrustedTypesCheck(execution_context)) {
+    return options;
+  }
+
+  const auto* default_policy = GetDefaultPolicy(execution_context);
+  if (!default_policy) {
+    TrustedTypeFail(kTrustedHTMLParserOptionsTransform, execution_context,
+                    interface_name, property_name, exception_state,
+                    g_empty_string);
+    return nullptr;
+  }
+
+  // TODO: support createParserOptions, and throwing if that is not provided or
+  // returns null.
+
+  return options;
 }
 
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,

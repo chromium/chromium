@@ -57,9 +57,9 @@ class CORE_EXPORT TrustedTypePolicy final : public ScriptWrappable {
                                             const HeapVector<ScriptValue>&,
                                             ExceptionState&);
 
-  bool HasCreateHTML();
-  bool HasCreateScript();
-  bool HasCreateScriptURL();
+  bool HasCreateHTML() const;
+  bool HasCreateScript() const;
+  bool HasCreateScriptURL() const;
 
   String name() const;
 

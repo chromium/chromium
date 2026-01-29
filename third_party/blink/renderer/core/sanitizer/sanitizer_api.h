@@ -27,7 +27,7 @@ class SanitizerAPI final {
                                      ExceptionState& exception_state);
 
   static StreamingSanitizer* CreateStreamingSanitizerUnsafeInternal(
-      SetHTMLUnsafeOptions* options,
+      const SetHTMLUnsafeOptions* options,
       const ContainerNode* context,
       ExceptionState& exception_state);
 };

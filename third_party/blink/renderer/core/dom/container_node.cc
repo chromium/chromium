@@ -1923,15 +1923,19 @@ WritableStream* ContainerNode::streamAppendHTMLUnsafe(
     ScriptState* script_state,
     SetHTMLUnsafeOptions* options,
     ExceptionState& exception_state) {
-  return HTMLStream::Create(script_state, this, options, exception_state);
+  DEFINE_STATIC_LOCAL(AtomicString, kInterfaceName, ("streamAppendHTMLUnsafe"));
+
+  return HTMLStream::Create(script_state, this, options, kInterfaceName,
+                            exception_state);
 }
 
 WritableStream* ContainerNode::streamHTMLUnsafe(
     ScriptState* script_state,
     SetHTMLUnsafeOptions* options,
     ExceptionState& exception_state) {
-  WritableStream* stream =
-      HTMLStream::Create(script_state, this, options, exception_state);
+  DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamHTMLUnsafe"));
+  WritableStream* stream = HTMLStream::Create(script_state, this, options,
+                                              kPropertyName, exception_state);
   if (!exception_state.HadException()) {
     RemoveChildren();
   }

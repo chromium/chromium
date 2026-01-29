@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_STREAM_H_
 
 namespace blink {
+class AtomicString;
 class ContainerNode;
 class ExceptionState;
 class ScriptState;
@@ -18,7 +19,8 @@ class HTMLStream {
  public:
   static WritableStream* Create(ScriptState*,
                                 ContainerNode* target,
-                                SetHTMLUnsafeOptions* options,
+                                const SetHTMLUnsafeOptions* options,
+                                const AtomicString& property_name,
                                 ExceptionState&);
 };
 }  // namespace blink

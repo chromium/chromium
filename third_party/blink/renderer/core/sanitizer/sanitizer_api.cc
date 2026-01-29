@@ -50,7 +50,7 @@ const Sanitizer* SanitizerFromSafeOptions(SetHTMLOptions* options,
   // Default case: Dictionary with 'sanitizer' member but no (valid) value.
   return Sanitizer::Create(nullptr, /*safe*/ true, exception_state);
 }
-const Sanitizer* SanitizerFromUnsafeOptions(SetHTMLUnsafeOptions* options,
+const Sanitizer* SanitizerFromUnsafeOptions(const SetHTMLUnsafeOptions* options,
                                             ExceptionState& exception_state) {
   if (!options || !options->hasSanitizer()) {
     // Default case: No dictionary, or dictionary without 'sanitizer' member.
@@ -134,7 +134,7 @@ void SanitizerAPI::SanitizeUnsafeInternal(const ContainerNode* context_element,
 }
 
 StreamingSanitizer* SanitizerAPI::CreateStreamingSanitizerUnsafeInternal(
-    SetHTMLUnsafeOptions* options,
+    const SetHTMLUnsafeOptions* options,
     const ContainerNode* context,
     ExceptionState& exception_state) {
   const Sanitizer* sanitizer =
