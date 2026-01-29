@@ -17,6 +17,7 @@
 #include "third_party/omnibox_proto/aim_tools.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 
+class PrefService;
 namespace contextual_search {
 
 using omnibox::InputType;
@@ -79,6 +80,9 @@ class InputStateModel {
   void set_state_for_testing(const InputState& state) { state_ = state; }
   const InputState& get_state_for_testing() { return state_; }
 
+  // Gets the `PrefService`.
+  void SetPrefService(const PrefService* pref_service);
+
  private:
   // Notify all subscribers of the current `state_`.
   void notifySubscribers();
@@ -101,11 +105,17 @@ class InputStateModel {
   // Gets the input type limits based on the current state.
   std::map<omnibox::InputType, int> GetInputTypeLimits();
 
+  // Helper to check if search content sharing is enabled based on the
+  // user preference from enterprise policy.
+  bool IsSearchContentSharingEnabled() const;
+
   InputState state_;
   omnibox::RuleSet rule_set_;
   base::raw_ref<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   base::RepeatingCallbackList<void(const InputState&)> subscribers_;
+
+  raw_ptr<const PrefService> pref_service_ = nullptr;
 };
 
 }  // namespace contextual_search

@@ -10,6 +10,9 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
+#include "components/contextual_search/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
@@ -32,11 +35,17 @@ class InputStateModelTest : public testing::Test {
         .WillByDefault(testing::Return(mock_controller_.get()));
     ON_CALL(*mock_controller_, GetFileInfoList())
         .WillByDefault(testing::Return(empty_file_info_list_));
+    pref_service_.registry()->RegisterIntegerPref(
+        contextual_search::kSearchContentSharingSettings,
+        static_cast<int>(
+            contextual_search::SearchContentSharingSettingsValue::kEnabled));
     input_state_model_ =
         std::make_unique<InputStateModel>(session_handle_, config_);
+    input_state_model_->SetPrefService(&pref_service_);
   }
 
  protected:
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<InputStateModel> input_state_model_;
   MockContextualSearchSessionHandle session_handle_;
   std::unique_ptr<MockContextualSearchContextController> mock_controller_;
@@ -261,6 +270,73 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
   EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
               testing::UnorderedElementsAre(testing::Pair("dr", "1"),
                                             testing::Pair("m", "1")));
+}
+
+TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {
+  // 1. Initial Setup: Explicitly allow restricted inputs.
+  state_.allowed_input_types = {
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+      omnibox::InputType::INPUT_TYPE_LENS_FILE,
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB,
+  };
+
+  // Enable content sharing policy.
+  pref_service_.SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  input_state_model_->set_state_for_testing(state_);
+  input_state_model_->setActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  auto new_state = input_state_model_->get_state_for_testing();
+
+  // Verify: Inputs remain allowed and are not disabled.
+  EXPECT_FALSE(new_state.allowed_input_types.empty());
+  EXPECT_TRUE(new_state.disabled_input_types.empty());
+
+  // 2. Disable content sharing policy.
+  pref_service_.SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  // Trigger update.
+  input_state_model_->setActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  new_state = input_state_model_->get_state_for_testing();
+
+  // Verify: Restricted inputs are removed from the allowed list entirely.
+  // Consequently, the disabled list remains empty as the inputs no longer
+  // exist.
+  EXPECT_TRUE(new_state.allowed_input_types.empty());
+  EXPECT_TRUE(new_state.disabled_input_types.empty());
+
+  // 3. Re-enable content sharing policy.
+  pref_service_.SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  // Reset the state with the original inputs, as they were erased in step 2.
+  state_.allowed_input_types = {
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+      omnibox::InputType::INPUT_TYPE_LENS_FILE,
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB,
+  };
+  input_state_model_->set_state_for_testing(state_);
+
+  // Trigger update.
+  input_state_model_->setActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  new_state = input_state_model_->get_state_for_testing();
+
+  // Verify: Inputs are restored and enabled.
+  EXPECT_THAT(new_state.allowed_input_types,
+              UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::InputType::INPUT_TYPE_LENS_FILE,
+                                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(new_state.disabled_input_types.empty());
 }
 
 }  // namespace contextual_search
