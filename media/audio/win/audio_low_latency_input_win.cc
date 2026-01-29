@@ -268,22 +268,42 @@ bool IsEndpointLoopbackCapture(std::string_view device_id,
          !is_process_loopback;
 }
 
+// Windows could potentially provide a WAVEFORMATEX instead of a
+// WAVEFORMATEXTENSIBLE. Handle both cases to properly capture the SubFormat.
+GUID GetSubFormat(WAVEFORMATEXTENSIBLE wave_format) {
+  if (wave_format.Format.wFormatTag == WAVE_FORMAT_PCM) {
+    return KSDATAFORMAT_SUBTYPE_PCM;
+  } else if (wave_format.Format.wFormatTag == WAVE_FORMAT_IEEE_FLOAT) {
+    return KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
+  } else {
+    return wave_format.SubFormat;
+  }
+}
+
 SampleFormat GetSampleFormatFromWaveFormat(
     const WAVEFORMATEXTENSIBLE& wave_format) {
-  switch (wave_format.Format.wBitsPerSample) {
-    case 8:
-      return kSampleFormatU8;
-    case 16:
-      return kSampleFormatS16;
-    case 24:
-      return kSampleFormatS24;
-    case 32:
-      if (IsEqualGUID(wave_format.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
+  const uint16_t bits = wave_format.Format.wBitsPerSample;
+  const GUID sub_format = GetSubFormat(wave_format);
+
+  const bool is_float =
+      IsEqualGUID(sub_format, KSDATAFORMAT_SUBTYPE_IEEE_FLOAT);
+  const bool is_pcm = IsEqualGUID(sub_format, KSDATAFORMAT_SUBTYPE_PCM);
+
+  if (is_float) {
+    return (bits == 32) ? kSampleFormatF32 : kUnknownSampleFormat;
+  }
+
+  if (is_pcm) {
+    switch (bits) {
+      case 8:
+        return kSampleFormatU8;
+      case 16:
+        return kSampleFormatS16;
+      case 24:
+        return kSampleFormatS24;
+      case 32:
         return kSampleFormatS32;
-      } else if (IsEqualGUID(wave_format.SubFormat,
-                             KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) {
-        return kSampleFormatF32;
-      }
+    }
   }
   // We do not support other formats, return unknown.
   return kUnknownSampleFormat;
@@ -732,7 +752,7 @@ bool WASAPIAudioInputStream::UpdateFormats() {
     output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
   } else if (use_device_sample_format_) {
     // Get the format the audio engine uses.
-    WAVEFORMATEXTENSIBLE mix_format;
+    WAVEFORMATEXTENSIBLE mix_format = {};
     HRESULT hr =
         CoreAudioUtil::GetSharedModeMixFormat(audio_client_.Get(), &mix_format);
     if (FAILED(hr)) {
@@ -744,20 +764,20 @@ bool WASAPIAudioInputStream::UpdateFormats() {
     base::UmaHistogramEnumeration("Media.Audio.Capture.Win.AudioEngineFormat",
                                   mix_sample_format);
     if (mix_sample_format != kUnknownSampleFormat) {
-      sample_format_ = mix_sample_format;
       // We are not sure if the Windows Audio Engine will ever choose 24bit over
       // 32bit. Check if this is the case, and if so we choose S32 instead.
-      CHECK_NE(sample_format_, kSampleFormatS24, base::NotFatalUntil::M148);
-      if (sample_format_ == kSampleFormatS24) {
-        sample_format_ = kSampleFormatS32;
-      }
+      CHECK_NE(mix_sample_format, kSampleFormatS24, base::NotFatalUntil::M148);
+      sample_format_ = (mix_sample_format == kSampleFormatS24)
+                           ? kSampleFormatS32
+                           : mix_sample_format;
 
-      input_format_.SubFormat = mix_format.SubFormat;
+      input_format_.SubFormat = GetSubFormat(mix_format);
+
       // Set up the fixed output format based on the discovered format.
-      if (IsEqualGUID(mix_format.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
+      if (IsEqualGUID(input_format_.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
         CHECK_NE(sample_format_, kSampleFormatF32);
         output_format_.wFormatTag = WAVE_FORMAT_PCM;
-      } else if (IsEqualGUID(mix_format.SubFormat,
+      } else if (IsEqualGUID(input_format_.SubFormat,
                              KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) {
         CHECK_EQ(sample_format_, kSampleFormatF32);
         output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
