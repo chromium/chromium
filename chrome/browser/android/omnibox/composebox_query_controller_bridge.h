@@ -82,6 +82,7 @@ class ComposeboxQueryControllerBridge
       JNIEnv* env,
       const base::UnguessableToken& context_token,
       std::optional<optimization_guide::PageContentResult> page_context);
+  void OnInputStateChanged(const contextual_search::InputState& state);
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
   CreateSearchUrlRequestInfoFromUrl(GURL url);
@@ -94,6 +95,7 @@ class ComposeboxQueryControllerBridge
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   std::unique_ptr<contextual_search::InputStateModel> input_state_model_;
+  base::CallbackListSubscription input_state_subscription_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   base::WeakPtrFactory<ComposeboxQueryControllerBridge> weak_ptr_factory_{this};
 };

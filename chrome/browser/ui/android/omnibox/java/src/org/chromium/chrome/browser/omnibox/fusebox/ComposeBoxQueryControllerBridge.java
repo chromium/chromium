@@ -10,11 +10,15 @@ import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.contextual_search.FileUploadStatus;
+import org.chromium.components.contextual_search.InputState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -39,6 +43,8 @@ public class ComposeBoxQueryControllerBridge {
 
     private long mNativeInstance;
     private @Nullable FileUploadObserver mFileUploadObserver;
+    private final SettableMonotonicObservableSupplier<InputState> mInputStateSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private ComposeBoxQueryControllerBridge() {}
 
@@ -138,11 +144,26 @@ public class ComposeBoxQueryControllerBridge {
         return ComposeBoxQueryControllerBridgeJni.get().isCreateImagesEligible(mNativeInstance);
     }
 
+    /**
+     * Returns an observable supplier for the current input state. This object contains the allowed
+     * and disabled tools, models, and inputs. Updates are tied to the underlying C++
+     * ContextualSearchSessionHandle, and may not be during other types of sessions. Callers should
+     * be careful that updates may occur outside of when they expect.
+     */
+    MonotonicObservableSupplier<InputState> getInputStateSupplier() {
+        return mInputStateSupplier;
+    }
+
     @CalledByNative
     void onFileUploadStatusChanged(String token, @FileUploadStatus int fileUploadStatus) {
         if (mFileUploadObserver != null) {
             mFileUploadObserver.onFileUploadStatusChanged(token, fileUploadStatus);
         }
+    }
+
+    @CalledByNative
+    private void onInputStateChanged(InputState inputState) {
+        mInputStateSupplier.set(inputState);
     }
 
     @NativeMethods

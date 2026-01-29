@@ -11,6 +11,7 @@
 #include "base/android/jni_bytebuffer.h"
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -46,6 +47,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/omnibox/jni_headers/ComposeBoxQueryControllerBridge_jni.h"
+#include "components/contextual_search/jni_headers/InputState_jni.h"
 
 namespace {
 void RunJavaCallback(
@@ -118,6 +120,11 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
         *session_handle_,
         config_ptr ? *config_ptr : omnibox::SearchboxConfig());
+    input_state_subscription_ =
+        input_state_model_->subscribe(base::BindRepeating(
+            &ComposeboxQueryControllerBridge::OnInputStateChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+    input_state_model_->Initialize();
   }
 
   query_controller()->AddObserver(this);
@@ -411,6 +418,21 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
   }
 
   OnGetTabPageContext(env, context_token, std::move(input_data));
+}
+
+void ComposeboxQueryControllerBridge::OnInputStateChanged(
+    const contextual_search::InputState& state) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  base::android::ScopedJavaLocalRef<jobject> j_input_state =
+      contextual_search::Java_InputState_Constructor(
+          env, state.allowed_tools, state.allowed_models,
+          state.allowed_input_types, state.active_tool, state.active_model,
+          state.disabled_tools, state.disabled_models,
+          state.disabled_input_types);
+
+  Java_ComposeBoxQueryControllerBridge_onInputStateChanged(env, java_obj_,
+                                                           j_input_state);
 }
 
 DEFINE_JNI(ComposeBoxQueryControllerBridge)

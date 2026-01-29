@@ -4,20 +4,40 @@
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 if (is_android) {
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/components/contextual_search/InputState.java" ]
+  }
+
   java_cpp_enum("java_enum_srcjar") {
     visibility = [ ":*" ]
     sources = [ "contextual_search_types.h" ]
   }
 
   android_library("components_contextual_search_java") {
+    sources = [ "android/java/src/org/chromium/components/contextual_search/InputState.java" ]
     srcjar_deps = [ ":java_enum_srcjar" ]
 
     # Important: the generated enum uses the @IntDef annotation provided by
     # this dependency.
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    deps = [
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    sources = [ "android/java/src/org/chromium/components/contextual_search/InputStateTest.java" ]
+    deps = [
+      ":components_contextual_search_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//third_party/junit",
+    ]
   }
 }
 

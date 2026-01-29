@@ -1427,6 +1427,7 @@ if (is_android) {
       "//components/collaboration:junit",
       "//components/commerce/core/android:junit_tests",
       "//components/content_capture/android/junit:components_content_capture_junit_tests",
+      "//components/contextual_search:junit",
       "//components/crash/android:junit",
       "//components/credential_management/android:junit_tests",
       "//components/data_sharing/internal:data_sharing_junit_tests",
