@@ -983,6 +983,9 @@ BASE_FEATURE(kIPHiOSLensPromoDesktopFeature,
 BASE_FEATURE(kIPHiOSEnhancedBrowsingDesktopFeature,
              "IPH_iOSEnhancedBrowsingDesktop",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSTabGroupsDesktopFeature,
+             "IPH_iOSTabGroupsDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_engagement

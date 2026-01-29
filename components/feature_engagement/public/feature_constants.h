@@ -446,6 +446,7 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSAddressPromoDesktopFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPaymentPromoDesktopFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSLensPromoDesktopFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSEnhancedBrowsingDesktopFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSTabGroupsDesktopFeature);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_engagement

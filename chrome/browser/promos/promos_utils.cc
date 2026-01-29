@@ -61,6 +61,8 @@ std::string IOSDesktopPromoHistogramType(PromoType promo_type) {
       return "EnhancedBrowsingPromo";
     case PromoType::kLens:
       return "LensPromo";
+    case PromoType::kTabGroups:
+      return "TabGroupsPromo";
   }
 }
 
@@ -179,6 +181,7 @@ bool VerifySyncingDatatypes(const syncer::SyncService& sync_service,
           syncer::AUTOFILL_WALLET_DATA);
     case PromoType::kEnhancedBrowsing:
     case PromoType::kLens:
+    case PromoType::kTabGroups:
       // TODO(crbug.com/438769954): Verify relevant data types.
       return true;
   }
@@ -281,6 +284,12 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(PromoType promo_type) {
       promo_opt_out_pref_name = promos_prefs::kDesktopToiOSLensPromoOptOut;
       promo_last_impression_timestamp_pref_name =
           promos_prefs::kDesktopToiOSLensPromoLastImpressionTimestamp;
+      break;
+    case PromoType::kTabGroups:
+#if !BUILDFLAG(IS_ANDROID)
+      promo_feature = &feature_engagement::kIPHiOSTabGroupsDesktopFeature;
+#endif  // !BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/479478830): Add Tab Groups prefs.
       break;
   }
 }

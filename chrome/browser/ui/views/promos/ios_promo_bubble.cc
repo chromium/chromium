@@ -237,6 +237,44 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(BubbleType bubble_type) {
   }
   return config;
 }
+
+// Creates and returns IOSPromoTypeConfigs for the Tab Groups bubble.
+IOSPromoConstants::IOSPromoTypeConfigs SetUpTabGroupsBubble(
+    BubbleType bubble_type) {
+  IOSPromoConstants::IOSPromoTypeConfigs config;
+  config.with_header = false;
+  config.decline_button_text_id = IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE;
+  switch (bubble_type) {
+    case BubbleType::kQRCode:
+      config.promo_title_id = IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_TITLE_QR;
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_DESCRIPTION_QR;
+      config.accept_button_text_id =
+          IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
+      // TODO (crbug.com/479229912): Add the Tab Groups QR code image once the
+      // URL is provided.
+      break;
+    case BubbleType::kReminder:
+      config.promo_title_id =
+          IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_TITLE_REMINDER;
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_DESCRIPTION_REMINDER;
+      config.accept_button_text_id =
+          IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      config.promo_image =
+          ui::ImageModel::FromResourceId(IDR_TAB_GROUPS_ON_IOS_ICON);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      break;
+    case BubbleType::kReminderConfirmation: {
+      SetUpBaseReminderConfirmationConfig(config);
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_TAB_GROUPS_REMINDER_CONFIRMATION;
+      break;
+    }
+  }
+  return config;
+}
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kIOSPromoBubbleElementId);
@@ -326,6 +364,8 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
       return SetUpEnhancedBrowsingBubble(bubble_type);
     case PromoType::kLens:
       return SetUpLensBubble(bubble_type);
+    case PromoType::kTabGroups:
+      return SetUpTabGroupsBubble(bubble_type);
   }
 }
 

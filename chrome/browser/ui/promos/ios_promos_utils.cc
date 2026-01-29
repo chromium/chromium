@@ -116,6 +116,13 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
                                       PromoType::kLens, bubble_type);
       break;
     }
+    case PromoType::kTabGroups: {
+      IOSPromoBubble::ShowPromoBubble(
+          {toolbar_button_provider->GetAvatarToolbarButton()},
+          /*highlighted_button=*/nullptr, profile, PromoType::kTabGroups,
+          bubble_type);
+      break;
+    }
   }
 }
 
