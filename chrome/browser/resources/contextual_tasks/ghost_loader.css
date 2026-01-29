@@ -1,0 +1,169 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --animation-delay: -1600ms;
+  --animation-offset: 2000ms;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px 15px;
+}
+
+.row {
+  column-gap: 12px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: 424px;
+  overflow: hidden;
+  /* Overflow wraps and is hidden; row-gap to make it completely hidden. */
+  row-gap: 24px;
+  width: 100%;
+}
+
+.line-container-group {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 184px;
+  gap: 12px;
+}
+
+.line-container {
+  width: 100%;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  /* Default stagger delay if not set inline */
+  --stagger-delay: 0ms;
+}
+
+.line-container.tall {
+  height: 267px;
+}
+
+.line-container.short {
+  height: 143px;
+}
+
+.line {
+  border-radius: 12px;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.line.bg {
+  background: var(--ghost-loader-highlight);
+  position: absolute;
+  opacity: 0.2;
+}
+
+.gradient,
+.gradient2,
+.gradient3 {
+  background: linear-gradient(110deg,
+      transparent 15%,
+      var(--ghost-loader-base) 30%,
+      var(--ghost-loader-highlight) 50%,
+      var(--ghost-loader-highlight) 65%,
+      var(--ghost-loader-base) 80%,
+      transparent 90%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.gradient {
+  animation: 6000ms cubic-bezier(0.5, 0, 0.3, 1) -2000ms infinite normal both running ghost-loading-slide;
+  height: 100%;
+  width: 400%;
+}
+
+.gradient2 {
+  animation: 6000ms cubic-bezier(0.3, 0, 0.3, 1) 0ms infinite normal both running ghost-loading-slide;
+  height: 100%;
+  width: 400%;
+}
+
+.gradient3 {
+  animation: 6000ms cubic-bezier(0.4, 0, 0.2, 1) 2000ms infinite normal both running ghost-loading-slide;
+  height: 100%;
+  width: 400%;
+}
+
+.delay0 {
+  --stagger-delay: 0ms;
+}
+
+.delay200 {
+  --stagger-delay: 200ms;
+}
+
+.delay400 {
+  --stagger-delay: 400ms;
+}
+
+.delay600 {
+  --stagger-delay: 600ms;
+}
+
+.delay800 {
+  --stagger-delay: 800ms;
+}
+
+.delay1000 {
+  --stagger-delay: 1000ms;
+}
+
+.delay1200 {
+  --stagger-delay: 1200ms;
+}
+
+.delay1400 {
+  --stagger-delay: 1400ms;
+}
+
+.delay1600 {
+  --stagger-delay: 1600ms;
+}
+
+.delay1800 {
+  --stagger-delay: 1800ms;
+}
+
+@keyframes ghost-loading-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.line-container .line .gradient {
+  animation-delay: calc(var(--stagger-delay) + var(--animation-delay));
+}
+
+.line-container .line .gradient2 {
+  animation-delay: calc(var(--stagger-delay) + var(--animation-delay) + var(--animation-offset));
+}
+
+.line-container .line .gradient3 {
+  animation-delay: calc(var(--stagger-delay) + var(--animation-delay) + var(--animation-offset) * 2);
+}
