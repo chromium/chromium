@@ -231,7 +231,7 @@ export class ContextMenuEntrypointElement extends
       delayUpload: false,
       origin: TabUploadOrigin.CONTEXT_MENU,
     });
-    if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox') {
+    if (!this.enableMultiTabSelection_) {
       this.$.menu.close();
     }
   }

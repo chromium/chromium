@@ -1286,6 +1286,9 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
       model: ModelMode = ModelMode.kUnspecified) {
+    if (this.ntpRealboxNextEnabled) {
+      this.$.context.closeMenu();
+    }
     this.dispatchEvent(new CustomEvent('open-composebox', {
       detail: {
         searchboxText: this.$.input.value,
