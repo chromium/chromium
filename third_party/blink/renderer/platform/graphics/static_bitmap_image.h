@@ -94,10 +94,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   void SetOriginClean(bool flag) { is_origin_clean_ = flag; }
 
   HighEntropyCanvasOpType HighEntropyCanvasOpTypes() const {
-    return high_entropy_canvas_op_types_;
-  }
-  void SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpType types) {
-    high_entropy_canvas_op_types_ = types;
+    return HighEntropyCanvasOpType::kNone;
   }
 
   // StaticBitmapImage needs to store the orientation of the image itself,
@@ -146,9 +143,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // AcceleratedStaticBitmapImage. To change this property, the call site would
   // have to call SetOriginClean().
   bool is_origin_clean_ = true;
-
-  HighEntropyCanvasOpType high_entropy_canvas_op_types_ =
-      HighEntropyCanvasOpType::kNone;
 };
 
 template <>

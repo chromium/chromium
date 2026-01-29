@@ -416,7 +416,6 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
     auto image = UnacceleratedStaticBitmapImage::Create(sk_image);
     image->SetOriginClean(OriginClean());
-    image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpType::kNone);
     return image;
   }
 
@@ -438,7 +437,6 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
       std::move(release_callback));
 
   DCHECK(image);
-  image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpType::kNone);
   return image;
 }
 
@@ -645,7 +643,6 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
           client_si_, sync_token(), GetAlphaType(), context_provider_wrapper_,
           owning_thread_ref_, owning_thread_task_runner_,
           std::move(release_callback));
-  image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpType::kNone);
   return image;
 }
 
