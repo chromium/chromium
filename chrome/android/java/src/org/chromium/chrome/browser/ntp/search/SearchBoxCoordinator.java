@@ -65,10 +65,6 @@ public class SearchBoxCoordinator {
         mModel.set(SearchBoxProperties.ALPHA, alpha);
     }
 
-    public void setVisibility(boolean visible) {
-        mModel.set(SearchBoxProperties.VISIBILITY, visible);
-    }
-
     public void setSearchText(String text) {
         mModel.set(SearchBoxProperties.SEARCH_TEXT, text);
     }

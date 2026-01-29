@@ -22,7 +22,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 interface SearchBoxProperties {
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
-    WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey VOICE_SEARCH_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<Drawable> VOICE_SEARCH_DRAWABLE = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<ColorStateList> VOICE_SEARCH_COLOR_STATE_LIST =
@@ -59,7 +58,6 @@ interface SearchBoxProperties {
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ALPHA,
-                VISIBILITY,
                 VOICE_SEARCH_VISIBILITY,
                 VOICE_SEARCH_DRAWABLE,
                 VOICE_SEARCH_COLOR_STATE_LIST,

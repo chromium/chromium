@@ -34,10 +34,7 @@ class SearchBoxViewBinder
         View searchBoxContainer = searchBoxlayout.findViewById(R.id.search_box_container);
         final TextView searchBoxTextView = searchBoxlayout.findViewById(R.id.search_box_text);
 
-        if (SearchBoxProperties.VISIBILITY == propertyKey) {
-            searchBoxlayout.setVisibility(
-                    model.get(SearchBoxProperties.VISIBILITY) ? View.VISIBLE : View.GONE);
-        } else if (SearchBoxProperties.ALPHA == propertyKey) {
+        if (SearchBoxProperties.ALPHA == propertyKey) {
             searchBoxlayout.setAlpha(model.get(SearchBoxProperties.ALPHA));
         } else if (SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST == propertyKey) {
             ImageViewCompat.setImageTintList(

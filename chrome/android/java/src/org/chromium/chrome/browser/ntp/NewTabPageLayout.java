@@ -852,9 +852,8 @@ public class NewTabPageLayout extends LinearLayout
 
         updateTilesLayoutMargins();
 
-        // Hide or show the views above the most visited tiles as needed, including search box, and
-        // spacers. The visibility of Logo is handled by LogoCoordinator.
-        mSearchBoxCoordinator.setVisibility(/* visible= */ true);
+        // Hide or show the views above the most visited tiles as needed, e.g, spacers. The
+        // visibility of Logo is handled by LogoCoordinator.
         if (mDseIconView != null) {
             setDseIconViewVisibility();
         }
@@ -1186,7 +1185,6 @@ public class NewTabPageLayout extends LinearLayout
             boolean isLensButtonVisible,
             boolean isComposeplateButtonVisible) {
         if (!mManager.isCurrentPage()
-                || (mSearchBoxCoordinator.getView().getVisibility() != View.VISIBLE)
                 || (mPreviousVoiceSearchButtonVisible != null
                         && isVoiceSearchButtonVisible == mPreviousVoiceSearchButtonVisible
                         && mPreviousLensButtonVisible != null
