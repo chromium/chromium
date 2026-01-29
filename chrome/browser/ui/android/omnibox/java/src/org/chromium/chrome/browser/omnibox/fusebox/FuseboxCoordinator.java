@@ -243,14 +243,14 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     /**
-     * Called when the user begins interacting with the Omnibox.
+     * Called when the user begins / resumes interacting with the Omnibox.
      *
      * <p>This method evaluates the current context to decide whether to activate the Fusebox UI.
      * Fusebox will not be activated if the feature is not initialized, the current page is not
      * supported, or if the default search engine is not Google.
      *
-     * @param input The {@link AutocompleteInput} object containing the context of the current
-     *     Omnibox session.
+     * @param input The input state for the new session. The input may be replaced without going
+     *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     public void beginInput(AutocompleteInput input) {
         boolean isSupportedPageClass =
@@ -267,8 +267,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         // Terminate any current input to re-set session and re-install observers.
         // This should ideally be an assert ensuring that we don't begin a new input while the old
         // one is still active; will turn to an assert separately in case this scenario happens.
-        endInput();
         if (mMediator == null || !isSupportedPageClass || !mDefaultSearchEngineIsGoogle) {
+            endInput();
             return;
         }
 
@@ -279,8 +279,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     /** Called when the user stops interacting with the Omnibox. */
     public void endInput() {
-        if (mInput == null) return;
-        assumeNonNull(mMediator).endInput();
+        if (mMediator != null) {
+            mMediator.endInput();
+        }
         mInput = null;
     }
 

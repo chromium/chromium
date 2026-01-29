@@ -995,10 +995,10 @@ class LocationBarMediator
     /**
      * Begins a new Omnibox input session.
      *
-     * @param input The input state for the new session.
+     * @param input The input state for the new session. The input may be replaced without going
+     *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     private void beginInput(AutocompleteInput input) {
-        endInput();
         mCurrentInput = input;
         mCurrentInput.getRequestTypeSupplier().addObserver(mAutocompleteRequestTypeObserver);
         mAutocompleteCoordinator.beginInput(input);
@@ -1012,7 +1012,10 @@ class LocationBarMediator
         mFuseboxCoordinator.endInput();
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
         var state = LocationBarState.from(mLocationBarDataProvider.getTab());
-        if (state != null && !state.isUrlBarFocused) mCurrentInput.reset();
+        if (state != null) {
+            state.autocompleteInput.reset();
+            state.isUrlBarFocused = false;
+        }
         mCurrentInput = null;
     }
 
@@ -1849,8 +1852,7 @@ class LocationBarMediator
         Tab currentTab = mLocationBarDataProvider.getTab();
         LocationBarState currentState = LocationBarState.from(currentTab);
         if (isLocationBarStateValid(currentState)) {
-            assert currentState != null;
-            clearOmniboxFocus();
+            beginInput(assumeNonNull(currentState).autocompleteInput);
             setUrlBarFocus(
                     /* shouldBeFocused= */ true,
                     currentState.autocompleteInput.getUserText(),

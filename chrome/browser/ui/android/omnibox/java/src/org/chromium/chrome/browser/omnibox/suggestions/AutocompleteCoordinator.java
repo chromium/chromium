@@ -272,9 +272,10 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     }
 
     /**
-     * Starts a new omnibox session.
+     * Starts a new / resumes existing omnibox session.
      *
-     * @param input The initial state of the omnibox.
+     * @param input The input state for the new session. The input may be replaced without going
+     *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     public void beginInput(AutocompleteInput input) {
         mMediator.beginInput(input);

@@ -155,25 +155,32 @@ public class FuseboxMediator {
     /**
      * Called when the user begins interacting with the Omnibox.
      *
-     * @param input The user's input state.
+     * @param input The input state for the new session. The input may be replaced without going
+     *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     /* package */ void beginInput(AutocompleteInput input) {
-        assert mInput == null;
-        mInput = input;
+        setAutocompleteInput(input);
         setAutocompleteRequestTypeChangeable(true);
         setToolbarVisible(true);
-        mInput.getRequestTypeSupplier()
-                .addSyncObserverAndCallIfNonNull(mOnAutocompleteRequestTypeChanged);
     }
 
     /** Called when the user stops interacting with the Omnibox. */
     /* package */ void endInput() {
-        if (mInput == null) return;
         mModelList.clear();
         setAutocompleteRequestTypeChangeable(false);
         setToolbarVisible(false);
-        mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
-        mInput = null;
+        setAutocompleteInput(null);
+    }
+
+    private void setAutocompleteInput(@Nullable AutocompleteInput input) {
+        if (mInput != null) {
+            mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
+        }
+        mInput = input;
+        if (mInput != null) {
+            mInput.getRequestTypeSupplier()
+                    .addSyncObserverAndCallIfNonNull(mOnAutocompleteRequestTypeChanged);
+        }
     }
 
     private Snackbar createStyledSnackbar(CharSequence text, int snackbarIdentifier) {
