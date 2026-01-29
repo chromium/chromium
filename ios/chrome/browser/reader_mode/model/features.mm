@@ -40,6 +40,9 @@ BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableReaderModeOptimizationGuideEligibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableContentSettingsOptionForLinks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsReaderModeAvailable() {
   if (IsUSCountryCode() &&
       !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
@@ -59,4 +62,8 @@ bool IsReaderModeOmniboxEntryPointEnabled() {
 bool IsReaderModeOptimizationGuideEligibilityAvailable() {
   return base::FeatureList::IsEnabled(
       kEnableReaderModeOptimizationGuideEligibility);
+}
+
+bool IsReaderModeContentSettingsForLinkEnabled() {
+  return base::FeatureList::IsEnabled(kEnableContentSettingsOptionForLinks);
 }

@@ -61,6 +61,7 @@ NSString* const kSettingsCookiesCellId = @"kSettingsCookiesCellId";
 NSString* const kSettingsDefaultSiteModeCellId =
     @"kSettingsDefaultSiteModeCellId";
 NSString* const kSettingsWebInspectorCellId = @"kSettingsWebInspectorCellId";
+NSString* const kSettingsReaderModeCellId = @"kSettingsReaderModeCellId";
 NSString* const kDefaultBrowserSettingsTableViewId =
     @"kDefaultBrowserSettingsTableViewId";
 NSString* const kSettingsHttpsOnlyModeCellId = @"kSettingsHttpsOnlyModeCellId";

@@ -162,9 +162,9 @@ ol.distilled-content-list {
 }
 
 body.links-hidden a {
-  color: inherit;
+  color: inherit !important;
   pointer-events: none;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 /* Table styling. */

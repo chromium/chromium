@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -174,6 +175,14 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   } else {
     config.features_enabled_and_params.push_back(
         {kEnableReaderModeOmniboxEntryPointInUS, {}});
+  }
+
+  if ([self isRunningTest:@selector(testReaderModeContentSettingsOldToggle)]) {
+    config.features_disabled.push_back(kEnableContentSettingsOptionForLinks);
+  }
+  if ([self isRunningTest:@selector(testReaderModeContentSettingsNewOptions)]) {
+    config.features_enabled_and_params.push_back(
+        {kEnableContentSettingsOptionForLinks, {}});
   }
 
   if ([self isRunningTest:@selector(testReaderModeDistillationTimeout)]) {
@@ -1259,6 +1268,105 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   // Wait for the Reader mode contextual panel entry point chip to be visible.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ContextualPanelEntrypointImageViewMatcher()];
+}
+
+// Tests that disabling kEnableContentSettingsOptionForLinks shows the old
+// Reading Mode toggle in Content Settings.
+- (void)testReaderModeContentSettingsOldToggle {
+  [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
+                                              "/article.html")];
+
+  // Wait for the contextual panel entrypoint to appear.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
+  // Open Content Settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::ContentSettingsButton()];
+
+  // Check that the Reading Mode toggle is visible.
+  id<GREYMatcher> readingModeToggleMatcher =
+      chrome_test_util::TableViewSwitchCell(
+          kSettingsShowReadingModeAvailableCellId, YES);
+  [[EarlGrey selectElementWithMatcher:readingModeToggleMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Toggle it OFF.
+  [[EarlGrey selectElementWithMatcher:readingModeToggleMatcher]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Go back to the page.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Reload the page to ensure the contextual panel entrypoint is updated.
+  [ChromeEarlGrey reload];
+
+  // The contextual panel entrypoint should be hidden.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+}
+
+// Tests that enabling kEnableContentSettingsOptionForLinks shows the new
+// Reading Mode section in Content Settings with multiple options.
+- (void)testReaderModeContentSettingsNewOptions {
+  [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
+                                              "/article.html")];
+
+  // Wait for the contextual panel entrypoint to appear.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
+  // Open Content Settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::ContentSettingsButton()];
+
+  // Check that the Reading Mode section is visible.
+  id<GREYMatcher> readingModeSectionMatcher =
+      grey_accessibilityID(kSettingsReaderModeCellId);
+  [[EarlGrey selectElementWithMatcher:readingModeSectionMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the Reading Mode section.
+  [[EarlGrey selectElementWithMatcher:readingModeSectionMatcher]
+      performAction:grey_tap()];
+
+  // Check that "Show suggestion" toggle is visible and toggle it OFF.
+  id<GREYMatcher> showSuggestionToggleMatcher =
+      chrome_test_util::TableViewSwitchCell(
+          kReaderModeSettingsShowSuggestionAccessibilityIdentifier, YES);
+  [[EarlGrey selectElementWithMatcher:showSuggestionToggleMatcher]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Check that "Show hyperlinks" toggle is visible and toggle it OFF.
+  id<GREYMatcher> showHyperlinksToggleMatcher =
+      chrome_test_util::TableViewSwitchCell(
+          kReaderModeSettingsShowHyperlinksAccessibilityIdentifier, YES);
+  [[EarlGrey selectElementWithMatcher:showHyperlinksToggleMatcher]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Go back to the page.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Reload the page to ensure the contextual panel entrypoint is updated.
+  [ChromeEarlGrey reload];
+
+  // The contextual panel entrypoint should be hidden.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
+  // Open Reader Mode UI to check for links-hidden class.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+
+  // Check for 'links-hidden' class on body.
+  NSString* js = @"document.body.classList.contains('links-hidden')";
+  GREYAssertTrue([ChromeEarlGrey evaluateJavaScript:js].GetBool(),
+                 @"The body should have the 'links-hidden' class");
 }
 
 @end
