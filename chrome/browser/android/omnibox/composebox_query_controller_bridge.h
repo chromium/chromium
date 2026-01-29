@@ -57,6 +57,8 @@ class ComposeboxQueryControllerBridge
   void RemoveAttachment(JNIEnv* env, const std::string& token);
   bool IsPdfUploadEligible(JNIEnv* env);
   bool IsCreateImagesEligible(JNIEnv* env);
+  void SetActiveTool(JNIEnv* env, omnibox::ToolMode tool_mode);
+  void SetActiveModel(JNIEnv* env, omnibox::ModelMode model_mode);
 
   std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
   CreateLensOverlaySuggestInputs() const;

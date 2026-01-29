@@ -309,6 +309,22 @@ bool ComposeboxQueryControllerBridge::IsCreateImagesEligible(JNIEnv* env) {
   return aim_service && aim_service->IsCreateImagesEligible();
 }
 
+void ComposeboxQueryControllerBridge::SetActiveTool(
+    JNIEnv* env,
+    omnibox::ToolMode tool_mode) {
+  if (input_state_model_) {
+    input_state_model_->setActiveTool(tool_mode);
+  }
+}
+
+void ComposeboxQueryControllerBridge::SetActiveModel(
+    JNIEnv* env,
+    omnibox::ModelMode model_mode) {
+  if (input_state_model_) {
+    input_state_model_->setActiveModel(model_mode);
+  }
+}
+
 std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
 ComposeboxQueryControllerBridge::CreateLensOverlaySuggestInputs() const {
   auto tokens = std::vector<base::UnguessableToken>();

@@ -145,6 +145,20 @@ public class ComposeBoxQueryControllerBridge {
     }
 
     /**
+     * @param toolMode The active tool to set.
+     */
+    void setActiveTool(int toolMode) {
+        ComposeBoxQueryControllerBridgeJni.get().setActiveTool(mNativeInstance, toolMode);
+    }
+
+    /**
+     * @param modelMode The active model to set.
+     */
+    void setActiveModel(int modelMode) {
+        ComposeBoxQueryControllerBridgeJni.get().setActiveModel(mNativeInstance, modelMode);
+    }
+
+    /**
      * Returns an observable supplier for the current input state. This object contains the allowed
      * and disabled tools, models, and inputs. Updates are tied to the underlying C++
      * ContextualSearchSessionHandle, and may not be during other types of sessions. Callers should
@@ -214,5 +228,11 @@ public class ComposeBoxQueryControllerBridge {
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         boolean isCreateImagesEligible(long nativeInstance);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        void setActiveTool(long nativeInstance, @JniType("omnibox::ToolMode") int toolMode);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        void setActiveModel(long nativeInstance, @JniType("omnibox::ModelMode") int modelMode);
     }
 }
