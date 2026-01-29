@@ -1776,11 +1776,13 @@ ComposeboxQueryController::ConstructVisualSearchInteractionData(
       media_type == lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||
       media_type == lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE;
 
-  // If there was an interaction request, then set the interaction data from
-  // the request.
+  // If there was an interaction request which has not been used to create a
+  // vsint yet, then set the interaction data from the request.
   if (latest_interaction_request_data_ &&
+      !latest_interaction_request_data_->interaction_details_used_in_vsint_ &&
       latest_interaction_request_data_->request_ &&
       latest_interaction_request_data_->request_->has_interaction_request()) {
+    latest_interaction_request_data_->interaction_details_used_in_vsint_ = true;
     auto sent_interaction_request =
         latest_interaction_request_data_->request_->interaction_request();
     interaction_data.set_interaction_type(
