@@ -83,10 +83,10 @@ void LaunchDateAndTimeSettings() {
   base::FilePath path;
   base::PathService::Get(base::DIR_SYSTEM, &path);
   static const wchar_t kControlPanelExe[] = L"control.exe";
-  path = path.Append(std::wstring(kControlPanelExe));
+  path = path.Append(kControlPanelExe);
   base::CommandLine command(path);
-  command.AppendArg(std::string("/name"));
-  command.AppendArg(std::string("Microsoft.DateAndTime"));
+  command.AppendArg("/name");
+  command.AppendArg("Microsoft.DateAndTime");
 
   base::LaunchOptions options;
   options.wait = false;

@@ -183,7 +183,7 @@ bool ErrorIsRetriable(int net_error, int http_error) {
          (http_error == kUnsetHttpResponseCode || http_error == net::HTTP_OK);
 }
 
-std::string GetExtraMetricsSuffix(
+std::string_view GetExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource) {
   switch (unsafe_resource.threat_source) {
     case safe_browsing::ThreatSource::LOCAL_PVER4:
@@ -204,7 +204,7 @@ std::string GetExtraMetricsSuffix(
   NOTREACHED();
 }
 
-std::string GetExtraExtraMetricsSuffix(
+std::string_view GetExtraExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource) {
   switch (unsafe_resource.threat_subtype) {
     case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1:
@@ -259,7 +259,7 @@ std::string GetThreatTypeStringForInterstitial(
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
       NOTREACHED();
   }
-  return std::string();
+  return {};
 }
 
 }  // namespace safe_browsing

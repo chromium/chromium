@@ -42,8 +42,7 @@ base::FilePath GetSharedLibraryPath() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
         // !BUILDFLAG(IS_FUCHSIA)
 
-  return base_dir.AppendASCII(
-      base::GetNativeLibraryName(std::string(kSharedLibraryName)));
+  return base_dir.AppendASCII(base::GetNativeLibraryName(kSharedLibraryName));
 }
 
 OptimizationGuideLibraryHolder::OptimizationGuideLibraryHolder(

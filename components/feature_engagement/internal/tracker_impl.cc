@@ -168,8 +168,7 @@ std::unique_ptr<Tracker> Tracker::Create(
     return CreateDemoModeTracker(feature_action);
   }
 
-  base::FilePath event_storage_dir =
-      storage_dir.AppendASCII(std::string(kEventDBName));
+  base::FilePath event_storage_dir = storage_dir.AppendASCII(kEventDBName);
   auto event_db = db_provider->GetDB<Event>(
       leveldb_proto::ProtoDbType::FEATURE_ENGAGEMENT_EVENT, event_storage_dir,
       background_task_runner);
@@ -199,7 +198,7 @@ std::unique_ptr<Tracker> Tracker::Create(
   auto time_provider = std::make_unique<SystemTimeProvider>();
 
   base::FilePath availability_storage_dir =
-      storage_dir.AppendASCII(std::string(kAvailabilityDBName));
+      storage_dir.AppendASCII(kAvailabilityDBName);
   auto availability_db = db_provider->GetDB<Availability>(
       leveldb_proto::ProtoDbType::FEATURE_ENGAGEMENT_AVAILABILITY,
       availability_storage_dir, background_task_runner);
@@ -214,7 +213,7 @@ std::unique_ptr<Tracker> Tracker::Create(
   std::unique_ptr<EventStorageMigration> event_storage_migration;
   if (IsOnDeviceStorageEnabled()) {
     base::FilePath device_event_storage_dir =
-        device_storage_dir.AppendASCII(std::string(kEventDBName));
+        device_storage_dir.AppendASCII(kEventDBName);
     auto device_event_db = db_provider->GetUniqueDB<Event>(
         leveldb_proto::ProtoDbType::FEATURE_ENGAGEMENT_EVENT,
         device_event_storage_dir, background_task_runner);

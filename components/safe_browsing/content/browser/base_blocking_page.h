@@ -99,7 +99,7 @@ class BaseBlockingPage
   // interstitial at a time.
   static UnsafeResourceMap* GetUnsafeResourcesMap();
 
-  static std::string GetMetricPrefix(
+  static std::string_view GetMetricPrefix(
       const UnsafeResourceList& unsafe_resources,
       BaseSafeBrowsingErrorUI::SBInterstitialReason interstitial_reason);
 

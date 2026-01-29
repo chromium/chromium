@@ -105,11 +105,11 @@ void RecordHttpResponseOrErrorCode(const char* metric_name,
 bool ErrorIsRetriable(int net_error, int http_error);
 
 // We populate a parallel set of metrics to differentiate some threat sources.
-std::string GetExtraMetricsSuffix(
+std::string_view GetExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource);
 
 // We populate a parallel set of metrics to differentiate some threat subtypes.
-std::string GetExtraExtraMetricsSuffix(
+std::string_view GetExtraExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource);
 
 // Return the threat_type string for unsafe site visits.

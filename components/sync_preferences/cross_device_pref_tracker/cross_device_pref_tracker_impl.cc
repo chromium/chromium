@@ -733,7 +733,7 @@ void CrossDevicePrefTrackerImpl::StartTrackingPrefs(
   CHECK(tracked_pref_service);
 
   for (std::string_view pref_name : pref_names) {
-    registrar.Add(std::string(pref_name), callback);
+    registrar.Add(pref_name, callback);
   }
 
   // Perform the initial sync of the pref's current value.

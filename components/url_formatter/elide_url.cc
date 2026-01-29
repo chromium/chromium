@@ -231,7 +231,7 @@ std::u16string ElideUrl(const GURL& url,
   // Query element.
   std::u16string url_query;
   const float kPixelWidthDotsTrailer =
-      gfx::GetStringWidthF(std::u16string(gfx::kEllipsisUTF16), font_list);
+      gfx::GetStringWidthF(gfx::kEllipsisUTF16, font_list);
   if (parsed.query.is_nonempty()) {
     url_query = u"?" + url_string.substr(parsed.query.begin);
     if (available_pixel_width >=

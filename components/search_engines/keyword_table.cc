@@ -150,7 +150,7 @@ const std::string ColumnsForVersion(int version, bool concatenated) {
     // Column added in version 137.
     columns.push_back("url_hash");
   }
-  return base::JoinString(columns, std::string(concatenated ? " || " : ", "));
+  return base::JoinString(columns, concatenated ? " || " : ", ");
 }
 
 WebDatabaseTable::TypeKey GetKey() {

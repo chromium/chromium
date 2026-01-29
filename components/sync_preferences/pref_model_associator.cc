@@ -449,11 +449,11 @@ bool PrefModelAssociator::IsPrefSyncedForTesting(
 
 void PrefModelAssociator::RegisterPref(std::string_view name) {
   DCHECK(!registered_preferences_.contains(name));
-  DCHECK(!client_ || (client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(
-                          std::string(name)) &&
-                      client_->GetSyncablePrefsDatabase()
-                              .GetSyncablePrefMetadata(std::string(name))
-                              ->data_type() == type_))
+  DCHECK(!client_ ||
+         (client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name) &&
+          client_->GetSyncablePrefsDatabase()
+                  .GetSyncablePrefMetadata(name)
+                  ->data_type() == type_))
       << "Preference " << name
       << " has not been added to syncable prefs allowlist, or has incorrect "
          "data.";

@@ -41,8 +41,8 @@ void ProtoDatabaseProvider::GetSharedDBInstance(
     base::AutoLock lock(get_db_lock_);
     if (!db_) {
       db_ = base::WrapRefCounted(new SharedProtoDatabase(
-          kSharedProtoDatabaseClientName, profile_dir_.AppendASCII(std::string(
-                                              kSharedProtoDatabaseDirectory))));
+          kSharedProtoDatabaseClientName,
+          profile_dir_.AppendASCII(kSharedProtoDatabaseDirectory)));
     }
   }
 

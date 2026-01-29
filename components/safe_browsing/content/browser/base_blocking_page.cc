@@ -146,7 +146,7 @@ BaseBlockingPage::UnsafeResourceMap* BaseBlockingPage::GetUnsafeResourcesMap() {
 }
 
 // static
-std::string BaseBlockingPage::GetMetricPrefix(
+std::string_view BaseBlockingPage::GetMetricPrefix(
     const UnsafeResourceList& unsafe_resources,
     BaseSafeBrowsingErrorUI::SBInterstitialReason interstitial_reason) {
   switch (interstitial_reason) {
