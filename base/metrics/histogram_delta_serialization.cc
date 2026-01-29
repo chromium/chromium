@@ -72,7 +72,7 @@ void HistogramDeltaSerialization::RecordDelta(
   Pickle pickle;
   histogram.SerializeInfo(&pickle);
   snapshot.Serialize(&pickle);
-  serialized_deltas_->emplace_back(pickle.data_as_char(), pickle.size());
+  serialized_deltas_->emplace_back(pickle.AsStringView());
 }
 
 }  // namespace base

@@ -66,7 +66,8 @@ void UnmappedNativeStructSerializerImpl::SerializeMessageContents(
   // Allocate a uint8 array, initialize its header, and copy the Pickle in.
   MessageFragment<Array_Data<uint8_t>> data_fragment(fragment.message());
   data_fragment.AllocateArrayData(ipc_message->payload_size());
-  UNSAFE_TODO(memcpy(data_fragment->storage(), ipc_message->payload(),
+  UNSAFE_TODO(memcpy(data_fragment->storage(),
+                     ipc_message->payload_bytes().data(),
                      ipc_message->payload_size()));
   fragment->data.Set(data_fragment.data());
 

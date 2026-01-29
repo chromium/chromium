@@ -215,15 +215,15 @@ TEST(PickleTest, CopyWithInvalidHeader) {
     const Pickle pickle = Pickle::WithUnownedBuffer(byte_span_from_ref(header));
 
     EXPECT_EQ(0U, pickle.size());
-    EXPECT_FALSE(pickle.data());
+    EXPECT_TRUE(pickle.AsBytes().empty());
 
     Pickle copy_built_with_op = pickle;
     EXPECT_EQ(0U, copy_built_with_op.size());
-    EXPECT_FALSE(copy_built_with_op.data());
+    EXPECT_TRUE(copy_built_with_op.AsBytes().empty());
 
     Pickle copy_built_with_ctor(pickle);
     EXPECT_EQ(0U, copy_built_with_ctor.size());
-    EXPECT_FALSE(copy_built_with_ctor.data());
+    EXPECT_TRUE(copy_built_with_ctor.AsBytes().empty());
   }
   // 2. Input buffer's size < sizeof(Pickle::Header). Which must also result in
   // Pickle's internal |header_| = null.
@@ -233,15 +233,15 @@ TEST(PickleTest, CopyWithInvalidHeader) {
     static_assert(sizeof(Pickle::Header) > sizeof(data));
 
     EXPECT_EQ(0U, pickle.size());
-    EXPECT_FALSE(pickle.data());
+    EXPECT_TRUE(pickle.AsBytes().empty());
 
     Pickle copy_built_with_op = pickle;
     EXPECT_EQ(0U, copy_built_with_op.size());
-    EXPECT_FALSE(copy_built_with_op.data());
+    EXPECT_TRUE(copy_built_with_op.AsBytes().empty());
 
     Pickle copy_built_with_ctor(pickle);
     EXPECT_EQ(0U, copy_built_with_ctor.size());
-    EXPECT_FALSE(copy_built_with_ctor.data());
+    EXPECT_TRUE(copy_built_with_ctor.AsBytes().empty());
   }
 }
 
@@ -302,7 +302,7 @@ TEST(PickleTest, PeekNext) {
 
   pickle.WriteString("Goooooooooooogle");
 
-  const char* pickle_data = pickle.data_as_char();
+  const char* pickle_data = pickle.AsStringView().data();
 
   size_t pickle_size;
 
@@ -363,64 +363,6 @@ TEST(PickleTest, PeekNextOverflow) {
                                &pickle_size));
   EXPECT_EQ(pickle_size, std::numeric_limits<uint32_t>::max() / 2);
 }
-
-TEST(PickleTest, FindNext) {
-  Pickle pickle;
-  pickle.WriteInt(1);
-  pickle.WriteString("Domo");
-
-  const char* start = reinterpret_cast<const char*>(pickle.data());
-  const char* end = UNSAFE_TODO(start + pickle.size());
-
-  EXPECT_EQ(end, Pickle::FindNext(pickle.header_size_, start, end));
-  EXPECT_EQ(nullptr,
-            Pickle::FindNext(pickle.header_size_, start, UNSAFE_TODO(end - 1)));
-  EXPECT_EQ(end,
-            Pickle::FindNext(pickle.header_size_, start, UNSAFE_TODO(end + 1)));
-}
-
-TEST(PickleTest, FindNextWithIncompleteHeader) {
-  size_t header_size = sizeof(Pickle::Header);
-  auto buffer = base::HeapArray<char>::Uninit(header_size - 1);
-  UNSAFE_TODO(memset(buffer.data(), 0x1, header_size - 1));
-
-  const char* start = buffer.data();
-  const char* end = UNSAFE_TODO(start + header_size - 1);
-
-  EXPECT_EQ(nullptr, Pickle::FindNext(header_size, start, end));
-}
-
-#if defined(COMPILER_MSVC)
-#pragma warning(push)
-#pragma warning(disable : 4146)
-#endif
-TEST(PickleTest, FindNextOverflow) {
-  size_t header_size = sizeof(Pickle::Header);
-  size_t header_size2 = 2 * header_size;
-  size_t payload_received = 100;
-  auto buffer = base::HeapArray<char>::Uninit(header_size2 + payload_received);
-  const char* start = buffer.data();
-  Pickle::Header* header = reinterpret_cast<Pickle::Header*>(buffer.data());
-  const char* end = UNSAFE_TODO(start + header_size2 + payload_received);
-  // It is impossible to construct an overflow test otherwise.
-  if (sizeof(size_t) > sizeof(header->payload_size) ||
-      sizeof(uintptr_t) > sizeof(header->payload_size)) {
-    return;
-  }
-
-  header->payload_size = -(reinterpret_cast<uintptr_t>(start) + header_size2);
-  EXPECT_EQ(nullptr, Pickle::FindNext(header_size2, start, end));
-
-  header->payload_size = -header_size2;
-  EXPECT_EQ(nullptr, Pickle::FindNext(header_size2, start, end));
-
-  header->payload_size = 0;
-  end = UNSAFE_TODO(start + header_size);
-  EXPECT_EQ(nullptr, Pickle::FindNext(header_size2, start, end));
-}
-#if defined(COMPILER_MSVC)
-#pragma warning(pop)
-#endif
 
 TEST(PickleTest, GetReadPointerAndAdvance) {
   Pickle pickle;

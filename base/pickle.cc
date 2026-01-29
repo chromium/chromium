@@ -27,7 +27,7 @@ const size_t Pickle::kPayloadUnit = 64;
 static const size_t kCapacityReadOnly = static_cast<size_t>(-1);
 
 PickleIterator::PickleIterator(const Pickle& pickle)
-    : payload_(pickle.payload()),
+    : payload_(reinterpret_cast<const char*>(pickle.payload_bytes().data())),
       read_index_(0),
       end_index_(pickle.payload_size()) {}
 
@@ -439,20 +439,13 @@ size_t Pickle::GetTotalAllocatedSize() const {
   return header_size_ + capacity_after_header_;
 }
 
-// static
-const char* Pickle::FindNext(size_t header_size,
-                             const char* start,
-                             const char* end) {
-  size_t pickle_size = 0;
-  if (!PeekNext(header_size, start, end, &pickle_size)) {
-    return nullptr;
-  }
-
-  if (pickle_size > static_cast<size_t>(end - start)) {
-    return nullptr;
-  }
-
-  return UNSAFE_TODO(start + pickle_size);
+span<uint8_t> Pickle::AsWritableBytes() {
+  CHECK(header_);
+  CHECK_NE(kCapacityReadOnly, capacity_after_header_)
+      << "oops: pickle is readonly";
+  // SAFETY: `header_` always points to at least `size()` valid bytes if
+  // non-null, and otherwise `size()` returns zero.
+  return UNSAFE_BUFFERS(span(reinterpret_cast<uint8_t*>(header_), size()));
 }
 
 // static
@@ -510,7 +503,8 @@ inline void* Pickle::ClaimUninitializedBytesInternal(size_t length) {
     Resize(std::max(new_capacity, new_size));
   }
 
-  char* write = UNSAFE_TODO(mutable_payload() + write_offset_);
+  char* write = UNSAFE_TODO(reinterpret_cast<char*>(header_) + header_size_ +
+                            write_offset_);
   std::fill(UNSAFE_TODO(write + length), UNSAFE_TODO(write + data_len),
             0);  // Always initialize padding
   header_->payload_size = static_cast<uint32_t>(new_size);
