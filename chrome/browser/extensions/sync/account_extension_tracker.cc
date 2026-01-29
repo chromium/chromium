@@ -19,6 +19,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -274,9 +275,12 @@ void AccountExtensionTracker::OnInitialExtensionsSyncDataReceived() {
   PrefService* prefs = profile_->GetPrefs();
   if (prefs->GetBoolean(
           syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount)) {
+    syncer::RecordSyncToSigninMigrationExtensionsStep(
+        syncer::SyncToSigninMigrationExtensionsStep::kMigrationStarted);
     ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
     const ExtensionSet extensions =
         extension_registry->GenerateInstalledExtensionsSet();
+    int deduplicated_extensions_count = 0;
     for (const auto& extension : extensions) {
       if (
           // Only de-duplicate extensions, not Chrome Apps/hosted apps.
@@ -291,9 +295,15 @@ void AccountExtensionTracker::OnInitialExtensionsSyncDataReceived() {
       }
       SetAccountExtensionType(extension->id(),
                               AccountExtensionType::kAccountInstalledSignedIn);
+      ++deduplicated_extensions_count;
     }
     prefs->ClearPref(
         syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount);
+    syncer::RecordSyncToSigninMigrationExtensionsStep(
+        syncer::SyncToSigninMigrationExtensionsStep::
+            kMigrationFinishedAndPrefCleared);
+    syncer::RecordSyncToSigninMigrationExtensionsDeduplicatedCount(
+        deduplicated_extensions_count);
   }
   NotifyOnExtensionsUploadabilityChanged();
 }

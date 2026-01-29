@@ -2373,6 +2373,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigration.ExtensionsMigrationStep"
+    enum="SyncToSigninMigrationExtensionsStep" expires_after="2027-01-28">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Within the wider Sync-to-Signin migration, this records various steps in the
+    Extensions-specific migration. The migration is requested by the central
+    Sync-to-Signin migration on profile initialization, and happens at most once
+    per browser session (and typically exactly once per profile). &quot;Total
+    count&quot; and &quot;Bucket proportion&quot; are not really meaningful;
+    instead compare the absolute sizes of the various buckets.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncToSigninMigration.MigrationType"
     enum="SyncToSigninMigrationType" expires_after="2026-12-05">
   <owner>ankushkush@google.com</owner>
@@ -2454,6 +2468,17 @@ chromium-metrics-reviews@google.com.
     location, during the Sync-to-Signin migration. Recorded only if the overall
     migration ran and decided to migrate bookmarks (see
     Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK).
+  </summary>
+</histogram>
+
+<histogram name="Sync.SyncToSigninMigrationOutcome.ExtensionDeduplicatedCount"
+    units="extensions" expires_after="2027-01-28">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    The number of extensions that were deduplicated during the Sync-to-Signin
+    migration. Recorded only if the overall migration ran and decided to migrate
+    extensions (see Sync.SyncToSigninMigrationDecision.Migration.EXTENSION).
   </summary>
 </histogram>
 

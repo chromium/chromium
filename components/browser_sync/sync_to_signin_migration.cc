@@ -593,7 +593,8 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   if (extensions_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
     pref_service->SetBoolean(
         syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount, true);
-    // TODO(crbug.com/328400930): Add metrics to track this migration.
+    syncer::RecordSyncToSigninMigrationExtensionsStep(
+        syncer::SyncToSigninMigrationExtensionsStep::kMigrationRequested);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

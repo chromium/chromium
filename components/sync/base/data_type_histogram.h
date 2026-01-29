@@ -67,7 +67,7 @@ void SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(SyncToSigninMigrationReadingListStep)
+// LINT.IfChange(ReadingListMigrationStep)
 enum class ReadingListMigrationStep {
   kMigrationRequested = 0,
   kMigrationStarted = 1,
@@ -77,6 +77,20 @@ enum class ReadingListMigrationStep {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationReadingListStep)
 void RecordSyncToSigninMigrationReadingListStep(ReadingListMigrationStep step);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationExtensionsStep)
+enum class SyncToSigninMigrationExtensionsStep {
+  kMigrationRequested = 0,
+  kMigrationStarted = 1,
+  kMigrationFinishedAndPrefCleared = 2,
+  kMaxValue = kMigrationFinishedAndPrefCleared
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationExtensionsStep)
+void RecordSyncToSigninMigrationExtensionsStep(
+    SyncToSigninMigrationExtensionsStep step);
+void RecordSyncToSigninMigrationExtensionsDeduplicatedCount(int count);
 
 }  // namespace syncer
 
