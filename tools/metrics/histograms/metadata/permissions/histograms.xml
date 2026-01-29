@@ -505,6 +505,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.AIv4.UseHardcodedPredictionThresholds"
+    enum="Boolean" expires_after="2026-07-20">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the prediction service used hardcoded thresholds (true) or
+    model metadata thresholds (false) for the AIv4 model. Recorded when the
+    threshold values are set in the executor.
+  </summary>
+</histogram>
+
 <histogram
     name="Permissions.AndroidSystemLevel.{SystemPermissionType}.Prompt.Shown"
     enum="Boolean" expires_after="2026-07-12">

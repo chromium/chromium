@@ -59,6 +59,12 @@ bool PermissionsAiEncoderBase<EncoderInput>::ConvertSkBitMapToTfliteTensor(
 }
 
 template <typename EncoderInput>
+void PermissionsAiEncoderBase<EncoderInput>::set_relevance_thresholds(
+    const std::array<float, 4>& thresholds) {
+  relevance_thresholds_ = thresholds;
+}
+
+template <typename EncoderInput>
 std::optional<typename PermissionsAiEncoderBase<EncoderInput>::ModelOutput>
 PermissionsAiEncoderBase<EncoderInput>::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {

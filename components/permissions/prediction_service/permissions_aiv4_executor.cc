@@ -7,7 +7,9 @@
 #include <array>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/types/optional_ref.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/permissions/prediction_service/permissions_aiv4_model_metadata.pb.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -72,7 +74,12 @@ bool PermissionsAiv4Executor::Preprocess(
 
 void PermissionsAiv4Executor::SetThresholdValues(
     base::optional_ref<const PermissionsAiv4ModelMetadata> metadata) {
-  if (!metadata.has_value() || !metadata.value().has_relevance_thresholds()) {
+  bool use_hardcoded_values =
+      !metadata.has_value() || !metadata.value().has_relevance_thresholds();
+  base::UmaHistogramBoolean("Permissions.AIv4.UseHardcodedPredictionThresholds",
+                            use_hardcoded_values);
+
+  if (use_hardcoded_values) {
     DCHECK(request_type() == RequestType::kNotifications ||
            request_type() == RequestType::kGeolocation);
 
@@ -82,16 +89,25 @@ void PermissionsAiv4Executor::SetThresholdValues(
     // ...
     // val < thr[4] -> High
     // val >= thr[4] -> VeryHigh
-    relevance_thresholds() = {0.008f, 0.024f, 0.11f, 0.32f};
+#if BUILDFLAG(IS_ANDROID)  
     if (request_type() == RequestType::kGeolocation) {
-      relevance_thresholds() = {0.033f, 0.077f, 0.2f, 0.49f};
+      set_relevance_thresholds({0.075f, 0.223f, 0.64f, 0.85f});
+    } else {
+      set_relevance_thresholds({0.005f, 0.023f, 0.12f, 0.37f});
     }
+#else
+    if (request_type() == RequestType::kGeolocation) {
+      set_relevance_thresholds({0.033f, 0.077f, 0.2f, 0.49f});
+    } else {
+      set_relevance_thresholds({0.008f, 0.024f, 0.11f, 0.32f});
+    }
+#endif
     return;
   }
   const auto& thresholds = metadata.value().relevance_thresholds();
-  relevance_thresholds() = {
-      thresholds.min_low_relevance(), thresholds.min_medium_relevance(),
-      thresholds.min_high_relevance(), thresholds.min_very_high_relevance()};
+  set_relevance_thresholds(
+      {thresholds.min_low_relevance(), thresholds.min_medium_relevance(),
+       thresholds.min_high_relevance(), thresholds.min_very_high_relevance()});
 }
 
 }  // namespace permissions

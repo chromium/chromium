@@ -43,6 +43,7 @@ class PermissionsAiEncoderBase
 
   RequestType request_type() const { return request_type_; }
   std::array<float, 4>& relevance_thresholds() { return relevance_thresholds_; }
+  void set_relevance_thresholds(const std::array<float, 4>& thresholds);
 
   bool ConvertSkBitMapToTfliteTensor(TfLiteTensor* input_tensor,
                                      const SkBitmap& input);
