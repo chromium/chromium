@@ -5,6 +5,7 @@
 #ifndef UI_GFX_SKIA_COLOR_SPACE_UTIL_H_
 #define UI_GFX_SKIA_COLOR_SPACE_UTIL_H_
 
+#include "base/containers/span.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -48,7 +49,8 @@ bool COLOR_SPACE_EXPORT SkM44IsApproximatelyIdentity(const SkM44& m,
 // column of the SkM44 are [0,0,0,1].
 skcms_Matrix3x3 COLOR_SPACE_EXPORT SkcmsMatrix3x3FromSkM44(const SkM44& in);
 SkM44 COLOR_SPACE_EXPORT SkM44FromSkcmsMatrix3x3(const skcms_Matrix3x3& in);
-SkM44 COLOR_SPACE_EXPORT SkM44FromRowMajor3x3(const float* scale);
+SkM44 COLOR_SPACE_EXPORT
+SkM44FromRowMajor3x3(base::span<const float, 9u> scale_3x3);
 
 }  // namespace gfx
 
