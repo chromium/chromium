@@ -47,6 +47,8 @@ class WebUIToolbarWebView
 
   // views::View:
   void AddedToWidget() override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;

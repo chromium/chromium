@@ -127,8 +127,6 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   // PLM has to be initialized before loading the URL.
   InitializePageLoadMetricsForWebContents(web_contents);
 
-  const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
-  web_view->SetPreferredSize(gfx::Size(size, size));
   web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   web_contents->SetIgnoreZoomGestures(true);
   web_view->SetID(VIEW_ID_RELOAD_BUTTON);
@@ -156,6 +154,20 @@ void WebUIToolbarWebView::AddedToWidget() {
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
   GetWebUIToolbarUI()->SetDelegate(this);
   reload_control_.Init();
+}
+
+gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  int button_count = 0;
+  button_count += features::IsWebUIReloadButtonEnabled();
+
+  const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  int width = button_count * size;
+  if (button_count > 0) {
+    width += (button_count - 1) *
+             GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  }
+  return gfx::Size(width, size);
 }
 
 void WebUIToolbarWebView::HandleContextMenu(
