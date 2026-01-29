@@ -275,9 +275,7 @@ String ResolveRelativePathnamePattern(const KURL& base_url, String pathname) {
     if (slash_index != kNotFound) {
       // Extract the base_url path up to and including the last slash. Append
       // the relative pathname to it.
-      base_path.Truncate(slash_index + 1);
-      base_path = StrCat({base_path, pathname});
-      return base_path;
+      return StrCat({StringView(base_path, 0, slash_index + 1), pathname});
     }
   }
   return pathname;

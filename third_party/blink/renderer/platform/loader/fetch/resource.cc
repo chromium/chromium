@@ -923,8 +923,8 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   if (level_of_detail == WebMemoryDumpLevelOfDetail::kDetailed) {
     String url_to_report = Url().GetString();
     if (url_to_report.length() > kMaxURLReportLength) {
-      url_to_report.Truncate(kMaxURLReportLength);
-      url_to_report = StrCat({url_to_report, "..."});
+      url_to_report =
+          StrCat({StringView(url_to_report, 0, kMaxURLReportLength), "..."});
     }
     dump->AddString("url", "", url_to_report);
 
