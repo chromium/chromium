@@ -47,7 +47,10 @@ class MockExtensionsPermissionsTracker : public ExtensionsPermissionsTracker {
  public:
   MockExtensionsPermissionsTracker(ExtensionRegistry* registry,
                                    content::BrowserContext* browser_context)
-      : ExtensionsPermissionsTracker(registry, browser_context) {
+      : ExtensionsPermissionsTracker(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            registry,
+            browser_context) {
     safe_permissions_.insert(std::begin(kSafePermissionsSet1),
                              std::end(kSafePermissionsSet1));
     safe_permissions_.insert(std::begin(kSafePermissionsSet2),

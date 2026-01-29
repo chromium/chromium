@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_EXTENSIONS_PERMISSIONS_TRACKER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
+
+class PrefService;
 
 namespace content {
 class BrowserContext;
@@ -30,7 +33,9 @@ bool IsAllowlistedForManagedGuestSession(const std::string& extension_id);
 // and outlives it.
 class ExtensionsPermissionsTracker : public ExtensionRegistryObserver {
  public:
-  ExtensionsPermissionsTracker(ExtensionRegistry* registry,
+  // `local_state` must be non-null and must outlive `this`.
+  ExtensionsPermissionsTracker(PrefService* local_state,
+                               ExtensionRegistry* registry,
                                content::BrowserContext* browser_context);
   ExtensionsPermissionsTracker(const ExtensionsPermissionsTracker&) = delete;
   ExtensionsPermissionsTracker& operator=(const ExtensionsPermissionsTracker&) =
@@ -52,6 +57,8 @@ class ExtensionsPermissionsTracker : public ExtensionRegistryObserver {
 
   void UpdateLocalState();
   void ParseExtensionPermissions(const Extension* extension);
+
+  const raw_ref<PrefService> local_state_;
 
   // Unowned, but guaranteed to outlive this object.
   raw_ptr<ExtensionRegistry> registry_;

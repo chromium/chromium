@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
 
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -176,9 +176,11 @@ bool IsAllowlistedForManagedGuestSession(const std::string& extension_id) {
 }
 
 ExtensionsPermissionsTracker::ExtensionsPermissionsTracker(
+    PrefService* local_state,
     ExtensionRegistry* registry,
     content::BrowserContext* browser_context)
-    : registry_(registry),
+    : local_state_(CHECK_DEREF(local_state)),
+      registry_(registry),
       pref_service_(Profile::FromBrowserContext(browser_context)->GetPrefs()) {
   observation_.Observe(registry_.get());
   pref_change_registrar_.Init(pref_service_);
@@ -271,8 +273,8 @@ void ExtensionsPermissionsTracker::UpdateLocalState() {
 
   DCHECK(pending_forced_extensions_.empty() || any_unsafe);
 
-  g_browser_process->local_state()->SetBoolean(
-      prefs::kManagedSessionUseFullLoginWarning, any_unsafe);
+  local_state_->SetBoolean(prefs::kManagedSessionUseFullLoginWarning,
+                           any_unsafe);
 }
 
 // static

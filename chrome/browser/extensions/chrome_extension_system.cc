@@ -266,6 +266,7 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
     if (chromeos::IsManagedGuestSession()) {
       extensions_permissions_tracker_ =
           std::make_unique<ExtensionsPermissionsTracker>(
+              g_browser_process->local_state(),
               ExtensionRegistry::Get(profile_), profile_);
     }
 #endif
