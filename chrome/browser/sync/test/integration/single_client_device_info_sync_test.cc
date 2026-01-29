@@ -103,9 +103,12 @@ sync_pb::DeviceInfoSpecifics CreateSpecifics(
   sync_pb::DeviceInfoSpecifics specifics;
   specifics.set_cache_guid(CacheGuidForSuffix(suffix));
   specifics.set_client_name(ClientNameForSuffix(suffix));
-  specifics.set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_LINUX);
+  specifics.set_os_type(sync_pb::SyncEnums_OsType_OS_TYPE_LINUX);
+  specifics.set_device_form_factor(
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   specifics.set_sync_user_agent(SyncUserAgentForSuffix(suffix));
-  specifics.set_chrome_version(ChromeVersionForSuffix(suffix));
+  specifics.mutable_chrome_version_info()->set_version_number(
+      ChromeVersionForSuffix(suffix));
   specifics.set_signin_scoped_device_id(SigninScopedDeviceIdForSuffix(suffix));
   specifics.set_last_updated_timestamp(
       syncer::TimeToProtoTime(base::Time::Now()));
@@ -299,17 +302,36 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
   sync_pb::DeviceInfoSpecifics device_info_specifics =
       CreateSpecifics(/*suffix=*/1);
   device_info_specifics.clear_chrome_version();
+  device_info_specifics.clear_chrome_version_info();
   InjectDeviceInfoSpecificsToServer(device_info_specifics);
 
   ASSERT_TRUE(SetupSync());
 
-  // Devices without a chrome_version correspond to non-Chromium-based clients
-  // and should be excluded.
+  // Devices without a chrome_version/chrome_version_info correspond to
+  // non-Chromium-based clients and should be excluded.
   EXPECT_THAT(
       GetDeviceInfoTracker()->GetAllChromeDeviceInfo(),
       UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid())));
   EXPECT_THAT(
       GetDeviceInfoTracker()->GetAllDeviceInfo(),
+      UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid()),
+                           ModelEntryHasCacheGuid(CacheGuidForSuffix(1))));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
+                       DownloadRemoteDeviceWithOldVersionFieldOnly) {
+  sync_pb::DeviceInfoSpecifics device_info_specifics =
+      CreateSpecifics(/*suffix=*/1);
+  device_info_specifics.clear_chrome_version_info();
+  device_info_specifics.set_chrome_version("someversion");
+  InjectDeviceInfoSpecificsToServer(device_info_specifics);
+
+  ASSERT_TRUE(SetupSync());
+
+  // Devices with only the deprecated `chrome_version` should still be
+  // recognized as Chrome devices.
+  EXPECT_THAT(
+      GetDeviceInfoTracker()->GetAllChromeDeviceInfo(),
       UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid()),
                            ModelEntryHasCacheGuid(CacheGuidForSuffix(1))));
 }
@@ -325,10 +347,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
 
   ASSERT_TRUE(SetupSync());
 
-  // Devices without a chrome_version correspond to non-Chromium-based clients
-  // and should be excluded.
+  // Devices with only the new `chrome_version_info` should be recognized as
+  // Chrome devices.
   EXPECT_THAT(
-      GetDeviceInfoTracker()->GetAllDeviceInfo(),
+      GetDeviceInfoTracker()->GetAllChromeDeviceInfo(),
       UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid()),
                            ModelEntryHasCacheGuid(CacheGuidForSuffix(1))));
 }
