@@ -908,29 +908,87 @@ const CGFloat kDividerWidth = 1.0;
       break;
     }
     case PageActionMenuButtonAction: {
-      if (feature.actionText && feature.actionText.length > 0) {
-        UIButton* actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [actionButton setTitle:feature.actionText
-                      forState:UIControlStateNormal];
-        actionButton.titleLabel.font = PreferredFontForTextStyle(
-            UIFontTextStyleSubheadline, UIFontWeightMedium);
-        [actionButton setTitleColor:[UIColor colorNamed:kBlue600Color]
-                           forState:UIControlStateNormal];
-        actionButton.tag = feature.featureType;
-        [actionButton addTarget:self
-                         action:@selector(handleFeatureButton:)
-               forControlEvents:UIControlEventTouchUpInside];
-        [stackView addArrangedSubview:actionButton];
+      if (feature.featureType == PageActionMenuPriceTracking) {
+        UIStackView* accessoryStack = [[UIStackView alloc] init];
+        accessoryStack.translatesAutoresizingMaskIntoConstraints = NO;
+        accessoryStack.axis = UILayoutConstraintAxisHorizontal;
+        accessoryStack.alignment = UIStackViewAlignmentCenter;
+        accessoryStack.spacing = 8.0;
+        [accessoryStack
+            setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
+                              forAxis:UILayoutConstraintAxisHorizontal];
 
-        // Add chevron for price tracking.
-        if (feature.featureType == PageActionMenuPriceTracking) {
-          UIImageView* chevronIcon = [self createNavigationChevron];
-          [stackView addArrangedSubview:chevronIcon];
-          actionButton.accessibilityLabel = l10n_util::GetNSString(
-              IDS_IOS_AI_HUB_OPEN_PRICE_TRACKING_ACCESSIBILITY_LABEL);
-        } else if (feature.featureType == PageActionMenuPopupBlocker) {
-          actionButton.accessibilityLabel = l10n_util::GetNSString(
-              IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL);
+        if (feature.actionText && feature.actionText.length > 0) {
+          UILabel* trackingLabel = [[UILabel alloc] init];
+          trackingLabel.text = feature.actionText;
+          trackingLabel.font = PreferredFontForTextStyle(
+              UIFontTextStyleSubheadline, UIFontWeightMedium);
+          trackingLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+          trackingLabel.adjustsFontForContentSizeCategory = YES;
+          trackingLabel.numberOfLines = 0;
+          trackingLabel.textAlignment = NSTextAlignmentRight;
+          [trackingLabel
+              setContentHuggingPriority:UILayoutPriorityRequired
+                                forAxis:UILayoutConstraintAxisHorizontal];
+          [accessoryStack addArrangedSubview:trackingLabel];
+        }
+
+        UIImageView* chevronIcon = [self createNavigationChevron];
+        UIButton* chevronButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        chevronButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [chevronButton addSubview:chevronIcon];
+
+        [NSLayoutConstraint activateConstraints:@[
+          [chevronIcon.centerXAnchor
+              constraintEqualToAnchor:chevronButton.centerXAnchor],
+          [chevronIcon.centerYAnchor
+              constraintEqualToAnchor:chevronButton.centerYAnchor],
+          [chevronButton.widthAnchor
+              constraintEqualToConstant:chevronIcon.intrinsicContentSize.width],
+          [chevronButton.heightAnchor
+              constraintEqualToConstant:chevronIcon.intrinsicContentSize.height]
+        ]];
+
+        [chevronButton
+            setContentHuggingPriority:UILayoutPriorityRequired
+                              forAxis:UILayoutConstraintAxisHorizontal];
+        [chevronButton
+            setContentHuggingPriority:UILayoutPriorityRequired
+                              forAxis:UILayoutConstraintAxisVertical];
+
+        // Set accessibility label based on subscription status.
+        chevronButton.accessibilityLabel =
+            feature.actionText
+                ? l10n_util::GetNSString(
+                      IDS_IOS_AI_HUB_OPEN_PRICE_TRACKING_ACCESSIBILITY_LABEL)
+                : l10n_util::GetNSString(
+                      IDS_IOS_AI_HUB_OPEN_PRICE_TRACK_ACCESSIBILITY_LABEL);
+
+        chevronButton.tag = feature.featureType;
+        [chevronButton addTarget:self
+                          action:@selector(handleFeatureButton:)
+                forControlEvents:UIControlEventTouchUpInside];
+        [accessoryStack addArrangedSubview:chevronButton];
+        [stackView addArrangedSubview:accessoryStack];
+      } else {
+        if (feature.actionText && feature.actionText.length > 0) {
+          UIButton* actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+          [actionButton setTitle:feature.actionText
+                        forState:UIControlStateNormal];
+          actionButton.titleLabel.font = PreferredFontForTextStyle(
+              UIFontTextStyleSubheadline, UIFontWeightMedium);
+          [actionButton setTitleColor:[UIColor colorNamed:kBlue600Color]
+                             forState:UIControlStateNormal];
+          actionButton.tag = feature.featureType;
+          [actionButton addTarget:self
+                           action:@selector(handleFeatureButton:)
+                 forControlEvents:UIControlEventTouchUpInside];
+          [stackView addArrangedSubview:actionButton];
+
+          if (feature.featureType == PageActionMenuPopupBlocker) {
+            actionButton.accessibilityLabel = l10n_util::GetNSString(
+                IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL);
+          }
         }
       }
       break;
