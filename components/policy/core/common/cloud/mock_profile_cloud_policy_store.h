@@ -12,7 +12,7 @@ namespace policy {
 
 class MockProfileCloudPolicyStore : public ProfileCloudPolicyStore {
  public:
-  MockProfileCloudPolicyStore();
+  explicit MockProfileCloudPolicyStore(const std::string& policy_type);
   MockProfileCloudPolicyStore(const MockProfileCloudPolicyStore&) = delete;
   MockProfileCloudPolicyStore& operator=(const MockProfileCloudPolicyStore&) =
       delete;

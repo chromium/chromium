@@ -35,7 +35,8 @@ DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     scoped_refptr<base::SequencedTaskRunner> first_load_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,
-                               PolicyScope::POLICY_SCOPE_USER),
+                               PolicyScope::POLICY_SCOPE_USER,
+                               dm_protocol::kChromePublicAccountPolicyType),
       first_load_task_runner_(first_load_task_runner),
       account_id_(account_id),
       session_manager_client_(session_manager_client),

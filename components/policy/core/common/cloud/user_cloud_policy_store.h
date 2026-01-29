@@ -69,6 +69,7 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
   DesktopCloudPolicyStore(
       const base::FilePath& policy_file,
       const base::FilePath& key_file,
+      const std::string& policy_type,
       PolicyLoadFilter policy_load_filter,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       PolicyScope policy_scope);
@@ -197,6 +198,7 @@ class POLICY_EXPORT UserCloudPolicyStore : public DesktopCloudPolicyStore {
   UserCloudPolicyStore(
       const base::FilePath& policy_file,
       const base::FilePath& key_file,
+      const std::string& policy_type,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   UserCloudPolicyStore(const UserCloudPolicyStore&) = delete;
   UserCloudPolicyStore& operator=(const UserCloudPolicyStore&) = delete;

@@ -40,6 +40,7 @@
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
@@ -123,7 +124,8 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
   // in the test.
   void MakeManagerWithPreloadedStore(const base::TimeDelta& fetch_timeout) {
     std::unique_ptr<MockCloudPolicyStore> store =
-        std::make_unique<MockCloudPolicyStore>();
+        std::make_unique<MockCloudPolicyStore>(
+            dm_protocol::GetChromeUserPolicyType());
     store->set_policy_data_for_testing(
         std::make_unique<em::PolicyData>(policy_data_));
     store->policy_map_ = policy_map_.Clone();
@@ -236,7 +238,8 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
   void MakeManagerWithEmptyStore(const base::TimeDelta& fetch_timeout,
                                  PolicyEnforcement enforcement_type) {
     std::unique_ptr<MockCloudPolicyStore> store =
-        std::make_unique<MockCloudPolicyStore>();
+        std::make_unique<MockCloudPolicyStore>(
+            dm_protocol::GetChromeUserPolicyType());
     EXPECT_CALL(*store, Load());
     CreateManager(std::move(store), fetch_timeout, enforcement_type);
     EXPECT_FALSE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -500,7 +503,8 @@ TEST_F(UserCloudPolicyManagerAshTest, SynchronousLoadWithEmptyStore) {
   // session.
   fatal_error_expected_ = true;
   std::unique_ptr<MockCloudPolicyStore> store =
-      std::make_unique<MockCloudPolicyStore>();
+      std::make_unique<MockCloudPolicyStore>(
+          dm_protocol::GetChromeUserPolicyType());
   // Tell the store it couldn't load data.
   store->NotifyStoreError();
   CreateManager(std::move(store), base::TimeDelta(),

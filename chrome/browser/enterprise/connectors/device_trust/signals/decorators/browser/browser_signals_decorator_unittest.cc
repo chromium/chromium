@@ -145,13 +145,16 @@ class BrowserSignalsDecoratorTest : public testing::Test {
             /*should_force=*/true);
 
     auto mock_browser_cloud_policy_store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType);
     mock_browser_cloud_policy_store_ = mock_browser_cloud_policy_store.get();
     std::unique_ptr<policy::MockCloudPolicyStore>
         mock_browser_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mock_browser_cloud_policy_extension_install_store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::
+                kChromeExtensionInstallMachineLevelCloudPolicyType);
 #endif
     mock_browser_cloud_policy_extension_install_store_ =
         mock_browser_cloud_policy_extension_install_store.get();
@@ -162,13 +165,15 @@ class BrowserSignalsDecoratorTest : public testing::Test {
             task_environment_.GetMainThreadTaskRunner());
 
     auto mock_user_cloud_policy_store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::GetChromeUserPolicyType());
     mock_user_cloud_policy_store_ = mock_user_cloud_policy_store.get();
     std::unique_ptr<policy::MockCloudPolicyStore>
         mock_user_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mock_user_cloud_policy_extension_install_store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
 #endif
     mock_user_cloud_policy_extension_install_store_ =
         mock_user_cloud_policy_extension_install_store.get();

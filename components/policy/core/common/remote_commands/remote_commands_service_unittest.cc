@@ -305,7 +305,7 @@ class RemoteCommandsServiceTest
   TestingRemoteCommandsServer server_;
   TestingCloudPolicyClientForRemoteCommands cloud_policy_client_{&server_,
                                                                  GetScope()};
-  MockCloudPolicyStore store_;
+  MockCloudPolicyStore store_{policy::dm_protocol::GetChromeUserPolicyType()};
   std::unique_ptr<RemoteCommandsService> remote_commands_service_;
 };
 

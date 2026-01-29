@@ -73,6 +73,7 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -323,7 +324,8 @@ class DemoSetupTestBase : public OobeBaseTest {
  private:
   // TODO(agawronska): Maybe create a separate test fixture for offline setup.
   base::ScopedTempDir fake_demo_resources_dir_;
-  policy::MockCloudPolicyStore mock_policy_store_;
+  policy::MockCloudPolicyStore mock_policy_store_{
+      policy::dm_protocol::GetChromeUserPolicyType()};
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
 

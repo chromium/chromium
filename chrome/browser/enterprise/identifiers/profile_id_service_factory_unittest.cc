@@ -141,7 +141,8 @@ class ProfileIdServiceFactoryTest : public testing::Test,
     BUILDFLAG(IS_ANDROID)
   policy::FakeBrowserDMTokenStorage storage_;
 #else
-  policy::MockCloudPolicyStore store_;
+  policy::MockCloudPolicyStore store_{
+      policy::dm_protocol::GetChromeUserPolicyType()};
 #if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif

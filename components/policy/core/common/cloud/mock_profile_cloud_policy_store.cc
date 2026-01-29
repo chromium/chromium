@@ -9,9 +9,11 @@
 
 namespace policy {
 
-MockProfileCloudPolicyStore::MockProfileCloudPolicyStore()
+MockProfileCloudPolicyStore::MockProfileCloudPolicyStore(
+    const std::string& policy_type)
     : ProfileCloudPolicyStore(base::FilePath(),
                               base::FilePath(),
+                              policy_type,
                               scoped_refptr<base::SequencedTaskRunner>()) {}
 
 MockProfileCloudPolicyStore::~MockProfileCloudPolicyStore() = default;

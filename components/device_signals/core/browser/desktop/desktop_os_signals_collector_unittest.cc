@@ -39,13 +39,15 @@ class DesktopOsSignalsCollectorTest : public testing::Test {
  protected:
   void SetUp() override {
     auto mock_browser_cloud_policy_store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::GetChromeUserPolicyType());
     mock_browser_cloud_policy_store_ = mock_browser_cloud_policy_store.get();
     std::unique_ptr<policy::MockCloudPolicyStore>
         mock_browser_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mock_browser_cloud_policy_extension_install_store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
 #endif
     mock_browser_cloud_policy_extension_install_store_ =
         mock_browser_cloud_policy_extension_install_store.get();

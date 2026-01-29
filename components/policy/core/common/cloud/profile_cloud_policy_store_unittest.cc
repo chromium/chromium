@@ -66,6 +66,7 @@ class ProfileCloudPolicyStoreTest : public testing::Test {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
     store_ = std::make_unique<ProfileCloudPolicyStore>(
         policy_file(), key_file(),
+        dm_protocol::kChromeMachineLevelUserCloudPolicyType,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     external_data_manager_ = std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_->SetPolicyStore(store_.get());
@@ -365,6 +366,7 @@ TEST_F(ProfileCloudPolicyStoreTest, StoreThenLoad) {
   // Now, make sure the policy can be read back in from a second store.
   std::unique_ptr<ProfileCloudPolicyStore> store2(new ProfileCloudPolicyStore(
       policy_file(), key_file(),
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType,
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->AddObserver(&observer_);
   EXPECT_CALL(observer_, OnStoreLoaded(store2.get()));
@@ -390,6 +392,7 @@ TEST_F(ProfileCloudPolicyStoreTest, StoreThenLoadImmediately) {
   // Now, make sure the policy can be read back in from a second store.
   std::unique_ptr<ProfileCloudPolicyStore> store2(new ProfileCloudPolicyStore(
       policy_file(), key_file(),
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType,
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->AddObserver(&observer_);
   EXPECT_CALL(observer_, OnStoreLoaded(store2.get()));
@@ -444,6 +447,7 @@ TEST_F(ProfileCloudPolicyStoreTest, KeyRotation) {
   // will still verify using the existing verification key.
   std::unique_ptr<ProfileCloudPolicyStore> store2(new ProfileCloudPolicyStore(
       policy_file(), key_file(),
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType,
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->AddObserver(&observer_);
   EXPECT_CALL(observer_, OnStoreLoaded(store2.get()));
@@ -470,6 +474,7 @@ TEST_F(ProfileCloudPolicyStoreTest, InvalidCachedVerificationSignature) {
   // the key won't verify.
   std::unique_ptr<ProfileCloudPolicyStore> store2(new ProfileCloudPolicyStore(
       policy_file(), key_file(),
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType,
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->AddObserver(&observer_);
   ExpectError(store2.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);

@@ -10,6 +10,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +72,8 @@ class ProfileAttesterTest
   SignedData signed_data_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  policy::MockCloudPolicyStore mock_profile_cloud_policy_store_;
+  policy::MockCloudPolicyStore mock_profile_cloud_policy_store_{
+      policy::dm_protocol::GetChromeUserPolicyType()};
   std::unique_ptr<ProfileAttester> profile_attester_;
   std::set<DTCPolicyLevel> levels_;
 };

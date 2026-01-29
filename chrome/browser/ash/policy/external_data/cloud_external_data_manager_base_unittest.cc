@@ -19,6 +19,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_external_data_store.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -111,7 +112,8 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ResourceCache> resource_cache_;
-  MockCloudPolicyStore cloud_policy_store_;
+  MockCloudPolicyStore cloud_policy_store_{
+      dm_protocol::GetChromeUserPolicyType()};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

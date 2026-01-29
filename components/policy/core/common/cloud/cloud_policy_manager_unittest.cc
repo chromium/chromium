@@ -91,12 +91,14 @@ ConfigurationPolicyProvider* TestHarness::CreateProvider(
     SchemaRegistry* registry,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   // Create and initialize the store.
-  auto store = std::make_unique<MockCloudPolicyStore>();
+  auto store = std::make_unique<MockCloudPolicyStore>(
+      dm_protocol::GetChromeUserPolicyType());
   store_ = store.get();
   store_->NotifyStoreLoaded();
   std::unique_ptr<MockCloudPolicyStore> extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_install_store = std::make_unique<MockCloudPolicyStore>();
+  extension_install_store = std::make_unique<MockCloudPolicyStore>(
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
   extension_install_store_ = extension_install_store.get();
   extension_install_store_->NotifyStoreLoaded();
 #endif
@@ -187,12 +189,14 @@ class CloudPolicyManagerTest : public testing::Test {
     policy_.payload().mutable_searchsuggestenabled()->set_value(false);
     policy_.Build();
 
-    auto store = std::make_unique<MockCloudPolicyStore>();
+    auto store = std::make_unique<MockCloudPolicyStore>(
+        dm_protocol::GetChromeUserPolicyType());
     store_ = store.get();
     EXPECT_CALL(*store_, Load());
     std::unique_ptr<MockCloudPolicyStore> extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    extension_install_store = std::make_unique<MockCloudPolicyStore>();
+    extension_install_store = std::make_unique<MockCloudPolicyStore>(
+        dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
     extension_install_store_ = extension_install_store.get();
     EXPECT_CALL(*extension_install_store_, Load());
 #endif

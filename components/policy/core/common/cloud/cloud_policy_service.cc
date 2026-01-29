@@ -32,9 +32,7 @@ CloudPolicyService::CloudPolicyService(const std::string& policy_type,
       store_(store),
       refresh_state_(REFRESH_NONE),
       initialization_complete_(false) {
-  if (policy_type_ != dm_protocol::kChromeExtensionInstallUserCloudPolicyType &&
-      policy_type_ !=
-          dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType) {
+  if (!IsExtensionInstallPolicyType(policy_type_)) {
     client_->AddPolicyTypeToFetch(policy_type_, settings_entity_id_);
   }
   client_->AddObserver(this);
@@ -301,6 +299,7 @@ void CloudPolicyService::RefreshCompleted(bool success) {
   // that there are no policies until the next retry.
   if (!success) {
     DVLOG_POLICY(2, POLICY_FETCHING)
+        << PolicyTypeLogTag(policy_type_, settings_entity_id_)
         << "Error while fetching policy. No policies until the next retry.";
     store_->SetFirstPoliciesLoaded(true);
   }

@@ -80,12 +80,14 @@ constexpr char kHostedDomainResponse[] = R"(
     })";
 
 std::unique_ptr<UserCloudPolicyManager> BuildCloudPolicyManager() {
-  auto store = std::make_unique<MockUserCloudPolicyStore>();
+  auto store = std::make_unique<MockUserCloudPolicyStore>(
+      dm_protocol::GetChromeUserPolicyType());
   EXPECT_CALL(*store, Load()).Times(AnyNumber());
 
   std::unique_ptr<MockUserCloudPolicyStore> extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_install_store = std::make_unique<MockUserCloudPolicyStore>();
+  extension_install_store = std::make_unique<MockUserCloudPolicyStore>(
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
   EXPECT_CALL(*extension_install_store, Load()).Times(AnyNumber());
 #endif
 

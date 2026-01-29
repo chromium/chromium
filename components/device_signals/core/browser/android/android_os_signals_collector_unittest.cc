@@ -17,6 +17,7 @@
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -56,7 +57,8 @@ class AndroidOsSignalsCollectorTest : public testing::Test {
  protected:
   void SetUp() override {
     auto mock_browser_cloud_policy_store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType);
     mock_browser_cloud_policy_store_ = mock_browser_cloud_policy_store.get();
     mock_browser_cloud_policy_manager_ =
         std::make_unique<policy::MockCloudPolicyManager>(

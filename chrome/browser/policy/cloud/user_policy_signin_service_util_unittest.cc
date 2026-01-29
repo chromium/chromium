@@ -46,6 +46,7 @@ class UserPolicySigninServiceUtilTest : public ::testing::Test {
     auto store = std::make_unique<MachineLevelUserCloudPolicyStore>(
         DMToken::CreateValidToken(kDMToken), std::string(), base::FilePath(),
         base::FilePath(), base::FilePath(), base::FilePath(),
+        dm_protocol::kChromeMachineLevelUserCloudPolicyType,
         scoped_refptr<base::SequencedTaskRunner>());
     store->set_policy_data_for_testing(std::move(policy_data));
 

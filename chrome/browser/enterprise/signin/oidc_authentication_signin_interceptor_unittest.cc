@@ -474,14 +474,16 @@ class OidcAuthenticationSigninInterceptorTest
   // Build a test version CloudPolicyManager for testing profiles.
   std::unique_ptr<UserCloudPolicyManager> BuildUserCloudPolicyManager() {
     auto mock_user_cloud_policy_store =
-        std::make_unique<MockUserCloudPolicyStore>();
+        std::make_unique<MockUserCloudPolicyStore>(
+            dm_protocol::GetChromeUserPolicyType());
     EXPECT_CALL(*mock_user_cloud_policy_store, Load())
         .Times(testing::AnyNumber());
     std::unique_ptr<MockUserCloudPolicyStore>
         mock_user_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mock_user_cloud_policy_extension_install_store =
-        std::make_unique<MockUserCloudPolicyStore>();
+        std::make_unique<MockUserCloudPolicyStore>(
+            dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
     EXPECT_CALL(*mock_user_cloud_policy_extension_install_store, Load())
         .Times(testing::AnyNumber());
 #endif
@@ -500,14 +502,16 @@ class OidcAuthenticationSigninInterceptorTest
 
   std::unique_ptr<ProfileCloudPolicyManager> BuildProfileCloudPolicyManager() {
     auto mock_profile_cloud_policy_store =
-        std::make_unique<MockProfileCloudPolicyStore>();
+        std::make_unique<MockProfileCloudPolicyStore>(
+            dm_protocol::kChromeMachineLevelUserCloudPolicyType);
     EXPECT_CALL(*mock_profile_cloud_policy_store, Load())
         .Times(testing::AnyNumber());
     std::unique_ptr<MockProfileCloudPolicyStore>
         mock_profile_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mock_profile_cloud_policy_extension_install_store =
-        std::make_unique<MockProfileCloudPolicyStore>();
+        std::make_unique<MockProfileCloudPolicyStore>(
+            dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
     EXPECT_CALL(*mock_profile_cloud_policy_extension_install_store, Load())
         .Times(testing::AnyNumber());
 #endif

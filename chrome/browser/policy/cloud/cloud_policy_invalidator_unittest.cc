@@ -147,8 +147,10 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   const base::Time start_time{task_environment_.GetMockClock()->Now()};
 
   // Objects the invalidator depends on.
-  testing::NiceMock<MockCloudPolicyStore> store_;
-  testing::NiceMock<MockCloudPolicyStore> extension_install_store_;
+  testing::NiceMock<MockCloudPolicyStore> store_{
+      dm_protocol::GetChromeUserPolicyType()};
+  testing::NiceMock<MockCloudPolicyStore> extension_install_store_{
+      dm_protocol::kChromeMachineLevelExtensionCloudPolicyType};
   CloudPolicyCore core_{dm_protocol::GetChromeUserPolicyType(),
                         std::string(),
                         &store_,

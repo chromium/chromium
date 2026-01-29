@@ -55,9 +55,11 @@ class ProfileCloudPolicyManagerTest : public testing::Test {
   }
 
   void CreateManager() {
-    store_ = new MockProfileCloudPolicyStore();
+    store_ = new MockProfileCloudPolicyStore(
+        dm_protocol::kChromeMachineLevelUserCloudPolicyType);
     EXPECT_CALL(*store_, Load());
-    extension_install_store_ = new MockProfileCloudPolicyStore();
+    extension_install_store_ = new MockProfileCloudPolicyStore(
+        dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
     EXPECT_CALL(*extension_install_store_, Load());
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();
     manager_ = std::make_unique<ProfileCloudPolicyManager>(

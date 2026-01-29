@@ -75,6 +75,22 @@ POLICY_EXPORT bool IsMachineLevelUserCloudPolicyType(const std::string& type);
 // Chrome.
 POLICY_EXPORT bool IsExtensionInstallPolicySupportedOnThisVersion();
 
+// Returns true if the given policy type is an extension install policy type.
+POLICY_EXPORT bool IsExtensionInstallPolicyType(const std::string& policy_type);
+
+// Returns true if the given policy type is a Chrome policy type.
+POLICY_EXPORT bool IsChromePolicyType(const std::string& policy_type);
+
+// Returns true if the given policy type is a machine-level policy type.
+POLICY_EXPORT bool IsMachineLevelPolicyType(const std::string& policy_type);
+
+// Returns true if the given policy type is a user-level policy type.
+POLICY_EXPORT bool IsUserLevelPolicyType(const std::string& policy_type);
+
+// Returns a log tag for the given policy type and settings entity id. This is
+// used for logging purposes only.
+POLICY_EXPORT std::string PolicyTypeLogTag(std::string_view policy_type,
+                                           std::string_view settings_entity_id);
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_UTIL_H_

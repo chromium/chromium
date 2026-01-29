@@ -141,7 +141,8 @@ class ProfilePolicyConnectorTest : public testing::Test {
   ~ProfilePolicyConnectorTest() override = default;
 
   void SetUp() override {
-    auto cloud_policy_store = std::make_unique<MockCloudPolicyStore>();
+    auto cloud_policy_store = std::make_unique<MockCloudPolicyStore>(
+        dm_protocol::GetChromeUserPolicyType());
     cloud_policy_store_ = cloud_policy_store.get();
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();
     cloud_policy_manager_ = std::make_unique<CloudPolicyManager>(

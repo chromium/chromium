@@ -69,7 +69,7 @@ class UserCloudPolicyStoreTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
     store_ = std::make_unique<UserCloudPolicyStore>(
-        policy_file(), key_file(),
+        policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     external_data_manager_ = std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_->SetPolicyStore(store_.get());
@@ -387,7 +387,7 @@ TEST_F(UserCloudPolicyStoreTest, StoreThenLoad) {
 
   // Now, make sure the policy can be read back in from a second store.
   std::unique_ptr<UserCloudPolicyStore> store2(new UserCloudPolicyStore(
-      policy_file(), key_file(),
+      policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
   store2->AddObserver(&observer_);
@@ -415,7 +415,7 @@ TEST_F(UserCloudPolicyStoreTest, StoreThenLoadImmediately) {
 
   // Now, make sure the policy can be read back in from a second store.
   std::unique_ptr<UserCloudPolicyStore> store2(new UserCloudPolicyStore(
-      policy_file(), key_file(),
+      policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
   store2->AddObserver(&observer_);
@@ -464,7 +464,7 @@ TEST_F(UserCloudPolicyStoreTest, LoadValidationError) {
   // Sign out, and sign back in as a different user, and try to load the profile
   // data (should fail due to mismatched account id).
   std::unique_ptr<UserCloudPolicyStore> store2(new UserCloudPolicyStore(
-      policy_file(), key_file(),
+      policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(other_account_id);
   store2->AddObserver(&observer_);
@@ -479,7 +479,7 @@ TEST_F(UserCloudPolicyStoreTest, LoadValidationError) {
   // Sign out - we should be able to load the policy (don't check users
   // when signed out).
   std::unique_ptr<UserCloudPolicyStore> store3(new UserCloudPolicyStore(
-      policy_file(), key_file(),
+      policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store3->AddObserver(&observer_);
   base::test::TestFuture<void> future;
@@ -493,7 +493,7 @@ TEST_F(UserCloudPolicyStoreTest, LoadValidationError) {
 
   // Now start a signin as a different user - this should fail validation.
   std::unique_ptr<UserCloudPolicyStore> store4(new UserCloudPolicyStore(
-      policy_file(), key_file(),
+      policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store4->SetSigninAccountId(other_account_id);
   store4->AddObserver(&observer_);
@@ -523,7 +523,7 @@ TEST_F(UserCloudPolicyStoreTest, KeyRotation) {
   // Now load this in a new store - this should trigger key rotation. The keys
   // will still verify using the existing verification key.
   std::unique_ptr<UserCloudPolicyStore> store2(new UserCloudPolicyStore(
-      policy_file(), key_file(),
+      policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
   store2->AddObserver(&observer_);
@@ -552,7 +552,7 @@ TEST_F(UserCloudPolicyStoreTest, InvalidCachedVerificationSignature) {
   // Now load this in a new store - this should cause a validation error because
   // the key won't verify.
   std::unique_ptr<UserCloudPolicyStore> store2(new UserCloudPolicyStore(
-      policy_file(), key_file(),
+      policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
   store2->AddObserver(&observer_);

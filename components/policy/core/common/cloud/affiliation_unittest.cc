@@ -111,8 +111,10 @@ TEST(CloudManagementAffiliationTest, UserAffiliated) {
 TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_User) {
   base::test::TaskEnvironment task_environment;
 
-  policy::MockUserCloudPolicyStore store;
-  policy::MockUserCloudPolicyStore extension_install_store;
+  policy::MockUserCloudPolicyStore store{
+      dm_protocol::GetChromeUserPolicyType()};
+  policy::MockUserCloudPolicyStore extension_install_store{
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   policy::CloudPolicyCore core(
       policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
       &extension_install_store,
@@ -137,8 +139,10 @@ TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_User) {
 TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_Device) {
   base::test::TaskEnvironment task_environment;
 
-  policy::MockUserCloudPolicyStore store;
-  policy::MockUserCloudPolicyStore extension_install_store;
+  policy::MockUserCloudPolicyStore store{
+      dm_protocol::GetChromeUserPolicyType()};
+  policy::MockUserCloudPolicyStore extension_install_store{
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   policy::CloudPolicyCore core(
       policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
       &extension_install_store,
@@ -163,8 +167,10 @@ TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_Device) {
 TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_NoClient) {
   base::test::TaskEnvironment task_environment;
 
-  policy::MockUserCloudPolicyStore store;
-  policy::MockUserCloudPolicyStore extension_install_store;
+  policy::MockUserCloudPolicyStore store{
+      dm_protocol::GetChromeUserPolicyType()};
+  policy::MockUserCloudPolicyStore extension_install_store{
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   policy::CloudPolicyCore core(
       policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
       &extension_install_store,
@@ -186,8 +192,10 @@ TEST(CloudManagementAffiliationTest,
      GetUserAffiliationIdsFromCore_NoPolicyData) {
   base::test::TaskEnvironment task_environment;
 
-  policy::MockUserCloudPolicyStore store;
-  policy::MockUserCloudPolicyStore extension_install_store;
+  policy::MockUserCloudPolicyStore store{
+      dm_protocol::GetChromeUserPolicyType()};
+  policy::MockUserCloudPolicyStore extension_install_store{
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   policy::CloudPolicyCore core(
       policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
       &extension_install_store,

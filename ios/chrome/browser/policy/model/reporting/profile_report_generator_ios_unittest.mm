@@ -22,6 +22,7 @@
 #import "components/enterprise/browser/reporting/report_generation_config.h"
 #import "components/enterprise/browser/reporting/report_type.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/cloud/cloud_policy_service.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
@@ -207,7 +208,9 @@ class ProfileReportGeneratorIOSTest
         std::make_unique<policy::MachineLevelUserCloudPolicyStore>(
             policy::DMToken::CreateValidToken(kFakeBrowserDmToken),
             std::string(), base::FilePath(), base::FilePath(), base::FilePath(),
-            base::FilePath(), scoped_refptr<base::SequencedTaskRunner>());
+            base::FilePath(),
+            policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+            scoped_refptr<base::SequencedTaskRunner>());
     machine_store->set_policy_data_for_testing(std::move(policy_data));
 
     machine_policy_manager_ =
@@ -235,9 +238,12 @@ class ProfileReportGeneratorIOSTest
   void InitProfileAffiliation() {
     auto policy_data = std::make_unique<em::PolicyData>();
     policy_data->add_user_affiliation_ids(kFakeAffiliationId);
+    policy_data->set_policy_type(
+        policy::dm_protocol::GetChromeUserPolicyType());
     policy_data->set_state(em::PolicyData::ACTIVE);
 
-    policy_store_ = std::make_unique<policy::MockCloudPolicyStore>();
+    policy_store_ = std::make_unique<policy::MockCloudPolicyStore>(
+        policy::dm_protocol::GetChromeUserPolicyType());
     policy_store_->SetPolicy(std::move(policy_data));
   }
 

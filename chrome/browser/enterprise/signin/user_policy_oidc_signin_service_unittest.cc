@@ -239,7 +239,8 @@ class UserPolicyOidcSigninServiceTestBase
       bool is_store_initialized,
       CloudPolicyStore::Status store_status) {
     auto mock_user_cloud_policy_store =
-        std::make_unique<MockUserCloudPolicyStore>();
+        std::make_unique<MockUserCloudPolicyStore>(
+            dm_protocol::GetChromeUserPolicyType());
     mock_user_cloud_policy_store_ = mock_user_cloud_policy_store.get();
 
     ConfigureMockStore(mock_user_cloud_policy_store_.get(),
@@ -254,7 +255,8 @@ class UserPolicyOidcSigninServiceTestBase
         mock_user_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mock_user_cloud_policy_extension_install_store =
-        std::make_unique<MockUserCloudPolicyStore>();
+        std::make_unique<MockUserCloudPolicyStore>(
+            dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
     EXPECT_CALL(*mock_user_cloud_policy_extension_install_store, Load())
         .Times(testing::AnyNumber());
 #endif
@@ -276,7 +278,8 @@ class UserPolicyOidcSigninServiceTestBase
       bool is_store_initialized,
       CloudPolicyStore::Status store_status) {
     auto mock_profile_cloud_policy_store =
-        std::make_unique<MockProfileCloudPolicyStore>();
+        std::make_unique<MockProfileCloudPolicyStore>(
+            dm_protocol::kChromeMachineLevelUserCloudPolicyType);
     mock_profile_cloud_policy_store_ = mock_profile_cloud_policy_store.get();
 
     ConfigureMockStore(mock_profile_cloud_policy_store_.get(),
@@ -286,7 +289,8 @@ class UserPolicyOidcSigninServiceTestBase
         mock_profile_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mock_profile_cloud_policy_extension_install_store =
-        std::make_unique<MockProfileCloudPolicyStore>();
+        std::make_unique<MockProfileCloudPolicyStore>(
+            dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
     EXPECT_CALL(*mock_profile_cloud_policy_extension_install_store, Load())
         .Times(testing::AnyNumber());
 #endif

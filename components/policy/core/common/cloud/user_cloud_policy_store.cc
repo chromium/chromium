@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -106,13 +107,19 @@ void StorePolicyToDiskOnBackgroundThread(
 DesktopCloudPolicyStore::DesktopCloudPolicyStore(
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
+    const std::string& policy_type,
     PolicyLoadFilter policy_load_filter,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     PolicyScope policy_scope)
-    : UserCloudPolicyStoreBase(background_task_runner, policy_scope),
+    : UserCloudPolicyStoreBase(background_task_runner,
+                               policy_scope,
+                               policy_type),
       policy_path_(policy_path),
       key_path_(key_path),
-      policy_load_filter_(std::move(policy_load_filter)) {}
+      policy_load_filter_(std::move(policy_load_filter)) {
+  DCHECK(IsChromePolicyType(policy_type) ||
+         IsExtensionInstallPolicyType(policy_type));
+}
 
 DesktopCloudPolicyStore::~DesktopCloudPolicyStore() = default;
 
@@ -240,13 +247,25 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
         DLOG_POLICY(WARNING, POLICY_PROCESSING)
             << "Verification key rotation detected";
       }
-
-      Validate(std::move(cloud_policy), std::move(key), validate_in_background,
-               base::BindRepeating(
-                   &DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation,
-                   weak_factory_.GetWeakPtr(), doing_key_rotation,
-                   result.key.has_signing_key() ? result.key.signing_key()
-                                                : std::string()));
+      DVLOG_POLICY(1, POLICY_PROCESSING)
+          << "Loading policy from disk for policy type: " << policy_type();
+      if (IsChromePolicyType(policy_type())) {
+        Validate(
+            std::move(cloud_policy), std::move(key), validate_in_background,
+            base::BindRepeating(
+                &DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation,
+                weak_factory_.GetWeakPtr(), doing_key_rotation,
+                result.key.has_signing_key() ? result.key.signing_key()
+                                             : std::string()));
+      } else if (IsExtensionInstallPolicyType(policy_type())) {
+        ValidateExtensionInstallPolicy(
+            std::move(cloud_policy), std::move(key), validate_in_background,
+            base::BindRepeating(&DesktopCloudPolicyStore::
+                                    OnExtensionInstallPolicyToStoreValidated,
+                                weak_factory_.GetWeakPtr()));
+      } else {
+        NOTREACHED();
+      }
       break;
     }
     default:
@@ -362,20 +381,19 @@ void DesktopCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
   // CloudPolicyStore::Store method.
   em::PolicyData policy_data;
   policy_data.ParseFromString(policy.policy_data());
-  if (policy_data.policy_type() ==
-          dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType ||
-      policy_data.policy_type() ==
-          dm_protocol::kChromeExtensionInstallUserCloudPolicyType) {
+  if (IsChromePolicyType(policy_type())) {
+    Validate(
+        std::move(policy_copy), std::unique_ptr<em::PolicySigningKey>(), true,
+        base::BindRepeating(&DesktopCloudPolicyStore::OnPolicyToStoreValidated,
+                            weak_factory_.GetWeakPtr()));
+  } else if (IsExtensionInstallPolicyType(policy_type())) {
     ValidateExtensionInstallPolicy(
         std::move(policy_copy), std::unique_ptr<em::PolicySigningKey>(), true,
         base::BindRepeating(
             &DesktopCloudPolicyStore::OnExtensionInstallPolicyToStoreValidated,
             weak_factory_.GetWeakPtr()));
   } else {
-    Validate(
-        std::move(policy_copy), std::unique_ptr<em::PolicySigningKey>(), true,
-        base::BindRepeating(&DesktopCloudPolicyStore::OnPolicyToStoreValidated,
-                            weak_factory_.GetWeakPtr()));
+    NOTREACHED();
   }
 }
 
@@ -428,12 +446,16 @@ void DesktopCloudPolicyStore::OnPolicyToStoreValidatedImpl(
 UserCloudPolicyStore::UserCloudPolicyStore(
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
+    const std::string& policy_type,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : DesktopCloudPolicyStore(policy_path,
                               key_path,
+                              policy_type,
                               PolicyLoadFilter(),
                               background_task_runner,
-                              PolicyScope::POLICY_SCOPE_USER) {}
+                              PolicyScope::POLICY_SCOPE_USER) {
+  CHECK(IsUserLevelPolicyType(policy_type));
+}
 
 UserCloudPolicyStore::~UserCloudPolicyStore() = default;
 
@@ -445,8 +467,9 @@ std::unique_ptr<UserCloudPolicyStore> UserCloudPolicyStore::Create(
       profile_path.Append(kPolicyDir).Append(kPolicyCacheFile);
   base::FilePath key_path =
       profile_path.Append(kPolicyDir).Append(kKeyCacheFile);
-  return base::WrapUnique(
-      new UserCloudPolicyStore(policy_path, key_path, background_task_runner));
+  return base::WrapUnique(new UserCloudPolicyStore(
+      policy_path, key_path, dm_protocol::GetChromeUserPolicyType(),
+      background_task_runner));
 }
 
 void UserCloudPolicyStore::SetSigninAccountId(const AccountId& account_id) {
@@ -462,8 +485,10 @@ UserCloudPolicyStore::CreateForExtensionInstall(
       profile_path.Append(kPolicyDir).Append(kExtensionInstallPolicyCacheFile);
   base::FilePath key_path =
       profile_path.Append(kPolicyDir).Append(kKeyCacheFile);
-  return base::WrapUnique(
-      new UserCloudPolicyStore(policy_path, key_path, background_task_runner));
+  return base::WrapUnique(new UserCloudPolicyStore(
+      policy_path, key_path,
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+      background_task_runner));
 }
 
 void UserCloudPolicyStore::Validate(

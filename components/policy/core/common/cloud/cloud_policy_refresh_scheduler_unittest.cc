@@ -215,7 +215,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockCloudPolicyClient client_;
-  MockCloudPolicyStore store_;
+  MockCloudPolicyStore store_{dm_protocol::GetChromeUserPolicyType()};
   em::PolicyData policy_data_;
   std::unique_ptr<MockCloudPolicyService> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
@@ -594,7 +594,7 @@ TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, OnConnectionChanged) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest,
        SignatureValidationFailedAndRetry) {
-  MockUserCloudPolicyStore store;
+  MockUserCloudPolicyStore store{dm_protocol::GetChromeUserPolicyType()};
   refresh_scheduler_ = std::make_unique<CloudPolicyRefreshScheduler>(
       &client_, &store, service_.get(), task_runner_,
       network::TestNetworkConnectionTracker::CreateGetter());

@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_device_trust_key_manager.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,7 +92,8 @@ class DeviceAttesterTest : public testing::Test {
   std::string public_key_;
   testing::StrictMock<test::MockDeviceTrustKeyManager> mock_key_manager_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
-  policy::MockCloudPolicyStore mock_browser_cloud_policy_store_;
+  policy::MockCloudPolicyStore mock_browser_cloud_policy_store_{
+      policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType};
   DeviceAttester device_attester_;
   base::test::TestFuture<void> future_;
   KeyInfo key_info_;

@@ -56,10 +56,12 @@ class UserCloudPolicyManagerTest : public testing::Test {
   }
 
   void CreateManager() {
-    store_ = new MockUserCloudPolicyStore();
+    store_ =
+        new MockUserCloudPolicyStore(dm_protocol::GetChromeUserPolicyType());
     EXPECT_CALL(*store_, Load());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    extension_install_store_ = new MockUserCloudPolicyStore();
+    extension_install_store_ = new MockUserCloudPolicyStore(
+        dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
     EXPECT_CALL(*extension_install_store_, Load());
 #endif
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();

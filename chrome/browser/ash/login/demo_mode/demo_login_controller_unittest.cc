@@ -36,6 +36,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
@@ -179,9 +180,11 @@ class DemoLoginControllerTest : public testing::Test {
   void SetUpPolicyClient(std::string dm_token = "fake-dm-token",
                          std::string client_id = "fake-client-id") {
     std::unique_ptr<policy::MockCloudPolicyStore> store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::GetChromeUserPolicyType());
     std::unique_ptr<policy::MockCloudPolicyStore> extension_install_store =
-        std::make_unique<policy::MockCloudPolicyStore>();
+        std::make_unique<policy::MockCloudPolicyStore>(
+            policy::dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
     std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client =
         std::make_unique<policy::MockCloudPolicyClient>();
     policy::CloudPolicyClient* client_ptr = cloud_policy_client.get();

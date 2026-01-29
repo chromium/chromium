@@ -26,6 +26,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
@@ -68,8 +69,10 @@ class MockUserCloudPolicyManagerAsh : public UserCloudPolicyManagerAsh {
       const scoped_refptr<base::SequencedTaskRunner>& task_runner)
       : UserCloudPolicyManagerAsh(
             profile,
-            std::make_unique<MockCloudPolicyStore>(),
-            std::make_unique<MockCloudPolicyStore>(),
+            std::make_unique<MockCloudPolicyStore>(
+                dm_protocol::GetChromeUserPolicyType()),
+            std::make_unique<MockCloudPolicyStore>(
+                dm_protocol::kChromeExtensionInstallUserCloudPolicyType),
             std::make_unique<MockCloudExternalDataManager>(),
             base::FilePath() /* component_policy_cache_path */,
             UserCloudPolicyManagerAsh::PolicyEnforcement::kPolicyRequired,
@@ -108,7 +111,8 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
             TestingBrowserProcess::GetGlobal()->GetTestingLocalState())),
         profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())),
-        store_(std::make_unique<MockCloudPolicyStore>()) {}
+        store_(std::make_unique<MockCloudPolicyStore>(
+            dm_protocol::GetChromeUserPolicyType())) {}
 
   ~UserCloudPolicyTokenForwarderTest() override = default;
 

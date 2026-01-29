@@ -90,12 +90,14 @@ class ExtensionInstallPolicyServiceTest : public testing::Test {
   // Build a test version CloudPolicyManager for testing profiles.
   std::unique_ptr<UserCloudPolicyManager> BuildUserCloudPolicyManager() {
     auto mock_user_cloud_policy_store =
-        std::make_unique<MockUserCloudPolicyStore>();
+        std::make_unique<MockUserCloudPolicyStore>(
+            dm_protocol::GetChromeUserPolicyType());
     std::unique_ptr<MockUserCloudPolicyStore>
         mock_user_cloud_policy_extension_install_store;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mock_user_cloud_policy_extension_install_store =
-        std::make_unique<MockUserCloudPolicyStore>();
+        std::make_unique<MockUserCloudPolicyStore>(
+            dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
 #endif
 
     return std::make_unique<UserCloudPolicyManager>(

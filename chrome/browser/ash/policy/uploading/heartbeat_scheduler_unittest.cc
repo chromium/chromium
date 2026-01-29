@@ -19,6 +19,7 @@
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "content/public/test/browser_task_environment.h"
@@ -176,7 +177,8 @@ class HeartbeatSchedulerTest : public testing::Test {
   MockGCMDriver gcm_driver_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   testing::NiceMock<MockCloudPolicyClient> cloud_policy_client_;
-  testing::NiceMock<MockCloudPolicyStore> cloud_policy_store_;
+  testing::NiceMock<MockCloudPolicyStore> cloud_policy_store_{
+      dm_protocol::GetChromeUserPolicyType()};
 
   // TaskRunner used to run individual tests.
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;

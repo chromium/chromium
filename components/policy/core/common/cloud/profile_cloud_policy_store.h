@@ -33,6 +33,7 @@ class POLICY_EXPORT ProfileCloudPolicyStore : public DesktopCloudPolicyStore {
   ProfileCloudPolicyStore(
       const base::FilePath& policy_path,
       const base::FilePath& key_path,
+      const std::string& policy_type,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       bool is_dasherless = false);
 
@@ -54,6 +55,12 @@ class POLICY_EXPORT ProfileCloudPolicyStore : public DesktopCloudPolicyStore {
 
   // override UserCloudPolicyStoreBase
   std::unique_ptr<UserCloudPolicyValidator> CreateValidator(
+      std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
+      CloudPolicyValidatorBase::ValidateTimestampOption option) override;
+
+  // override UserCloudPolicyStoreBase
+  std::unique_ptr<ExtensionInstallCloudPolicyValidator>
+  CreateExtensionInstallValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       CloudPolicyValidatorBase::ValidateTimestampOption option) override;
 

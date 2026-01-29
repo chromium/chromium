@@ -76,8 +76,10 @@ class FmRegistrationTokenUploaderTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockInvalidationListener> mock_invalidation_listener_;
-  testing::NiceMock<MockCloudPolicyStore> mock_store_;
-  testing::NiceMock<MockCloudPolicyStore> mock_extension_install_store_;
+  testing::NiceMock<MockCloudPolicyStore> mock_store_{
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType};
+  testing::NiceMock<MockCloudPolicyStore> mock_extension_install_store_{
+      dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType};
   CloudPolicyCore core_;
 };
 

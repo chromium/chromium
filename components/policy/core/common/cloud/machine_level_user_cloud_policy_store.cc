@@ -44,10 +44,12 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
     const base::FilePath& external_policy_info_path,
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
+    const std::string& policy_type,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : DesktopCloudPolicyStore(
           policy_path,
           key_path,
+          policy_type,
           base::BindRepeating(
               &MachineLevelUserCloudPolicyStore::MaybeUseExternalCachedPolicies,
               external_policy_path,
@@ -55,7 +57,9 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
           background_task_runner,
           PolicyScope::POLICY_SCOPE_MACHINE),
       machine_dm_token_(machine_dm_token),
-      machine_client_id_(machine_client_id) {}
+      machine_client_id_(machine_client_id) {
+  CHECK(IsMachineLevelPolicyType(policy_type));
+}
 
 MachineLevelUserCloudPolicyStore::~MachineLevelUserCloudPolicyStore() = default;
 
@@ -82,6 +86,7 @@ MachineLevelUserCloudPolicyStore::Create(
   return std::make_unique<MachineLevelUserCloudPolicyStore>(
       machine_dm_token, machine_client_id, external_policy_path,
       external_policy_info_path, policy_cache_file, key_cache_file,
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType,
       background_task_runner);
 }
 
@@ -99,7 +104,9 @@ MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
       machine_dm_token, machine_client_id,
       /*external_policy_path=*/base::FilePath(),
       /*external_policy_info_path=*/base::FilePath(), policy_cache_file,
-      key_cache_file, background_task_runner);
+      key_cache_file,
+      dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
+      background_task_runner);
 }
 
 bool IsResultKeyEqual(const PolicyLoadResult& default_result,
@@ -224,21 +231,21 @@ std::unique_ptr<UserCloudPolicyValidator>
 MachineLevelUserCloudPolicyStore::CreateValidator(
     std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
     CloudPolicyValidatorBase::ValidateTimestampOption option) {
-  auto validator = std::make_unique<UserCloudPolicyValidator>(
-      std::move(policy_fetch_response), background_task_runner());
-  validator->ValidatePolicyType(
-      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
-  validator->ValidateDMToken(machine_dm_token_.value(),
-                             CloudPolicyValidatorBase::DM_TOKEN_REQUIRED);
-  validator->ValidateDeviceId(machine_client_id_,
-                              CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  if (has_policy()) {
-    validator->ValidateTimestamp(
-        base::Time::FromMillisecondsSinceUnixEpoch(policy()->timestamp()),
-        option);
-  }
-  validator->ValidatePayload();
-  return validator;
+  // This function is only used to validate Chrome settings policies.
+  CHECK_EQ(policy_type(), dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  return CreateValidatorImpl<em::CloudPolicySettings>(
+      std::move(policy_fetch_response), option);
+}
+
+std::unique_ptr<ExtensionInstallCloudPolicyValidator>
+MachineLevelUserCloudPolicyStore::CreateExtensionInstallValidator(
+    std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
+    CloudPolicyValidatorBase::ValidateTimestampOption option) {
+  // This function is only used to validate Chrome extension install policies.
+  CHECK_EQ(policy_type(),
+           dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
+  return CreateValidatorImpl<em::ExtensionInstallPolicies>(
+      std::move(policy_fetch_response), option);
 }
 
 void MachineLevelUserCloudPolicyStore::SetupRegistration(
@@ -298,6 +305,27 @@ void MachineLevelUserCloudPolicyStore::ValidateImpl(
     validator->RunValidation();
     std::move(callback).Run(validator.get());
   }
+}
+
+template <typename PayloadProto>
+std::unique_ptr<CloudPolicyValidator<PayloadProto>>
+MachineLevelUserCloudPolicyStore::CreateValidatorImpl(
+    std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
+    CloudPolicyValidatorBase::ValidateTimestampOption timestamp_option) {
+  auto validator = std::make_unique<CloudPolicyValidator<PayloadProto>>(
+      std::move(policy_fetch_response), background_task_runner());
+  validator->ValidatePolicyType(policy_type());
+  validator->ValidateDMToken(machine_dm_token_.value(),
+                             CloudPolicyValidatorBase::DM_TOKEN_REQUIRED);
+  validator->ValidateDeviceId(machine_client_id_,
+                              CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
+  if (has_policy()) {
+    validator->ValidateTimestamp(
+        base::Time::FromMillisecondsSinceUnixEpoch(policy()->timestamp()),
+        timestamp_option);
+  }
+  validator->ValidatePayload();
+  return validator;
 }
 
 }  // namespace policy

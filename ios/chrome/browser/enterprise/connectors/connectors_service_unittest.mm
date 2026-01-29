@@ -14,6 +14,7 @@
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_test_utils.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/cloud/cloud_policy_util.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
@@ -55,7 +56,8 @@ class ConnectorsServiceTest : public PlatformTest {
     enterprise_management::PolicyData profile_policy_data;
     profile_policy_data.set_request_token(kTestProfileDmToken);
 
-    auto store = std::make_unique<policy::MockUserCloudPolicyStore>();
+    auto store = std::make_unique<policy::MockUserCloudPolicyStore>(
+        policy::dm_protocol::GetChromeUserPolicyType());
     store->set_policy_data_for_testing(
         std::make_unique<enterprise_management::PolicyData>(
             std::move(profile_policy_data)));
@@ -87,7 +89,9 @@ class ConnectorsServiceTest : public PlatformTest {
         std::make_unique<policy::MachineLevelUserCloudPolicyStore>(
             policy::DMToken::CreateValidToken(kTestBrowserDmToken),
             std::string(), base::FilePath(), base::FilePath(), base::FilePath(),
-            base::FilePath(), scoped_refptr<base::SequencedTaskRunner>());
+            base::FilePath(),
+            policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+            scoped_refptr<base::SequencedTaskRunner>());
     machine_store->set_policy_data_for_testing(std::move(policy_data));
 
     manager_ = std::make_unique<policy::MachineLevelUserCloudPolicyManager>(

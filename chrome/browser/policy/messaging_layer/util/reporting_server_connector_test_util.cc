@@ -71,10 +71,11 @@ class FakeDelegate : public EncryptedReportingClient::Delegate {
 };
 
 ReportingServerConnector::TestEnvironment::TestEnvironment()
-    : store_(std::make_unique<::policy::MockCloudPolicyStore>()),
+    : store_(std::make_unique<::policy::MockCloudPolicyStore>(
+          ::policy::dm_protocol::kChromeDevicePolicyType)),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      extension_install_store_(
-          std::make_unique<::policy::MockCloudPolicyStore>()),
+      extension_install_store_(std::make_unique<::policy::MockCloudPolicyStore>(
+          ::policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType)),
 #endif
       core_(std::make_unique<::policy::CloudPolicyCore>(
           ::policy::dm_protocol::kChromeDevicePolicyType,

@@ -249,7 +249,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   std::unique_ptr<ResourceCache> owned_cache_;
   raw_ptr<ResourceCache, AcrossTasksDanglingUntriaged> cache_;
   raw_ptr<MockCloudPolicyClient, DanglingUntriaged> client_;
-  MockCloudPolicyStore store_;
+  MockCloudPolicyStore store_{dm_protocol::GetChromeUserPolicyType()};
   CloudPolicyCore core_;
   SchemaRegistry registry_;
   std::unique_ptr<ComponentCloudPolicyService> service_;

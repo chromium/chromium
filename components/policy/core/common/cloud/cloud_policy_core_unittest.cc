@@ -91,8 +91,9 @@ class CloudPolicyCoreTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   TestingPrefServiceSimple prefs_;
-  MockCloudPolicyStore store_;
-  MockCloudPolicyStore extension_install_store_;
+  MockCloudPolicyStore store_{dm_protocol::GetChromeUserPolicyType()};
+  MockCloudPolicyStore extension_install_store_{
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType};
   std::unique_ptr<CloudPolicyCore> core_;
 
   int core_connected_callback_count_ = 0;

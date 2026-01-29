@@ -8,7 +8,8 @@
 
 namespace policy {
 
-MockCloudPolicyStore::MockCloudPolicyStore() = default;
+MockCloudPolicyStore::MockCloudPolicyStore(const std::string& policy_type)
+    : CloudPolicyStore(policy_type) {}
 
 MockCloudPolicyStore::~MockCloudPolicyStore() = default;
 

@@ -9,9 +9,11 @@
 
 namespace policy {
 
-MockUserCloudPolicyStore::MockUserCloudPolicyStore()
+MockUserCloudPolicyStore::MockUserCloudPolicyStore(
+    const std::string& policy_type)
     : UserCloudPolicyStore(base::FilePath(),
                            base::FilePath(),
+                           policy_type,
                            scoped_refptr<base::SequencedTaskRunner>()) {}
 
 MockUserCloudPolicyStore::~MockUserCloudPolicyStore() = default;

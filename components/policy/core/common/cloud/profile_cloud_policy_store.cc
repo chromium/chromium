@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -36,14 +37,19 @@ const base::FilePath::CharType kExtensionInstallPolicyCacheFile[] =
 ProfileCloudPolicyStore::ProfileCloudPolicyStore(
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
+    const std::string& policy_type,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     bool is_dasherless)
     : DesktopCloudPolicyStore(policy_path,
                               key_path,
+                              policy_type,
                               PolicyLoadFilter(),
                               background_task_runner,
                               PolicyScope::POLICY_SCOPE_USER),
-      is_dasherless_(is_dasherless) {}
+      is_dasherless_(is_dasherless) {
+  CHECK(is_dasherless_ ? IsUserLevelPolicyType(policy_type)
+                       : IsMachineLevelPolicyType(policy_type));
+}
 
 ProfileCloudPolicyStore::~ProfileCloudPolicyStore() = default;
 
@@ -56,7 +62,8 @@ std::unique_ptr<ProfileCloudPolicyStore> ProfileCloudPolicyStore::Create(
   base::FilePath policy_cache_file = policy_dir.Append(kPolicyCache);
   base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
   return std::make_unique<ProfileCloudPolicyStore>(
-      policy_cache_file, key_cache_file, background_task_runner, is_dasherless);
+      policy_cache_file, key_cache_file, dm_protocol::GetChromeUserPolicyType(),
+      background_task_runner, is_dasherless);
 }
 
 // static
@@ -70,7 +77,9 @@ ProfileCloudPolicyStore::CreateForExtensionInstall(
       policy_dir.Append(kExtensionInstallPolicyCacheFile);
   base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
   return std::make_unique<ProfileCloudPolicyStore>(
-      policy_cache_file, key_cache_file, background_task_runner, is_dasherless);
+      policy_cache_file, key_cache_file,
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+      background_task_runner, is_dasherless);
 }
 
 std::unique_ptr<UserCloudPolicyValidator>
@@ -82,9 +91,27 @@ ProfileCloudPolicyStore::CreateValidator(
   // TODO (crbug/1421330): Once the real policy type is available, replace this
   // validation.
 
-  validator->ValidatePolicyType(
-      is_dasherless_ ? dm_protocol::GetChromeUserPolicyType()
-                     : dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  validator->ValidatePolicyType(policy_type());
+  validator->ValidateAgainstCurrentPolicy(
+      policy(), option, CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,
+      CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
+  validator->ValidatePayload();
+  if (has_policy()) {
+    validator->ValidateTimestamp(
+        base::Time::FromMillisecondsSinceUnixEpoch(policy()->timestamp()),
+        option);
+  }
+  validator->ValidatePayload();
+  return validator;
+}
+
+std::unique_ptr<ExtensionInstallCloudPolicyValidator>
+ProfileCloudPolicyStore::CreateExtensionInstallValidator(
+    std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
+    CloudPolicyValidatorBase::ValidateTimestampOption option) {
+  auto validator = std::make_unique<ExtensionInstallCloudPolicyValidator>(
+      std::move(policy_fetch_response), background_task_runner());
+  validator->ValidatePolicyType(policy_type());
   validator->ValidateAgainstCurrentPolicy(
       policy(), option, CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,
       CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);

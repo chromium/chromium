@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
@@ -287,6 +288,39 @@ bool IsMachineLevelUserCloudPolicyType(const std::string& type) {
 bool IsExtensionInstallPolicySupportedOnThisVersion() {
   return version_info::GetMajorVersionNumberAsInt() >=
          kMinimumVersionForExtensionInstallPolicy;
+}
+
+bool IsExtensionInstallPolicyType(const std::string& policy_type) {
+  return policy_type ==
+             dm_protocol::kChromeExtensionInstallUserCloudPolicyType ||
+         policy_type ==
+             dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType;
+}
+
+bool IsChromePolicyType(const std::string& policy_type) {
+  return policy_type == dm_protocol::GetChromeUserPolicyType() ||
+         policy_type == dm_protocol::kChromeMachineLevelUserCloudPolicyType;
+}
+
+bool IsMachineLevelPolicyType(const std::string& policy_type) {
+  return policy_type == dm_protocol::kChromeMachineLevelUserCloudPolicyType ||
+         policy_type ==
+             dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType;
+}
+
+bool IsUserLevelPolicyType(const std::string& policy_type) {
+  return policy_type == dm_protocol::GetChromeUserPolicyType() ||
+         policy_type == dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+}
+
+std::string PolicyTypeLogTag(std::string_view policy_type,
+                             std::string_view settings_entity_id) {
+  if (settings_entity_id.empty()) {
+    return base::StrCat({"[policy_type=", policy_type, "]"});
+  }
+
+  return base::StrCat({"[policy_type=", policy_type,
+                       "settings_entity_id=", settings_entity_id, "]"});
 }
 
 }  // namespace policy

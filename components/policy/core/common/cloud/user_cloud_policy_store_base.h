@@ -27,7 +27,8 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
  public:
   UserCloudPolicyStoreBase(
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      PolicyScope policy_scope);
+      PolicyScope policy_scope,
+      const std::string& policy_type);
   UserCloudPolicyStoreBase(const UserCloudPolicyStoreBase&) = delete;
   UserCloudPolicyStoreBase& operator=(const UserCloudPolicyStoreBase&) = delete;
   ~UserCloudPolicyStoreBase() override;
@@ -85,7 +86,6 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
   template <typename PayloadProto>
   std::unique_ptr<CloudPolicyValidator<PayloadProto>> CreateValidatorImpl(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
-      const std::string& policy_type,
       CloudPolicyValidatorBase::ValidateTimestampOption option);
 
   // Task runner for background file operations.

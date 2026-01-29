@@ -69,7 +69,8 @@ constexpr char kUserAffiliationId[] = "user-affiliation-id";
 
 // Builds and returns a UserCloudPolicyManager for testing.
 std::unique_ptr<UserCloudPolicyManager> BuildCloudPolicyManager() {
-  auto store = std::make_unique<MockUserCloudPolicyStore>();
+  auto store = std::make_unique<MockUserCloudPolicyStore>(
+      dm_protocol::GetChromeUserPolicyType());
   EXPECT_CALL(*store, Load()).Times(AnyNumber());
 
   return std::make_unique<UserCloudPolicyManager>(

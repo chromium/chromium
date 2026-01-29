@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/dbus/session_manager/policy_descriptor.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -44,7 +45,8 @@ UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
     const AccountId& account_id,
     const base::FilePath& user_policy_key_dir)
     : UserCloudPolicyStoreBase(background_task_runner,
-                               PolicyScope::POLICY_SCOPE_USER),
+                               PolicyScope::POLICY_SCOPE_USER,
+                               dm_protocol::GetChromeUserPolicyType()),
       session_manager_client_(session_manager_client),
       account_id_(account_id),
       cached_policy_key_loader_(
