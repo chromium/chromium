@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GUEST_VIEW_WEB_VIEW_CONTEXT_MENU_CONTENT_TYPE_WEB_VIEW_H_
 #define CHROME_BROWSER_GUEST_VIEW_WEB_VIEW_CONTEXT_MENU_CONTENT_TYPE_WEB_VIEW_H_
 
+#include <optional>
+
+#include "base/version_info/channel.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 
 namespace extensions {
@@ -27,6 +30,10 @@ class ContextMenuContentTypeWebView : public ContextMenuContentType {
   // ContextMenuContentType overrides.
   bool SupportsGroup(int group) override;
 
+  // Overrides Chrome channel with the provided value. Set to empty to clear.
+  static void SetChannelForTesting(
+      std::optional<version_info::Channel> channel);
+
  protected:
   ContextMenuContentTypeWebView(
       const base::WeakPtr<extensions::WebViewGuest> web_view_guest,
@@ -36,6 +43,11 @@ class ContextMenuContentTypeWebView : public ContextMenuContentType {
   friend class ContextMenuContentTypeFactory;
 
   const extensions::Extension* GetExtension() const;
+
+  static version_info::Channel GetChannel();
+
+  // An override of the Chrome channel, used for testing.
+  static std::optional<version_info::Channel> channel_override_;
 
   base::WeakPtr<extensions::WebViewGuest> web_view_guest_;
 };

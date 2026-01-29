@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -36,12 +37,14 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
+#include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/guest_view/web_view/context_menu_content_type_web_view.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -8025,5 +8028,97 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, OpenLinkInNewTab) {
     waiter.WaitForMenuOpenAndClose();
     EXPECT_TRUE(waiter.IsCommandExecuted().value());
     EXPECT_EQ(incognito_browser_count + 1, chrome::GetIncognitoBrowserCount());
+  }
+}
+
+class ContextualTasksChannelWebViewTest : public WebViewChannelTest {
+ public:
+  ContextualTasksChannelWebViewTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility},
+        {});
+  }
+
+  void TearDownOnMainThread() override {
+    WebViewChannelTest::TearDownOnMainThread();
+    ContextMenuContentTypeWebView::SetChannelForTesting(std::nullopt);
+  }
+
+ protected:
+  std::optional<version_info::Channel> GetOptionalChannelParam() {
+    version_info::Channel channel = GetChannelParam();
+    if (channel == version_info::Channel::UNKNOWN) {
+      return std::nullopt;
+    }
+
+    return channel;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ContextualTasksChannelWebViewTest,
+    testing::Combine(testing::Values(version_info::Channel::UNKNOWN,
+                                     version_info::Channel::STABLE),
+                     testing::Bool()),
+    ContextualTasksChannelWebViewTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksChannelWebViewTest, InspectElement) {
+  SKIP_FOR_MPARCH();
+
+  ContextMenuContentTypeWebView::SetChannelForTesting(
+      GetOptionalChannelParam());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to chrome://contextual-tasks
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Wait for the contextual-tasks webview to be created.
+  guest_view::GuestViewBase* guest_view1 =
+      GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view1);
+
+  // Inject a second webview embedding an external URL.
+  GURL guest_url = embedded_test_server()->GetURL("/title1.html");
+  std::string inject_webview_script = content::JsReplace(
+      "var wv = document.createElement('webview');"
+      "wv.src = $1;"
+      "wv.style.position = 'absolute';"
+      "wv.style.top = '0px';"
+      "wv.style.left = '0px';"
+      "wv.style.width = '100px';"
+      "wv.style.height = '100px';"
+      "document.body.appendChild(wv);",
+      guest_url.spec());
+  content::WebContents* embedder_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ExecuteScriptAsync(embedder_web_contents, inject_webview_script);
+
+  // Wait for the second webview to be created and loaded.
+  GetGuestViewManager()->WaitForNumGuestsCreated(2u);
+  auto* guest_view2 = GetGuestViewManager()->GetLastGuestViewCreated();
+  ASSERT_NE(guest_view1, guest_view2);
+  EXPECT_TRUE(GetGuestViewManager()->WaitUntilAttachedAndLoaded(guest_view2));
+
+  // Wait for the second webview to be ready to receive events.
+  content::MainThreadFrameObserver synchronize_threads(
+      guest_view2->GetGuestMainFrame()->GetRenderWidgetHost());
+  synchronize_threads.Wait();
+
+  // Verify that the "Inspect" context menu item is enabled and can be
+  // executed.
+  {
+    ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_INSPECTELEMENT);
+    OpenContextMenu(guest_view2->GetGuestMainFrame());
+    waiter.WaitForMenuOpenAndClose();
+
+    // Verify the command was present in the menu and was executed.
+    EXPECT_TRUE(waiter.IsCommandExecuted().value());
   }
 }
