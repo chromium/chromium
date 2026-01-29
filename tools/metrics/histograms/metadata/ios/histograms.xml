@@ -1499,7 +1499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultStatusAPI.CooldownError.DaysLeft" units="Days"
-    expires_after="2026-02-25">
+    expires_after="2026-06-28">
   <owner>gujen@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
