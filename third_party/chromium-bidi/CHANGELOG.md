@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [13.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.0.1...chromium-bidi-v13.1.0) (2026-01-29)
+
+
+### Features
+
+* implement `browser.setClientWindowState` ([#4031](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4031)) ([8b284ee](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8b284eeb6ac270489056b3d4885e5f393a21acfd))
+
+
+### Bug Fixes
+
+* handle uncaught exceptions in close method ([#4005](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4005)) ([8f0ef95](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8f0ef95783e8bdcd5e08a29675db70146682f087))
+
 ## [13.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.0.0...chromium-bidi-v13.0.1) (2026-01-21)
 
 
