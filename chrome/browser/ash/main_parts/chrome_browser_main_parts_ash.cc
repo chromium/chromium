@@ -172,6 +172,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
@@ -888,6 +889,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
           g_browser_process->local_state());
 
   session_termination_manager_ = std::make_unique<SessionTerminationManager>();
+  app_terminating_subscription_ = browser_shutdown::AddAppTerminatingCallback(
+      session_termination_manager_->GetClosureNotifyingAppTerminating());
 
   // This should be in PreProfileInit but it needs to be created before the
   // policy connector is started.

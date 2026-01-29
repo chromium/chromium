@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -45,6 +44,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_data.h"
@@ -154,9 +154,8 @@ FullRestoreService::FullRestoreService(Profile* profile)
           /*should_init_service=*/true)),
       restore_data_handler_(std::make_unique<FullRestoreDataHandler>(profile_)),
       delegate_(std::make_unique<DelegateImpl>()) {
-  on_app_terminating_subscription_ =
-      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
-          &FullRestoreService::OnAppTerminating, base::Unretained(this)));
+  session_termination_observation_.Observe(
+      ash::SessionTerminationManager::Get());
 
   auto* full_restore_save_handler =
       ::full_restore::FullRestoreSaveHandler::GetInstance();
@@ -582,6 +581,8 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
 }
 
 void FullRestoreService::OnAppTerminating() {
+  session_termination_observation_.Reset();
+
   if (auto* arc_task_handler =
           app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
               profile_)) {

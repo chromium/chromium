@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
 #include "chrome/browser/ash/input_method/ime_service_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/ash/text_input_method.h"
@@ -47,7 +48,8 @@ class InputMethodPersistence;
 // The implementation of InputMethodManager.
 class InputMethodManagerImpl : public InputMethodManager,
                                public CandidateWindowController::Observer,
-                               public AssistiveWindowControllerDelegate {
+                               public AssistiveWindowControllerDelegate,
+                               public ash::SessionTerminationManager::Observer {
  public:
   class StateImpl : public InputMethodManager::State {
    public:
@@ -259,9 +261,10 @@ class InputMethodManagerImpl : public InputMethodManager,
   void SetState(scoped_refptr<InputMethodManager::State> state) override;
   void ImeMenuActivationChanged(bool is_active) override;
 
-  void OnAppTerminating();
-
  private:
+  // ash::SessionTerminationManager::Observer:
+  void OnAppTerminating() override;
+
   // CandidateWindowController::Observer overrides:
   void CandidateClicked(int index) override;
   void CandidateWindowOpened() override;
@@ -308,6 +311,10 @@ class InputMethodManagerImpl : public InputMethodManager,
   std::unique_ptr<InputMethodDelegate> delegate_;
 
   std::unique_ptr<InputMethodPersistence> persistence_;
+
+  base::ScopedObservation<ash::SessionTerminationManager,
+                          ash::SessionTerminationManager::Observer>
+      session_termination_observation_{this};
 
   // A list of objects that monitor the manager.
   base::ObserverList<InputMethodManager::Observer>::Unchecked observers_;
@@ -359,8 +366,6 @@ class InputMethodManagerImpl : public InputMethodManager,
       map<Profile*, std::unique_ptr<ImeServiceConnector>, ProfileCompare>
           ImeServiceConnectorMap;
   ImeServiceConnectorMap ime_service_connectors_;
-
-  base::CallbackListSubscription on_app_terminating_subscription_;
 };
 
 }  // namespace input_method

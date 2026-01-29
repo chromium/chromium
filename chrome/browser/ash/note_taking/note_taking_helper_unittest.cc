@@ -52,6 +52,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_common.mojom.h"
@@ -447,6 +448,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // Has Init() been called?
   bool initialized_ = false;
 
+  ash::SessionTerminationManager session_termination_manager_;
   ArcAppTest arc_app_test_{ArcAppTest::UserManagerMode::kDoNothing};
   std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
   base::test::ScopedFeatureList feature_list_;

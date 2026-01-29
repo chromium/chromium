@@ -7,22 +7,25 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
+#include "base/scoped_observation.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 
 namespace ash {
 
 // Creates and owns `ash::AuthParts` instance and provides it with
 // browser-specific implementations.
-class ChromeAuthParts {
+class ChromeAuthParts : public ash::SessionTerminationManager::Observer {
  public:
   ChromeAuthParts();
-  ~ChromeAuthParts();
+  ~ChromeAuthParts() override;
 
  private:
-  void OnAppTerminating();
+  void OnAppTerminating() override;
 
-  base::CallbackListSubscription app_termination_subscription_;
+  base::ScopedObservation<ash::SessionTerminationManager,
+                          ash::SessionTerminationManager::Observer>
+      observation_{this};
   std::unique_ptr<AuthParts> auth_parts_;
 };
 

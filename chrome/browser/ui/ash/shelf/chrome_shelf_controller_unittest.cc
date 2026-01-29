@@ -149,6 +149,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
@@ -1407,6 +1408,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     return std::make_unique<TestBrowserWindowAura>(std::move(window));
   }
 
+  ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
       multi_user_window_manager_browser_adaptor_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;

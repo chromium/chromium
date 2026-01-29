@@ -73,6 +73,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -908,6 +909,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   FakeAppListModelUpdater* model_updater() { return model_updater_.get(); }
 
  private:
+  ash::SessionTerminationManager session_termination_manager_;
   ArcAppTest arc_app_test_;
   display::test::TestScreen test_screen_{/*create_dispay=*/true,
                                          /*register_screen=*/true};

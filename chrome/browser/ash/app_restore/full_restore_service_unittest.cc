@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/constants/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -303,6 +304,7 @@ class FullRestoreServiceTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  ash::SessionTerminationManager session_termination_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   std::unique_ptr<TestingProfileManager> profile_manager_;

@@ -59,6 +59,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/account_id/account_id.h"
@@ -330,6 +331,7 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
  private:
   std::string GetStatusImpl(bool follow_transients);
 
+  ash::SessionTerminationManager session_termination_manager_;
   ScopedStubInstallAttributes test_install_attributes_;
 
   // These get created for each session.

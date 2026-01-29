@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -259,6 +260,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<FwupdDownloadClientImpl> fwupd_download_client_;
 
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
+  base::CallbackListSubscription app_terminating_subscription_;
 
   std::unique_ptr<cros_healthd::internal::DataCollector>
       cros_healthd_data_collector_;

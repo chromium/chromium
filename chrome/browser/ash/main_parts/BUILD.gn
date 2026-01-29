@@ -95,6 +95,7 @@ static_library("main_parts") {
     "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/device_identity",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/ash/assistant",

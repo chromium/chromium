@@ -33,6 +33,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -385,6 +386,7 @@ class InputMethodManagerImplTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
   raw_ptr<InputMethodManagerImpl, DanglingUntriaged> manager_ = nullptr;

@@ -38,6 +38,7 @@
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/app_constants/constants.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -473,6 +474,7 @@ class AppContextMenuArcTest : public AppContextMenuTest {
   }
 
  protected:
+  ash::SessionTerminationManager session_termination_manager_;
   ArcAppTest arc_app_test_;
 };
 

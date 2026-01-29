@@ -10,12 +10,12 @@
 
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
-#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/sessions/exit_type_service.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_types.h"
@@ -54,7 +54,8 @@ enum class RestoreAction {
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
-                           public SessionObserver {
+                           public SessionObserver,
+                           public ash::SessionTerminationManager::Observer {
  public:
   // Delegate class that talks to ash shell. Ash shell is not created in
   // unit tests so this should be mocked out for testing those behaviors.
@@ -123,6 +124,9 @@ class FullRestoreService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+  // ash::SessionTerminationManager::Observer:
+  void OnAppTerminating() override;
+
   // Returns true if `Init` can be called to show the notification or restore
   // apps. Otherwise, returns false.
   bool CanBeInited() const;
@@ -137,8 +141,6 @@ class FullRestoreService : public KeyedService,
 
   // Callback used when the pref |kRestoreAppsAndPagesPrefName| changes.
   void OnPreferenceChanged(const std::string& pref_name);
-
-  void OnAppTerminating();
 
   // Callbacks for the informed restore dialog buttons.
   void OnDialogRestore();
@@ -164,6 +166,10 @@ class FullRestoreService : public KeyedService,
 
   // Shows the informed restore onboarding dialog when there is no restore data.
   void MaybeShowInformedRestoreOnboarding(bool restore_on);
+
+  base::ScopedObservation<ash::SessionTerminationManager,
+                          ash::SessionTerminationManager::Observer>
+      session_termination_observation_{this};
 
   raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
@@ -199,8 +205,6 @@ class FullRestoreService : public KeyedService,
   std::unique_ptr<InformedRestoreContentsData> contents_data_;
 
   std::unique_ptr<Delegate> delegate_;
-
-  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // Browser session restore exit type service lock. This is created when the
   // system is restored from crash to help set the browser saving flag.

@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -274,6 +275,7 @@ class ArcAppsPublisherTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  ash::SessionTerminationManager session_termination_manager_;
   ash::SystemWebAppDelegateMap system_apps_;
   ArcAppTest arc_app_test_;
   std::unique_ptr<TestingProfile> profile_;

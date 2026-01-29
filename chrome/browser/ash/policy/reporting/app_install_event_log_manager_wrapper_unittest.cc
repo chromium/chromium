@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -153,6 +154,7 @@ class AppInstallEventLogManagerWrapperTest
   const base::FilePath log_file_path_;
   base::ListValue app_list_;
 
+  ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<AppInstallEventLogManagerWrapperTestable> wrapper_;
 
   scoped_refptr<base::SequencedTaskRunner> log_task_runner_;

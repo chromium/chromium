@@ -250,6 +250,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/file_manager:constants",
+    "//chromeos/ash/components/login/session",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/experiences/arc:arc_test_support",

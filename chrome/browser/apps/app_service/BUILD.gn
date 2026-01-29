@@ -324,6 +324,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/resources:app_icon_resources_grit",
       "//chrome/test:test_support_unit",
+      "//chromeos/ash/components/login/session",
       "//chromeos/ash/components/system",
       "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/components/mgs:test_support",

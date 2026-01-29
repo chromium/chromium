@@ -58,7 +58,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -485,9 +484,8 @@ AccessibilityManager::AccessibilityManager(
       application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   session_observation_.Observe(session_manager::SessionManager::Get());
 
-  on_app_terminating_subscription_ =
-      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
-          &AccessibilityManager::OnAppTerminating, base::Unretained(this)));
+  session_termination_observation_.Observe(
+      ash::SessionTerminationManager::Get());
 
   focus_changed_subscription_ =
       content::BrowserAccessibilityState::GetInstance()
@@ -2022,6 +2020,7 @@ void AccessibilityManager::PlayVolumeAdjustSound() {
 }
 
 void AccessibilityManager::OnAppTerminating() {
+  session_termination_observation_.Reset();
   app_terminating_ = true;
 }
 

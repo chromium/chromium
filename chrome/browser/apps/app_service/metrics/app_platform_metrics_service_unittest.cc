@@ -42,6 +42,7 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -759,6 +760,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
  private:
+  ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<TestBrowserWindowAura> browser_window1_;
   std::unique_ptr<TestBrowserWindowAura> browser_window2_;
   aura::test::TestWindowDelegate delegate1_;

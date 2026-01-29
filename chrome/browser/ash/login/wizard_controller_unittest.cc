@@ -61,6 +61,7 @@
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/device_settings_cache.h"
@@ -294,6 +295,7 @@ class WizardControllerTestBase : public ::testing::Test {
           base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
           base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
+  ash::SessionTerminationManager session_termination_manager_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_{std::make_unique<user_manager::FakeUserManager>()};
   std::unique_ptr<TestingProfileManager> profile_manager_;

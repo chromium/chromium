@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -133,6 +134,7 @@ enum class PlaySoundOption {
 // watching profile notifications and pref-changes.
 class AccessibilityManager
     : public session_manager::SessionManagerObserver,
+      public ash::SessionTerminationManager::Observer,
       public extensions::api::braille_display_private::BrailleObserver,
       public extensions::ExtensionRegistryObserver,
       public user_manager::UserManager::UserSessionStateObserver,
@@ -650,6 +652,9 @@ class AccessibilityManager
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  // ash::SessionTerminationManager::Observer:
+  void OnAppTerminating() override;
+
   // Dictation dialog methods.
   bool ShouldShowNetworkDictationDialog(const std::string& locale);
   void ShowNetworkDictationDialog();
@@ -687,8 +692,6 @@ class AccessibilityManager
       std::optional<::extensions::api::accessibility_private::PumpkinData>
           data);
 
-  void OnAppTerminating();
-
   void MaybeLogBrailleDisplayConnectedTime();
 
   bool spoken_feedback_enabled() const { return bool(screen_reader_mode_); }
@@ -703,6 +706,9 @@ class AccessibilityManager
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
+  base::ScopedObservation<ash::SessionTerminationManager,
+                          ash::SessionTerminationManager::Observer>
+      session_termination_observation_{this};
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
@@ -801,8 +807,6 @@ class AccessibilityManager
   base::FilePath dlc_path_for_test_;
 
   base::CallbackListSubscription focus_changed_subscription_;
-
-  base::CallbackListSubscription on_app_terminating_subscription_;
 
   base::WeakPtrFactory<AccessibilityManager> weak_ptr_factory_{this};
 

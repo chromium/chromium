@@ -170,6 +170,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/login/session",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_constants",
     "//components/crx_file",

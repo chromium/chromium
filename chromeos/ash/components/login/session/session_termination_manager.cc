@@ -93,6 +93,12 @@ bool SessionTerminationManager::IsLockedToSingleUser() {
   return is_locked_to_single_user_;
 }
 
+base::OnceClosure
+SessionTerminationManager::GetClosureNotifyingAppTerminating() {
+  return base::BindOnce(&SessionTerminationManager::OnAppTerminating,
+                        weak_factory_.GetWeakPtr());
+}
+
 void SessionTerminationManager::DidWaitForServiceToBeAvailable(
     bool service_is_available) {
   if (!service_is_available) {
@@ -126,6 +132,10 @@ void SessionTerminationManager::RebootIfNecessaryProcessReply(
     Reboot(power_manager::REQUEST_RESTART_OTHER,
            kLockedToSingleUserRebootDescription);
   }
+}
+
+void SessionTerminationManager::OnAppTerminating() {
+  observers_.Notify(&Observer::OnAppTerminating);
 }
 
 }  // namespace ash

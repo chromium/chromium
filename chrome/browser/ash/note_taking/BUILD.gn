@@ -84,6 +84,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/login/session",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc:notification_test_support",
     "//chromeos/ash/experiences/arc:prefs",

@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,6 +18,7 @@ namespace ash {
 namespace input_method {
 
 TEST(InputMethodConfigurationTest, TestInitialize) {
+  ash::SessionTerminationManager session_termination_manager;
   session_manager::SessionManager session_manager{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   ScopedTestingCrosSettings cros_settings;
@@ -34,6 +36,7 @@ TEST(InputMethodConfigurationTest, TestInitialize) {
 }
 
 TEST(InputMethodConfigurationTest, TestInitializeForTesting) {
+  ash::SessionTerminationManager session_termination_manager;
   InputMethodManager* manager = InputMethodManager::Get();
   EXPECT_FALSE(manager);
 

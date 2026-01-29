@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -102,6 +103,7 @@ class AppInstallServiceAshTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  ash::SessionTerminationManager session_termination_manager_;
   ArcAppTest arc_app_test_;
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<Profile> profile_;

@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
@@ -1093,9 +1092,8 @@ InputMethodManagerImpl::InputMethodManagerImpl(
 
   // We should not use ALL_BROWSERS_CLOSING here since logout might be cancelled
   // by JavaScript after ALL_BROWSERS_CLOSING is sent (crosbug.com/11055).
-  on_app_terminating_subscription_ =
-      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
-          &InputMethodManagerImpl::OnAppTerminating, base::Unretained(this)));
+  session_termination_observation_.Observe(
+      ash::SessionTerminationManager::Get());
 }
 
 InputMethodManagerImpl::~InputMethodManagerImpl() {
@@ -1342,6 +1340,8 @@ void InputMethodManagerImpl::SetCandidateWindowControllerForTesting(
 }
 
 void InputMethodManagerImpl::OnAppTerminating() {
+  session_termination_observation_.Reset();
+
   if (candidate_window_controller_.get()) {
     candidate_window_controller_.reset();
   }
