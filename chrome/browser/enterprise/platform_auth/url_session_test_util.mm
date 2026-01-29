@@ -14,6 +14,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "chrome/browser/enterprise/platform_auth/url_session_url_loader.h"
 #include "net/base/apple/url_conversions.h"
 
 namespace url_session_test_util {
@@ -154,6 +157,22 @@ NSURLSession* GetTestURLSessionForConfig(ResponseConfig&& config) {
       [NSURLSessionConfiguration ephemeralSessionConfiguration];
   session_config.protocolClasses = @[ unique_subclass ];
   return [NSURLSession sessionWithConfiguration:session_config];
+}
+
+bool ScopedURLSessionOverrideForTesting::instance_exists_{false};
+
+ScopedURLSessionOverrideForTesting::ScopedURLSessionOverrideForTesting(
+    NSURLSession* session_override) {
+  CHECK_IS_TEST();
+  CHECK(!instance_exists_);
+  enterprise_auth::URLSessionURLLoader::OverrideURLSessionForTesting(
+      session_override);
+  instance_exists_ = true;
+}
+
+ScopedURLSessionOverrideForTesting::~ScopedURLSessionOverrideForTesting() {
+  enterprise_auth::URLSessionURLLoader::OverrideURLSessionForTesting(nil);
+  instance_exists_ = false;
 }
 
 }  // namespace url_session_test_util

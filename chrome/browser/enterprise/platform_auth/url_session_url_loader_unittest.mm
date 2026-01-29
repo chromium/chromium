@@ -127,9 +127,8 @@ class URLSessionURLLoaderTest : public testing::Test {
  private:
   void CreateURLSessionURLLoader(ResponseConfig&& reponse_config) {
     URLSessionURLLoader* instance = new URLSessionURLLoader();
-    instance->OverrideSessionForTesting(
-        url_session_test_util::GetTestURLSessionForConfig(
-            std::move(reponse_config)));
+    session_override_.emplace(url_session_test_util::GetTestURLSessionForConfig(
+        std::move(reponse_config)));
     url_loader_ = instance->weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -142,6 +141,8 @@ class URLSessionURLLoaderTest : public testing::Test {
   MockClient mock_client;
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote_;
   mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_;
+  std::optional<url_session_test_util::ScopedURLSessionOverrideForTesting>
+      session_override_;
 };
 
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithBody) {

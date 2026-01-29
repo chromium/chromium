@@ -62,11 +62,6 @@ class ExtensibleEnterpriseSSOPrefsHandler {
  public:
   explicit ExtensibleEnterpriseSSOPrefsHandler(PrefService* local_state);
 
-  // Only to be used in test.
-  ExtensibleEnterpriseSSOPrefsHandler(PrefService* local_state,
-                                      std::unique_ptr<CFPreferencesObserver>
-                                          cf_preferences_override_for_testing_);
-
   ~ExtensibleEnterpriseSSOPrefsHandler();
 
   ExtensibleEnterpriseSSOPrefsHandler(ExtensibleEnterpriseSSOPrefsHandler&) =
@@ -87,6 +82,11 @@ class ExtensibleEnterpriseSSOPrefsHandler {
 
  private:
   void OnConfigRead(base::ListValue res);
+
+  friend class ScopedCFPreferenceObserverOverride;
+  static void OverrideCFPreferenceObserverForTesting(
+      base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>
+          cf_prefs_observer_override);
 
   std::unique_ptr<CFPreferencesObserver> cf_preferences_observer_;
   raw_ptr<PrefService> local_state_{nullptr};

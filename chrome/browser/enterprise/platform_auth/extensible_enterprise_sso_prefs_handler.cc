@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -15,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -34,6 +36,9 @@ using ScopedPropList = base::apple::ScopedCFTypeRef<CFPropertyListRef>;
 namespace {
 
 const CFStringRef kExtensibleSSOPrefName(CFSTR("com.apple.extensiblesso"));
+base::NoDestructor<
+    base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>>
+    g_cf_prefs_observer_override_for_testing;
 
 base::ListValue ParseConfiguration(CFPreferencesObserver::Config config) {
   if (!config.extension_id || !config.team_id || !config.hosts) {
@@ -170,15 +175,14 @@ const CFStringRef ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOTeamID(
 
 ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
     PrefService* local_state)
-    : ExtensibleEnterpriseSSOPrefsHandler(
-          local_state,
-          std::make_unique<CFPreferencesObserverImpl>()) {}
+    : local_state_(local_state) {
+  if (*g_cf_prefs_observer_override_for_testing) {
+    CHECK_IS_TEST();
+    cf_preferences_observer_ = g_cf_prefs_observer_override_for_testing->Run();
+  } else {
+    cf_preferences_observer_ = std::make_unique<CFPreferencesObserverImpl>();
+  }
 
-ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
-    PrefService* local_state,
-    std::unique_ptr<CFPreferencesObserver> cf_preferences_observer)
-    : cf_preferences_observer_(std::move(cf_preferences_observer)),
-      local_state_(local_state) {
   DCHECK(cf_preferences_observer_);
   DCHECK(local_state_);
   auto callback =
@@ -217,6 +221,15 @@ void ExtensibleEnterpriseSSOPrefsHandler::RegisterPrefs(
     PrefRegistrySimple* pref_registry) {
   pref_registry->RegisterListPref(
       prefs::kExtensibleEnterpriseSSOConfiguredHosts);
+}
+
+// static
+void ExtensibleEnterpriseSSOPrefsHandler::
+    OverrideCFPreferenceObserverForTesting(
+        base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>
+            cf_prefs_observer_override) {
+  *g_cf_prefs_observer_override_for_testing =
+      std::move(cf_prefs_observer_override);
 }
 
 }  // namespace enterprise_auth

@@ -7,9 +7,11 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,6 +19,10 @@
 #include "net/http/http_version.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+
+namespace url_session_test_util {
+class ScopedURLSessionOverrideForTesting;
+}
 
 namespace enterprise_auth {
 
@@ -88,11 +94,10 @@ class URLSessionURLLoader : public network::mojom::URLLoader {
 
   void RecordFailureMetrics(SSORequestFailReason reason);
 
-  inline void OverrideSessionForTesting(NSURLSession* session) {
-    session_override_ = session;
-  }
+  static void OverrideURLSessionForTesting(NSURLSession* new_session);
 
   friend URLSessionURLLoaderTest;
+  friend class url_session_test_util::ScopedURLSessionOverrideForTesting;
 
   static constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
@@ -100,8 +105,6 @@ class URLSessionURLLoader : public network::mojom::URLLoader {
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   NSURLSessionTask* task_ = nil;
   base::TimeTicks request_start_;
-
-  NSURLSession* session_override_ = nil;
 
   base::WeakPtrFactory<URLSessionURLLoader> weak_ptr_factory_{this};
 };

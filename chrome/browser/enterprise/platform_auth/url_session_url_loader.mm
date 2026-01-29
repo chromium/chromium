@@ -27,6 +27,7 @@ namespace enterprise_auth {
 
 namespace {
 
+NSURLSession* g_url_session_override_for_testing = nil;
 constexpr base::ByteSize kDataSizeLimit = base::KiBU(128);
 
 }  // namespace
@@ -75,10 +76,12 @@ void URLSessionURLLoader::Start(
 
   NSURLRequest* ns_request =
       url_session_helper::ConvertResourceRequest(request, timeout);
-  NSURLSession* session = [NSURLSession sharedSession];
-  if (session_override_) {
+  NSURLSession* session = nil;
+  if (g_url_session_override_for_testing) {
     CHECK_IS_TEST();
-    session = session_override_;
+    session = g_url_session_override_for_testing;
+  } else {
+    session = [NSURLSession sharedSession];
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
@@ -246,5 +249,12 @@ void URLSessionURLLoader::FollowRedirect(
 // Does not apply to URLSession.
 void URLSessionURLLoader::SetPriority(net::RequestPriority priority,
                                       int32_t intra_priority_value) {}
+
+// static
+void URLSessionURLLoader::OverrideURLSessionForTesting(  // IN-TEST
+    NSURLSession* new_session) {
+  CHECK_IS_TEST();
+  g_url_session_override_for_testing = new_session;
+}
 
 }  // namespace enterprise_auth

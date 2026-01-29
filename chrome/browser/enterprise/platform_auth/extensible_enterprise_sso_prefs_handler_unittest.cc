@@ -13,11 +13,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -35,8 +37,8 @@ using ScopedPropList = base::apple::ScopedCFTypeRef<CFPropertyListRef>;
 
 class TestCFWrapper : public CFPreferencesObserver {
  public:
-  explicit TestCFWrapper(base::RepeatingClosure* callback)
-      : callback_(callback) {}
+  explicit TestCFWrapper(base::RepeatingClosure* callback, Config* config)
+      : callback_(callback), config_(config) {}
 
   void Subscribe(base::RepeatingClosure on_update) override {
     if (!*callback_) {
@@ -51,13 +53,12 @@ class TestCFWrapper : public CFPreferencesObserver {
   }
 
   base::OnceCallback<Config()> GetReadConfigCallback() override {
-    return base::BindOnce([](Config config) { return config; }, config);
+    return base::BindOnce([](Config config) { return config; }, *config_);
   }
-
-  Config config{Config(ScopedPropList(), ScopedPropList(), ScopedPropList())};
 
  private:
   raw_ptr<base::RepeatingClosure> callback_;
+  raw_ptr<Config> config_;
 };
 
 class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
@@ -66,11 +67,16 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
     ExtensibleEnterpriseSSOPrefsHandler::RegisterPrefs(
         pref_service_.registry());
 
-    std::unique_ptr<TestCFWrapper> test_cf_wrapper =
-        std::make_unique<TestCFWrapper>(&notification_callback_);
-    test_cf_wrapper_ref_ = test_cf_wrapper.get();
-    prefs_handler_ = std::make_unique<ExtensibleEnterpriseSSOPrefsHandler>(
-        &pref_service_, std::move(test_cf_wrapper));
+    cf_prefs_override_.emplace(base::BindRepeating(
+        &ExtensibleEnterpriseSSOPrefsHandlerTest::TestCFPreferenceFactory,
+        base::Unretained(this)));
+
+    prefs_handler_ =
+        std::make_unique<ExtensibleEnterpriseSSOPrefsHandler>(&pref_service_);
+  }
+
+  std::unique_ptr<CFPreferencesObserver> TestCFPreferenceFactory() {
+    return std::make_unique<TestCFWrapper>(&notification_callback_, &config_);
   }
 
   ScopedPropList HostsToScopedPropList(
@@ -101,7 +107,7 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
   void SetConfigOverride(ScopedPropList extension_id,
                          ScopedPropList team_id,
                          ScopedPropList hosts) {
-    test_cf_wrapper_ref_->config = CFPreferencesObserver::Config(
+    config_ = CFPreferencesObserver::Config(
         std::move(extension_id), std::move(team_id), std::move(hosts));
   }
 
@@ -121,16 +127,19 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    test_cf_wrapper_ref_ = nullptr;
+    cf_prefs_override_.reset();
     prefs_handler_.reset();
     testing::Test::TearDown();
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestCFWrapper> test_cf_wrapper_ref_;
+  CFPreferencesObserver::Config config_{/*extension_id=*/ScopedPropList(),
+                                        /*team_id=*/ScopedPropList(),
+                                        /*hosts=*/ScopedPropList()};
   std::unique_ptr<ExtensibleEnterpriseSSOPrefsHandler> prefs_handler_;
   base::RepeatingClosure notification_callback_;
   TestingPrefServiceSimple pref_service_;
+  std::optional<ScopedCFPreferenceObserverOverride> cf_prefs_override_;
 };
 
 TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, BasicList) {
@@ -235,7 +244,6 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, CorrectlyStopsListening) {
   // Stop observing.
   const std::vector<std::string_view> new_hosts = {"example.com"};
   SetHostsPropertyOverride(new_hosts);
-  test_cf_wrapper_ref_ = nullptr;
   prefs_handler_.reset();
 
   SendNotification();
@@ -251,7 +259,6 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, CorrectlyStopsListening) {
 TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, OnlyStopObserving) {
   std::vector<std::string_view> hosts = {"foobar.com"};
   SetHostsPropertyOverride(hosts);
-  test_cf_wrapper_ref_ = nullptr;
   prefs_handler_.reset();
 
   SendNotification();
@@ -266,7 +273,6 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, StopAndStartAgain) {
   const std::vector<std::string_view> hosts = {"foo.bar.com", "example.net",
                                                "foo bar foo bar"};
   SetHostsPropertyOverride(hosts);
-  test_cf_wrapper_ref_ = nullptr;
   prefs_handler_.reset();
 
   SendNotification();
@@ -276,11 +282,8 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, StopAndStartAgain) {
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
           .empty());
 
-  std::unique_ptr<TestCFWrapper> test_cf_wrapper =
-      std::make_unique<TestCFWrapper>(&notification_callback_);
-  test_cf_wrapper_ref_ = test_cf_wrapper.get();
-  prefs_handler_ = std::make_unique<ExtensibleEnterpriseSSOPrefsHandler>(
-      &pref_service_, std::move(test_cf_wrapper));
+  prefs_handler_ =
+      std::make_unique<ExtensibleEnterpriseSSOPrefsHandler>(&pref_service_);
 
   SetHostsPropertyOverride(hosts);
   SendNotification();
