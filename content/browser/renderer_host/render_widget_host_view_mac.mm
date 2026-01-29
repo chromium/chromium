@@ -334,6 +334,20 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
     remote_ns_view_->SetVisible(false);
   }
 
+  // Re-send the current text input state to the new NSView bridge. This is
+  // necessary because the text input state may have been set before the
+  // migration (e.g., when a PWA launches with an auto-focused text field).
+  // Without this, the new NSView's inputContext will return nil because
+  // _textInputType remains TEXT_INPUT_TYPE_NONE, causing emoji picker and
+  // other IME features to fail. See https://crbug.com/478659019.
+  if (text_input_manager_) {
+    const ui::mojom::TextInputState* state =
+        text_input_manager_->GetTextInputState();
+    if (state) {
+      remote_ns_view_->SetTextInputState(state->type, state->flags);
+    }
+  }
+
   // End local display::Screen observation via `in_process_ns_view_bridge_`;
   // the remote NSWindow's display::Screen information will be sent by Mojo.
   // TODO(crbug.com/40179941): Maybe just destroy `in_process_ns_view_bridge_`?
