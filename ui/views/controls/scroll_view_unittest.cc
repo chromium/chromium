@@ -457,8 +457,10 @@ class WidgetScrollViewTest : public test::WidgetTest,
  private:
   // ui::CompositorObserver:
   void OnCompositingDidCommit(ui::Compositor* compositor) override {
-    quit_closure_.Run();
-    quit_closure_.Reset();
+    if (!quit_closure_.is_null()) {
+      quit_closure_.Run();
+      quit_closure_.Reset();
+    }
   }
 
   raw_ptr<Widget> widget_ = nullptr;
@@ -2166,6 +2168,77 @@ TEST_F(ScrollViewTest, HorizontalVerticalOverflowIndicators) {
   // The overflow indicators on the top and left should now be visible.
   EXPECT_TRUE(test_api.more_content_top()->GetVisible());
   EXPECT_TRUE(test_api.more_content_left()->GetVisible());
+}
+
+// Verifies that the next successful frame post-layout callback is called.
+TEST_F(WidgetScrollViewTest, NextSuccessfulFramePostLayoutCallback) {
+  auto contents = std::make_unique<View>();
+  contents->SetPreferredSize(gfx::Size(100, 100));
+  ScrollView* scroll_view = AddScrollViewWithContents(std::move(contents));
+
+  base::RunLoop run_loop;
+  bool callback_called = false;
+  scroll_view->RegisterNextSuccessfulFramePostLayoutCallback(base::BindOnce(
+      [](bool* callback_called, base::OnceClosure quit_closure) {
+        *callback_called = true;
+        std::move(quit_closure).Run();
+      },
+      &callback_called, run_loop.QuitClosure()));
+
+  // Trigger layout.
+  scroll_view->InvalidateLayout();
+  views::test::RunScheduledLayout(scroll_view);
+
+  // The callback should not be called yet (it waits for a frame).
+  EXPECT_FALSE(callback_called);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_called);
+}
+
+// Verifies that the next successful frame post-layout callback is called only
+// once even if multiple layouts occur.
+TEST_F(WidgetScrollViewTest, NextSuccessfulFramePostLayoutCallbackOnce) {
+  auto contents = std::make_unique<View>();
+  contents->SetPreferredSize(gfx::Size(100, 100));
+  ScrollView* scroll_view = AddScrollViewWithContents(std::move(contents));
+
+  int callback_called_count = 0;
+  base::RunLoop run_loop;
+  scroll_view->RegisterNextSuccessfulFramePostLayoutCallback(base::BindOnce(
+      [](int* callback_called_count, base::OnceClosure quit_closure) {
+        (*callback_called_count)++;
+        std::move(quit_closure).Run();
+      },
+      &callback_called_count, run_loop.QuitClosure()));
+
+  // Trigger layout multiple times.
+  scroll_view->InvalidateLayout();
+  views::test::RunScheduledLayout(scroll_view);
+  scroll_view->InvalidateLayout();
+  views::test::RunScheduledLayout(scroll_view);
+
+  run_loop.Run();
+
+  EXPECT_EQ(1, callback_called_count);
+
+  // Trigger another layout and wait again to be sure it doesn't fire again.
+  // We need to wait for another frame to be sure.
+  base::RunLoop run_loop2;
+  widget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const viz::FrameTimingDetails& frame_timing_details) {
+            std::move(quit_closure).Run();
+          },
+          run_loop2.QuitClosure()));
+
+  scroll_view->InvalidateLayout();
+  views::test::RunScheduledLayout(scroll_view);
+  run_loop2.Run();
+
+  EXPECT_EQ(1, callback_called_count);
 }
 
 TEST_F(ScrollViewTest, VerticalWithHeaderOverflowIndicators) {
