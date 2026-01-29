@@ -215,6 +215,9 @@ std::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
     dacl_entries.emplace_back(new_token->User(),
                               base::win::SecurityAccessMode::kRevoke,
                               GENERIC_ALL, 0);
+    dacl_entries.emplace_back(new_token->User(),
+                              base::win::SecurityAccessMode::kGrant,
+                              GENERIC_EXECUTE, 0);
     dacl_entries.emplace_back(
         base::win::Sid(base::win::WellKnownSid::kCreatorOwnerRights),
         base::win::SecurityAccessMode::kGrant, READ_CONTROL, 0);
