@@ -286,9 +286,7 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
 
     const bool is_libc_diagnostic =
         diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
-#ifdef LLVM_FORCE_HEAD_REVISION
         diag_id == clang::diag::warn_unsafe_buffer_format_attr_call ||
-#endif
         diag_id == clang::diag::note_unsafe_buffer_printf_call;
 
     const bool is_unique_ptr_diagnostic =
