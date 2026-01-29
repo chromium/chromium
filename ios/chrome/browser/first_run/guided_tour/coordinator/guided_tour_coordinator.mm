@@ -69,6 +69,9 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 }
 
 - (void)stop {
+  // Dismissing the presenter could trigger the dismiss callback, so break the
+  // connection to the delegate to avoid infinite loops.
+  _delegate = nil;
   [_presenter dismiss];
   _presenter = nil;
 }

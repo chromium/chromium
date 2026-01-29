@@ -59,6 +59,9 @@
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
 }
 
 #pragma mark - Property Implementation.
