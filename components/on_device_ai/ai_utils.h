@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
+// TODO(crbug.com/479193577): Switch to using a namespace.
 class AIUtils {
  public:
   using LanguageCodes =

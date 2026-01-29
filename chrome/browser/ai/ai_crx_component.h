@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_AI_AI_CRX_COMPONENT_H_
 #define CHROME_BROWSER_AI_AI_CRX_COMPONENT_H_
 
-#include "chrome/browser/ai/ai_model_download_progress_manager.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/on_device_ai/ai_model_download_progress_manager.h"
 
 namespace on_device_ai {
 

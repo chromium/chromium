@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AI_AI_MODEL_DOWNLOAD_PROGRESS_MANAGER_H_
-#define CHROME_BROWSER_AI_AI_MODEL_DOWNLOAD_PROGRESS_MANAGER_H_
+#ifndef COMPONENTS_ON_DEVICE_AI_AI_MODEL_DOWNLOAD_PROGRESS_MANAGER_H_
+#define COMPONENTS_ON_DEVICE_AI_AI_MODEL_DOWNLOAD_PROGRESS_MANAGER_H_
 
 #include <memory>
 
@@ -162,4 +162,4 @@ class AIModelDownloadProgressManager {
 };
 }  // namespace on_device_ai
 
-#endif  // CHROME_BROWSER_AI_AI_MODEL_DOWNLOAD_PROGRESS_MANAGER_H_
+#endif  // COMPONENTS_ON_DEVICE_AI_AI_MODEL_DOWNLOAD_PROGRESS_MANAGER_H_

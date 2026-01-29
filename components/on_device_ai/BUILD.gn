@@ -16,3 +16,14 @@ source_set("on_device_ai") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+source_set("ai_model_download_progress_manager") {
+  sources = [
+    "ai_model_download_progress_manager.cc",
+    "ai_model_download_progress_manager.h",
+  ]
+  deps = [
+    ":on_device_ai",
+    "//services/on_device_model/public/mojom",
+  ]
+}

@@ -10,6 +10,7 @@
 
 using optimization_guide::OnDeviceError;
 
+// static
 blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertOnDeviceError(
     OnDeviceError error) {
   switch (error) {

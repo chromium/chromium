@@ -33,7 +33,7 @@ source_set("ai") {
   public_deps = [
     "//base",
     "//chrome/browser/actor",
-    "//chrome/browser/ai:ai_model_download_progress_manager",
+    "//chrome/browser/ai:ai_model_download_progress_manager_components",
     "//chrome/browser/profiles:profile",
     "//components/component_updater",
     "//components/on_device_ai",
@@ -77,7 +77,7 @@ source_set("impl") {
     "//components/autofill/core/browser",
     "//components/history_embeddings",
     "//components/language/core/common",
-    "//components/on_device_ai",
+    "//components/on_device_ai:ai_model_download_progress_manager",
     "//components/optimization_guide/content/browser",
     "//components/site_engagement/content",
     "//pdf:buildflags",
@@ -98,12 +98,10 @@ source_set("impl") {
   }
 }
 
-source_set("ai_model_download_progress_manager") {
+source_set("ai_model_download_progress_manager_components") {
   sources = [
     "ai_crx_component.cc",
     "ai_crx_component.h",
-    "ai_model_download_progress_manager.cc",
-    "ai_model_download_progress_manager.h",
     "ai_never_load_component.cc",
     "ai_never_load_component.h",
   ]
@@ -111,7 +109,7 @@ source_set("ai_model_download_progress_manager") {
     "//base",
     "//chrome/browser:browser_process",
     "//components/component_updater",
-    "//components/on_device_ai",
+    "//components/on_device_ai:ai_model_download_progress_manager",
     "//components/update_client",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
@@ -145,13 +143,12 @@ source_set("unit_tests") {
     "ai_manager_unittest.cc",
     "ai_model_download_progress_manager_unittest.cc",
     "ai_proofreader_unittest.cc",
-    "ai_rewriter_unittest.cc",
     "ai_summarizer_unittest.cc",
     "ai_writer_unittest.cc",
   ]
   deps = [
     ":ai",
-    ":ai_model_download_progress_manager",
+    ":ai_model_download_progress_manager_components",
     ":test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//components/on_device_ai",
