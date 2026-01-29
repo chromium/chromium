@@ -435,9 +435,27 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
   void InitBaseParams() {
     scoped_feature_list_base_params_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchUseContentRefactor,
-          {{"ineligible_decoy_request_probability", "0"},
-           {"prefetch_container_lifetime_s", "-1"}}}},
+        {
+            {
+                features::kPrefetchUseContentRefactor,
+                {
+                    {"ineligible_decoy_request_probability", "0"},
+                    {"prefetch_container_lifetime_s", "-1"},
+                },
+            },
+            // We have a feature flag
+            // `kPrefetchMultipleActiveSetSizeLimitForBase` to allow concurrent
+            // prefetch, but we'll keep using active set size 1 for tests.
+            // Override the params to test the behavior of concurrent cases.
+            {
+                features::kPrefetchSchedulerTesting,
+                {
+                    {"kPrefetchSchedulerTestingActiveSetSizeLimitForBase", "1"},
+                    {"kPrefetchSchedulerTestingActiveSetSizeLimitForBurst",
+                     "1"},
+                },
+            },
+        },
         {blink::features::kRemovePurposeHeaderForPrefetch});
   }
 

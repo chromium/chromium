@@ -19994,6 +19994,27 @@
             ]
         }
     ],
+    "PrefetchMultipleActiveSetSizeLimitForBase": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2",
+                    "params": {
+                        "prefetch_multiple_active_set_size_limit_for_base_value": "2"
+                    },
+                    "enable_features": [
+                        "PrefetchMultipleActiveSetSizeLimitForBase"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrefetchNewTabPageTrigger": [
         {
             "platforms": [
