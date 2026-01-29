@@ -519,6 +519,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   onBookmarkRemoved(bookmark: BookmarksTreeNode) {
+    if (this.$.contextMenu.anyBookmarkMatches(bookmark.id)) {
+      this.$.contextMenu.close();
+    }
     const scrollTop = this.$.bookmarks.scrollTop;
     this.updateDisplayLists_();
     const isShown = this.bookmarkIsShowing_(bookmark);

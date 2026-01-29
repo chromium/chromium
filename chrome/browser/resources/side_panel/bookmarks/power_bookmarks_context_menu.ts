@@ -127,6 +127,14 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
     return this.$.menu.open;
   }
 
+  close() {
+    this.$.menu.close();
+  }
+
+  anyBookmarkMatches(id: string): boolean {
+    return this.bookmarks_.some(bookmark => bookmark.id === id);
+  }
+
   private getMenuItemsForBookmarks_(): MenuItem[] {
     // TODO(crbug.com/40262319): Factor in URLs not available in incognito.
     let bookmarkCount = 0;
