@@ -316,9 +316,12 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
 // TODO(crbug.com/40915051): Fails on MAC.
 // TODO(crbug.com/40915051): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not.
+// TODO(crbug.com/479691925): Fails on Windows 11.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TabCaptureProvidesMinFps DISABLED_TabCaptureProvidesMinFps
 #elif defined(MEMORY_SANITIZER)
+#define MAYBE_TabCaptureProvidesMinFps DISABLED_TabCaptureProvidesMinFps
+#elif BUILDFLAG(IS_WIN)
 #define MAYBE_TabCaptureProvidesMinFps DISABLED_TabCaptureProvidesMinFps
 #else
 #define MAYBE_TabCaptureProvidesMinFps TabCaptureProvidesMinFps
