@@ -1415,8 +1415,9 @@ class JavascriptOptimizerBubbleBrowserTest
 class JavascriptOptimizerBubbleBrowserTest_EnterprisePolicy
     : public JavascriptOptimizerBubbleBrowserTest {};
 
+// TODO(crbug.com/462425975): Flaky test disabled
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest_EnterprisePolicy,
-                       BubbleShowsOnClick) {
+                       DISABLED_BubbleShowsOnClick) {
   EnableEnterprisePolicy();
 
   ASSERT_TRUE(content::NavigateToURL(
@@ -1440,9 +1441,10 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest_EnterprisePolicy,
 class JavascriptOptimizerBubbleBrowserTest_NotFromEnterprisePolicy
     : public JavascriptOptimizerBubbleBrowserTest {};
 
+// TODO(crbug.com/462425975): Flaky test disabled
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBubbleBrowserTest_NotFromEnterprisePolicy,
-    BubbleShowsOnClick) {
+    DISABLED_BubbleShowsOnClick) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
