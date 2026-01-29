@@ -11,10 +11,16 @@ export function getHtml(this: UnexportableKeysInternalsAppElement) {
 <h1>Unexportable Keys Internals</h1>
 <table>
   <tr>
-    <th>Wrapped Key</th>
-    <th>Algorithm</th>
-    <th>Key Tag</th>
-    <th>Creation Time</th>
+    ${this.columns_.map(col => html`
+      <th class="sort-header"
+          data-sort-key="${col.key}"
+          @click="${this.onSortClick_}"
+          @keydown="${this.onSortKeyDown_}"
+          tabindex="0"
+          aria-sort="${this.getSortAttribute_(col.key)}">
+        ${col.label}
+      </th>
+    `)}
     <th>Actions</th>
   </tr>
   ${this.unexportableKeysInfo_.map((item, index) => html`

@@ -39,6 +39,19 @@ th {
   border: 1px solid #ddd;
 }
 
+.sort-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sort-header[aria-sort='ascending']::after {
+  content: ' ▲';
+}
+
+.sort-header[aria-sort='descending']::after {
+  content: ' ▼';
+}
+
 .wrapped-key {
   max-width: 200px;
   overflow: hidden;
