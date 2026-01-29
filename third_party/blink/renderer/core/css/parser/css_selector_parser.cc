@@ -984,6 +984,15 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
       if (pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter ||
           pseudo_id == kPseudoIdFirstLetter ||
           pseudo_id == kPseudoIdFirstLine) {
+        // Count usage of legacy pseudo-element syntax without colons (e.g.,
+        // getComputedStyle(el, "before") instead of getComputedStyle(el,
+        // ":before")). This is used to assess compat risk before potentially
+        // changing behavior per CSSOM spec.
+        if (num_colons == 0 && parent) {
+          UseCounter::Count(
+              parent->GetDocument(),
+              WebFeature::kGetComputedStylePseudoElementWithoutColon);
+        }
         return pseudo_id;
       }
 

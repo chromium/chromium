@@ -5095,6 +5095,7 @@ enum WebFeature {
   kAudioContextAsyncStateTransitions = 5779,
   kAudioContextAsyncTransitionToRunningStateRead = 5780,
   kAudioContextAsyncTransitionToSuspendedStateRead = 5781,
+  kGetComputedStylePseudoElementWithoutColon = 5782,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
