@@ -176,11 +176,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
         std::string("--") + switches::kSearchEngineChoiceCountry + "=BE");
   }
 
-  if ([self isRunningTest:@selector(testSwitchAccountFromAccountMenu)] ||
-      [self isRunningTest:@selector(testSignOutFromAccountFromAccountMenu)]) {
-    config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
-  }
-
   return config;
 }
 

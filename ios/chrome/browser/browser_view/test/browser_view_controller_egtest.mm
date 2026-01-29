@@ -56,21 +56,6 @@ const char kSecondURLText[] = "You've arrived";
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  if ([self isRunningTest:@selector
-            (testOpenSearchWidgetWithSignOutProfileSwitch)] ||
-      [self isRunningTest:@selector
-            (testOpenSearchWidgetWithSignInProfileSwitch)] ||
-      [self isRunningTest:@selector
-            (testOpenSearchWidgetWithUnmanagedToManagedProfileSwitch)]) {
-    config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
-  }
-
-  return config;
-}
-
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {

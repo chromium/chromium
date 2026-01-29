@@ -46,8 +46,6 @@
 class ReminderNotificationClientTest : public PlatformTest {
  protected:
   ReminderNotificationClientTest() {
-    feature_list_.InitAndEnableFeature(kSeparateProfilesForManagedAccounts);
-
     TestProfileIOS::Builder builder;
     builder.SetPrefService(CreatePrefService());
     profile_ = std::move(builder).Build();
@@ -145,7 +143,6 @@ class ReminderNotificationClientTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState local_state_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;

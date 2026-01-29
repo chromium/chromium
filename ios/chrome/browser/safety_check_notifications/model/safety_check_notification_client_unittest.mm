@@ -73,9 +73,6 @@ UpgradeRecommendedDetails OutdatedAppDetails() {
 class SafetyCheckNotificationClientTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        kSeparateProfilesForManagedAccounts);
-
     SetupMockNotificationCenter();
 
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
@@ -259,7 +256,6 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<SafetyCheckNotificationClient> notification_client_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
