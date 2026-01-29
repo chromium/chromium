@@ -73,13 +73,12 @@ export class DeviceCollection extends EventTarget {
     if (oldDeviceIndex !== -1) {
       // Update rssi if it's valid
       const oldDeviceInfo = this.array_[oldDeviceIndex]!;
-      const rssi = (deviceInfo.rssi && deviceInfo.rssi.value) ||
-          (oldDeviceInfo.rssi && oldDeviceInfo.rssi.value);
+      const rssi = deviceInfo.rssi ?? oldDeviceInfo.rssi;
 
       // The rssi property may be null, so it must be re-assigned.
       Object.assign(oldDeviceInfo, deviceInfo);
       if (rssi !== undefined && rssi !== null) {
-        oldDeviceInfo.rssi = {value: rssi};
+        oldDeviceInfo.rssi = rssi;
       }
       this.dispatchEvent(new CustomEvent(
           'device-update',

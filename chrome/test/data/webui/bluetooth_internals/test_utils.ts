@@ -319,7 +319,7 @@ export function fakeDeviceInfo1(): DeviceInfo {
     address: 'AA:AA:84:96:92:84',
     name: 'AAA',
     nameForDisplay: 'AAA',
-    rssi: {value: -40},
+    rssi: -40,
     serviceUuids: [{uuid: '00002a05-0000-1000-8000-00805f9b34fb'}],
     isGattConnected: false,
     manufacturerDataMap: {'1': [1, 2], '2': [3, 4]},

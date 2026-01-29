@@ -63,17 +63,12 @@ enum GattResult {
 };
 // LINT.ThenChange(//tools/metrics/metadata/nearby/enums.xml:NearbyConnectionsGattResult)
 
-// TODO(crbug.com/40489779): Remove when numerical values can be optional.
-struct RSSIWrapper {
-  int8 value;
-};
-
 struct DeviceInfo {
   string? name;
   string name_for_display;
   string address;
   bool is_gatt_connected;
-  RSSIWrapper? rssi;
+  int8? rssi;
   // Returns the list of service UUIDs that the device supports.
   // See device::BluetoothDevice::GetUUIDs().
   array<UUID> service_uuids;

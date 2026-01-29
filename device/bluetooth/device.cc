@@ -39,11 +39,7 @@ mojom::DeviceInfoPtr Device::ConstructDeviceInfoStruct(
       base::UTF16ToUTF8(device->GetNameForDisplay());
   device_info->address = device->GetAddress();
   device_info->is_gatt_connected = device->IsGattConnected();
-
-  if (device->GetInquiryRSSI()) {
-    device_info->rssi = mojom::RSSIWrapper::New();
-    device_info->rssi->value = device->GetInquiryRSSI().value();
-  }
+  device_info->rssi = device->GetInquiryRSSI();
 
   std::vector<device::BluetoothUUID> service_uuids;
   for (auto& uuid : device->GetUUIDs())

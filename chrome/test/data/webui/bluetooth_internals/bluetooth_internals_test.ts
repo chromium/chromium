@@ -140,7 +140,7 @@ suite('bluetooth_internals', function() {
     assertEquals(deviceInfo.address, addressColumn.textContent);
 
     if (deviceInfo.rssi) {
-      assertEquals(String(deviceInfo.rssi.value), rssiColumn.textContent);
+      assertEquals(String(deviceInfo.rssi), rssiColumn.textContent);
     }
 
     if (deviceInfo.serviceUuids) {
@@ -245,7 +245,7 @@ suite('bluetooth_internals', function() {
     // Copy device info because device collection will not copy this object.
     const newDeviceInfo = fakeDeviceInfo1();
     newDeviceInfo.nameForDisplay = 'DDDD';
-    newDeviceInfo.rssi = {value: -20};
+    newDeviceInfo.rssi = -20;
     newDeviceInfo.serviceUuids = [
       {uuid: '00002a05-0000-1000-8000-00805f9b34fb'},
       {uuid: '0000180d-0000-1000-8000-00805f9b34fb'},
@@ -268,7 +268,7 @@ suite('bluetooth_internals', function() {
 
     const newDeviceInfo = fakeDeviceInfo3();
     newDeviceInfo.nameForDisplay = 'DDDD';
-    newDeviceInfo.rssi = {value: -20};
+    newDeviceInfo.rssi = -20;
     newDeviceInfo.serviceUuids = [
       {uuid: '00002a05-0000-1000-8000-00805f9b34fb'},
       {uuid: '0000180d-0000-1000-8000-00805f9b34fb'},
@@ -299,7 +299,7 @@ suite('bluetooth_internals', function() {
     assertEquals('Unknown', rssiColumn.textContent);
 
     const newDeviceInfo1 = fakeDeviceInfo3();
-    newDeviceInfo1.rssi = {value: -42};
+    newDeviceInfo1.rssi = -42;
     adapterBroker.deviceChanged(newDeviceInfo1);
     assertEquals('-42', rssiColumn.textContent);
 
@@ -310,7 +310,7 @@ suite('bluetooth_internals', function() {
     assertEquals('-42', rssiColumn.textContent);
 
     const newDeviceInfo3 = fakeDeviceInfo3();
-    newDeviceInfo3.rssi = {value: -17};
+    newDeviceInfo3.rssi = -17;
     adapterBroker.deviceChanged(newDeviceInfo3);
     assertEquals('-17', rssiColumn.textContent);
   });
@@ -528,7 +528,7 @@ suite('bluetooth_internals', function() {
     ['name',
      'address',
      'isGattConnected',
-     'rssi.value',
+     'rssi',
      'serviceUuids',
      'manufacturerDataMap',
     ].forEach(function(propName) {

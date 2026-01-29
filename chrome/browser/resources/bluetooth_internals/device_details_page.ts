@@ -31,7 +31,7 @@ const PROPERTY_NAMES = {
   name: 'Name',
   address: 'Address',
   isGattConnected: 'GATT Connected',
-  'rssi.value': 'Latest RSSI',
+  rssi: 'Latest RSSI',
   serviceUuids: 'Services',
   manufacturerDataMap: 'Manufacturer Data',
 };
@@ -156,8 +156,8 @@ export class DeviceDetailsPage extends Page {
     const rssi = this.deviceInfo.rssi;
 
     let rssiValue: number|string = 'Unknown';
-    if (rssi && rssi.value != null && rssi.value <= 0) {
-      rssiValue = rssi.value;
+    if (rssi && rssi <= 0) {
+      rssiValue = rssi;
     }
 
     const serviceUuidsText = formatServiceUuids(this.deviceInfo.serviceUuids);
@@ -169,7 +169,7 @@ export class DeviceDetailsPage extends Page {
       name: this.deviceInfo.nameForDisplay,
       address: this.deviceInfo.address,
       isGattConnected: connectedText,
-      'rssi.value': rssiValue,
+      rssi: rssiValue,
       serviceUuids: serviceUuidsText,
       manufacturerDataMap: manufacturerDataMapText,
     };
