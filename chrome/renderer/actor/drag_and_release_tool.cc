@@ -64,14 +64,10 @@ DragAndReleaseTool::DragAndReleaseTool(
 DragAndReleaseTool::~DragAndReleaseTool() = default;
 
 void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
-  ValidatedResult validated_result = Validate();
-  if (!validated_result.has_value()) {
-    std::move(callback).Run(std::move(validated_result.error()));
-    return;
-  }
-
-  ResolvedTarget from_target = validated_result->from;
-  ResolvedTarget to_target = validated_result->to;
+  CHECK(validated_drag_params_.has_value())
+      << "Execute tool was called before validation";
+  ResolvedTarget from_target = validated_drag_params_->from;
+  ResolvedTarget to_target = validated_drag_params_->to;
 
   journal_->Log(task_id_, "DragAndReleaseTool::Execute",
                 JournalDetailsBuilder()
@@ -115,8 +111,8 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DragAndReleaseTool::ProcessDrag,
-                     weak_ptr_factory_.GetWeakPtr(), validated_result->from,
-                     validated_result->to, std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), from_target, to_target,
+                     std::move(callback)),
       kInitialMoveDelay);
 }
 
@@ -203,7 +199,7 @@ std::string DragAndReleaseTool::DebugString() const {
                          ToDebugString(action_->to_target));
 }
 
-DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
+mojom::ActionResultPtr DragAndReleaseTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
@@ -217,11 +213,11 @@ DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
   ResolveResult resolved_to = ResolveTarget(*to_target);
 
   if (!resolved_from.has_value()) {
-    return base::unexpected(std::move(resolved_from.error()));
+    return std::move(resolved_from.error());
   }
 
   if (!resolved_to.has_value()) {
-    return base::unexpected(std::move(resolved_to.error()));
+    return std::move(resolved_to.error());
   }
 
   if (resolved_from->GetWidget(*this) != resolved_to->GetWidget(*this)) {
@@ -230,15 +226,16 @@ DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
     static constexpr std::string_view kErrorMessage =
         "Drag across widgets is not supported.";
     NOTIMPLEMENTED() << kErrorMessage;
-    return base::unexpected(MakeResult(mojom::ActionResultCode::kNotImplemented,
-                                       /*requires_page_stabilization=*/false,
-                                       kErrorMessage));
+    return MakeResult(mojom::ActionResultCode::kNotImplemented,
+                      /*requires_page_stabilization=*/false, kErrorMessage);
   }
 
   // TODO(b/450018073): This should be checking the targets for time-of-use
   // validity.
 
-  return DragParams{resolved_from.value(), resolved_to.value()};
+  validated_drag_params_ =
+      DragParams{resolved_from.value(), resolved_to.value()};
+  return MakeOkResult();
 }
 
 bool DragAndReleaseTool::InjectMouseEvent(WebWidget& widget,

@@ -58,12 +58,8 @@ ClickTool::ClickTool(content::RenderFrame& frame,
 ClickTool::~ClickTool() = default;
 
 void ClickTool::Execute(ToolFinishedCallback callback) {
-  ValidatedResult validated_result = Validate();
-  if (!validated_result.has_value()) {
-    std::move(callback).Run(std::move(validated_result.error()));
-    return;
-  }
-
+  CHECK(validated_target_.has_value())
+      << "Execute tool was called before validation";
   WebMouseEvent::Button button;
   switch (action_->type) {
     case mojom::ClickType::kLeft: {
@@ -87,7 +83,7 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
     }
   }
 
-  ResolvedTarget target = validated_result.value();
+  ResolvedTarget target = validated_target_.value();
   journal_->Log(
       task_id_, "ClickTool::Execute",
       JournalDetailsBuilder().Add("point", target.widget_point).Build());
@@ -118,13 +114,13 @@ void ClickTool::Cancel() {
   }
 }
 
-ClickTool::ValidatedResult ClickTool::Validate() const {
+mojom::ActionResultPtr ClickTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return base::unexpected(std::move(resolved_target.error()));
+    return std::move(resolved_target.error());
   }
 
   // Perform click validation on the resolved node.
@@ -133,14 +129,15 @@ ClickTool::ValidatedResult ClickTool::Validate() const {
     WebFormControlElement form_element =
         node.DynamicTo<WebFormControlElement>();
     if (!form_element.IsNull() && !form_element.IsEnabled()) {
-      return base::unexpected(MakeResult(
+      return MakeResult(
           mojom::ActionResultCode::kElementDisabled,
           /*requires_page_stabilization=*/false,
-          absl::StrFormat("[Element %s]", base::ToString(form_element))));
+          absl::StrFormat("[Element %s]", base::ToString(form_element)));
     }
   }
 
-  return resolved_target;
+  validated_target_ = std::move(resolved_target.value());
+  return MakeOkResult();
 }
 
 }  // namespace actor

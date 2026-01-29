@@ -32,12 +32,8 @@ NoOpTool::NoOpTool(content::RenderFrame& frame,
 NoOpTool::~NoOpTool() = default;
 
 void NoOpTool::Execute(ToolFinishedCallback callback) {
-  ValidatedResult validated_result = Validate();
-  if (!validated_result.has_value()) {
-    std::move(callback).Run(std::move(validated_result.error()));
-    return;
-  }
-
+  CHECK(validated_target_.has_value())
+      << "Execute tool was called before validation";
   std::move(callback).Run(MakeOkResult());
 }
 
@@ -45,16 +41,17 @@ std::string NoOpTool::DebugString() const {
   return absl::StrFormat("NoOpTool[%s]", ToDebugString(target_));
 }
 
-NoOpTool::ValidatedResult NoOpTool::Validate() const {
+mojom::ActionResultPtr NoOpTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return base::unexpected(std::move(resolved_target.error()));
+    return std::move(resolved_target.error());
   }
 
-  return base::ok();
+  validated_target_ = std::move(resolved_target.value());
+  return MakeOkResult();
 }
 
 }  // namespace actor

@@ -30,6 +30,7 @@ class ScriptTool : public ToolBase {
   ~ScriptTool() override;
 
   // actor::ToolBase
+  mojom::ActionResultPtr Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
 

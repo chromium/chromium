@@ -60,7 +60,13 @@ class ToolBase {
            mojom::ObservedToolTargetPtr observed_target);
   virtual ~ToolBase();
 
-  // Executes the tool. `callback` is invoked with the tool result.
+  // Validates that the tool can be executed and returns the result. The
+  // implementation stores any necessary state to allow Execute() to run
+  // afterwards.
+  virtual mojom::ActionResultPtr Validate() = 0;
+
+  // Executes the tool. `callback` is invoked with the tool result. Requires
+  // validation to be called first.
   virtual void Execute(ToolFinishedCallback callback) = 0;
 
   // Cancels execution of the tool.

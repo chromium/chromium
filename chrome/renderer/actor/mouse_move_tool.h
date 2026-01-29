@@ -33,15 +33,13 @@ class MouseMoveTool : public ToolBase {
   ~MouseMoveTool() override;
 
   // actor::ToolBase
+  mojom::ActionResultPtr Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
 
  private:
-  using ValidatedResult =
-      base::expected<ResolvedTarget, mojom::ActionResultPtr>;
-  ValidatedResult Validate() const;
-
   mojom::MouseMoveActionPtr action_;
+  std::optional<ResolvedTarget> validated_target_;
 };
 
 }  // namespace actor

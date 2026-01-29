@@ -45,23 +45,17 @@ MouseMoveTool::MouseMoveTool(content::RenderFrame& frame,
 MouseMoveTool::~MouseMoveTool() = default;
 
 void MouseMoveTool::Execute(ToolFinishedCallback callback) {
-  ValidatedResult validated_result = Validate();
-  if (!validated_result.has_value()) {
-    std::move(callback).Run(std::move(validated_result.error()));
-    return;
-  }
-
-  ResolvedTarget& target = validated_result.value();
-
+  CHECK(validated_target_.has_value())
+      << "Execute tool was called before validation";
   // Dispatch MouseMove event
   blink::WebMouseEvent mouse_event(blink::WebInputEvent::Type::kMouseMove,
                                    blink::WebInputEvent::kNoModifiers,
                                    ui::EventTimeForNow());
   // No button for move
   mouse_event.button = blink::WebMouseEvent::Button::kNoButton;
-  mouse_event.SetPositionInWidget(target.widget_point);
+  mouse_event.SetPositionInWidget(validated_target_->widget_point);
 
-  WebWidget* widget = target.GetWidget(*this);
+  WebWidget* widget = validated_target_->GetWidget(*this);
   CHECK(widget);
   blink::WebInputEventResult move_result = widget->HandleInputEvent(
       blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
@@ -80,16 +74,17 @@ std::string MouseMoveTool::DebugString() const {
   return absl::StrFormat("MouseMoveTool[%s]", ToDebugString(target_));
 }
 
-MouseMoveTool::ValidatedResult MouseMoveTool::Validate() const {
+mojom::ActionResultPtr MouseMoveTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return base::unexpected(std::move(resolved_target.error()));
+    return std::move(resolved_target.error());
   }
 
-  return resolved_target;
+  validated_target_ = std::move(resolved_target.value());
+  return MakeOkResult();
 }
 
 }  // namespace actor

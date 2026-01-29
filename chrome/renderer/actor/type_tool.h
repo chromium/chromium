@@ -46,6 +46,7 @@ class TypeTool : public ToolBase {
   ~TypeTool() override;
 
   // actor::ToolBase
+  mojom::ActionResultPtr Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   void Cancel() override;
   std::string DebugString() const override;
@@ -53,10 +54,6 @@ class TypeTool : public ToolBase {
   bool SupportsPaintStability() const override;
 
  private:
-  using ValidatedResult =
-      base::expected<ResolvedTarget, mojom::ActionResultPtr>;
-  ValidatedResult Validate() const;
-
   // Return true if input text can be procssed into a series of keypresses.
   bool ProcessInputText(
       std::vector<KeyDispatcher::KeyParams>& key_sequence) const;

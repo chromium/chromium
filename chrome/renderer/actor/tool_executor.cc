@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -50,26 +51,18 @@ ToolExecutor::~ToolExecutor() {
   }
 }
 
-void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
-                              ToolExecutorCallback callback) {
-  journal_->Log(invocation->task_id, "ToolExecutor::InvokeTool Received", {});
+mojom::ActionResultPtr ToolExecutor::InitializeTool(
+    mojom::ToolInvocationPtr invocation) {
+  auto init_entry = journal_->CreatePendingAsyncEntry(invocation->task_id,
+                                                      "InitializeTool", {});
 
   // Send the buffer now so the journal shows we received the message. This
   // helps when debugging unresponsive renderers.
   journal_->SendLogBuffer();
 
   if (tool_) {
-    std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kExecutorBusy,
-                   /*requires_page_stabilization=*/false,
-                   "Another tool invocation is still running."));
-    return;
+    return MakeResult(mojom::ActionResultCode::kExecutorBusy);
   }
-
-  CHECK(!completion_callback_);
-  completion_callback_ = std::move(callback);
-  invoke_journal_entry_ =
-      journal_->CreatePendingAsyncEntry(invocation->task_id, "InvokeTool", {});
 
   WebLocalFrame* web_frame = frame_->GetWebFrame();
 
@@ -78,12 +71,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
 
   // Check LocalRoot in case the frame is a subframe.
   if (!web_frame || !web_frame->FrameWidget()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ToolExecutor::OnCompletion,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       MakeResult(mojom::ActionResultCode::kFrameWentAway)));
-    return;
+    return MakeResult(mojom::ActionResultCode::kFrameWentAway);
   }
 
   switch (invocation->action->which()) {
@@ -161,11 +149,43 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
     performed_scroll_into_view_ = true;
   }
 
+  return tool_->Validate();
+}
+
+void ToolExecutor::ExecuteTool(const actor::TaskId& task_id,
+                               ToolExecutorCallback callback) {
   execute_journal_entry_ = journal_->CreatePendingAsyncEntry(
-      invocation->task_id, "ExecuteTool",
+      task_id, "ExecuteTool",
       JournalDetailsBuilder().Add("tool", tool_->DebugString()).Build());
+  // Send the buffer now so the journal shows we received the message. This
+  // helps when debugging unresponsive renderers.
+  journal_->SendLogBuffer();
+  CHECK(tool_);
+  CHECK_EQ(tool_->task_id(), task_id);
+  CHECK(!completion_callback_);
+  completion_callback_ = std::move(callback);
   tool_->Execute(base::BindOnce(&ToolExecutor::ToolFinished,
                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
+                              ToolExecutorCallback callback) {
+  invoke_journal_entry_ =
+      journal_->CreatePendingAsyncEntry(invocation->task_id, "InvokeTool", {});
+  // Send the buffer now so the journal shows we received the message. This
+  // helps when debugging unresponsive renderers.
+  journal_->SendLogBuffer();
+  CHECK(!base::FeatureList::IsEnabled(
+      features::kGlicActorSplitValidateAndExecute));
+  actor::TaskId task_id = invocation->task_id;
+  mojom::ActionResultPtr result = InitializeTool(std::move(invocation));
+  if (!IsOk(*result)) {
+    CHECK(!completion_callback_);
+    completion_callback_ = std::move(callback);
+    ToolFinished(std::move(result));
+    return;
+  }
+  ExecuteTool(task_id, std::move(callback));
 }
 
 void ToolExecutor::CancelTool(const actor::TaskId& task_id) {
@@ -197,20 +217,12 @@ void ToolExecutor::CancelTool(const actor::TaskId& task_id) {
 }
 
 void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
+  CHECK(completion_callback_);
   execute_journal_entry_.reset();
+  invoke_journal_entry_.reset();
   result->execution_end_time = base::TimeTicks::Now();
   result->requires_page_stabilization |= performed_scroll_into_view_;
-  OnCompletion(std::move(result));
-}
-
-void ToolExecutor::OnCompletion(mojom::ActionResultPtr result) {
-  CHECK(completion_callback_);
-
-  CHECK(tool_);
-  // Release current tool so we can accept a new tool invocation.
   tool_.reset();
-
-  invoke_journal_entry_.reset();
   std::move(completion_callback_).Run(std::move(result));
 }
 

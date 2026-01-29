@@ -42,6 +42,7 @@ class DragAndReleaseTool : public ToolBase {
   ~DragAndReleaseTool() override;
 
   // actor::ToolBase
+  mojom::ActionResultPtr Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
 
@@ -50,8 +51,6 @@ class DragAndReleaseTool : public ToolBase {
     ResolvedTarget from;
     ResolvedTarget to;
   };
-  using ValidatedResult = base::expected<DragParams, mojom::ActionResultPtr>;
-  ValidatedResult Validate() const;
 
   void ProcessDrag(ResolvedTarget from,
                    ResolvedTarget to,
@@ -65,6 +64,7 @@ class DragAndReleaseTool : public ToolBase {
 
   mojom::DragAndReleaseActionPtr action_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::optional<DragParams> validated_drag_params_;
   base::WeakPtrFactory<DragAndReleaseTool> weak_ptr_factory_{this};
 };
 

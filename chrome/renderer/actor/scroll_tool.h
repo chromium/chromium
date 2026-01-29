@@ -34,6 +34,7 @@ class ScrollTool : public ToolBase {
   ~ScrollTool() override;
 
   // actor::ToolBase
+  mojom::ActionResultPtr Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
 
@@ -42,12 +43,9 @@ class ScrollTool : public ToolBase {
     blink::WebElement scroller;
     gfx::Vector2dF scroll_by_offset;
   };
-  using ValidatedResult =
-      base::expected<ScrollerAndDistance, mojom::ActionResultPtr>;
-
-  ValidatedResult Validate() const;
 
   mojom::ScrollActionPtr action_;
+  std::optional<ScrollerAndDistance> validated_scroller_and_distance_;
 };
 
 }  // namespace actor

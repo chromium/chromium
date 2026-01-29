@@ -29,12 +29,12 @@ class NoOpTool : public ToolBase {
   ~NoOpTool() override;
 
   // actor::ToolBase
+  mojom::ActionResultPtr Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
 
  private:
-  using ValidatedResult = base::expected<void, mojom::ActionResultPtr>;
-  ValidatedResult Validate() const;
+  std::optional<ResolvedTarget> validated_target_;
 };
 
 }  // namespace actor

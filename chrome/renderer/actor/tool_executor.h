@@ -34,6 +34,10 @@ class ToolExecutor {
   ToolExecutor(const ToolExecutor&) = delete;
   ToolExecutor& operator=(const ToolExecutor&) = delete;
 
+  mojom::ActionResultPtr InitializeTool(mojom::ToolInvocationPtr request);
+
+  void ExecuteTool(const actor::TaskId& task_id, ToolExecutorCallback callback);
+
   void InvokeTool(mojom::ToolInvocationPtr request,
                   ToolExecutorCallback callback);
 
@@ -41,7 +45,6 @@ class ToolExecutor {
 
  private:
   void ToolFinished(mojom::ActionResultPtr result);
-  void OnCompletion(mojom::ActionResultPtr result);
 
   bool performed_scroll_into_view_ = false;
 

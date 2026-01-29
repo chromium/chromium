@@ -465,14 +465,9 @@ mojom::ActionResultPtr TypeTool::SimulateKeyPress(
 }
 
 void TypeTool::Execute(ToolFinishedCallback callback) {
-  ValidatedResult validated_target = Validate();
-  if (!validated_target.has_value()) {
-    std::move(callback).Run(std::move(validated_target.error()));
-    return;
-  }
-
+  CHECK(resolved_target_.has_value())
+      << "Execute tool was called before validation";
   // Injecting a click to get focus.
-  resolved_target_ = validated_target.value();
   journal_->Log(task_id_, "TypeTool::Execute::Focus",
                 JournalDetailsBuilder()
                     .Add("coord", resolved_target_->widget_point)
@@ -644,7 +639,7 @@ bool TypeTool::SupportsPaintStability() const {
   return true;
 }
 
-TypeTool::ValidatedResult TypeTool::Validate() const {
+mojom::ActionResultPtr TypeTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
@@ -652,26 +647,25 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return base::unexpected(std::move(resolved_target.error()));
+    return std::move(resolved_target.error());
   }
 
   if (target_->is_dom_node_id()) {
     const WebNode& node = resolved_target->node;
     if (!node.IsElementNode()) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kTypeTargetNotElement));
+      return MakeResult(mojom::ActionResultCode::kTypeTargetNotElement);
     }
 
     WebElement element = node.To<WebElement>();
     if (WebFormControlElement form_control =
             element.DynamicTo<WebFormControlElement>()) {
       if (!form_control.IsEnabled()) {
-        return base::unexpected(
-            MakeResult(mojom::ActionResultCode::kElementDisabled));
+        return MakeResult(mojom::ActionResultCode::kElementDisabled);
       }
     }
   }
-  return resolved_target;
+  resolved_target_ = std::move(resolved_target.value());
+  return MakeOkResult();
 }
 
 bool TypeTool::ProcessInputText(

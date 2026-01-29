@@ -31,6 +31,7 @@ class SelectTool : public ToolBase {
   ~SelectTool() override;
 
   // actor::ToolBase
+  mojom::ActionResultPtr Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
 
@@ -39,11 +40,9 @@ class SelectTool : public ToolBase {
     blink::WebSelectElement select;
     blink::WebString option_value;
   };
-  using ValidatedResult =
-      base::expected<TargetAndValue, mojom::ActionResultPtr>;
-  ValidatedResult Validate() const;
 
   mojom::SelectActionPtr action_;
+  std::optional<TargetAndValue> validated_target_and_value_;
 };
 
 }  // namespace actor
