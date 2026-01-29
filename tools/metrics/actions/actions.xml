@@ -4124,6 +4124,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.CrossDeviceSettingImport.OmniboxPosition.Apply">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded when the user taps on the &quot;Apply&quot; button in the
+    cross-device settings import snackbar, to apply the bottom/top omnibox
+    position setting only.
+  </description>
+</action>
+
+<action name="Android.CrossDeviceSettingImport.OmniboxPosition.Redo">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded when the user taps on the &quot;Redo&quot; button in the
+    cross-device settings import snackbar, to redo applying the bottom/top
+    omnibox position setting only.
+  </description>
+</action>
+
+<action name="Android.CrossDeviceSettingImport.OmniboxPosition.Undo">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded when the user taps on the &quot;Undo&quot; button in the
+    cross-device settings import snackbar, to undo applying the bottom/top
+    omnibox position setting only.
+  </description>
+</action>
+
 <action name="Android.CrossDeviceSettingImport.Redo">
   <owner>clank-app-team@google.com</owner>
   <owner>jhimawan@google.com</owner>
