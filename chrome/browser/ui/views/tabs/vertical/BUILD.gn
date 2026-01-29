@@ -16,6 +16,7 @@ source_set("vertical") {
     "vertical_tab_strip_bottom_container.h",
     "vertical_tab_strip_flat_edge_button.h",
     "vertical_tab_strip_top_container.h",
+    "vertical_tab_strip_utils.h",
     "vertical_tab_strip_view.h",
     "vertical_unpinned_tab_container_view.h",
   ]
@@ -52,6 +53,7 @@ source_set("impl") {
     "vertical_tab_strip_bottom_container.cc",
     "vertical_tab_strip_flat_edge_button.cc",
     "vertical_tab_strip_top_container.cc",
+    "vertical_tab_strip_utils.cc",
     "vertical_tab_strip_view.cc",
     "vertical_tab_view.cc",
     "vertical_tab_view.h",

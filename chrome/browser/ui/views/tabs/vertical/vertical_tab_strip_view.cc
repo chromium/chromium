@@ -9,8 +9,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -22,6 +24,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -38,7 +41,8 @@ void SetScrollViewProperties(views::ScrollView* scroll_view) {
 }
 }  // namespace
 
-VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node) {
+VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node)
+    : collection_node_(collection_node) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetProperty(views::kElementIdentifierKey, kTabStripElementId);
 
@@ -59,6 +63,10 @@ VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node) {
 
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &VerticalTabStripView::RemoveScrollViewContents, base::Unretained(this)));
+
+  node_destroyed_subscription_ =
+      collection_node_->RegisterWillDestroyCallback(base::BindOnce(
+          &VerticalTabStripView::ResetCollectionNode, base::Unretained(this)));
 }
 
 VerticalTabStripView::~VerticalTabStripView() = default;
@@ -150,6 +158,33 @@ gfx::Size VerticalTabStripView::GetMinimumSize() const {
               1.5 * GetLayoutConstant(LayoutConstant::kVerticalTabHeight)));
 }
 
+void VerticalTabStripView::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (collection_node_ && selection.active_tab_changed() && selection.new_tab) {
+    TabCollectionNode* activated_node =
+        collection_node_->GetNodeForHandle(selection.new_tab->GetHandle());
+    CHECK(activated_node);
+
+    if (pinned_tabs_container_view_->Contains(activated_node->view())) {
+      pinned_tabs_scroll_view_->RegisterNextSuccessfulFramePostLayoutCallback(
+          base::BindOnce(
+              &VerticalTabStripView::DidPresentFramePostActivation,
+              base::Unretained(this), pinned_tabs_scroll_view_,
+              std::make_unique<views::ViewTracker>(activated_node->view())));
+    } else {
+      // Views must either be in the pinned or unpinned view trees.
+      DCHECK(unpinned_tabs_container_view_->Contains(activated_node->view()));
+      unpinned_tabs_scroll_view_->RegisterNextSuccessfulFramePostLayoutCallback(
+          base::BindOnce(
+              &VerticalTabStripView::DidPresentFramePostActivation,
+              base::Unretained(this), unpinned_tabs_scroll_view_,
+              std::make_unique<views::ViewTracker>(activated_node->view())));
+    }
+  }
+}
+
 VerticalPinnedTabContainerView* VerticalTabStripView::GetPinnedTabsContainer() {
   return pinned_tabs_container_view_;
 }
@@ -206,6 +241,12 @@ bool VerticalTabStripView::IsPositionInWindowCaption(const gfx::Point& point) {
   return true;
 }
 
+void VerticalTabStripView::InitializeTabStrip(TabStripModel& tab_strip_model) {
+  // TODO(crbug.com/452120900): TabStripModelObserver auto-unregisters in its
+  // destructor.
+  tab_strip_model.AddObserver(this);
+}
+
 views::View* VerticalTabStripView::AddScrollViewContents(
     std::unique_ptr<views::View> view) {
   if (auto* container =
@@ -236,6 +277,47 @@ void VerticalTabStripView::RemoveScrollViewContents(views::View* view) {
   // |view| should only ever be VerticalUnpinnedTabContainerView or
   // VerticalPinnedTabContainerView.
   NOTREACHED();
+}
+
+void VerticalTabStripView::ResetCollectionNode() {
+  collection_node_ = nullptr;
+}
+
+void VerticalTabStripView::DidPresentFramePostActivation(
+    views::ScrollView* scroll_view,
+    std::unique_ptr<views::ViewTracker> view_tracker) {
+  views::View* const activated_view = view_tracker->view();
+
+  // Guard against views being removed from the tree between frames.
+  if (!activated_view || !Contains(activated_view)) {
+    return;
+  }
+
+  // Get view bounds in its contents coordinates.
+  gfx::Rect activated_view_bounds =
+      GetVerticalTabStripViewTargetBounds(activated_view);
+
+  // Proceed up the hierarchy until the content view is reached, iteratively
+  // adjusting target view bounds.
+  for (views::View* v = activated_view->parent(); v != scroll_view->contents();
+       v = v->parent()) {
+    activated_view_bounds =
+        views::View::ConvertRectToTarget(v, v->parent(), activated_view_bounds);
+  }
+
+  // Get the visible bounds of the content view.
+  const gfx::Rect visible_contents_rect = scroll_view->GetVisibleRect();
+
+  // Determine the adjustment required to fit the activated view into the
+  // visible content view bounds.
+  gfx::Rect adjusted_activated_view_bounds = activated_view_bounds;
+  adjusted_activated_view_bounds.AdjustToFit(visible_contents_rect);
+
+  // Calculate the required scroll offset for the visible content bounds (the
+  // reverse of the activated view adjustment).
+  int diff = activated_view_bounds.y() - adjusted_activated_view_bounds.y();
+
+  scroll_view->ScrollByOffset({0, static_cast<float>(diff)});
 }
 
 BEGIN_METADATA(VerticalTabStripView)

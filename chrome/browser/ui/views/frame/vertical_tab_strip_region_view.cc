@@ -467,6 +467,7 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
                                views::MaximumFlexSizeRule::kUnbounded));
   tab_strip_view_->SetProperty(views::kMarginsKey,
                                gfx::Insets::VH(kRegionVerticalPadding, 0));
+  tab_strip_view_->InitializeTabStrip(*tab_strip_model_);
   std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
   CHECK(separator_index.has_value());
   ReorderChildView(tab_strip_view_, separator_index.value() + 1);
