@@ -207,10 +207,14 @@ error-page {
   width: calc(100% - 40px);
 }
 
+#composebox {
+  max-width: var(--max-composebox-width);
+}
+
 :host([is-zero-state_]) #composebox {
+  --max-composebox-width: 750px;
   bottom: 0;
   height: auto;
-  max-width: var(--max-composebox-width);
   min-width: var(--min-composebox-width);
   pointer-events: auto;
   position: relative;
@@ -285,7 +289,7 @@ error-page {
 #composeboxHeaderWrapper {
   background-color: var(--search-background-color);
   display: none;
-  justify-content: flex-start;
+  justify-content: center;
   /* Same width so stays at same centering as composebox with flexbox. */
   max-width: var(--max-composebox-width);
   position: relative;
@@ -294,6 +298,10 @@ error-page {
 
 :host([is-zero-state_]) #composeboxHeaderWrapper {
   display: flex;
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
+  justify-content: align-start;
 }
 
 :host([is-zero-state_][is-shown-in-tab_]) .flex-center {
