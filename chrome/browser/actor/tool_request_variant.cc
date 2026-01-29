@@ -46,6 +46,11 @@ void ConvertToVariantFn::Apply(const DragAndReleaseToolRequest& tr) {
 void ConvertToVariantFn::Apply(const HistoryToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+void ConvertToVariantFn::Apply(const LoadAndExtractContentToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
+#endif
 void ConvertToVariantFn::Apply(const MediaControlToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }

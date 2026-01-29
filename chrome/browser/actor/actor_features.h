@@ -104,6 +104,8 @@ BASE_DECLARE_FEATURE(kActorRestartObservationDelayControllerOnNavigate);
 // interaction) before sending action to renderer.
 BASE_DECLARE_FEATURE(kActorSendBrowserSignalForAction);
 
+BASE_DECLARE_FEATURE(kGlicActorLoadAndExtractContentTool);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_

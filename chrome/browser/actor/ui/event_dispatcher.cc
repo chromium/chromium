@@ -73,6 +73,9 @@ constexpr absl::Overload PreToolEventsFn{
 #endif
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    NoUiEvents<LoadAndExtractContentToolRequest>,
+#endif
     NoUiEvents<MediaControlToolRequest>,
     [](const MoveMouseToolRequest& tr) {
       return EventSequence<AsyncUiEvent>{
@@ -105,6 +108,9 @@ constexpr absl::Overload PostToolEventsFn{
 #endif
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    NoUiEvents<LoadAndExtractContentToolRequest>,
+#endif
     NoUiEvents<MediaControlToolRequest>,
     NoUiEvents<MoveMouseToolRequest>,
     NoUiEvents<NavigateToolRequest>,

@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -46,6 +47,9 @@ class ToolRequestVisitorFunctor {
 #endif
   virtual void Apply(const DragAndReleaseToolRequest&) = 0;
   virtual void Apply(const HistoryToolRequest&) = 0;
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  virtual void Apply(const LoadAndExtractContentToolRequest&) = 0;
+#endif
   virtual void Apply(const MediaControlToolRequest&) = 0;
   virtual void Apply(const MoveMouseToolRequest&) = 0;
   virtual void Apply(const NavigateToolRequest&) = 0;

@@ -20,6 +20,7 @@
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -81,6 +83,7 @@ using apc::CreateWindowAction;
 using apc::DragAndReleaseAction;
 using apc::HistoryBackAction;
 using apc::HistoryForwardAction;
+using apc::LoadAndExtractContentAction;
 using apc::MediaControlAction;
 using apc::MoveMouseAction;
 using apc::NavigateAction;
@@ -434,6 +437,21 @@ std::unique_ptr<ToolRequest> CreateActivateWindowRequest(
   return std::make_unique<ActivateWindowToolRequest>(action.window_id());
 }
 
+std::unique_ptr<ToolRequest> CreateLoadAndExtractContentRequest(
+    const LoadAndExtractContentAction& action) {
+  if (!base::FeatureList::IsEnabled(
+          actor::kGlicActorLoadAndExtractContentTool)) {
+    return nullptr;
+  }
+
+  std::vector<GURL> urls;
+  urls.reserve(action.urls_size());
+  std::ranges::transform(action.urls(), std::back_inserter(urls),
+                         [](const auto& url) { return GURL(url); });
+
+  return std::make_unique<LoadAndExtractContentToolRequest>(std::move(urls));
+}
+
 std::unique_ptr<ToolRequest> CreateBackRequest(
     const HistoryBackAction& action) {
   tabs::TabHandle tab_handle = GetTabHandle(action);
@@ -738,6 +756,12 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const ActivateWindowAction& activate_window_action =
           action.activate_window();
       return CreateActivateWindowRequest(activate_window_action);
+    }
+    case optimization_guide::proto::Action::kLoadAndExtractContent: {
+      const LoadAndExtractContentAction& load_and_extract_content_action =
+          action.load_and_extract_content();
+      return CreateLoadAndExtractContentRequest(
+          load_and_extract_content_action);
     }
     case optimization_guide::proto::Action::kYieldToUser:
       NOTIMPLEMENTED();

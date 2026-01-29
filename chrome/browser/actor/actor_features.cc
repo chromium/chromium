@@ -148,4 +148,7 @@ BASE_FEATURE(kActorRestartObservationDelayControllerOnNavigate,
 BASE_FEATURE(kActorSendBrowserSignalForAction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicActorLoadAndExtractContentTool,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace actor

@@ -29,6 +29,9 @@ using ToolRequestVariant = std::variant<
 #endif
     DragAndReleaseToolRequest,
     HistoryToolRequest,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    LoadAndExtractContentToolRequest,
+#endif
     MediaControlToolRequest,
     MoveMouseToolRequest,
     NavigateToolRequest,
@@ -61,6 +64,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
 #endif
   void Apply(const DragAndReleaseToolRequest&) override;
   void Apply(const HistoryToolRequest&) override;
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  void Apply(const LoadAndExtractContentToolRequest&) override;
+#endif
   void Apply(const MediaControlToolRequest&) override;
   void Apply(const MoveMouseToolRequest&) override;
   void Apply(const NavigateToolRequest&) override;

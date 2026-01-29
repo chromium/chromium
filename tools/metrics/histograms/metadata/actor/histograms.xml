@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CreateWindow" summary="Create Window"/>
   <variant name="DragAndRelease" summary="Drag And Release"/>
   <variant name="History" summary="History"/>
+  <variant name="LoadAndExtractContent" summary="Load And Extract Content"/>
   <variant name="MediaControl" summary="Media Control"/>
   <variant name="MoveMouse" summary="MoveMouse"/>
   <variant name="Navigate" summary="Navigate"/>
