@@ -365,6 +365,8 @@ bool IsNewTabAddsToActiveGroupEnabled();
 
 bool IsWebUIReloadButtonEnabled();
 
+bool IsWebUIHomeButtonEnabled();
+
 bool IsWebUISplitTabsButtonEnabled();
 
 bool IsWebUILocationBarEnabled();

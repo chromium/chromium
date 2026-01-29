@@ -518,6 +518,11 @@ bool IsWebUIReloadButtonEnabled() {
          base::FeatureList::IsEnabled(features::kWebUIReloadButton);
 }
 
+bool IsWebUIHomeButtonEnabled() {
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+         base::FeatureList::IsEnabled(features::kWebUIHomeButton);
+}
+
 bool IsWebUISplitTabsButtonEnabled() {
   return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          base::FeatureList::IsEnabled(features::kWebUISplitTabsButton);
@@ -530,7 +535,7 @@ bool IsWebUILocationBarEnabled() {
 
 bool IsWebUIToolbarEnabled() {
   return IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled() ||
-         IsWebUILocationBarEnabled();
+         IsWebUIHomeButtonEnabled() || IsWebUILocationBarEnabled();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

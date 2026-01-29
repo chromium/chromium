@@ -284,8 +284,6 @@ void ToolbarView::Init() {
   };
 
   PrefService* const prefs = browser_->profile()->GetPrefs();
-  std::unique_ptr<HomeButton> home = std::make_unique<HomeButton>(
-      browser_, base::BindRepeating(callback, browser_, IDC_HOME));
 
   std::unique_ptr<ExtensionsToolbarDesktop> extensions_container;
   std::unique_ptr<views::View> toolbar_divider;
@@ -325,7 +323,10 @@ void ToolbarView::Init() {
         browser_->profile(), browser_->command_controller(),
         InitialWebUIWindowMetricsManager::From(browser_)));
   }
-  home_ = AddChildView(std::move(home));
+  if (!features::IsWebUIHomeButtonEnabled()) {
+    home_ = AddChildView(std::make_unique<HomeButton>(
+        browser_, base::BindRepeating(callback, browser_, IDC_HOME)));
+  }
   std::unique_ptr<SplitTabsToolbarButton> split =
       std::make_unique<SplitTabsToolbarButton>(browser_);
   split_tabs_ = AddChildView(std::move(split));
@@ -468,7 +469,9 @@ void ToolbarView::Init() {
       base::BindRepeating(&ToolbarView::OnShowHomeButtonChanged,
                           base::Unretained(this)));
 
-  home_->SetVisible(show_home_button_.GetValue());
+  if (home_) {
+    home_->SetVisible(show_home_button_.GetValue());
+  }
 
   InitLayout();
 
@@ -1165,7 +1168,9 @@ void ToolbarView::OnShowForwardButtonChanged() {
 }
 
 void ToolbarView::OnShowHomeButtonChanged() {
-  home_->SetVisible(show_home_button_.GetValue());
+  if (home_) {
+    home_->SetVisible(show_home_button_.GetValue());
+  }
 }
 
 void ToolbarView::OnTouchUiChanged() {
