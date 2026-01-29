@@ -11,8 +11,8 @@
 
 BrowserListEnumerator::BrowserListEnumerator(bool enumerate_new_browser)
     : enumerate_new_browser_(enumerate_new_browser),
-      browsers_(BrowserList::GetInstance()->deprecated_begin(),
-                BrowserList::GetInstance()->deprecated_end()) {
+      browsers_(BrowserList::GetInstance()->begin(),
+                BrowserList::GetInstance()->end()) {
   BrowserList::GetInstance()->AddObserver(this);
 }
 
@@ -42,14 +42,6 @@ void BrowserListEnumerator::OnBrowserRemoved(Browser* browser) {
 Browser* BrowserListEnumerator::Next() {
   Browser* browser = browsers_.front();
   browsers_.erase(browsers_.begin());
-  bool found = false;
-  for (auto it = BrowserList::GetInstance()->deprecated_begin();
-       it != BrowserList::GetInstance()->deprecated_end(); ++it) {
-    if (*it == browser) {
-      found = true;
-      break;
-    }
-  }
-  DCHECK(found);
+  DCHECK(std::ranges::contains(*BrowserList::GetInstance(), browser));
   return browser;
 }

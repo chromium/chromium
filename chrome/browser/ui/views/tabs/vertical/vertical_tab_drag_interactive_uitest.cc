@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -193,14 +194,9 @@ class VerticalTabDragHandlerTest
 
   BrowserWindowInterface& GetLatestBrowser() {
     CHECK(!GlobalBrowserCollection::GetInstance()->IsEmpty());
-    BrowserWindowInterface* latest_browser = nullptr;
-    GlobalBrowserCollection::GetInstance()->ForEach(
-        [&latest_browser](BrowserWindowInterface* browser) {
-          latest_browser = browser;
-          return true;
-        });
-    CHECK(latest_browser);
-    return *latest_browser;
+    BrowserWindowInterface* browser = *(--BrowserList::GetInstance()->end());
+    CHECK(browser);
+    return *browser;
   }
 
   gfx::ScopedAnimationDurationScaleMode disable_animation_{

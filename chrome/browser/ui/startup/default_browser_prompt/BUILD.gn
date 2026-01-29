@@ -28,7 +28,6 @@ source_set("default_browser_prompt") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_tab_strip",
-    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_model",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/infobars/content",

@@ -15,8 +15,8 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -65,17 +65,15 @@ VerticalTabStripStateController::VerticalTabStripStateController(
     session_service_->AddObserver(this);
 
     bool is_browser_ready = false;
-    GlobalBrowserCollection::GetInstance()->ForEach(
-        [&is_browser_ready, this](BrowserWindowInterface* browser) {
-          if (browser->GetSessionID() == session_id_) {
-            is_browser_ready = true;
-          }
-          return !is_browser_ready;
-        });
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      if (browser->session_id() == session_id_) {
+        is_browser_ready = true;
+        break;
+      }
+    }
 
     if (!is_browser_ready) {
-      browser_collection_observation_.Observe(
-          GlobalBrowserCollection::GetInstance());
+      browser_list_observation_.Observe(BrowserList::GetInstance());
     }
   }
 }
@@ -161,7 +159,7 @@ void VerticalTabStripStateController::NotifyModeChanged() {
 }
 
 void VerticalTabStripStateController::UpdateSessionService() {
-  if (session_service_ && !browser_collection_observation_.IsObserving()) {
+  if (session_service_ && !browser_list_observation_.IsObserving()) {
     session_service_->AddWindowExtraData(session_id_, kCollapsedKey,
                                          base::ToString(state_.collapsed));
     session_service_->AddWindowExtraData(
@@ -199,10 +197,9 @@ void VerticalTabStripStateController::OnDestroying(
   }
 }
 
-void VerticalTabStripStateController::OnBrowserCreated(
-    BrowserWindowInterface* browser) {
-  if (browser == browser_window_) {
-    browser_collection_observation_.Reset();
+void VerticalTabStripStateController::OnBrowserAdded(Browser* browser) {
+  if (browser == browser_window_->GetBrowserForMigrationOnly()) {
+    browser_list_observation_.Reset();
     UpdateSessionService();
   }
 }

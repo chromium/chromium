@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -60,8 +59,7 @@ void DefaultBrowserInfoBarManager::ShowInfoBars(bool can_pin_to_taskbar) {
 
   default_browser_controller_->OnShown();
 
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
+  browser_list_observation_.Observe(BrowserList::GetInstance());
   browser_tab_strip_tracker_ =
       std::make_unique<BrowserTabStripTracker>(this, this);
   // This will trigger a call to `OnTabStripModelChanged`, which will create
@@ -73,7 +71,7 @@ void DefaultBrowserInfoBarManager::CloseAllInfoBars() {
   can_pin_to_taskbar_ = false;
   user_initiated_info_bar_close_pending_.reset();
 
-  browser_collection_observation_.Reset();
+  browser_list_observation_.Reset();
   browser_tab_strip_tracker_.reset();
 
   for (const auto& infobars_entry : infobars_) {
@@ -84,8 +82,7 @@ void DefaultBrowserInfoBarManager::CloseAllInfoBars() {
   infobars_.clear();
 }
 
-void DefaultBrowserInfoBarManager::OnBrowserClosed(
-    BrowserWindowInterface* /*browser*/) {
+void DefaultBrowserInfoBarManager::OnBrowserRemoved(Browser* /*browser*/) {
   if (user_initiated_info_bar_close_pending_.has_value()) {
     return;
   }
@@ -93,14 +90,12 @@ void DefaultBrowserInfoBarManager::OnBrowserClosed(
   // If the last browser window that we are tracking is getting closed, and the
   // user hasn't interacted with the infobar yet, we record this as IGNORED.
   bool all_tracked_browser_windows_closed = true;
-  GlobalBrowserCollection::GetInstance()->ForEach(
-      [&all_tracked_browser_windows_closed,
-       this](BrowserWindowInterface* browser) {
-        if (ShouldTrackBrowser(browser)) {
-          all_tracked_browser_windows_closed = false;
-        }
-        return all_tracked_browser_windows_closed;
-      });
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (ShouldTrackBrowser(browser)) {
+      all_tracked_browser_windows_closed = false;
+      break;
+    }
+  }
 
   if (!all_tracked_browser_windows_closed) {
     return;
@@ -108,7 +103,7 @@ void DefaultBrowserInfoBarManager::OnBrowserClosed(
 
   // Reset the observers.
   browser_tab_strip_tracker_.reset();
-  browser_collection_observation_.Reset();
+  browser_list_observation_.Reset();
 
   default_browser_controller_->OnIgnored();
   default_browser_controller_.reset();

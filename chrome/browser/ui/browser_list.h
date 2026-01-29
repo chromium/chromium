@@ -45,6 +45,9 @@ class BrowserList {
   BrowserList(const BrowserList&) = delete;
   BrowserList& operator=(const BrowserList&) = delete;
 
+  const_iterator begin() const { return browsers_.begin(); }
+  const_iterator end() const { return browsers_.end(); }
+
   static BrowserList* GetInstance();
 
   // Adds or removes |browser| from the list it is associated with. The browser
@@ -100,9 +103,6 @@ class BrowserList {
  private:
   BrowserList();
   ~BrowserList();
-
-  const_iterator deprecated_begin() const { return browsers_.begin(); }
-  const_iterator deprecated_end() const { return browsers_.end(); }
 
   // Returns iterated access to list of open browsers ordered by activation. The
   // underlying data structure is a vector and we push_back on recent access so
@@ -185,10 +185,6 @@ class BrowserList {
       base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
   friend void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
       base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
-  // BrowserListEnumerator needs access to begin() and end().
-  friend class BrowserListEnumerator;
-  // GetAllBrowserWindowInterfaces() needs access to begin() and end().
-  friend std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces();
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIST_H_
