@@ -1055,52 +1055,6 @@ TEST_F(DnsTransactionTest, LookupWithLog) {
   EXPECT_EQ(observer.dict_count(), 5);
 }
 
-TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
-  OptRecordRdata expected_opt_rdata;
-  const auto data = std::to_array<uint8_t>({0xbe, 0xef});
-  transaction_factory_->AddEDNSOption(
-      OptRecordRdata::UnknownOpt::CreateForTesting(123, data));
-  expected_opt_rdata.AddOpt(
-      OptRecordRdata::UnknownOpt::CreateForTesting(123, data));
-
-  AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,
-                           kT0ResponseDatagram, &expected_opt_rdata);
-
-  TransactionHelper helper0(kT0RecordCount);
-  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           false /* secure */, resolve_context_.get());
-  helper0.RunUntilComplete();
-}
-
-TEST_F(DnsTransactionTest, LookupWithMultipleEDNSOptions) {
-  OptRecordRdata expected_opt_rdata;
-  const auto data0 = std::to_array<uint8_t>({0xde, 0xad});
-  const auto data1 = std::to_array<uint8_t>({0xbe, 0xef});
-  const auto data2 = std::to_array<uint8_t>({0xff});
-  std::vector<std::pair<uint16_t, base::span<const uint8_t>>> params = {
-      // Two options with the same code, to check that both are included.
-      std::pair<uint16_t, base::span<const uint8_t>>(1, data0),
-      std::pair<uint16_t, base::span<const uint8_t>>(1, data1),
-      // Try a different code and different length of data.
-      std::pair<uint16_t, base::span<const uint8_t>>(2, data2)};
-
-  for (auto& param : params) {
-    transaction_factory_->AddEDNSOption(
-        OptRecordRdata::UnknownOpt::CreateForTesting(param.first,
-                                                     param.second));
-    expected_opt_rdata.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
-        param.first, param.second));
-  }
-
-  AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,
-                           kT0ResponseDatagram, &expected_opt_rdata);
-
-  TransactionHelper helper0(kT0RecordCount);
-  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           false /* secure */, resolve_context_.get());
-  helper0.RunUntilComplete();
-}
-
 // Concurrent lookup tests assume that DnsTransaction::Start immediately
 // consumes a socket from ClientSocketFactory.
 TEST_F(DnsTransactionTest, ConcurrentLookup) {

@@ -17,6 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
 #include "net/dns/opt_record_rdata.h"
@@ -81,7 +83,7 @@ TEST(DnsQueryTest, Constructor) {
 }
 
 TEST(DnsQueryTest, CopiesAreIndependent) {
-  DnsQuery q1(26 /* id */, kQName, dns_protocol::kTypeAAAA);
+  DnsQuery q1(/*id=*/26, kQName, dns_protocol::kTypeAAAA);
 
   DnsQuery q2(q1);
 
@@ -139,43 +141,9 @@ TEST(DnsQueryTest, EDNS0) {
   EXPECT_EQ(question, q1.question());
 }
 
-TEST(DnsQueryTest, ExtendedDnsErrorRequest) {
-  // clang-format off
-  const auto query_data = std::to_array<uint8_t>({
-      // Header
-      0xbe, 0xef, 0x01, 0x00,  // Flags -- set RD (recursion desired) bit.
-      // Set QDCOUNT (question count) and ARCOUNT (additional count) to 1, all
-      // the rest are 0 for a query.
-      0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-      // Question
-      0x03, 'w', 'w', 'w',  // QNAME: www.example.com in DNS format.
-      0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 0x03, 'c', 'o', 'm', 0x00,
-
-      0x00, 0x01,  // QTYPE: A query.
-      0x00, 0x01,  // QCLASS: IN class.
-
-      // Additional
-      0x00,  // QNAME: empty (root domain)
-      0x00, 0x29,  // TYPE: OPT
-      0x10, 0x00,  // CLASS: max UDP payload size
-      0x00, 0x00, 0x00, 0x00,  // TTL: rcode, version and flags
-      0x00, 0x06,  // RDATA length
-      0x00, 0x0f,  // OPT code for EDE
-      0x00, 0x02,  // OPT data size
-      0x00, 0x00,  // EDE Info Code "Other Error" (0)
-  });
-  // clang-format on
-
-  OptRecordRdata opt_rdata;
-  opt_rdata.AddOpt(OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest());
-  DnsQuery q1(0xbeef, kQName, dns_protocol::kTypeA, &opt_rdata,
-              DnsQuery::PaddingStrategy::NONE);
-  EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
-}
-
 TEST(DnsQueryTest, Block128Padding) {
-  DnsQuery query(46 /* id */, kQName, dns_protocol::kTypeAAAA,
-                 nullptr /* opt_rdata */,
+  DnsQuery query(/*id=*/46, kQName, dns_protocol::kTypeAAAA,
+                 /*opt_rdata=*/nullptr,
                  DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
 
   // Query is expected to be short and fit in a single 128-byte padded block.
@@ -188,50 +156,6 @@ TEST(DnsQueryTest, Block128Padding) {
   EXPECT_EQ(parsed_query.qtype(), dns_protocol::kTypeAAAA);
 }
 
-TEST(DnsQueryTest, Block128Padding_EDE) {
-  // clang-format off
-  const auto query_data_prefix = std::to_array<uint8_t>({
-      // Header
-      0xbe, 0xef, 0x01, 0x00,  // Flags -- set RD (recursion desired) bit.
-      // Set QDCOUNT (question count) and ARCOUNT (additional count) to 1, all
-      // the rest are 0 for a query.
-      0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-      // Question
-      0x03, 'w', 'w', 'w',  // QNAME: www.example.com in DNS format.
-      0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 0x03, 'c', 'o', 'm', 0x00,
-
-      0x00, 0x1c,  // QTYPE: AAAA query.
-      0x00, 0x01,  // QCLASS: IN class.
-
-      // Additional
-      0x00,  // QNAME: empty (root domain)
-      0x00, 0x29,  // TYPE: OPT
-      0x10, 0x00,  // CLASS: max UDP payload size
-      0x00, 0x00, 0x00, 0x00,  // TTL: rcode, version and flags
-      0x00, 0x54,  // RDATA length
-      0x00, 0x0f,  // OPT code for EDE
-      0x00, 0x02,  // OPT data size
-      0x00, 0x00,  // EDE Info Code "Other Error" (0)
-      0x00, 0x0c,  // OPT code for Padding
-      0x00, 0x4a,  // Padding length to pad up to 128 bytes
-  });
-  // clang-format on
-
-  OptRecordRdata opt_rdata;
-  opt_rdata.AddOpt(OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest());
-  DnsQuery query(0xbeef, kQName, dns_protocol::kTypeAAAA, &opt_rdata,
-                 DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
-
-  // Query is expected to be short and fit in a single 128-byte padded block.
-  ASSERT_EQ(128, query.io_buffer()->size());
-  EXPECT_THAT(query.io_buffer()->first(query_data_prefix.size()),
-              ElementsAreArray(query_data_prefix));
-
-  // Ensure created query still parses as expected.
-  DnsQuery parsed_query(query.io_buffer());
-  EXPECT_TRUE(parsed_query.Parse(query.io_buffer()->size()));
-}
-
 TEST(DnsQueryTest, Block128Padding_LongName) {
   std::optional<std::vector<uint8_t>> qname =
       dns_names_util::DottedNameToNetwork(
@@ -239,8 +163,8 @@ TEST(DnsQueryTest, Block128Padding_LongName) {
           "size.because.it.would.be.nice.to.test.something.realy.long.like."
           "that.com");
   ASSERT_TRUE(qname.has_value());
-  DnsQuery query(112 /* id */, qname.value(), dns_protocol::kTypeAAAA,
-                 nullptr /* opt_rdata */,
+  DnsQuery query(/*id=*/112, qname.value(), dns_protocol::kTypeAAAA,
+                 /*opt_rdata=*/nullptr,
                  DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
 
   // Query is expected to pad into a second 128-byte block.
@@ -635,6 +559,181 @@ TEST(DnsQueryParseTest, FailsQueryWithNamePointer) {
   EXPECT_FALSE(query.Parse(kDataSpan.size()));
 }
 
+class DnsQueryStructuredDnsErrorsEnabledTest : public ::testing::Test {
+ protected:
+  // Enable by default
+  DnsQueryStructuredDnsErrorsEnabledTest() {
+    features_.InitAndEnableFeature(features::kUseStructuredDnsErrors);
+  }
+
+  base::test::ScopedFeatureList features_;
+};
+
+class DnsQueryStructuredErrorsDisabledTest : public ::testing::Test {
+ protected:
+  DnsQueryStructuredErrorsDisabledTest() {
+    features_.InitAndDisableFeature(features::kUseStructuredDnsErrors);
+  }
+
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(DnsQueryStructuredDnsErrorsEnabledTest, ExtendedDnsErrorRequest) {
+  // clang-format off
+  const auto query_data = std::to_array<uint8_t>({
+      // Header
+      0xbe, 0xef, 0x01, 0x00,  // Flags -- set RD (recursion desired) bit.
+      // Set QDCOUNT (question count) and ARCOUNT (additional count) to 1, all
+      // the rest are 0 for a query.
+      0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+      // Question
+      0x03, 'w', 'w', 'w',  // QNAME: www.example.com in DNS format.
+      0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 0x03, 'c', 'o', 'm', 0x00,
+
+      0x00, 0x01,  // QTYPE: A query.
+      0x00, 0x01,  // QCLASS: IN class.
+
+      // Additional
+      0x00,  // QNAME: empty (root domain)
+      0x00, 0x29,  // TYPE: OPT
+      0x10, 0x00,  // CLASS: max UDP payload size
+      0x00, 0x00, 0x00, 0x00,  // TTL: rcode, version and flags
+      0x00, 0x06,  // RDATA length
+      0x00, 0x0f,  // OPT code for EDE
+      0x00, 0x02,  // OPT data size
+      0x00, 0x00,  // EDE Info Code "Other Error" (0)
+  });
+  // clang-format on
+
+  DnsQuery q1(/*id=*/0xbeef, kQName, dns_protocol::kTypeA,
+              /*opt_rdata=*/nullptr, DnsQuery::PaddingStrategy::NONE);
+
+  EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
+}
+
+// TODO(crbug.com/396483553): Remove this test in a follow-up CL once DnsQuery
+// no longer takes an `opt_rdata` parameter.
+TEST_F(DnsQueryStructuredDnsErrorsEnabledTest, NoDuplicateEDE) {
+  // clang-format off
+  const auto query_data = std::to_array<uint8_t>({
+      // Header
+      0xbe, 0xef, 0x01, 0x00,  // Flags -- set RD (recursion desired) bit.
+      // Set QDCOUNT (question count) and ARCOUNT (additional count) to 1, all
+      // the rest are 0 for a query.
+      0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+      // Question
+      0x03, 'w', 'w', 'w',  // QNAME: www.example.com in DNS format.
+      0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 0x03, 'c', 'o', 'm', 0x00,
+
+      0x00, 0x01,  // QTYPE: A query.
+      0x00, 0x01,  // QCLASS: IN class.
+
+      // Additional
+      0x00,        // QNAME: empty (root domain)
+      0x00, 0x29,  // TYPE: OPT
+      0x10, 0x00,  // CLASS: max UDP payload size
+      0x00, 0x00, 0x00, 0x00,  // TTL: rcode, version and flags
+      0x00, 0x06,  // RDATA length (single EDE option)
+      0x00, 0x0f,  // OPT code for EDE
+      0x00, 0x02,  // OPT data size
+      0x00, 0x00,  // EDE Info Code "Other Error" (0)
+  });
+  // clang-format on
+
+  OptRecordRdata opt_rdata;
+  opt_rdata.AddOpt(OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest());
+
+  DnsQuery q1(/*id=*/0xbeef, kQName, dns_protocol::kTypeA,
+              /*opt_rdata=*/&opt_rdata, DnsQuery::PaddingStrategy::NONE);
+
+  EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
+}
+
+TEST_F(DnsQueryStructuredDnsErrorsEnabledTest, Block128Padding_EDE) {
+  // clang-format off
+  const auto query_data_prefix = std::to_array<uint8_t>({
+      // Header
+      0xbe, 0xef, 0x01, 0x00,  // Flags -- set RD (recursion desired) bit.
+      // Set QDCOUNT (question count) and ARCOUNT (additional count) to 1, all
+      // the rest are 0 for a query.
+      0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+      // Question
+      0x03, 'w', 'w', 'w',  // QNAME: www.example.com in DNS format.
+      0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 0x03, 'c', 'o', 'm', 0x00,
+
+      0x00, 0x1c,  // QTYPE: AAAA query.
+      0x00, 0x01,  // QCLASS: IN class.
+
+      // Additional
+      0x00,  // QNAME: empty (root domain)
+      0x00, 0x29,  // TYPE: OPT
+      0x10, 0x00,  // CLASS: max UDP payload size
+      0x00, 0x00, 0x00, 0x00,  // TTL: rcode, version and flags
+      0x00, 0x54,  // RDATA length
+      0x00, 0x0f,  // OPT code for EDE
+      0x00, 0x02,  // OPT data size
+      0x00, 0x00,  // EDE Info Code "Other Error" (0)
+      0x00, 0x0c,  // OPT code for Padding
+      0x00, 0x4a,  // Padding length to pad up to 128 bytes
+  });
+  // clang-format on
+
+  DnsQuery query(/*id=*/0xbeef, kQName, dns_protocol::kTypeAAAA,
+                 /*opt_rdata=*/nullptr,
+                 DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
+
+  // Query is expected to be short and fit in a single 128-byte padded block.
+  ASSERT_EQ(128, query.io_buffer()->size());
+  EXPECT_THAT(query.io_buffer()->first(query_data_prefix.size()),
+              ElementsAreArray(query_data_prefix));
+
+  // Ensure created query still parses as expected.
+  DnsQuery parsed_query(query.io_buffer());
+  EXPECT_TRUE(parsed_query.Parse(query.io_buffer()->size()));
+  EXPECT_THAT(parsed_query.qname(), ElementsAreArray(kQName));
+  EXPECT_EQ(parsed_query.qtype(), dns_protocol::kTypeAAAA);
+}
+
+TEST_F(DnsQueryStructuredErrorsDisabledTest, Block128Padding_NoEDE) {
+  // clang-format off
+  const auto query_data_prefix = std::to_array<uint8_t>({
+      // Header
+      0xbe, 0xef, 0x01, 0x00,  // Flags -- set RD (recursion desired) bit.
+      // Set QDCOUNT (question count) and ARCOUNT (additional count) to 1, all
+      // the rest are 0 for a query.
+      0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+      // Question
+      0x03, 'w', 'w', 'w',  // QNAME: www.example.com in DNS format.
+      0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 0x03, 'c', 'o', 'm', 0x00,
+
+      0x00, 0x1c,  // QTYPE: AAAA query.
+      0x00, 0x01,  // QCLASS: IN class.
+
+      // Additional
+      0x00,  // QNAME: empty (root domain)
+      0x00, 0x29,  // TYPE: OPT
+      0x10, 0x00,  // CLASS: max UDP payload size
+      0x00, 0x00, 0x00, 0x00,  // TTL: rcode, version and flags
+      0x00, 0x54,  // RDATA length
+      0x00, 0x0c,  // OPT code for Padding
+      0x00, 0x50,  // Padding length to pad up to 128 bytes (no EDE present)
+  });
+  // clang-format on
+
+  DnsQuery query(/*id=*/0xbeef, kQName, dns_protocol::kTypeAAAA,
+                 /*opt_rdata=*/nullptr,
+                 DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
+
+  ASSERT_EQ(128, query.io_buffer()->size());
+  EXPECT_THAT(query.io_buffer()->first(query_data_prefix.size()),
+              ElementsAreArray(query_data_prefix));
+
+  // Ensure created query still parses as expected.
+  DnsQuery parsed_query(query.io_buffer());
+  EXPECT_TRUE(parsed_query.Parse(query.io_buffer()->size()));
+  EXPECT_THAT(parsed_query.qname(), ElementsAreArray(kQName));
+  EXPECT_EQ(parsed_query.qtype(), dns_protocol::kTypeAAAA);
+}
 }  // namespace
 
 }  // namespace net

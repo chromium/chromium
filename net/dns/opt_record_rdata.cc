@@ -79,8 +79,8 @@ std::vector<OptRecordRdata::EdeOpt::FilteringDetails> ParseFilteringDetails(
     auto id = GetFilteringDetailsString(entry, "id");
     if (db && id) {
       OptRecordRdata::EdeOpt::FilteringDetails meta;
-      meta.resolver_operator_id = std::move(*db);
-      meta.filtering_incident_id = std::move(*id);
+      meta.database_operator_id = std::move(*db);
+      meta.incident_id = std::move(*id);
       filtering_details.push_back(std::move(meta));
     }
   }

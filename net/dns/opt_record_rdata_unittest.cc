@@ -270,12 +270,12 @@ TEST_F(FilteringDetailsParsingTest, ParseFilteringDetailsOptRecords) {
   ASSERT_EQ(incidents.size(), static_cast<size_t>(2));
 
   const OptRecordRdata::EdeOpt::FilteringDetails& first = incidents.front();
-  EXPECT_EQ(first.resolver_operator_id, "example");
-  EXPECT_EQ(first.filtering_incident_id, "abc123");
+  EXPECT_EQ(first.database_operator_id, "example");
+  EXPECT_EQ(first.incident_id, "abc123");
 
   const OptRecordRdata::EdeOpt::FilteringDetails& second = incidents[1];
-  EXPECT_EQ(second.resolver_operator_id, "second-example");
-  EXPECT_EQ(second.filtering_incident_id, "456");
+  EXPECT_EQ(second.database_operator_id, "second-example");
+  EXPECT_EQ(second.incident_id, "456");
 }
 TEST_F(FilteringDetailsParsingTest, MissingRoRejected) {
   static constexpr std::string_view kJsonExtraText =

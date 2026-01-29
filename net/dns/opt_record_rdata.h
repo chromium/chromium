@@ -50,8 +50,8 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
 
   class NET_EXPORT_PRIVATE EdeOpt : public Opt {
    public:
-    // Metadata for Filtering Details (ro/inc) are defined in Version 1 of
-    // https://datatracker.ietf.org/doc/draft-nottingham-public-resolver-errors/01/
+    // Metadata for Filtering Details (db/id) are defined in Version 2 of
+    // https://datatracker.ietf.org/doc/draft-nottingham-public-resolver-errors/02/
     struct NET_EXPORT_PRIVATE FilteringDetails {
       FilteringDetails();
       ~FilteringDetails();
@@ -61,8 +61,8 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
       FilteringDetails(FilteringDetails&&) noexcept;
       FilteringDetails& operator=(FilteringDetails&&) noexcept;
 
-      std::string resolver_operator_id;   // "ro"
-      std::string filtering_incident_id;  // "inc"
+      std::string database_operator_id;  // "db" Filtering Database Operator ID
+      std::string incident_id;           // "id" Filtering Incident ID
     };
 
     static const uint16_t kOptCode = dns_protocol::kEdnsExtendedDnsError;

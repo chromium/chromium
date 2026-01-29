@@ -11,12 +11,14 @@
 #include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/sys_byteorder.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
 #include "net/dns/opt_record_rdata.h"
@@ -42,7 +44,7 @@ size_t QuestionSize(size_t qname_size) {
   return qname_size + sizeof(uint16_t) + sizeof(uint16_t);
 }
 
-// Buffer size of Opt record for |rdata| (does not include Opt record or RData
+// Buffer size of Opt record for `rdata` (does not include Opt record or RData
 // added for padding).
 size_t OptRecordSize(const OptRecordRdata* rdata) {
   return rdata == nullptr ? 0 : kOptRRFixedSize + rdata->buf().size();
@@ -64,13 +66,22 @@ size_t DeterminePaddingSize(size_t unpadded_size,
   }
 }
 
-std::unique_ptr<OptRecordRdata> AddPaddingIfNecessary(
+// Builds OPT record rdata for the query by cloning `opt_rdata` (if any),
+// adding feature-driven EDNS options, and adding padding if requested.
+// Returns nullptr if no OPT record is needed.
+std::unique_ptr<OptRecordRdata> MergeOptRecordRdataAndAddPadding(
     const OptRecordRdata* opt_rdata,
     DnsQuery::PaddingStrategy padding_strategy,
     size_t no_opt_buffer_size) {
-  // If no input OPT record rdata and no padding, no OPT record rdata needed.
-  if (!opt_rdata && padding_strategy == DnsQuery::PaddingStrategy::NONE)
+  const bool structured_errors_enabled =
+      base::FeatureList::IsEnabled(features::kUseStructuredDnsErrors);
+
+  // If no input OPT record rdata, no padding, and structured errors are
+  // disabled, no OPT record rdata needed.
+  if (!opt_rdata && padding_strategy == DnsQuery::PaddingStrategy::NONE &&
+      !structured_errors_enabled) {
     return nullptr;
+  }
 
   std::unique_ptr<OptRecordRdata> merged_opt_rdata;
   if (opt_rdata) {
@@ -81,12 +92,19 @@ std::unique_ptr<OptRecordRdata> AddPaddingIfNecessary(
   }
   DCHECK(merged_opt_rdata);
 
+  // If kUseStructuredDnsErrors is enabled, ensure EDE option exists.
+  if (structured_errors_enabled &&
+      !merged_opt_rdata->ContainsOptCode(dns_protocol::kEdnsExtendedDnsError)) {
+    merged_opt_rdata->AddOpt(
+        OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest());
+  }
+
   size_t unpadded_size =
       no_opt_buffer_size + OptRecordSize(merged_opt_rdata.get());
   size_t padding_size = DeterminePaddingSize(unpadded_size, padding_strategy);
 
   if (padding_size > 0) {
-    // |opt_rdata| must not already contain padding if DnsQuery is to add
+    // `merged_opt_rdata` must not already contain padding if DnsQuery is to add
     // padding.
     DCHECK(!merged_opt_rdata->ContainsOptCode(dns_protocol::kEdnsPadding));
     // OPT header is the minimum amount of padding.
@@ -119,7 +137,8 @@ DnsQuery::DnsQuery(uint16_t id,
 
   size_t buffer_size = kHeaderSize + QuestionSize(qname_size_);
   std::unique_ptr<OptRecordRdata> merged_opt_rdata =
-      AddPaddingIfNecessary(opt_rdata, padding_strategy, buffer_size);
+      MergeOptRecordRdataAndAddPadding(opt_rdata, padding_strategy,
+                                       buffer_size);
   if (merged_opt_rdata)
     buffer_size += OptRecordSize(merged_opt_rdata.get());
 
@@ -207,8 +226,8 @@ bool DnsQuery::Parse(size_t valid_bytes) {
       qclass != dns_protocol::kClassIN) {
     return false;
   }
-  // |io_buffer_| now contains the raw packet of a valid DNS query, we just
-  // need to properly initialize |qname_size_|.
+  // `io_buffer_` now contains the raw packet of a valid DNS query, we just
+  // need to properly initialize `qname_size_`.
   qname_size_ = qname.size();
   return true;
 }

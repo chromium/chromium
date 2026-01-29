@@ -63,7 +63,6 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_internal_result.h"
-#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
@@ -1206,15 +1205,19 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 // round-robin afterwards. Each server is attempted DnsConfig::attempts times.
 class DnsTransactionImpl final : public DnsTransaction {
  public:
-  DnsTransactionImpl(DnsSession* session,
-                     std::string hostname,
-                     uint16_t qtype,
-                     const NetLogWithSource& parent_net_log,
-                     const OptRecordRdata* opt_rdata,
-                     bool secure,
-                     SecureDnsMode secure_dns_mode,
-                     ResolveContext* resolve_context,
-                     bool fast_timeout)
+  DnsTransactionImpl(
+      DnsSession* session,
+      std::string hostname,
+      uint16_t qtype,
+      const NetLogWithSource& parent_net_log,
+      // TODO(crbug.com/396483553): Remove `opt_rdata` and all plumbing between
+      // DnsTransactionImpl and DnsQuery in a follow-up CL now that structured
+      // DNS error (EDE) requests are injected at the DnsQuery layer.
+      const OptRecordRdata* opt_rdata,
+      bool secure,
+      SecureDnsMode secure_dns_mode,
+      ResolveContext* resolve_context,
+      bool fast_timeout)
       : session_(session),
         hostname_(std::move(hostname)),
         qtype_(qtype),
@@ -1835,8 +1838,11 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
       ResolveContext* resolve_context,
       bool fast_timeout) override {
     return std::make_unique<DnsTransactionImpl>(
-        session_.get(), std::move(hostname), qtype, net_log, opt_rdata_.get(),
-        secure, secure_dns_mode, resolve_context, fast_timeout);
+        session_.get(), std::move(hostname), qtype, net_log,
+        // No factory-level EDNS option injection; per-transaction options are
+        // passed through other call sites when needed.
+        /*opt_rdata=*/nullptr, secure, secure_dns_mode, resolve_context,
+        fast_timeout);
   }
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
@@ -1849,23 +1855,12 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
         session_->GetWeakPtr(), resolve_context->GetWeakPtr());
   }
 
-  void AddEDNSOption(std::unique_ptr<OptRecordRdata::Opt> opt) override {
-    DCHECK(opt);
-    if (opt_rdata_ == nullptr)
-      opt_rdata_ = std::make_unique<OptRecordRdata>();
-
-    opt_rdata_->AddOpt(std::move(opt));
-  }
-
   SecureDnsMode GetSecureDnsModeForTest() override {
     return session_->config().secure_dns_mode;
   }
 
-  OptRecordRdata* GetOptRdataForTest() override { return opt_rdata_.get(); }
-
  private:
   scoped_refptr<DnsSession> session_;
-  std::unique_ptr<OptRecordRdata> opt_rdata_;
 };
 
 }  // namespace

@@ -19,7 +19,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -39,7 +38,6 @@
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/resolve_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -695,13 +693,6 @@ std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
 std::unique_ptr<DnsProbeRunner> MockDnsTransactionFactory::CreateDohProbeRunner(
     ResolveContext* resolve_context) {
   return std::make_unique<MockDohProbeRunner>(weak_ptr_factory_.GetWeakPtr());
-}
-
-void MockDnsTransactionFactory::AddEDNSOption(
-    std::unique_ptr<OptRecordRdata::Opt> opt) {}
-
-OptRecordRdata* MockDnsTransactionFactory::GetOptRdataForTest() {
-  return nullptr;
 }
 
 SecureDnsMode MockDnsTransactionFactory::GetSecureDnsModeForTest() {
