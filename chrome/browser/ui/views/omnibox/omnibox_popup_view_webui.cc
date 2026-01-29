@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -105,7 +106,9 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
             base::TimeTicks::Now() - construction_time_;
         construction_time_ = base::TimeTicks();
         base::UmaHistogramTimes(
-            "Omnibox.Popup.WebUI.ConstructionToFirstShownDuration", delta);
+            base::StrCat({presenter_->GetPopupMetricPrefix(),
+                          ".ConstructionToFirstShownDuration"}),
+            delta);
       }
     }
   }

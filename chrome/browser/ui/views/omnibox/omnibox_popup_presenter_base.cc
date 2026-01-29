@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -57,7 +58,7 @@ void OmniboxPopupPresenterBase::Show() {
     auto show_widget_time = base::TimeTicks::Now();
     widget_->GetCompositor()->RequestPresentationTimeForNextFrame(
         base::BindOnce(
-            [](std::string_view uma_metric, base::TimeTicks show_widget_time,
+            [](std::string uma_metric, base::TimeTicks show_widget_time,
                const gfx::PresentationFeedback& feedback) {
               // If there is ever an error, the timestamp means the timestamp
               // of the error. In that case we shouldn't record anything.
@@ -68,7 +69,9 @@ void OmniboxPopupPresenterBase::Show() {
                   feedback.timestamp - show_widget_time;
               base::UmaHistogramTimes(uma_metric, delta);
             },
-            GetPopupShowToPaintMetric(), show_widget_time));
+            base::StrCat(
+                {GetPopupMetricPrefix(), ".PresenterShowLatency.ToPaint"}),
+            show_widget_time));
 
     content->GetWebContents()->WasShown();
     if (ShouldReceiveFocus()) {

@@ -56,6 +56,10 @@ void OmniboxAimPopupWebUIContent::OnPageClosedWithInput(
   }
 }
 
+std::string_view OmniboxAimPopupWebUIContent::GetMetricPrefix() const {
+  return "Omnibox.Popup.Aim";
+}
+
 void OmniboxAimPopupWebUIContent::CloseUI() {
   OmniboxPopupWebUIBaseContent::CloseUI();
 }

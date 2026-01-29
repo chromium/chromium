@@ -50,6 +50,10 @@ void OmniboxPopupAimPresenter::Hide() {
   OmniboxPopupPresenterBase::Hide();
 }
 
+std::string_view OmniboxPopupAimPresenter::GetPopupMetricPrefix() const {
+  return "Omnibox.Popup.Aim";
+}
+
 void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                          bool active) {
   // This method is called when the focus is transferred to or from this widget.
@@ -72,8 +76,4 @@ void OmniboxPopupAimPresenter::WidgetDestroyed() {
       OmniboxPopupState::kAim) {
     controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
   }
-}
-
-std::string_view OmniboxPopupAimPresenter::GetPopupShowToPaintMetric() const {
-  return "Omnibox.Popup.Aim.PresenterShowLatency.ToPaint";
 }

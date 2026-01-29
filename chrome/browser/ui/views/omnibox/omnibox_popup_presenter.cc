@@ -35,6 +35,10 @@ void OmniboxPopupPresenter::Hide() {
   content_height_ = 1;
 }
 
+std::string_view OmniboxPopupPresenter::GetPopupMetricPrefix() const {
+  return "Omnibox.Popup.WebUI";
+}
+
 void OmniboxPopupPresenter::WidgetDestroyed() {
   // Update the popup state manager if widget was destroyed externally, e.g., by
   // the OS. This ensures the popup state manager stays in sync.
@@ -53,8 +57,4 @@ bool OmniboxPopupPresenter::ShouldShowLocationBarCutout() const {
 bool OmniboxPopupPresenter::ShouldReceiveFocus() const {
   return views::AsViewClass<OmniboxPopupWebUIContent>(GetWebUIContent())
       ->wants_focus();
-}
-
-std::string_view OmniboxPopupPresenter::GetPopupShowToPaintMetric() const {
-  return "Omnibox.Popup.WebUI.PresenterShowLatency.ToPaint";
 }

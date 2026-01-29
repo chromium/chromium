@@ -37,6 +37,9 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // the possibly empty input that should replace the omnibox text.
   void OnPageClosedWithInput(const std::string& input);
 
+ protected:
+  std::string_view GetMetricPrefix() const override;
+
  private:
   // WebUIContentsWrapper::Host:
   // Called from WebUI code to close the widget. I.e. when user presses

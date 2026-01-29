@@ -25,13 +25,13 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   ~OmniboxPopupPresenter() override;
 
   void Hide() override;
+  std::string_view GetPopupMetricPrefix() const override;
 
  protected:
   // OmniboxPopupPresenterBase overrides:
   void WidgetDestroyed() override;
   bool ShouldShowLocationBarCutout() const override;
   bool ShouldReceiveFocus() const override;
-  std::string_view GetPopupShowToPaintMetric() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

@@ -2926,8 +2926,36 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.Aim.ConstructionToFirstShownDuration" units="ms"
+    expires_after="2026-12-22">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time between the AI Mode WebUI page load which happens when the
+    popup presenter is constructed and the first time the popup widget is shown.
+    Given that the AI Mode WebUI page begins the asynchronous process of loading
+    its resources, initialization, and binding immediately after it is loaded,
+    this metric can be seen as a time budget for the AI Mode WebUI page remote
+    to be bound and ready to receive calls. Recorded at most once per browser
+    window.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.Aim.CrashRecovery" enum="Boolean"
+    expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the renderer process has crashed and the contents is being
+    reloaded before showing the WebUI AI Mode popup.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Popup.Aim.PresenterShowLatency.ToPaint" units="ms"
-    expires_after="2026-11-12">
+    expires_after="2026-12-22">
   <owner>mahmadi@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2938,8 +2966,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.Aim.RendererProcessGoneStatus"
+    enum="OmniboxWebUIRendererProcessGoneStatus" expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the termination status of the AI Mode Popup WebUI renderer process
+    when it goes away. This helps monitor crash rates and types.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Popup.WebUI.ConstructionToFirstShownDuration"
-    units="ms" expires_after="2026-11-12">
+    units="ms" expires_after="2026-12-22">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

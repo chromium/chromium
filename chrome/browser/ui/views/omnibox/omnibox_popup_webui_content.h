@@ -49,6 +49,9 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
+ protected:
+  std::string_view GetMetricPrefix() const override;
+
  private:
   // Returns the WebUI Omnibox Handler. Can return null.
   WebuiOmniboxHandler* omnibox_handler();
