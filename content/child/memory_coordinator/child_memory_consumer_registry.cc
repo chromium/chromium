@@ -71,14 +71,14 @@ void ChildMemoryConsumerRegistry::NotifyUpdateMemoryLimit(int percentage) {
 }
 
 // static
-mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
+mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
 ChildMemoryConsumerRegistry::BindAndPassReceiver() {
   auto& child_registry = static_cast<ChildMemoryConsumerRegistry&>(
       base::MemoryConsumerRegistry::Get());
   return child_registry.BindAndPassReceiverImpl();
 }
 
-mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
+mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
 ChildMemoryConsumerRegistry::BindAndPassReceiverForTesting() {
   return BindAndPassReceiverImpl();
 }
@@ -87,23 +87,26 @@ void ChildMemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_id,
     base::MemoryConsumerTraits traits,
     base::RegisteredMemoryConsumer consumer) {
-  auto [it, inserted] =
-      consumer_groups_.try_emplace(std::string(consumer_id), traits);
-  ConsumerGroup& consumer_group = it->second.consumer_group;
+  auto [it, inserted] = consumer_groups_.try_emplace(std::string(consumer_id));
+  if (inserted) {
+    it->second = std::make_unique<ConsumerGroupAndReceiverId>(traits);
+  }
+
+  ConsumerGroup& consumer_group = it->second->consumer_group;
 
   if (inserted) {
     // First time seeing a consumer with this ID.
 
-    if (browser_registry_) {
+    if (registry_host_) {
       // Bind a new pipe to connect with the browser process.
       mojo::PendingRemote<mojom::ChildMemoryConsumer> remote;
-      it->second.receiver_id = child_memory_consumers_.Add(
+      it->second->receiver_id = child_memory_consumers_.Add(
           this, remote.InitWithNewPipeAndPassReceiver(),
           CreateRegisteredMemoryConsumer(&consumer_group));
 
       // Notify the browser process.
-      browser_registry_->RegisterChildMemoryConsumer(std::string(consumer_id),
-                                                     traits, std::move(remote));
+      registry_host_->Register(std::string(consumer_id), traits,
+                               std::move(remote));
     }
 
     // Add to `consumer_infos_` to facilitate iteration by external callers.
@@ -122,8 +125,8 @@ void ChildMemoryConsumerRegistry::OnMemoryConsumerRemoved(
     base::RegisteredMemoryConsumer consumer) {
   auto it = consumer_groups_.find(consumer_id);
   CHECK(it != consumer_groups_.end());
-  ConsumerGroup& consumer_group = it->second.consumer_group;
-  std::optional<mojo::ReceiverId> receiver_id = it->second.receiver_id;
+  ConsumerGroup& consumer_group = it->second->consumer_group;
+  std::optional<mojo::ReceiverId> receiver_id = it->second->receiver_id;
 
   consumer_group.RemoveMemoryConsumer(consumer);
 
@@ -146,15 +149,15 @@ void ChildMemoryConsumerRegistry::OnMemoryConsumerRemoved(
   }
 }
 
-mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
+mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
 ChildMemoryConsumerRegistry::BindAndPassReceiverImpl() {
-  CHECK(!browser_registry_);
+  CHECK(!registry_host_);
 
-  auto pending_receiver = browser_registry_.BindNewPipeAndPassReceiver();
+  auto pending_receiver = registry_host_.BindNewPipeAndPassReceiver();
 
   // Notify the browser for consumers that registered early.
-  for (auto& [consumer_id, consumer_group_and_receiver_id] : consumer_groups_) {
-    auto& [consumer_group, receiver_id] = consumer_group_and_receiver_id;
+  for (auto& [consumer_id, entry] : consumer_groups_) {
+    auto& [consumer_group, receiver_id] = *entry;
 
     // Bind a new pipe to connect with the browser process.
     mojo::PendingRemote<mojom::ChildMemoryConsumer> remote;
@@ -163,8 +166,8 @@ ChildMemoryConsumerRegistry::BindAndPassReceiverImpl() {
         CreateRegisteredMemoryConsumer(&consumer_group));
 
     // Notify the browser process.
-    browser_registry_->RegisterChildMemoryConsumer(
-        std::string(consumer_id), consumer_group.traits(), std::move(remote));
+    registry_host_->Register(std::string(consumer_id), consumer_group.traits(),
+                             std::move(remote));
   }
 
   return pending_receiver;

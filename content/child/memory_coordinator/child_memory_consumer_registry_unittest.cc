@@ -26,29 +26,28 @@ namespace {
 
 using ConsumerInfo = ChildMemoryConsumerRegistry::ConsumerInfo;
 
-class DummyBrowserMemoryConsumerRegistry
-    : public mojom::BrowserMemoryConsumerRegistry {
+class DummyChildMemoryConsumerRegistryHost
+    : public mojom::ChildMemoryConsumerRegistryHost {
  public:
-  explicit DummyBrowserMemoryConsumerRegistry(
-      mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry> receiver)
+  explicit DummyChildMemoryConsumerRegistryHost(
+      mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  // mojom::BrowserMemoryConsumerRegistry:
-  void RegisterChildMemoryConsumer(
-      const std::string& consumer_id,
-      base::MemoryConsumerTraits traits,
-      mojo::PendingRemote<mojom::ChildMemoryConsumer> remote_consumer)
+  // mojom::ChildMemoryConsumerRegistryHost:
+  void Register(const std::string& consumer_id,
+                base::MemoryConsumerTraits traits,
+                mojo::PendingRemote<mojom::ChildMemoryConsumer> remote_consumer)
       override {
     remote_set_.Add(std::move(remote_consumer));
   }
 
-  mojo::PendingRemote<mojom::BrowserMemoryConsumerRegistry>
+  mojo::PendingRemote<mojom::ChildMemoryConsumerRegistryHost>
   BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
  private:
-  mojo::Receiver<mojom::BrowserMemoryConsumerRegistry> receiver_;
+  mojo::Receiver<mojom::ChildMemoryConsumerRegistryHost> receiver_;
 
   mojo::RemoteSet<mojom::ChildMemoryConsumer> remote_set_;
 };
@@ -61,8 +60,9 @@ class ChildMemoryConsumerRegistryTest : public testing::Test {
  protected:
   ChildMemoryConsumerRegistry* registry() { return &registry_; }
 
-  std::unique_ptr<DummyBrowserMemoryConsumerRegistry> CreateBrowserRegistry() {
-    return std::make_unique<DummyBrowserMemoryConsumerRegistry>(
+  std::unique_ptr<DummyChildMemoryConsumerRegistryHost>
+  CreateBrowserRegistry() {
+    return std::make_unique<DummyChildMemoryConsumerRegistryHost>(
         registry_.BindAndPassReceiverForTesting());
   }
 

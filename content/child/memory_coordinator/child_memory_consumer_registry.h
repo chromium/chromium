@@ -6,7 +6,7 @@
 #define CONTENT_CHILD_MEMORY_COORDINATOR_CHILD_MEMORY_CONSUMER_REGISTRY_H_
 
 #include <functional>
-#include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -19,13 +19,14 @@
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
 
 // This is an implementation of the MemoryConsumerRegistry meant to live in a
 // child process. Consumers added to this registry are seamlessly registered
-// with the browser's registry through the mojom::BrowserMemoryConsumerRegistry
-// interface.
+// with the browser's registry through the
+// mojom::ChildMemoryConsumerRegistryHost interface.
 class CONTENT_EXPORT ChildMemoryConsumerRegistry
     : public base::MemoryConsumerRegistry,
       public mojom::ChildMemoryConsumer {
@@ -56,12 +57,12 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
   size_t size() const { return consumer_groups_.size(); }
 
   // Allows connecting this process's global instance with the browser process.
-  static mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
+  static mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
   BindAndPassReceiver();
 
   // Non-static version of the above, allowing to connect the browser and child
   // registries if the caller has a pointer to the registry.
-  mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
+  mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
   BindAndPassReceiverForTesting();
 
  private:
@@ -99,11 +100,11 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
       std::string_view consumer_id,
       base::RegisteredMemoryConsumer consumer) override;
 
-  mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
+  mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
   BindAndPassReceiverImpl();
 
   // Used to register consumers in the child process with the browser process.
-  mojo::Remote<mojom::BrowserMemoryConsumerRegistry> browser_registry_;
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> registry_host_;
 
   // Contains groups of all MemoryConsumers with the same consumer ID, and their
   // associated mojo::ReceiverId.
@@ -115,7 +116,7 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
     ConsumerGroup consumer_group;
     std::optional<mojo::ReceiverId> receiver_id;
   };
-  std::map<std::string, ConsumerGroupAndReceiverId, std::less<>>
+  absl::flat_hash_map<std::string, std::unique_ptr<ConsumerGroupAndReceiverId>>
       consumer_groups_;
 
   // For each ConsumerGroup, a mojom::ChildMemoryConsumer connection with the

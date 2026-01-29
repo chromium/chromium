@@ -48,6 +48,7 @@
 #include "components/variations/variations_ids_provider.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browser_thread_impl.h"
+#include "content/browser/memory_coordinator/browser_memory_coordinator.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/scheduler/browser_task_executor.h"
@@ -621,7 +622,7 @@ void BrowserTestBase::SetUp() {
   // follows.
 
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
-  base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry> registry;
+  BrowserMemoryCoordinator memory_coordinator;
 
   // Unlike other platforms, android_browsertests can reuse the same process for
   // multiple tests. Need to reset startup metrics to allow recording them

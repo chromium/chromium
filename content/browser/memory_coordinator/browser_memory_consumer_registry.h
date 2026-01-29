@@ -5,30 +5,17 @@
 #ifndef CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_CONSUMER_REGISTRY_H_
 #define CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_CONSUMER_REGISTRY_H_
 
-#include <functional>
-#include <map>
-#include <string>
-#include <string_view>
-#include <tuple>
-#include <vector>
-
+#include "base/memory/raw_ref.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "base/memory_coordinator/traits.h"
+#include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 #include "content/common/content_export.h"
-#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
-
-// Binds `pending_receiver` with the global BrowserMemoryConsumerRegistry.
-void CONTENT_EXPORT BindBrowserMemoryConsumerRegistry(
-    ProcessType process_type,
-    ChildProcessId child_process_id,
-    mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
-        pending_receiver);
 
 // The MemoryConsumerRegistry implementation that lives in the browser process.
 // This implementation acts as the main registry, as all the registries in child
@@ -37,22 +24,22 @@ void CONTENT_EXPORT BindBrowserMemoryConsumerRegistry(
 // processes.
 class CONTENT_EXPORT BrowserMemoryConsumerRegistry
     : public base::MemoryConsumerRegistry,
-      public mojom::BrowserMemoryConsumerRegistry {
+      public ChildMemoryConsumerRegistryHost::Delegate {
  public:
   BrowserMemoryConsumerRegistry();
   ~BrowserMemoryConsumerRegistry() override;
 
-  // mojom::BrowserMemoryConsumerRegistry:
-  void RegisterChildMemoryConsumer(
-      const std::string& consumer_id,
+  // ChildMemoryConsumerRegistryHost::Delegate:
+  void AddMemoryConsumerFromChildProcess(
+      std::string_view consumer_id,
       base::MemoryConsumerTraits traits,
-      mojo::PendingRemote<mojom::ChildMemoryConsumer> remote_consumer) override;
-
-  // Binds `pending_receiver` to `this`.
-  void Bind(ProcessType process_type,
-            ChildProcessId child_process_id,
-            mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
-                pending_receiver);
+      ProcessType process_type,
+      ChildProcessId child_process_id,
+      base::MemoryConsumer* consumer) override;
+  void RemoveMemoryConsumerFromChildProcess(
+      std::string_view consumer_id,
+      ChildProcessId child_process_id,
+      base::MemoryConsumer* consumer) override;
 
   // Details about a group of consumers of the same type.
   struct ConsumerInfo {
@@ -89,24 +76,6 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
   size_t size() const { return consumer_infos_.size(); }
 
  private:
-  // An implementation of base::MemoryConsumer that encapsulates a connection to
-  // to a mojom::ChildMemoryConsumer in a child process. This enables uniform
-  // handling of local and remote MemoryConsumers.
-  class ChildMemoryConsumer : public base::MemoryConsumer {
-   public:
-    ChildMemoryConsumer(
-        mojo::PendingRemote<mojom::ChildMemoryConsumer> remote_consumer,
-        base::OnceCallback<void(ChildMemoryConsumer*)> on_disconnect_handler);
-    ~ChildMemoryConsumer() override;
-
-    // base::MemoryConsumer:
-    void OnReleaseMemory() override;
-    void OnUpdateMemoryLimit() override;
-
-   private:
-    mojo::Remote<mojom::ChildMemoryConsumer> remote_consumer_;
-  };
-
   // An implementation of MemoryConsumer that groups all consumers with the same
   // consumer ID and process ID to ensure they are treated identically.
   class ConsumerGroup : public base::MemoryConsumer {
@@ -154,28 +123,12 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
                                 ChildProcessId child_process_id,
                                 base::RegisteredMemoryConsumer consumer);
 
-  void OnChildMemoryConsumerDisconnected(
-      const std::string& consumer_id,
-      ChildProcessId child_process_id,
-      ChildMemoryConsumer* child_memory_consumer);
-
-  struct ChildRegistryContext {
-    ProcessType process_type;
-    ChildProcessId child_process_id;
-  };
-  mojo::ReceiverSet<mojom::BrowserMemoryConsumerRegistry, ChildRegistryContext>
-      receivers_;
-
   using ConsumerGroupKey = std::tuple<std::string, ChildProcessId>;
-
-  // Holds a ChildMemoryConsumer for each consumer group that lives in a child
-  // process.
-  std::map<ConsumerGroupKey, ChildMemoryConsumer, std::less<>>
-      child_memory_consumers_;
 
   // Contains groups of all MemoryConsumers with the same consumer ID and
   // process ID.
-  std::map<ConsumerGroupKey, ConsumerGroup, std::less<>> consumer_groups_;
+  absl::flat_hash_map<ConsumerGroupKey, std::unique_ptr<ConsumerGroup>>
+      consumer_groups_;
 
   // For each ConsumerGroup, this holds a corresponding ConsumerInfo entry. This
   // exists to facilitate iteration over existing MemoryConsumers.

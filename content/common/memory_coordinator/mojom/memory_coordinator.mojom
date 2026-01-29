@@ -31,9 +31,9 @@ struct MemoryConsumerTraits {
 
 // The interface for communicating with the MemoryConsumerRegistry that lives in
 // the browser process.
-interface BrowserMemoryConsumerRegistry {
+interface ChildMemoryConsumerRegistryHost {
   // Registers a MemoryConsumer with the browser-side registry.
-  RegisterChildMemoryConsumer(
+  Register(
       string consumer_id,
       MemoryConsumerTraits traits,
       pending_remote<ChildMemoryConsumer> child_consumer);
