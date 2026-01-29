@@ -433,7 +433,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   }
 }
 
-void ContextualTasksUiService::OnNonAiNavigationInTab(
+void ContextualTasksUiService::OnSearchResultsNavigationInTab(
     const GURL& url,
     base::WeakPtr<tabs::TabInterface> tab) {
   if (!tab || !tab->GetContents()) {
@@ -554,48 +554,47 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       task_id = GetTaskIdFromHostURL(source_contents->GetLastCommittedURL());
     }
 
-    // Contend with the tab-specific cases first since they're the simplest.
-    if (tab) {
-      if (is_nav_to_ai) {
-        // Allow any navigations to an AI page with no speicial handling when
-        // viewed in a tab.
-        return false;
-      } else {
-        // Any navigation in a tab that isn't AI needs special handling.
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ContextualTasksUiService::OnNonAiNavigationInTab,
-                           weak_ptr_factory_.GetWeakPtr(), url_params.url,
-                           tab->GetWeakPtr()));
-        return true;
-      }
-    }
-
     // If the navigation is to a search results page or AI page, it is allowed
     // if being viewed in the side panel, but only if it is intercepted without
     // the side panel-specific params. If the params have already been added, do
     // nothing, otherwise this logic causes an infinite "intercept" loop.
-    if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
-      if (!lens::HasCommonSearchQueryParameters(url_params.url)) {
-        ContextualTasksUI* webui_controller = nullptr;
-        if (source_contents->GetWebUI()) {
-          webui_controller = source_contents->GetWebUI()
-                                 ->GetController()
-                                 ->GetAs<ContextualTasksUI>();
+    if (IsSearchResultsUrl(url_params.url) || is_nav_to_ai) {
+      if (tab) {
+        if (!is_nav_to_ai) {
+          // The SRP should never be embedded in the WebUI when viewed in a tab.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &ContextualTasksUiService::OnSearchResultsNavigationInTab,
+                  weak_ptr_factory_.GetWeakPtr(), url_params.url,
+                  tab->GetWeakPtr()));
+          return true;
+        } else {
+          // Allow any navigations to an AI page.
+          return false;
+        }
+      } else if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
+        if (!lens::HasCommonSearchQueryParameters(url_params.url)) {
+          ContextualTasksUI* webui_controller = nullptr;
+          if (source_contents->GetWebUI()) {
+            webui_controller = source_contents->GetWebUI()
+                                   ->GetController()
+                                   ->GetAs<ContextualTasksUI>();
+          }
+
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&ContextualTasksUiService::
+                                 OnSearchResultsNavigationInSidePanel,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(url_params), webui_controller));
+          return true;
         }
 
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &ContextualTasksUiService::OnSearchResultsNavigationInSidePanel,
-                weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
-                webui_controller));
-        return true;
+        // If the params are present and the page is "valid" (e.g. not
+        // shopping and has a query), allow the navigation.
+        return false;
       }
-
-      // If the params are present and the page is "valid" (e.g. not
-      // shopping and has a query), allow the navigation.
-      return false;
     }
 
     // This needs to be posted in case the called method triggers a navigation
