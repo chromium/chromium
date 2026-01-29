@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_WIDGET_GLIC_SIDE_PANEL_COORDINATOR_ANDROID_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_WIDGET_GLIC_SIDE_PANEL_COORDINATOR_ANDROID_H_
 
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 
 namespace tabs {
@@ -29,6 +31,17 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
       base::RepeatingCallback<void(State state)> callback) override;
   int GetPreferredWidth() override;
   bool IsGlicSidePanelActive() override;
+
+ private:
+  void SetState(State state);
+  void OnTabDidActivate(tabs::TabInterface* tab);
+  void OnTabWillDeactivate(tabs::TabInterface* tab);
+
+  State state_ = State::kClosed;
+  base::RepeatingCallbackList<void(State)> state_callbacks_;
+  const raw_ptr<tabs::TabInterface> tab_;
+  base::CallbackListSubscription did_activate_subscription_;
+  base::CallbackListSubscription will_deactivate_subscription_;
 };
 
 }  // namespace glic

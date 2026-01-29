@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_ANDROID_H_
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_ANDROID_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 
 namespace tabs {
@@ -23,6 +26,8 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
       base::WeakPtr<tabs::TabInterface> tab,
       GlicUiEmbedder::Delegate& delegate);
 
+  GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
+                          GlicUiEmbedder::Delegate& delegate);
   ~GlicInactiveSidePanelUi() override;
 
   // GlicUiEmbedder:
@@ -38,7 +43,12 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
   std::string DescribeForTesting() override;
 
  private:
-  GlicInactiveSidePanelUi();
+  GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
+
+  base::WeakPtr<tabs::TabInterface> tab_;
+  const raw_ref<GlicUiEmbedder::Delegate> delegate_;
+
+  base::WeakPtrFactory<GlicInactiveSidePanelUi> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
