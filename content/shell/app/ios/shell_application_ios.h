@@ -10,6 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface ShellAppSceneDelegate : UIResponder <UIWindowSceneDelegate>
+@end
+
 // UIApplicationDelegate implementation for web_view_shell.
 @interface ShellAppDelegate : UIResponder <UIApplicationDelegate>
 

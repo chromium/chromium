@@ -15,13 +15,14 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(IS_IOS_TVOS)
+#include "content/shell/app/ios/shell_app_scene_delegate_tvos.h"
+#endif
+
 static int g_argc = 0;
 static const char** g_argv = nullptr;
 static std::unique_ptr<content::ContentMainRunner> g_main_runner;
 static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
-
-@interface ShellAppSceneDelegate : UIResponder <UIWindowSceneDelegate>
-@end
 
 @implementation ShellAppSceneDelegate
 
@@ -59,7 +60,11 @@ static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
   UISceneConfiguration* configuration =
       [[UISceneConfiguration alloc] initWithName:nil
                                      sessionRole:connectingSceneSession.role];
+#if BUILDFLAG(IS_IOS_TVOS)
+  configuration.delegateClass = ShellAppSceneDelegateTVOS.class;
+#else
   configuration.delegateClass = ShellAppSceneDelegate.class;
+#endif
   return configuration;
 }
 
