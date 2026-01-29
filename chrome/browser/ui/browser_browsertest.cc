@@ -1526,7 +1526,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
   });
   for (auto& param : params) {
     param.initial_show_state = ui::mojom::WindowShowState::kMinimized;
-    AddBlankTabAndShow(Browser::Create(param));
+    AddBlankTabAndShow(Browser::Create(param), /*wait_for_activation=*/false);
   }
 }
 

@@ -307,7 +307,11 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
   // Called from the various CreateBrowser methods to add a blank tab, wait for
   // the navigation to complete, and show the browser's window.
-  void AddBlankTabAndShow(Browser* browser);
+  // `wait_for_activation` indicates if this method should wait until the
+  // browser activation happens, which should be true in most of the case unless
+  // the caller knows that it won't happen (e.g. when the browser is created
+  // with minimized window).
+  void AddBlankTabAndShow(Browser* browser, bool wait_for_activation = true);
 
 #if !BUILDFLAG(IS_MAC)
   // Return a CommandLine object that is used to relaunch the browser_test
