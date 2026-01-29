@@ -54,7 +54,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      const PrimaryPlaneParams& primary_plane_params,
+      std::optional<OverlayCandidate>& primary_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final;
@@ -79,7 +79,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      const std::optional<OverlayCandidate>& primary_plane,
+      std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds);
 

@@ -66,6 +66,18 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       bool has_occluding_surface_damage,
       bool zero_damage_rect);
 
+  // TODO(weiliangc): Eventually the asymmetry between primary plane and
+  // non-primary places should be internalized and should not have a special
+  // API.
+  static OverlayCandidate ProcessOutputSurfaceAsOverlay(
+      const gfx::Size& viewport_size,
+      const gfx::Size& resource_size,
+      const SharedImageFormat si_format,
+      const gfx::ColorSpace& color_space,
+      bool has_alpha,
+      float opacity,
+      const gpu::Mailbox& mailbox);
+
   static std::unique_ptr<OverlayProcessorInterface> CreateOverlayProcessor(
       OutputSurface* output_surface,
       gpu::SurfaceHandle surface_handle,
@@ -90,23 +102,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // processor.
   virtual bool NeedsSurfaceDamageRectList() const = 0;
 
-  struct PrimaryPlaneParams {
-    const gfx::Size viewport_size;
-    const gfx::Size resource_size_in_pixels;
-    bool supports_hdr = false;
-    bool is_opaque = false;
-
-#if BUILDFLAG(IS_OZONE)
-    // Ozone requires checking for overlay support with an actual buffer. To
-    // create the primary plane, `OverlayProcessorOzone` will use an existing
-    // `overlay_testing_mailbox` (usually, the last swapped primary plane
-    // buffer) or will make a dummy buffer using `si_format` and `color_space`.
-    const SharedImageFormat si_format;
-    const gfx::ColorSpace color_space;
-    const gpu::Mailbox overlay_testing_mailbox;
-#endif
-  };
-
   // Attempts to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
   // TODO(crbug.com/444264038): Delete this overload when the RPDQ refactor is
@@ -118,7 +113,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      const PrimaryPlaneParams& primary_plane_params,
+      std::optional<OverlayCandidate>& primary_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) = 0;
@@ -127,7 +122,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
                           AggregatedRenderPassList* render_passes,
                           const SkM44& output_color_matrix,
                           SurfaceDamageRectList surface_damage_rect_list,
-                          const PrimaryPlaneParams& primary_plane_params,
+                          std::optional<OverlayCandidate>& primary_plane,
                           CandidateList* overlay_candidates,
                           gfx::Rect* damage_rect,
                           std::vector<gfx::Rect>* content_bounds);
@@ -180,8 +175,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
  protected:
   OverlayProcessorInterface() = default;
-
-  static OverlayCandidate CreatePrimaryPlane(const PrimaryPlaneParams& params);
 };
 
 }  // namespace viz

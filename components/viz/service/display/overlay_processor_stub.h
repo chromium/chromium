@@ -33,7 +33,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      const PrimaryPlaneParams& primary_plane_params,
+      std::optional<OverlayCandidate>& primary_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final {}

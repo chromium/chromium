@@ -48,7 +48,7 @@ void OverlayProcessorMac::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
-    const PrimaryPlaneParams& primary_plane_params,
+    std::optional<OverlayCandidate>& primary_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
@@ -79,9 +79,13 @@ void OverlayProcessorMac::ProcessForOverlays(
         &render_pass->quad_list, render_pass_filters,
         render_pass_backdrop_filters, candidates);
 
+    CHECK(primary_plane);
+    render_pass->has_transparent_background |= !primary_plane->is_opaque;
+
     // Mac doesn't use the plane_z_order field and it needs to have primary
     // plane last in the list of overlays.
-    candidates->push_back(CreatePrimaryPlane(primary_plane_params));
+    candidates->push_back(std::move(primary_plane).value());
+    primary_plane.reset();
   }
 }
 

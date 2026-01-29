@@ -197,10 +197,6 @@ void OverlayProcessorAndroid::InsertPrimaryPlane(
   NOTREACHED();
 }
 
-bool OverlayProcessorAndroid::ShouldCreatePrimaryPlane() const {
-  return false;
-}
-
 void OverlayProcessorAndroid::TakeOverlayCandidates(
     OverlayCandidateList* candidate_list) {
   overlay_candidates_.swap(*candidate_list);
