@@ -126,9 +126,9 @@ bool AddInternetZoneIdentifierDirectly(const base::FilePath& file_path) {
                          kMotwForInternetZone);
 }
 
-void CheckQuarantineResult(QuarantineFileResult result,
-                           QuarantineFileResult expected_result) {
-  EXPECT_EQ(expected_result, result);
+void CheckQuarantineResult(QuarantineFileResult expected,
+                           QuarantineFileResult actual) {
+  EXPECT_EQ(expected, actual);
 }
 
 }  // namespace
