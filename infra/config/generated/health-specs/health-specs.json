@@ -8396,6 +8396,27 @@
           }
         ]
       },
+      "android-x64-treesinviz-enabled-rel": {
+        "contact_team_email": "chrome-gpu-team@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "android-x86-code-coverage": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
@@ -10103,6 +10124,27 @@
           }
         ]
       },
+      "linux-chromeos-treesinviz-enabled-rel": {
+        "contact_team_email": "chrome-gpu-team@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "linux-code-coverage": {
         "problem_specs": [
           {
@@ -10732,6 +10774,27 @@
       },
       "linux-swangle-x64-exp": {
         "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "linux-treesinviz-disabled-rel": {
+        "contact_team_email": "chrome-gpu-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11638,6 +11701,27 @@
       },
       "mac-swangle-chromium-x64": {
         "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "mac-treesinviz-enabled-rel": {
+        "contact_team_email": "chrome-gpu-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12794,6 +12878,27 @@
       },
       "win-swangle-x86": {
         "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "win-treesinviz-enabled-rel": {
+        "contact_team_email": "chrome-gpu-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

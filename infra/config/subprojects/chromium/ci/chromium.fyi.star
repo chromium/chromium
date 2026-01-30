@@ -2534,3 +2534,199 @@ ci.builder(
     ),
     contact_team_email = "chrome-counter-abuse-core@google.com",
 )
+
+fyi_mac_builder(
+    name = "mac-treesinviz-enabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "mac",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = ["trees_in_viz_enabled_tests"],
+        mixins = ["mac_15_x64"],
+    ),
+    builderless = True,
+    cores = None,
+    console_view_entry = consoles.console_view_entry(
+        category = "viz",
+        short_name = "mac",
+    ),
+    contact_team_email = "chrome-gpu-team@google.com",
+)
+
+ci.builder(
+    name = "win-treesinviz-enabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "win",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = ["trees_in_viz_enabled_tests"],
+        mixins = [
+            "x86-64",
+            "win10",
+        ],
+    ),
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "viz",
+        short_name = "win",
+    ),
+    contact_team_email = "chrome-gpu-team@google.com",
+)
+
+ci.builder(
+    name = "linux-chromeos-treesinviz-enabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_with_codecs",
+            "release_builder",
+            "remoteexec",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = ["trees_in_viz_enabled_tests"],
+        mixins = [
+            "x86-64",
+            "linux-jammy",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "viz",
+        short_name = "lcr",
+    ),
+    contact_team_email = "chrome-gpu-team@google.com",
+)
+
+ci.builder(
+    name = "android-x64-treesinviz-enabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "main_builder",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "base_config",
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "remoteexec",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = ["trees_in_viz_enabled_tests"],
+        mixins = [
+            "15-x64-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "viz",
+        short_name = "and",
+    ),
+    contact_team_email = "chrome-gpu-team@google.com",
+)
+
+ci.builder(
+    name = "linux-treesinviz-disabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature disabled.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = ["trees_in_viz_disabled_tests"],
+        mixins = ["linux-jammy"],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "viz",
+        short_name = "lnx",
+    ),
+    contact_team_email = "chrome-gpu-team@google.com",
+)

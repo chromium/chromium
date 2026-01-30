@@ -576,6 +576,15 @@ try_.builder(
     execution_timeout = 20 * time.hour,
 )
 
+try_.builder(
+    name = "mac-treesinviz-enabled-rel",
+    mirrors = [
+        "ci/mac-treesinviz-enabled-rel",
+    ],
+    gn_args = "ci/mac-treesinviz-enabled-rel",
+    contact_team_email = "chrome-gpu-team@google.com",
+)
+
 ios_builder(
     name = "ios-asan",
     mirrors = [

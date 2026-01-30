@@ -429,3 +429,12 @@ try_.builder(
         ],
     ),
 )
+
+try_.builder(
+    name = "linux-chromeos-treesinviz-enabled-rel",
+    mirrors = [
+        "ci/linux-chromeos-treesinviz-enabled-rel",
+    ],
+    gn_args = "ci/linux-chromeos-treesinviz-enabled-rel",
+    contact_team_email = "chrome-gpu-team@google.com",
+)

@@ -1,0 +1,12 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "is_component_build": false,
+    "is_debug": false,
+    "target_cpu": "x64",
+    "target_os": "linux",
+    "use_reclient": false,
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

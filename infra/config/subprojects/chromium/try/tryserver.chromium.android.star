@@ -1473,6 +1473,15 @@ try_.builder(
     ),
 )
 
+try_.builder(
+    name = "android-x64-treesinviz-enabled-rel",
+    mirrors = [
+        "ci/android-x64-treesinviz-enabled-rel",
+    ],
+    gn_args = "ci/android-x64-treesinviz-enabled-rel",
+    contact_team_email = "chrome-gpu-team@google.com",
+)
+
 gpu.try_.optional_tests_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,

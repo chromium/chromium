@@ -6807,6 +6807,38 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "trees_in_viz_disabled_tests",
+    targets = [
+        "cc_unittests",
+        "viz_unittests",
+        "blink_web_tests",
+        "content_browsertests",
+        "browser_tests",
+    ],
+    mixins = [
+        targets.mixin(
+            args = ["--disable-features=TreesInViz"],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "trees_in_viz_enabled_tests",
+    targets = [
+        "cc_unittests",
+        "viz_unittests",
+        "blink_web_tests",
+        "content_browsertests",
+        "browser_tests",
+    ],
+    mixins = [
+        targets.mixin(
+            args = ["--enable-features=TreesInViz"],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "tvos_rel_tests",
     targets = [
         targets.bundle(
