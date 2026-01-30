@@ -78,6 +78,11 @@ class SkillsSyncBridge : public syncer::DataTypeSyncBridge,
   // Called on database save completion.
   void OnDatabaseSave(const std::optional<syncer::ModelError>& error);
 
+  // Returns the trimmed specifics for `storage_key` which may contain unknown
+  // fields.
+  const sync_pb::SkillSpecifics& GetPossiblyTrimmedSpecifics(
+      const std::string& storage_key) const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.

@@ -23,17 +23,26 @@
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "components/sync/test/unknown_field_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
+using syncer::test::HasUnknownField;
+using testing::AllOf;
 using testing::Contains;
 using testing::IsEmpty;
 using testing::Pointee;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
+
+MATCHER_P(HasSimpleSkill, matcher, "") {
+  return arg.has_simple_skill() &&
+         testing::ExplainMatchResult(matcher, arg.simple_skill(),
+                                     result_listener);
+}
 
 MATCHER_P3(HasSkill, name, icon, prompt, "") {
   return arg.name == name && arg.icon == icon && arg.prompt == prompt;
@@ -270,6 +279,45 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldMergeRemoteData) {
 
 // TODO(crbug.com/471795213): add a test to verify that skills can't be created
 // when sync is disabled.
+
+IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
+                       ShouldPreserveUnknownFields) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  sync_pb::SkillSpecifics specifics_with_unknown_fields =
+      CreateSkillSpecifics(kSkillId, "name", "icon", "prompt");
+
+  // Add unknown fields that should be preserved by the client.
+  syncer::test::AddUnknownFieldToProto(
+      *specifics_with_unknown_fields.mutable_simple_skill(),
+      "simple_skill_unknown_field");
+  syncer::test::AddUnknownFieldToProto(specifics_with_unknown_fields,
+                                       "specifics_unknown_field");
+
+  InjectSpecificsToFakeServer(specifics_with_unknown_fields);
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SkillsServiceChecker(GetSkillsService(),
+                                   UnorderedElementsAre(Pointee(
+                                       HasSkill("name", "icon", "prompt"))))
+                  .Wait());
+
+  // Update the skill on the client.
+  const skills::Skill* skill = GetSkillsService().UpdateSkill(
+      kSkillId, "updated name", "updated icon", "updated prompt");
+  ASSERT_NE(skill, nullptr);
+
+  // Verify that the server received the update and that unknown fields are
+  // preserved.
+  EXPECT_TRUE(
+      ServerSkillsMatchChecker(
+          UnorderedElementsAre(AllOf(
+              HasSkillSpecifics(kSkillId, "updated name", "updated icon",
+                                "updated prompt"),
+              HasUnknownField("specifics_unknown_field"),
+              HasSimpleSkill(HasUnknownField("simple_skill_unknown_field")))))
+          .Wait());
+}
 
 // ChromeOS does not support signout.
 #if !BUILDFLAG(IS_CHROMEOS)

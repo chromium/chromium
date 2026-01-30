@@ -127,6 +127,9 @@ class SkillsSyncBridgeTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_processor_, ModelReadyToSync)
         .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
+    ON_CALL(mock_processor_, IsTrackingMetadata).WillByDefault(Return(true));
 
     bridge_ = std::make_unique<SkillsSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
@@ -483,6 +486,30 @@ TEST_F(SkillsSyncBridgeTest, ShouldPropagateUpdatesToSync) {
               Put(_,
                   Pointee(EntityDataHasSkillSpecifics(
                       base::test::EqualsProto(expected_specifics))),
+                  _));
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldPropagateUpdatesToSyncWithUnknownFields) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  Skill skill(kSkillId, "name", "icon", "prompt");
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId))
+      .WillByDefault(Return(&skill));
+
+  // These specifics will be returned by the mock processor and are expected to
+  // be passed back to Put() while preserving unknown fields.
+  sync_pb::EntitySpecifics specifics_with_unknown_fields;
+  syncer::test::AddUnknownFieldToProto(
+      *specifics_with_unknown_fields.mutable_skill(), "unknown_field");
+  ON_CALL(mock_processor(), GetPossiblyTrimmedRemoteSpecifics(kSkillId))
+      .WillByDefault(ReturnRef(specifics_with_unknown_fields));
+
+  EXPECT_CALL(mock_processor(),
+              Put(kSkillId,
+                  Pointee(EntityDataHasSkillSpecifics(
+                      syncer::test::HasUnknownField("unknown_field"))),
                   _));
   bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
 }

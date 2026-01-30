@@ -38,11 +38,15 @@ int64_t ToWindowsEpochMicros(base::Time time) {
   return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
-sync_pb::SkillSpecifics SkillToSpecifics(const Skill& skill) {
+// Converts a `skill` to specifics proto. `base_specifics` is used to preserve
+// unknown fields when committing to the server.
+sync_pb::SkillSpecifics SkillToSpecifics(
+    const Skill& skill,
+    sync_pb::SkillSpecifics base_specifics) {
   // Skill ID must be a valid GUID.
   CHECK(base::Uuid::ParseLowercase(skill.id).is_valid());
 
-  sync_pb::SkillSpecifics specifics;
+  sync_pb::SkillSpecifics specifics = std::move(base_specifics);
   specifics.set_guid(skill.id);
   specifics.set_name(skill.name);
   specifics.set_icon(skill.icon);
@@ -83,7 +87,10 @@ syncer::EntityData SpecificsToEntityData(
 void StoreSkill(const Skill& skill,
                 syncer::DataTypeStore::WriteBatch& write_batch) {
   proto::SkillLocalData local_data;
-  *local_data.mutable_specifics() = SkillToSpecifics(skill);
+  // Do not store unknown fields to avoid duplicating data as it's already
+  // stored in the sync metadata.
+  *local_data.mutable_specifics() =
+      SkillToSpecifics(skill, /*base_specifics=*/sync_pb::SkillSpecifics());
   write_batch.WriteData(skill.id, local_data.SerializeAsString());
 }
 
@@ -182,7 +189,8 @@ std::unique_ptr<syncer::DataBatch> SkillsSyncBridge::GetDataForCommit(
 
     batch->Put(storage_key,
                std::make_unique<syncer::EntityData>(
-                   SpecificsToEntityData(SkillToSpecifics(*skill))));
+                   SpecificsToEntityData(SkillToSpecifics(
+                       *skill, GetPossiblyTrimmedSpecifics(storage_key)))));
   }
 
   return batch;
@@ -193,8 +201,11 @@ std::unique_ptr<syncer::DataBatch> SkillsSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::unique_ptr<Skill>& skill : skills_service_->GetSkills()) {
-    batch->Put(skill->id, std::make_unique<syncer::EntityData>(
-                              SpecificsToEntityData(SkillToSpecifics(*skill))));
+    batch->Put(
+        skill->id,
+        std::make_unique<syncer::EntityData>(SpecificsToEntityData(
+            SkillToSpecifics(*skill,
+                             /*base_specifics=*/sync_pb::SkillSpecifics()))));
   }
 
   return batch;
@@ -316,8 +327,8 @@ void SkillsSyncBridge::OnSkillUpdated(
     StoreSkill(*skill, *batch);
     change_processor()->Put(
         skill->id,
-        std::make_unique<syncer::EntityData>(
-            SpecificsToEntityData(SkillToSpecifics(*skill))),
+        std::make_unique<syncer::EntityData>(SpecificsToEntityData(
+            SkillToSpecifics(*skill, GetPossiblyTrimmedSpecifics(skill->id)))),
         batch->GetMetadataChangeList());
   }
 
@@ -385,6 +396,18 @@ void SkillsSyncBridge::OnDatabaseSave(
   if (error) {
     change_processor()->ReportError(*error);
   }
+}
+
+const sync_pb::SkillSpecifics& SkillsSyncBridge::GetPossiblyTrimmedSpecifics(
+    const std::string& storage_key) const {
+  // TODO(crbug.com/471795213): verify that metadata is being tracked.
+  if (!change_processor()->IsTrackingMetadata()) {
+    return sync_pb::SkillSpecifics::default_instance();
+  }
+
+  return change_processor()
+      ->GetPossiblyTrimmedRemoteSpecifics(storage_key)
+      .skill();
 }
 
 }  // namespace skills
