@@ -80,7 +80,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1377,27 +1376,44 @@ void AutofillExternalDelegate::MaybeAuthenticateBeforeFilling(
 
 void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
     const Suggestion& suggestion) {
-  absl::Cleanup popup_closer = [this] {
-    manager_->client().HideAutofillSuggestions(
-        SuggestionHidingReason::kAcceptSuggestion);
-  };
-
   const base::optional_ref<const EntityInstance> entity =
       GetEntityInstance(suggestion);
   auto [form_structure, autofill_field] = GetQueriedFormAndField();
   if (!entity || !autofill_field) {
+    manager_->client().HideAutofillSuggestions(
+        SuggestionHidingReason::kAcceptSuggestion);
     return;
   }
-  const AutofillTriggerSource trigger_source = GetTriggerSource();
-  if (!ShouldReauthBeforeFilling(*entity,
-                                 RationalizeAndDetermineAttributeTypes(
-                                     form_structure->fields(),
-                                     autofill_field->section(), entity->type()),
-                                 manager_->client().GetAppLocale(),
-                                 CHECK_DEREF(manager_->client().GetPrefs()))) {
-    manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
-                                query_field_.global_id(), entity.as_ptr(),
-                                trigger_source);
+
+  // A callback that fills if the argument is `true`. Regardless of the
+  // argument, it always hides the popup.
+  // We bind a lambda instead of binding `FillOrPreviewForm` directly
+  // to make sure that `entity`'s lifetime is long enough.
+  base::OnceCallback<void(bool)> fill_and_hide =
+      base::BindOnce(
+          [](base::WeakPtr<BrowserAutofillManager> manager,
+             const FormData& form, const FieldGlobalId& field_id,
+             const EntityInstance& entity, AutofillTriggerSource trigger_source,
+             bool auth_suceeded) {
+            if (manager && auth_suceeded) {
+              manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                                         field_id, &entity, trigger_source);
+            }
+          },
+          manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,
+          query_field_.global_id(), *entity, GetTriggerSource())
+          .Then(base::BindOnce(&AutofillClient::HideAutofillSuggestions,
+                               manager_->client().GetWeakPtr(),
+                               SuggestionHidingReason::kAcceptSuggestion));
+
+  const bool should_reauth = ShouldReauthBeforeFilling(
+      *entity,
+      RationalizeAndDetermineAttributeTypes(
+          form_structure->fields(), autofill_field->section(), entity->type()),
+      manager_->client().GetAppLocale(),
+      CHECK_DEREF(manager_->client().GetPrefs()));
+  if (!should_reauth) {
+    std::move(fill_and_hide).Run(true);
     return;
   }
 
@@ -1409,7 +1425,6 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
             suggestion),
         trigger_source_,
         /*is_update=*/true, AutofillSuggestionsIgnoreFocusLoss(true));
-    std::move(popup_closer).Cancel();
   }
 
   // Authenticate and fill on success.
@@ -1419,25 +1434,8 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
       base::UTF8ToUTF16(autofill_field->origin().host());
   message = l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH, origin);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  MaybeAuthenticateBeforeFilling(
-      message, "Autofill.Ai.ReauthToFill",
-      base::BindOnce(
-          [](base::WeakPtr<BrowserAutofillManager> manager,
-             const FormData& form, const FieldGlobalId& field_id,
-             const EntityInstance& entity, AutofillTriggerSource trigger_source,
-             bool auth_succeeded) {
-            if (!manager) {
-              return;
-            }
-            if (auth_succeeded) {
-              manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                         field_id, &entity, trigger_source);
-            }
-            manager->client().HideAutofillSuggestions(
-                SuggestionHidingReason::kAcceptSuggestion);
-          },
-          manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,
-          query_field_.global_id(), *entity, trigger_source));
+  MaybeAuthenticateBeforeFilling(message, "Autofill.Ai.ReauthToFill",
+                                 std::move(fill_and_hide));
 }
 
 void AutofillExternalDelegate::OnReauthCompleted(
