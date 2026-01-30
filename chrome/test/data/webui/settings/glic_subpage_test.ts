@@ -310,7 +310,7 @@ suite('GlicSubpage', function() {
 
     // Ensure the page reacts appropriately to the enterprise policy pref being
     // flipped off and back on.
-    test('DisabledByPolicy', async () => {
+    test('CanActOnWebFalse', async () => {
       page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
       page.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
       page.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
@@ -822,7 +822,7 @@ suite('GlicSubpage', function() {
     });
   });
 
-  suite('WebActuationEnterprisePolicy', () => {
+  suite('SimulateCanActOnWebOnAndOff', () => {
     function waitOneTick() {
       return new Promise(resolve => setTimeout(resolve, 0));
     }
@@ -835,7 +835,7 @@ suite('GlicSubpage', function() {
       await flushTasks();
     }
 
-    test('ToggleDisabledByEnterprisePolicy', async () => {
+    test('ToggleDisabledWhenCanActOnWebFalse', async () => {
       page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, true);
       await flushTasks();
 
@@ -858,7 +858,7 @@ suite('GlicSubpage', function() {
       assertFalse(webActuationToggle.checked);
     });
 
-    test('MenuCollapsesWhenDisabledByPolicy', async () => {
+    test('MenuCollapsesWhenCanActOnWebFalse', async () => {
       const webActuationToggle =
           $<SettingsToggleButtonElement>('webActuationToggle')!;
       let infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
@@ -878,7 +878,7 @@ suite('GlicSubpage', function() {
       assertFalse(infoCard.opened);
     });
 
-    test('PrefDoesNotExpandMenuWhenDisabledByPolicy', async () => {
+    test('PrefDoesNotExpandMenuWhenCanActOnWebFalse', async () => {
       // Start disabled by enterprise.
       await setWebActuationCapability(false);
 
@@ -895,7 +895,7 @@ suite('GlicSubpage', function() {
       assertFalse(infoCard.opened);
     });
 
-    test('ToggleReEnablesWhenPolicyAllows', async () => {
+    test('ToggleReEnablesWhenCanActOnWebTrue', async () => {
       // Start disabled.
       await setWebActuationCapability(false);
       let webActuationToggle =

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/settings/on_device_ai_settings_handler.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -615,6 +616,31 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageMicrophoneToggleTest,
           "runMochaSuite('GlicSubpage MicrophoneToggleVisible')");
 }
 
+struct WebActuationTestParams {
+  std::string test_name;
+  // Command line override switch.
+  bool force_show_switch = false;
+  // kGlicWebActuationSetting (Global Gate).
+  bool setting_feature_enabled = true;
+  // kGlicWebActuationSettingsToggle.
+  // If true = tier-enforced
+  // If false = legacy prefs.
+  bool toggle_feature_enabled = true;
+  // kGlicActorPolicyControlExemption.
+  bool policy_control_exemption = false;
+  // Tiers that allow web actuation.
+  std::string eligible_tiers = "100,200";
+  // User subscription AI tier.
+  int32_t user_tier = 100;
+  // If false, blocks via kAccountCapabilityIneligible.
+  bool has_account_capability = true;
+  // Used for legacy mode (when toggle_feature_enabled=false).
+  bool consent_pref_set = false;
+
+  // Expected Result (The JS Mocha suite to run)
+  std::string expected_suite;
+};
+
 class SettingsGlicSubPageWebActuationToggleTestBase
     : public SettingsGlicSubPageTestBase {
  protected:
@@ -624,243 +650,159 @@ class SettingsGlicSubPageWebActuationToggleTestBase
   }
 };
 
-class SettingsGlicSubPageWebActuationToggleTest
-    : public SettingsGlicSubPageWebActuationToggleTestBase {
+class SettingsGlicSubPageWebActuationTableTest
+    : public SettingsGlicSubPageWebActuationToggleTestBase,
+      public testing::WithParamInterface<WebActuationTestParams> {
  public:
-  SettingsGlicSubPageWebActuationToggleTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"},
-           {features::kGlicActorEligibleTiers.name, "100,200"}}}},
-        /*disabled_features=*/{});
+  SettingsGlicSubPageWebActuationTableTest() {
+    const WebActuationTestParams& p = GetParam();
+
+    base::FieldTrialParams actor_params;
+    actor_params[features::kGlicActorEligibleTiers.name] = p.eligible_tiers;
+    actor_params[features::kGlicActorPolicyControlExemption.name] =
+        p.policy_control_exemption ? "true" : "false";
+
+    std::vector<base::test::FeatureRefAndParams> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+
+    if (p.force_show_switch) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          ::switches::kGlicAlwaysShowWebActuationToggle);
+    }
+    if (p.setting_feature_enabled) {
+      enabled.push_back({features::kGlicWebActuationSetting, {}});
+    } else {
+      disabled.emplace_back(features::kGlicWebActuationSetting);
+    }
+    if (p.toggle_feature_enabled) {
+      enabled.push_back({features::kGlicWebActuationSettingsToggle, {}});
+    } else {
+      disabled.emplace_back(features::kGlicWebActuationSettingsToggle);
+    }
+    enabled.emplace_back(features::kGlicActor, actor_params);
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
   void SetUpOnMainThread() override {
     SettingsBrowserTest::SetUpOnMainThread();
-    SigninAndEnableAccountCapability();
-    GetProfile()->GetPrefs()->SetBoolean(
-        glic::prefs::kGlicUserEnabledActuationOnWeb, false);
+    const WebActuationTestParams& p = GetParam();
+
+    if (p.has_account_capability) {
+      SigninAndEnableAccountCapability();
+    } else {
+      // Just sign in.
+      glic::SigninWithPrimaryAccount(GetProfile());
+    }
+
+    SetUserTier(p.user_tier);
+    if (p.consent_pref_set) {
+      GetProfile()->GetPrefs()->SetBoolean(
+          glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+    } else {
+      // For "No Pref" branch, clear the pref so IsDefaultValue() returns true.
+      GetProfile()->GetPrefs()->ClearPref(
+          glic::prefs::kGlicUserEnabledActuationOnWeb);
+    }
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationToggleTest,
-                       SettingsGlicSubPageWebActuationToggleEnabled) {
+IN_PROC_BROWSER_TEST_P(SettingsGlicSubPageWebActuationTableTest,
+                       ToggleVisibilityLogic) {
   RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationSettingFeatureEnabled')");
+          "runMochaSuite('" + GetParam().expected_suite + "')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationToggleTest,
-                       SettingsGlicSubPageWebActuationEnterprisePolicy) {
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationEnterprisePolicy')");
+std::string GenerateWebActuationSettingsToggleTestName(
+    const testing::TestParamInfo<WebActuationTestParams>& info) {
+  return info.param.test_name;
 }
 
-class SettingsGlicSubPageWebActuationAllowedTierToggleTest
-    : public SettingsGlicSubPageWebActuationToggleTestBase {
- public:
-  SettingsGlicSubPageWebActuationAllowedTierToggleTest() {
-    // Set the allowed tiers to "100" and "200"
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicWebActuationSettingsToggle, {}},
-         {features::kGlicActor,
-          {{features::kGlicActorEligibleTiers.name, "100,200"}}}},
-        {});
-  }
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SettingsGlicSubPageWebActuationTableTest,
+    testing::Values(
+        // --- 1. GATEKEEPERS (Top-level overrides) ---
+        WebActuationTestParams{
+            .test_name = "SwitchOverride_ForcesVisible",
+            .force_show_switch = true,
+            .setting_feature_enabled = false,  // Even if feature is off
+            .expected_suite = "GlicSubpage WebActuationToggleVisible"},
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+        WebActuationTestParams{
+            .test_name = "FeatureDisabled_ForcesHidden",
+            .setting_feature_enabled = false,
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
 
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
-                       ToggleHiddenForUserWithoutAccountCapability) {
-  SetUserTier(100);
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
-}
+        // --- 2. CAPABILITY (Hard security gate) ---
+        WebActuationTestParams{
+            .test_name = "IneligibleCapability_Hidden",
+            .has_account_capability = false,
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
 
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
-                       ToggleVisibleForAllowedTier) {
-  SigninAndEnableAccountCapability();
-  SetUserTier(100);
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleVisible')");
-}
+        // --- 3. ENFORCEMENT (New Rollout: toggle_feature_on = true) ---
+        WebActuationTestParams{
+            .test_name = "Enforced_TierEligible_Visible",
+            .toggle_feature_enabled = true,
+            .user_tier = 100,
+            .expected_suite = "GlicSubpage WebActuationToggleVisible"},
 
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
-                       ToggleHiddenForDisallowedTier) {
-  SigninAndEnableAccountCapability();
-  SetUserTier(999);
-  GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+        WebActuationTestParams{
+            .test_name = "Enforced_TierDisallowed_Hidden",
+            .toggle_feature_enabled = true,
+            .user_tier = 999,
+            .consent_pref_set = true,  // Blocked despite saved pref
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
 
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
-}
+        WebActuationTestParams{
+            .test_name = "Enforced_NoTiersConfigured_Hidden",
+            .eligible_tiers = "",  // Empty allowed list
+            .consent_pref_set = true,
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
 
-class SettingsGlicSubPageWebActuationDefaultStateToggleTest
-    : public SettingsGlicSubPageWebActuationToggleTestBase {
- public:
-  SettingsGlicSubPageWebActuationDefaultStateToggleTest() {
-    // Set the allowed tiers to "100" and "200"
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicActor,
-          {
-              {features::kGlicActorEligibleTiers.name, "100,200"},
-          }}},
-        {});
-  }
+        // --- 4. LEGACY / MIGRATION (toggle_feature_on = false) ---
+        WebActuationTestParams{
+            .test_name = "Legacy_WithPref_Visible",
+            .toggle_feature_enabled = false,
+            .user_tier = 999,  // Tier ignored in legacy mode
+            .consent_pref_set = true,
+            .expected_suite = "GlicSubpage WebActuationToggleVisible"},
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+        WebActuationTestParams{
+            .test_name = "Legacy_NoPref_Hidden",
+            .toggle_feature_enabled = false,
+            .user_tier = 100,  // Valid tier but no pref = hidden
+            .consent_pref_set = false,
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
 
-// This is a smoke test for the enterprise visibility leak bug.
-// It verifies that a user in the default state (eligible capability,
-// no modified prefs, and no tier feature flag) does NOT see the toggle.
-// This ensures that enterprise policy checks do not act as a "blanket"
-// visibility trigger that forces the toggle to show for ineligible users.
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationDefaultStateToggleTest,
-                       ToggleNotVisibleWithNoSettings) {
-  SigninAndEnableAccountCapability();
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
-}
+        WebActuationTestParams{
+            .test_name = "Legacy_NoTiersConfigured_Hidden",
+            .toggle_feature_enabled = false,
+            .eligible_tiers = "",  // Empty allowed list
+            .consent_pref_set = true,
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
 
-class SettingsGlicSubPageWebActuationNoTiersToggleTest
-    : public SettingsGlicSubPageWebActuationToggleTestBase {
- public:
-  SettingsGlicSubPageWebActuationNoTiersToggleTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicWebActuationSettingsToggle, {}},
-         {features::kGlicActor,
-          {
-              {features::kGlicActorEligibleTiers.name, ""},
-          }}},
-        {});
-  }
+        // --- 5. EDGE CASES ---
+        WebActuationTestParams{
+            .test_name = "SimulateCanActOnWebOnAndOff",
+            .policy_control_exemption = true,
+            .expected_suite = "GlicSubpage SimulateCanActOnWebOnAndOff"},
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+        WebActuationTestParams{
+            .test_name = "TierAllowed_ButCapabilityMissing_Hidden",
+            .user_tier = 100,
+            .has_account_capability = false,
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
 
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationNoTiersToggleTest,
-                       ToggleNotVisibleWithNoTiers) {
-  SigninAndEnableAccountCapability();
-  // Set the pref.
-  GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
-  // Ensure that the toggle is still hidden.
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
-}
-
-class SettingsGlicSubPageWebActuationNoToggleFeatureNoTiersToggleTest
-    : public SettingsGlicSubPageWebActuationToggleTestBase {
- public:
-  SettingsGlicSubPageWebActuationNoToggleFeatureNoTiersToggleTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicActor,
-          {
-              {features::kGlicActorEligibleTiers.name, ""},
-          }}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SettingsGlicSubPageWebActuationNoToggleFeatureNoTiersToggleTest,
-    ToggleNotVisibleWithNoTiers) {
-  SigninAndEnableAccountCapability();
-  // Set the pref.
-  GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
-  // Ensure that the toggle is still hidden.
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
-}
-class SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest
-    : public SettingsGlicSubPageWebActuationToggleTestBase {
- public:
-  SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest() {
-    // Set the allowed tiers to "100" and "200"
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicWebActuationSettingsToggle, {}},
-         {features::kGlicActor,
-          {
-              {features::kGlicActorEligibleTiers.name, "100,200"},
-              {features::kGlicActorPolicyControlExemption.name, "true"},
-          }}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest,
-    ToggleVisibleForAllowedTier) {
-  SigninAndEnableAccountCapability();
-  SetUserTier(100);
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleVisible')");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest,
-    ToggleHiddenForDisallowedTier) {
-  SigninAndEnableAccountCapability();
-  SetUserTier(999);
-  GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
-
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
-}
-
-class SettingsGlicSubPageWebActuationPrefToggleVisibilityTest
-    : public SettingsGlicSubPageWebActuationToggleTestBase {
- public:
-  SettingsGlicSubPageWebActuationPrefToggleVisibilityTest() {
-    // Set the allowed tiers to "100" and "200"
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {
-            {features::kGlicWebActuationSetting, {}},
-            {features::kGlicActor,
-             {
-                 {features::kGlicActorEligibleTiers.name, "100,200"},
-                 {features::kGlicActorPolicyControlExemption.name, "true"},
-             }},
-        },
-        /*disabled_features=*/{});
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationPrefToggleVisibilityTest,
-                       ToggleVisibleForPreviouslySetPref) {
-  SigninAndEnableAccountCapability();
-  GetProfile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
-
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage WebActuationToggleVisible')");
-}
+        WebActuationTestParams{
+            .test_name = "SmokeTest_DefaultState_Hidden",
+            .toggle_feature_enabled = false,
+            .user_tier = 0,
+            .consent_pref_set = false,
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"}),
+    GenerateWebActuationSettingsToggleTestName);
 
 class SettingsGlicSubageDataProtectionTest : public SettingsBrowserTest {
  public:
