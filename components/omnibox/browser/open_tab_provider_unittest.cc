@@ -66,29 +66,51 @@ TEST_F(OpenTabProviderTest, TestURLMatch) {
   ASSERT_EQ(1UL, open_tab_provider().matches().size());
 }
 
-TEST_F(OpenTabProviderTest, TestChromeSchemeOmitted) {
-  TabMatcher::TabWrapper open_tab(u"google", GURL("chrome-native://newtab/"),
+TEST_F(OpenTabProviderTest, TestChromeNewTabPageOmitted) {
+  TabMatcher::TabWrapper open_tab(u"test", GURL("chrome-native://newtab/"),
                                   base::Time());
   static_cast<FakeTabMatcher&>(
       const_cast<TabMatcher&>(client().GetTabMatcher()))
       .AddOpenTab(open_tab);
 
-  open_tab = TabMatcher::TabWrapper(u"google", GURL("chrome-distiller://new/"),
-                                  base::Time());
+  open_tab = TabMatcher::TabWrapper(
+      u"test bookmarks", GURL("chrome-native://bookmarks/"), base::Time());
   static_cast<FakeTabMatcher&>(
       const_cast<TabMatcher&>(client().GetTabMatcher()))
       .AddOpenTab(open_tab);
 
-  AutocompleteInput input(u"new",
+  open_tab = TabMatcher::TabWrapper(u"test history", GURL("chrome://history/"),
+                                    base::Time());
+  static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(client().GetTabMatcher()))
+      .AddOpenTab(open_tab);
+
+  open_tab = TabMatcher::TabWrapper(u"test scheme match",
+                                    GURL("test://newtab/"), base::Time());
+  static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(client().GetTabMatcher()))
+      .AddOpenTab(open_tab);
+
+  AutocompleteInput input(u"test",
                           metrics::OmniboxEventProto::PageClassification::
                               OmniboxEventProto_PageClassification_ANDROID_HUB,
                           TestSchemeClassifier());
   open_tab_provider().Start(input, /* minimal_changes= */ false);
+
+  int test_index = 0;
 #if BUILDFLAG(IS_ANDROID)
-  ASSERT_EQ(0UL, open_tab_provider().matches().size());
+  ASSERT_EQ(3UL, open_tab_provider().matches().size());
 #else
-  ASSERT_EQ(2UL, open_tab_provider().matches().size());
+  ASSERT_EQ(4UL, open_tab_provider().matches().size());
+  ASSERT_EQ(open_tab_provider().matches()[test_index++].destination_url,
+            "chrome-native://newtab/");
 #endif
+  ASSERT_EQ(open_tab_provider().matches()[test_index++].destination_url,
+            "chrome-native://bookmarks/");
+  ASSERT_EQ(open_tab_provider().matches()[test_index++].destination_url,
+            "chrome://history/");
+  ASSERT_EQ(open_tab_provider().matches()[test_index++].destination_url,
+            "test://newtab/");
 }
 
 TEST_F(OpenTabProviderTest, TestNoMatches) {
