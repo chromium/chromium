@@ -981,20 +981,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   [self.geminiHandler hideFloatyIfInvokedAnimated:YES];
 }
 
-- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
-       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
-                      animator:(id<UIContextMenuInteractionAnimating>)animator {
-  if (!IsGeminiCopresenceEnabled()) {
-    return;
-  }
-
-  // Ensure floaty is shown after the context menu has fully dismissed.
-  __weak __typeof(self) weakSelf = self;
-  [animator addCompletion:^() {
-    [weakSelf.geminiHandler showFloatyIfInvokedAnimated:YES];
-  }];
-}
-
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
   // Allow copying if the steady location bar is visible.
   if (!self.locationBarSteadyView.hidden && action == @selector(copy:)) {

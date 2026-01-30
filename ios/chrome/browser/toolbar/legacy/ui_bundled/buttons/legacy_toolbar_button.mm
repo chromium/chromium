@@ -165,25 +165,6 @@ const CGFloat kButtonImageInset = 3;
                              animator:animator];
 }
 
-- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
-       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
-                      animator:(id<UIContextMenuInteractionAnimating>)animator {
-  if (IsGeminiCopresenceEnabled()) {
-    // Ensure floaty is shown after the context menu is dismissed from a
-    // non-UIAction. A UIAction represents a user choosing an action on the
-    // UIMenu. In the event a menu option is chosen, this function isn't called
-    // and the floaty shouldn't show.
-    __weak __typeof(self) weakSelf = self;
-    [animator addCompletion:^() {
-      [weakSelf.geminiHandler showFloatyIfInvokedAnimated:NO];
-    }];
-  }
-
-  [super contextMenuInteraction:interaction
-        willEndForConfiguration:configuration
-                       animator:animator];
-}
-
 #pragma mark - Accessors
 
 - (UIView*)spotlightView {
