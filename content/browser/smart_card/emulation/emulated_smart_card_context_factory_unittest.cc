@@ -117,6 +117,8 @@ class MockSmartCardEmulationManager : public SmartCardEmulationManager {
                device::mojom::SmartCardTransaction::EndTransactionCallback),
               (override));
 
+  MOCK_METHOD(void, OnReleaseContext, (uint32_t), (override));
+
   base::WeakPtr<MockSmartCardEmulationManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -183,11 +185,21 @@ class EmulatedSmartCardContextTest
  public:
   void SetUp() override {
     context_ = std::make_unique<EmulatedSmartCardContext>(
-        manager()->GetWeakPtr(), 123);
+        manager()->GetWeakPtr(), context_id);
+  }
+
+  void TearDown() override {
+    context_.reset();
+    EmulatedSmartCardContextFactoryTest::TearDown();
+  }
+
+  void ExpectContextRelease() {
+    EXPECT_CALL(*manager(), OnReleaseContext(context_id)).Times(1);
   }
 
  protected:
   std::unique_ptr<EmulatedSmartCardContext> context_;
+  const int context_id = 123;
 };
 
 TEST_F(EmulatedSmartCardContextTest, ListReaders_Success) {
@@ -200,6 +212,7 @@ TEST_F(EmulatedSmartCardContextTest, ListReaders_Success) {
             device::mojom::SmartCardListReadersResult::NewReaders(
                 kExpectedReaders));
       });
+  ExpectContextRelease();
 
   base::test::TestFuture<device::mojom::SmartCardListReadersResultPtr> future;
   context_->ListReaders(future.GetCallback());
@@ -219,6 +232,7 @@ TEST_F(EmulatedSmartCardContextTest, ListReaders_Failure) {
             device::mojom::SmartCardListReadersResult::NewError(
                 device::mojom::SmartCardError::kNoService));
       });
+  ExpectContextRelease();
 
   base::test::TestFuture<device::mojom::SmartCardListReadersResultPtr> future;
   context_->ListReaders(future.GetCallback());
@@ -262,6 +276,7 @@ TEST_F(EmulatedSmartCardContextTest, GetStatusChange_Success) {
             device::mojom::SmartCardStatusChangeResult::NewReaderStates(
                 std::move(results)));
       });
+  ExpectContextRelease();
 
   base::test::TestFuture<device::mojom::SmartCardStatusChangeResultPtr> future;
   context_->GetStatusChange(timeout, std::move(reader_states),
@@ -284,6 +299,7 @@ TEST_F(EmulatedSmartCardContextTest, GetStatusChange_Failure) {
             device::mojom::SmartCardStatusChangeResult::NewError(
                 device::mojom::SmartCardError::kTimeout));
       });
+  ExpectContextRelease();
 
   base::test::TestFuture<device::mojom::SmartCardStatusChangeResultPtr> future;
   context_->GetStatusChange(/*timeout=*/base::Seconds(1),
@@ -317,6 +333,7 @@ TEST_F(EmulatedSmartCardContextTest, Cancel_Success) {
         std::move(callback).Run(device::mojom::SmartCardResult::NewSuccess(
             device::mojom::SmartCardSuccess::kOk));
       });
+  ExpectContextRelease();
 
   base::test::TestFuture<device::mojom::SmartCardResultPtr> future;
   context_->Cancel(future.GetCallback());
@@ -334,6 +351,7 @@ TEST_F(EmulatedSmartCardContextTest, Cancel_Failure) {
         std::move(callback).Run(device::mojom::SmartCardResult::NewError(
             device::mojom::SmartCardError::kInvalidHandle));
       });
+  ExpectContextRelease();
 
   base::test::TestFuture<device::mojom::SmartCardResultPtr> future;
   context_->Cancel(future.GetCallback());
@@ -378,6 +396,7 @@ TEST_F(EmulatedSmartCardContextTest, Connect_Success) {
   EXPECT_CALL(*manager(),
               OnConnect(kContextId, reader_name, share_mode, _, _, _))
       .WillOnce(base::test::RunOnceCallback<5>(std::move(success_result)));
+  ExpectContextRelease();
 
   base::test::TestFuture<device::mojom::SmartCardConnectResultPtr> future;
   context_->Connect(reader_name, share_mode, std::move(protocols),
@@ -400,6 +419,7 @@ TEST_F(EmulatedSmartCardContextTest, Connect_Failure) {
         std::move(callback).Run(device::mojom::SmartCardConnectResult::NewError(
             device::mojom::SmartCardError::kNoSmartcard));
       });
+  ExpectContextRelease();
 
   base::test::TestFuture<device::mojom::SmartCardConnectResultPtr> future;
   context_->Connect("Reader A", device::mojom::SmartCardShareMode::kShared,

@@ -87,6 +87,10 @@ class CONTENT_EXPORT SmartCardEmulationHandler
       device::mojom::SmartCardConnection::BeginTransactionCallback,
       device::mojom::SmartCardTransactionResult>;
 
+  struct PendingReleaseContext {
+    void ReportError(device::mojom::SmartCardError error) {}
+  };
+
   using PendingRequest = std::variant<PendingCreateContext,
                                       PendingListReaders,
                                       PendingGetStatusChange,
@@ -94,7 +98,8 @@ class CONTENT_EXPORT SmartCardEmulationHandler
                                       PendingPlainResult,
                                       PendingDataResult,
                                       PendingStatus,
-                                      PendingBeginTransaction>;
+                                      PendingBeginTransaction,
+                                      PendingReleaseContext>;
 
  private:
   static std::vector<SmartCardEmulationHandler*> ForAgentHost(
@@ -145,6 +150,9 @@ class CONTENT_EXPORT SmartCardEmulationHandler
       const String& in_state,
       const Binary& in_atr,
       std::optional<String> in_protocol) override;
+
+  DispatchResponse ReportReleaseContextResult(
+      const String& in_requestId) override;
 
   DispatchResponse ReportError(const String& in_requestId,
                                const String& in_resultCode) override;
@@ -219,6 +227,8 @@ class CONTENT_EXPORT SmartCardEmulationHandler
       device::mojom::SmartCardTransaction::EndTransactionCallback callback)
       override;
 
+  void OnReleaseContext(uint32_t context_id) override;
+
   void AddPendingRequest(const std::string& request_id, PendingRequest request);
 
   template <typename T>
@@ -261,6 +271,9 @@ class CONTENT_EXPORT SmartCardEmulationHandler
       uint32_t handle);
 
   base::expected<void, std::string> CompletePlainResult(
+      const std::string& request_id);
+
+  base::expected<void, std::string> CompleteReleaseContext(
       const std::string& request_id);
 
   base::expected<void, std::string> FailRequest(

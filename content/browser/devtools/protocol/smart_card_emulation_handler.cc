@@ -580,6 +580,13 @@ SmartCardEmulationHandler::CompletePlainResult(const std::string& request_id) {
   return base::ok();
 }
 
+base::expected<void, std::string>
+SmartCardEmulationHandler::CompleteReleaseContext(
+    const std::string& request_id) {
+  RETURN_IF_ERROR(TakePendingRequest<PendingReleaseContext>(request_id));
+  return base::ok();
+}
+
 base::expected<void, std::string> SmartCardEmulationHandler::FailRequest(
     const std::string& request_id,
     device::mojom::SmartCardError error) {
@@ -698,6 +705,15 @@ DispatchResponse SmartCardEmulationHandler::ReportStatusResult(
         return DispatchResponse::ServerError(error);
       });
 
+  return DispatchResponse::Success();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportReleaseContextResult(
+    const String& in_requestId) {
+  RETURN_IF_ERROR(CompleteReleaseContext(in_requestId),
+                  [](const std::string& error) {
+                    return DispatchResponse::ServerError(error);
+                  });
   return DispatchResponse::Success();
 }
 
@@ -845,6 +861,12 @@ void SmartCardEmulationHandler::OnEndTransaction(
   AddPendingRequest(request_id, PendingPlainResult(std::move(callback)));
   frontend_->EndTransactionRequested(request_id, handle,
                                      ToProtocolDisposition(disposition));
+}
+
+void SmartCardEmulationHandler::OnReleaseContext(uint32_t context_id) {
+  std::string request_id = GenerateRequestId();
+  AddPendingRequest(request_id, PendingReleaseContext());
+  frontend_->ReleaseContextRequested(request_id, context_id);
 }
 
 }  // namespace content::protocol
