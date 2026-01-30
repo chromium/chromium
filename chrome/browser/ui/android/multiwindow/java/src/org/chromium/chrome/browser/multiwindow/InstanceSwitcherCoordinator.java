@@ -189,7 +189,7 @@ public class InstanceSwitcherCoordinator {
         mInactiveInstancesList.setAdapter(inactiveListAdapter);
         mInactiveInstancesList.addItemDecoration(inactiveListItemDecoration);
 
-        addInstanceListGlobalLayoutListener(
+        addLayoutListeners(
                 mDialogView,
                 mTabHeaderRow,
                 mInstanceListContainer,
@@ -198,7 +198,8 @@ public class InstanceSwitcherCoordinator {
                 mIsInactiveListShowing,
                 mNewWindowLayout,
                 mMinCommandItemHeightPx,
-                mItemPaddingHeightPx);
+                mItemPaddingHeightPx,
+                /* registerResizeListener= */ true);
 
         mTabHeaderRow.addOnTabSelectedListener(
                 new OnTabSelectedListener() {
@@ -209,7 +210,7 @@ public class InstanceSwitcherCoordinator {
                         mInactiveInstancesList.setVisibility(
                                 isActiveTab ? View.GONE : View.VISIBLE);
                         mIsInactiveListShowing = !isActiveTab;
-                        addInstanceListGlobalLayoutListener(
+                        addLayoutListeners(
                                 mDialogView,
                                 mTabHeaderRow,
                                 mInstanceListContainer,
@@ -218,7 +219,8 @@ public class InstanceSwitcherCoordinator {
                                 mIsInactiveListShowing,
                                 mNewWindowLayout,
                                 mMinCommandItemHeightPx,
-                                mItemPaddingHeightPx);
+                                mItemPaddingHeightPx,
+                                /* registerResizeListener= */ false);
                         updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
                         unselectItems(/* hideVisibleList= */ false);
                         updateMoreMenu();
@@ -245,8 +247,8 @@ public class InstanceSwitcherCoordinator {
         return adapter;
     }
 
-    // Adds a listener to layout the command item correctly relative to the instance list view.
-    /* package */ static OnGlobalLayoutListener addInstanceListGlobalLayoutListener(
+    // Adds listeners to layout the command item correctly relative to the instance list view.
+    /* package */ static OnGlobalLayoutListener addLayoutListeners(
             View dialogView,
             TabLayout tabHeaderRow,
             View instanceListContainer,
@@ -255,7 +257,29 @@ public class InstanceSwitcherCoordinator {
             boolean isInactiveListShowing,
             View newWindowLayout,
             int minCommandItemHeightPx,
-            int itemPaddingHeightPx) {
+            int itemPaddingHeightPx,
+            boolean registerResizeListener) {
+        if (registerResizeListener) {
+            // Needed for proper placement of +New window item after a window height resize.
+            // The global layout listener is one-shot so it is unable to handle subsequent window
+            // resizes.
+            dialogView.addOnLayoutChangeListener(
+                    (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                        if (bottom - top != oldBottom - oldTop) {
+                            maybeUpdateInstanceListContainerParams(
+                                    dialogView,
+                                    tabHeaderRow,
+                                    instanceListContainer,
+                                    activeInstancesList,
+                                    inactiveInstancesList,
+                                    isInactiveListShowing,
+                                    newWindowLayout,
+                                    minCommandItemHeightPx,
+                                    itemPaddingHeightPx);
+                        }
+                    });
+        }
+
         var listener =
                 new OnGlobalLayoutListener() {
                     @Override
@@ -728,7 +752,7 @@ public class InstanceSwitcherCoordinator {
 
     private void removeInstances(List<Integer> instanceIds) {
         for (Integer instanceId : instanceIds) {
-            addInstanceListGlobalLayoutListener(
+            addLayoutListeners(
                     assumeNonNull(mDialogView),
                     assumeNonNull(mTabHeaderRow),
                     assumeNonNull(mInstanceListContainer),
@@ -737,7 +761,8 @@ public class InstanceSwitcherCoordinator {
                     mIsInactiveListShowing,
                     assumeNonNull(mNewWindowLayout),
                     mMinCommandItemHeightPx,
-                    mItemPaddingHeightPx);
+                    mItemPaddingHeightPx,
+                    /* registerResizeListener= */ false);
             assert mDialog != null;
             mSelectedItems.remove(instanceId);
             updateActionButtons();
