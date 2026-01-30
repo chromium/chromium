@@ -4,12 +4,9 @@
 
 #include "services/network/enterprise/encryption/encrypted_cache_file.h"
 
-#include <algorithm>
 #include <utility>
 
-#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "crypto/process_bound_string.h"
 
 namespace network::enterprise_encryption {
 
@@ -46,10 +43,15 @@ int64_t GetLogicalChunkStart(uint32_t chunk_index) {
 
 EncryptedCacheFile::EncryptedCacheFile(
     std::unique_ptr<disk_cache::CacheFile> file,
-    const crypto::ProcessBoundString& primary_key)
-    : file_(std::move(file)), key_(primary_key) {
-  // TODO: crbug.com/476324615 - Generate per-file access key. Handle errors.
-}
+    base::span<const uint8_t, kKeySize> key)
+    : file_(std::move(file)), key_(std::string(key.begin(), key.end())) {}
+
+EncryptedCacheFile::EncryptedCacheFile(
+    std::unique_ptr<disk_cache::CacheFile> file)
+    : file_(std::move(file)),
+      // TODO(crbug.com/474061119): Temporary placeholder key until master key
+      // generation is fully implemented.
+      key_(std::string(kKeySize, static_cast<char>(0xFE))) {}
 
 EncryptedCacheFile::~EncryptedCacheFile() = default;
 
