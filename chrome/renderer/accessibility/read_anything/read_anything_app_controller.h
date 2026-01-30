@@ -167,6 +167,8 @@ class ReadAnythingAppController
   void OnTabMuteStateChange(bool muted) override;
   void UpdateContent(const std::string& title,
                      const std::string& content) override;
+  void OnReadabilityDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState new_state) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnDeviceLocked() override;

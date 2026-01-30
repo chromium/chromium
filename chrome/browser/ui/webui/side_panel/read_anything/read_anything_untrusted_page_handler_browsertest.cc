@@ -135,6 +135,10 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void,
               UpdateContent,
               (const std::string& title, const std::string& content));
+  MOCK_METHOD(void,
+              OnReadabilityDistillationStateChanged,
+              (read_anything::mojom::ReadAnythingDistillationState state),
+              (override));
 
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 };

@@ -440,4 +440,7 @@ interface UntrustedPage {
   // the WebUI and notifies the WebUI that DOM distiller has processed a
   // distillation request.
   UpdateContent(string title, string content);
+
+  // Informs the renderer of the content returned by the Readability distiller.
+  OnReadabilityDistillationStateChanged(read_anything.mojom.ReadAnythingDistillationState state);
 };

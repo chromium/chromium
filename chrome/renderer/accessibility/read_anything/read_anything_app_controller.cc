@@ -2783,3 +2783,13 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
       ReadAnythingAppModel::DistillationMethod::kReadability);
   ExecuteJavaScript("chrome.readingMode.updateContent();");
 }
+
+void ReadAnythingAppController::OnReadabilityDistillationStateChanged(
+    read_anything::mojom::ReadAnythingDistillationState new_state) {
+  // Readability distillation happens in the browser
+  // (ReadAnythingUntrustedPageHandler). This notification triggers a
+  // "ping-pong" flow to keep logic synchronized: it updates the renderer's
+  // model, which then circles back to the ReadAnythingUntrustedPageHandler to
+  // update the distillation state in the ReadAnythingController.
+  SetDistillationState(new_state);
+}

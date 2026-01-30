@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
@@ -1279,6 +1280,9 @@ void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
             << url.spec();
     // Call UpdateContent with empty values so status can be updated from show
     // loading to no content.
+    page_->OnReadabilityDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationEmpty);
     page_->UpdateContent("", "");
     return;
   }
@@ -1287,6 +1291,9 @@ void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
       dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
           content->GetBrowserContext());
   DCHECK(dom_distiller_service);
+  page_->OnReadabilityDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
   distiller_delegate_->StartDistillation(dom_distiller_service, content);
 }
 
@@ -1328,9 +1335,16 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
     dom_distiller_content_ = full_html;
 
     if (dom_distiller_title() && dom_distiller_content()) {
+      page_->OnReadabilityDistillationStateChanged(
+          read_anything::mojom::ReadAnythingDistillationState::
+              kDistillationWithContent);
       page_->UpdateContent(dom_distiller_title().value(),
                            dom_distiller_content().value());
     }
+  } else {
+    page_->OnReadabilityDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationEmpty);
   }
 }
 
