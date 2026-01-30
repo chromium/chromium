@@ -30,6 +30,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/web_app_id_constants.h"
 #include "base/feature_list.h"
+#include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
@@ -108,7 +109,8 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(chromeos::features::kVidsAppPreinstall)) {
-    apps.push_back(GetConfigForVids(is_standalone_tabbed));
+    std::string user_type = apps::DetermineUserType(&profile);
+    apps.push_back(GetConfigForVids(is_standalone_tabbed, user_type));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

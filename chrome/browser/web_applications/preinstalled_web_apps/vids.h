@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_VIDS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_VIDS_H_
 
@@ -10,7 +12,8 @@
 namespace web_app {
 
 // Returns the config for preinstalling the Vids app.
-ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed);
+ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed,
+                                        std::string_view user_type);
 
 }  // namespace web_app
 

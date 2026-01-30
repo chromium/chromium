@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/liburlpattern/parse.h"
@@ -52,7 +53,8 @@ blink::Manifest::HomeTabParams HomeTabPathnames(
 
 }  // namespace
 
-ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed) {
+ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed,
+                                        std::string_view user_type) {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://docs.google.com/videos/installwebapp?usp=chrome_default"),
@@ -62,6 +64,11 @@ ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed) {
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"managed"};
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kVidsAppConsumerPreinstall)) {
+    options.user_type_allowlist.push_back("unmanaged");
+  }
+  options.only_for_new_users = user_type == "unmanaged";
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
     GURL start_url =

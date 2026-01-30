@@ -276,6 +276,9 @@ BASE_FEATURE(kSystemFeaturesDisableListHidden,
 // Controls whether Vids is preinstalled.
 BASE_FEATURE(kVidsAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether Vids is preinstalled for consumers.
+BASE_FEATURE(kVidsAppConsumerPreinstall, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsBatteryBadgeIconEnabled() {
   return base::FeatureList::IsEnabled(kBatteryBadgeIcon);
 }
