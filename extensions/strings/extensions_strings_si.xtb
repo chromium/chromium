@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">අනුරුව විසංකේතනය කළ නොහැකි විය: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">දේශීයකරණය භාවිතා කෙරිණ, නමුත් manifest හි default_locale නීර්ණය කර නොමැත.</translation>
 <translation id="2576842806987913196">මෙය මෙනමින් දැනටමත් ඇති CRX  ගොනුවකි.</translation>
+<translation id="2743583586211388067">ඔබේ සංවිධානයේ දිගු අවදානම් ප්‍රතිපත්තිය යටතේ මෙම දිගුවට ප්‍රවේශය අවහිර කර ඇත.</translation>
 <translation id="2785530881066938471">අන්තර්ගත පිටපත් සඳහා '<ph name="RELATIVE_PATH" />' ගොනුව පැටවිය නොහැක. එය UTF-8 සංකේතනය කර නැත.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (දිගු ID "<ph name="EXTENSION_ID" />") පරිපාලක විසින් අවහිර කර ඇත. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">පැකේජය ස්ථාපනය කළ නොහැකි විය: '<ph name="ERROR_CODE" />'</translation>

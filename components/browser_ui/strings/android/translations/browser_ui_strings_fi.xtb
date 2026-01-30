@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Voit pyytää sivustojen tietokoneversiota</translation>
 <translation id="1085696779717592361">Chromen käyttö oletuksena</translation>
 <translation id="113098737392899175">Siirry sivuilla tekstikohdistimen avulla, kun näppäimistö on yhdistetty</translation>
+<translation id="1149644372535087155">Tallenna salasanat Chromeen</translation>
 <translation id="1178015372320901893">Omat pikakuvakkeet ‑alapaneeli</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1181037720776840403">Poista</translation>
@@ -172,6 +173,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="2682367912565197520">Poista tallennettu zoomaustaso</translation>
 <translation id="2683434792633810741">Poistetaanko data ja nollataanko luvat?</translation>
 <translation id="2685514716378236873">Ei sallittu</translation>
+<translation id="2710883118091822664">Kirjautumalla sisään voit jatkaa helposti kaikilla laitteilla</translation>
 <translation id="2713106313042589954">Sammuta kamera</translation>
 <translation id="2717722538473713889">Sähköpostiosoitteet</translation>
 <translation id="2726059656860238749">Käynnistä Chrome niin, että omniboxi on tarkennettuna, jolloin käynnistysaika on lyhyempi edullisemmilla laitteilla.</translation>
@@ -199,6 +201,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3004438526346162184">Sivustot voivat käyttää tätä ominaisuutta ikkunoiden hallinnointiin kaikilla näytöillä</translation>
 <translation id="3008272652534848354">Nollaa luvat</translation>
 <translation id="301521992641321250">Estetty automaattisesti</translation>
+<translation id="3026311960038210">Teemakokoelmat</translation>
 <translation id="3064871050034234884">Sivustot voivat toistaa ääntä</translation>
 <translation id="3065787901655140044">Lisäsuojaus on päällä</translation>
 <translation id="3069226013421428034">Salli kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
@@ -341,6 +344,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4478158430052450698">Helpota zoomauksen muokkausta eri sivustoilla</translation>
 <translation id="4479647676395637221">Pyydä lupaa, kun sivustot yrittävät käyttää kameraasi (suositus).</translation>
 <translation id="4505788138578415521">URL näkyy laajennettuna</translation>
+<translation id="4523472416386354622">Aloita kirjautumalla sisään</translation>
 <translation id="4534723447064627427">Laita mikrofoni päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn mikrofoniisi.</translation>
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
 <translation id="4570913071927164677">Tiedot</translation>
@@ -397,6 +401,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="512938610812707830">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli avattu kokonaan</translation>
 <translation id="5137460097045297858">Discover-fiidin alapaneeli avattu puoliksi</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Hinnanalennus avoimilla välilehdillä}other{Hinnanalennukset avoimilla välilehdillä}}</translation>
+<translation id="5150048675001754041">Kirjaudu nopeasti ja helposti sivustoille ja sovelluksiin</translation>
 <translation id="5186036860380548585">Toiminto on käytettävissä näytön yläosassa</translation>
 <translation id="5197729504361054390"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saa valitsemasi yhteystiedot.</translation>
 <translation id="5198930230016462977">"Muuta Uusi välilehti ‑sivua" -alapaneeli suljettu</translation>
@@ -566,6 +571,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6980861169612950611">Poistetaanko sivustodata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Saavutettavuus</translation>
 <translation id="6991142177939282156">Sallittu • Käytetään likimääräistä sijaintia</translation>
+<translation id="6992014788289743568">Paranna suojausta ja pidä datasi turvassa tarkistamalla salasanasi</translation>
 <translation id="6992289844737586249">Pyydä lupaa, kun sivustot yrittävät käyttää mikrofonia (suositus).</translation>
 <translation id="7000754031042624318">Poistettu käytöstä Android-asetuksissa</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>

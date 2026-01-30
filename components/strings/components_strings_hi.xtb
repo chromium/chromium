@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS Keychain के साथ Password Manager का इस्तेमाल करने के लिए, Chromium को फिर से लॉन्च करें और Keychain को ऐक्सेस करने की अनुमति दें. फिर से लॉन्च करने पर, आपके टैब दोबारा खुल जाएंगे.</translation>
 <translation id="1652887625750064647">एआई के हिसाब से बेहतरीन सुझाव</translation>
 <translation id="1653465303147789530">ऐप्लिकेशन स्विच किए बिना, <ph name="PAYMENT_METHOD" /> से पेमेंट करें</translation>
+<translation id="1655159794885649984">इस साइट पर कॉन्टेंट को खींचकर छोड़ने की सुविधा काम नहीं करती</translation>
 <translation id="1656024727720460136">Chrome इस पेज को रीडर मोड में दिखा रहा है, ताकि इसे आसानी से पढ़ा जा सके. Chrome ने सुरक्षित कनेक्शन का इस्तेमाल करके मूल पेज काे फिर से पा लिया है.</translation>
 <translation id="1656489000284462475">पिकअप</translation>
 <translation id="1658111267661135323">टीवी और वीडियो</translation>
@@ -1678,6 +1679,7 @@
 <translation id="365641980390710834">कैज़ुअल कपड़े</translation>
 <translation id="3658742229777143148">पुनरीक्षण</translation>
 <translation id="3659521826520353662">एडमिन की बनाई हुई कौनसी वेबसाइटें देखी गई हैं और कब: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">इस आईबीएएन को Google Wallet में सेव किया गया है. इसलिए, इसका इस्तेमाल Google की सभी सेवाओं पर किया जा सकता है.</translation>
 <translation id="3664479564786885722">इस प्रॉडक्ट को बेचने वाले दूसरे स्टोर से खरीदारी के ज़्यादा विकल्प खोजें.</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@
 <translation id="6085149458302186532">लेबल (कलर्ड)</translation>
 <translation id="6087312102907839798">मिलती-जुलती खोजें</translation>
 <translation id="6089505343295765444">Chrome इतिहास से मिटाए गए टैब, अब भी तुलना करने वाली टेबल में दिखेंगे</translation>
+<translation id="6091115085465716987">Google Wallet का लोगो</translation>
 <translation id="6091691259076781835">तेज़ी से चेकआउट करने के लिए, इस सीवीसी को अपने डिवाइस में सेव करें</translation>
 <translation id="6093599771645355227">येलो 1</translation>
 <translation id="6093795393556121384">आपका कार्ड सत्‍यापित हो गया है</translation>
@@ -3814,6 +3817,7 @@
 <translation id="7057567173736333354">इमेज के बारे में जानकारी दें</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ने पुष्टि की है कि <ph name="ISSUER" /> ने इस वेबसाइट को सर्टिफ़िकेट दिया है.</translation>
 <translation id="7058774143982824355">CSV पासवर्ड वाली फ़ाइल के लिए पार्सर सेवा</translation>
+<translation id="7062344833049251424">अगली बार फटाफट पेमेंट करने के लिए, अपने कार्ड की जानकारी और बिलिंग पते को Google Wallet में सेव करें</translation>
 <translation id="706295145388601875">Chrome की सेटिंग में वेब पते जोड़ें और मैनेज करें</translation>
 <translation id="7063157783216323487">ग्रीन 2</translation>
 <translation id="7064443976734085921">कॉम्पैक्ट कारें</translation>
@@ -4284,6 +4288,7 @@
 <translation id="7754587126786572336">अपडेट शुरू होते ही, आपके Chrome टैब और ऐप्लिकेशन बंद हो जाएंगे</translation>
 <translation id="7755287808199759310">आपका अभिभावक इसे आपके लिए अनवरोधित कर सकता है</translation>
 <translation id="7755624218968747854">प्राइमरी रोल</translation>
+<translation id="7756441544371887150">अगर आपने Google Wallet में इस कार्ड की जानकारी सेव की है, तो Chrome में खरीदारी करने के लिए कार्ड की जानकारी ऑटोमैटिक भरने की सुविधा चालू करें</translation>
 <translation id="7758069387465995638">हो सकता है कि फ़ायरवॉल या एंटीवायरस ने कनेक्शन को रोक दिया हो.</translation>
 <translation id="7759147511335618829">एमआईडीआई डिवाइस कंट्रोल और रीप्रोग्राम करना</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
@@ -5208,6 +5213,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{कुछ नहीं}=1{1 आइटम}one{# आइटम}other{# आइटम}}</translation>
 <translation id="976522784004777030">5 x 8 इंच</translation>
 <translation id="977502174772294970">शादी के जुड़ी सेवाएं</translation>
+<translation id="978750072783101994">अगर आपने Google Wallet में इस कार्ड की जानकारी सेव की है, तो Chromium में खरीदारी करने के लिए कार्ड की जानकारी ऑटोमैटिक भरने की सुविधा चालू करें</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" /> आपके ब्राउज़र और प्रोफ़ाइल को मैनेज करता है</translation>
 <translation id="979189555234810423">एक्सपो और सम्मेलन</translation>
 <translation id="979503328401807348">ज़्यादा काम के विज्ञापन</translation>

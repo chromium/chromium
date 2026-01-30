@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">No s'ha pogut descodificar la imatge: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">S'ha utilitzat localització, però no s'ha especificat default_locale al manifest.</translation>
 <translation id="2576842806987913196">Ja hi ha un fitxer CRX amb aquest nom.</translation>
+<translation id="2743583586211388067">L'accés a aquesta extensió està bloquejat per la política de riscos de les extensions de la teva organització.</translation>
 <translation id="2785530881066938471">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" per a l'script de contingut. No està codificat com a UTF-8.</translation>
 <translation id="2903070246402204397">L'administrador ha bloquejat l'extensió <ph name="EXTENSION_NAME" /> (amb l'identificador <ph name="EXTENSION_ID" />). <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">No s'ha pogut instal·lar el paquet: "<ph name="ERROR_CODE" />"</translation>

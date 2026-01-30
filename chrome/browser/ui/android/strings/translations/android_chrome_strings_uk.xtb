@@ -1572,6 +1572,7 @@
 <translation id="7523960634226602883">Пошук за допомогою камери через Google Об’єктив</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> закрито й збережено</translation>
 <translation id="7545347190366646170">Користувачі, які мають доступ</translation>
+<translation id="7553482318994371148">Повторно відкрити закриті вкладки</translation>
 <translation id="7554643625247105821">Не вдалося перевірити версію Chrome</translation>
 <translation id="7557508262441527045">Ви вийшли</translation>
 <translation id="7573665567024262965">Виберіть додатки за умовчанням</translation>
@@ -1892,6 +1893,7 @@
 <translation id="8856931513242997049">Вікно надання дозволу на надсилання сповіщень закрито</translation>
 <translation id="8863714995118816041">Дозволи для вебсайту <ph name="SITE_NAME" /> відновлено</translation>
 <translation id="8865415417596392024">Дані Chrome у вашому обліковому записі</translation>
+<translation id="8872506776304248286">Відкрити в додатку</translation>
 <translation id="8890668505403261809">Пошук на анонімних вкладках</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" /> (вибрана анонімна вкладка, на якій увімкнено запис)</translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>

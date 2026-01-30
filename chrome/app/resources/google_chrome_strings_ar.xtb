@@ -26,6 +26,7 @@
 <translation id="1158134713295836892">‏‫Gemini في Chrome</translation>
 <translation id="1184145431117212167">‏تعذَّر التثبيت بسبب عدم توافُق الإصدار الذي تستخدمه من نظام التشغيل Windows.</translation>
 <translation id="1194807384646768652">‏حَظَر Chrome عملية التنزيل هذه لأنّ نوع الملف لا يتم تنزيله عادةً، وقد يكون خطيرًا.</translation>
+<translation id="1197860368385086056">‏عند فتح Chrome على <ph name="DEVICE_TYPE" /> في المرة القادمة، ستظهر لك رسالة تطلب منك تفعيل تنبيهات ميزة "تتبُّع الأسعار".</translation>
 <translation id="1203500561924088507">شكرًا على التثبيت. عليك إعادة تشغيل المتصفِّح قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
 <translation id="1290883685122687410">حدث خطأ أثناء الإعداد: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -283,7 +284,6 @@
 <translation id="4022972681110646219">ترجمة محتوى الشاشة</translation>
 <translation id="4023601594785368013">اللغة الأصلية: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">‏يجب إعادة تشغيل نظام التشغيل Chrome لتثبيت التحديث.</translation>
-<translation id="4039097928859803404">‏عرض اختصارات "وضع AI" دائمًا</translation>
 <translation id="4050175100176540509">تحسينات الأمان المهمة والميزات الجديدة متاحة في أحدث إصدار.</translation>
 <translation id="4053720452172726777">‏تخصيص Google Chrome والتحكم فيه</translation>
 <translation id="408393047846373801">‏سجِّل الدخول إلى Chrome للوصول إلى كلمات المرور وغيرها على جميع أجهزتك. سيتم حفظ كلمة المرور هذه في حسابك على Google بعد تسجيل الدخول.</translation>
@@ -504,6 +504,7 @@
 <translation id="6321592572353357376">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chrome</translation>
 <translation id="6326175484149238433">‏إزالة من Chrome</translation>
 <translation id="6327105987658262776">ما مِن تحديث متوفّر.</translation>
+<translation id="6333195756043503664">‏فتح Chrome عند تشغيل جهاز الكمبيوتر</translation>
 <translation id="6334815226785304306">‏يمكنك جعل Google Chrome المتصفّح التلقائي وتثبيته في شريط التطبيقات</translation>
 <translation id="63540178978900677">‏لم يعُد Chrome متصفّحك التلقائي. جعل Chrome المتصفّح التلقائي؟</translation>
 <translation id="6360449101159168105">‏عندما كانت علامة التبويب هذه غير نشطة، تم إخلاء مساحة في الذاكرة للحفاظ على سرعة Chrome. يمكنك اختيار أن يظل هذا الموقع الإلكتروني نشطًا دائمًا.</translation>
@@ -613,6 +614,7 @@
 <translation id="7515191208480168435">‏يمكنك تثبيت ميزة "عدسة Google" للوصول إليها بسهولة</translation>
 <translation id="7535429826459677826">‏إصدار مطوري البرامج من Google Chrome</translation>
 <translation id="7543146567111253230">‏يمكنك تسجيل الدخول إلى Chrome للحصول على هذه الإشارة وغيرها على جميع أجهزتك</translation>
+<translation id="756134248912568991">‏عند فتح Chrome على <ph name="DEVICE_TYPE" /> في المرة القادمة، ستظهر لك رسالة تطلب منك استخدام مجموعات علامات التبويب.</translation>
 <translation id="756809126120519699">‏بيانات Chrome التي تم محوها</translation>
 <translation id="7572537927358445944">‏غير مفعَّلة • لا يمكن لمتصفّح Chrome التحقّق من مصدر هذه الإضافة</translation>
 <translation id="7583399374488819119">أداة تثبيت <ph name="COMPANY_NAME" /></translation>
@@ -657,7 +659,6 @@
 <translation id="7869620795354551924">‏لاستخدام كلمات المرور المحفوظة، يُرجى مسح رمز الاستجابة السريعة ضوئيًا وتنزيل Chrome لجهاز iOS، ثم تسجيل الدخول إلى حسابك على Google</translation>
 <translation id="7872446069773932638">جارٍ التنزيل… الثواني المتبقّية: <ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">‏اختيار نص باستخدام "عدسة Google"</translation>
-<translation id="7887929410013642057">‏عرض اختصارات "وضع AI" دائمًا</translation>
 <translation id="7890208801193284374">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chrome على النحو الذي يريدونه.</translation>
 <translation id="7896673875602241923">‏سجّل شخص ما الدخول من قبل إلى Chrome على جهاز الكمبيوتر هذا باسم <ph name="ACCOUNT_EMAIL_LAST" />. يُرجى إنشاء حساب مستخدم جديد في Chrome للإبقاء على معلوماتك بشكلٍ منفصل.</translation>
 <translation id="7904985524660297937">‏يمكنك تجربة Gemini في Google Chrome الآن</translation>

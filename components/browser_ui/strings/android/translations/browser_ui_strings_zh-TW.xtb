@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">你可以要求查看電腦版網站</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="113098737392899175">接上鍵盤時，使用文字游標瀏覽頁面</translation>
+<translation id="1149644372535087155">在 Chrome 中儲存密碼</translation>
 <translation id="1178015372320901893">「我的捷徑」底部功能表</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -172,6 +173,7 @@
 <translation id="2682367912565197520">刪除已儲存的縮放比例</translation>
 <translation id="2683434792633810741">要刪除並重設嗎？</translation>
 <translation id="2685514716378236873">不允許</translation>
+<translation id="2710883118091822664">登入帳戶，即可在所有裝置上輕鬆接續工作</translation>
 <translation id="2713106313042589954">關閉攝影機</translation>
 <translation id="2717722538473713889">電子郵件地址</translation>
 <translation id="2726059656860238749">啟動 Chrome 時將焦點置於網址列，縮短低階裝置的啟動時間。</translation>
@@ -199,6 +201,7 @@
 <translation id="3004438526346162184">網站可透過這項功能管理所有螢幕上的視窗</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
+<translation id="3026311960038210">主題系列</translation>
 <translation id="3064871050034234884">網站可以播放音效</translation>
 <translation id="3065787901655140044">進階保護功能已開啟</translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
@@ -341,6 +344,7 @@
 <translation id="4478158430052450698">在不同網站上都能更輕鬆地自訂縮放比例</translation>
 <translation id="4479647676395637221">允許網站使用你的攝影機前，必須先詢問你 (建議)</translation>
 <translation id="4505788138578415521">已展開網址</translation>
+<translation id="4523472416386354622">登入即可開始使用</translation>
 <translation id="4534723447064627427">如要允許 <ph name="APP_NAME" /> 存取裝置的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">關閉麥克風</translation>
 <translation id="4570913071927164677">詳細資料</translation>
@@ -397,6 +401,7 @@
 <translation id="512938610812707830">新分頁外觀主題系列底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="5137460097045297858">「探索」動態消息底部功能表已開啟，並顯示在畫面下半部</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{開啟的分頁中有商品降價}other{開啟的分頁中有商品降價}}</translation>
+<translation id="5150048675001754041">輕鬆快速登入網站和應用程式</translation>
 <translation id="5186036860380548585">選項位於畫面頂端</translation>
 <translation id="5197729504361054390">系統會將你選取的聯絡人資訊提供給 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5198930230016462977">自訂新分頁底部功能表已關閉</translation>
@@ -566,6 +571,7 @@
 <translation id="6980861169612950611">要刪除網站資料嗎？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="6991142177939282156">允許 • 使用概略位置</translation>
+<translation id="6992014788289743568">檢查密碼，強化安全防護並提升資料安全</translation>
 <translation id="6992289844737586249">允許網站使用你的麥克風前，必須先詢問你 (建議)</translation>
 <translation id="7000754031042624318">已在 Android 設定中關閉</translation>
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>

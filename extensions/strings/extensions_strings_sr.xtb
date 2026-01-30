@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Није могуће декодирати слику: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Коришћена је локализација, али параметар default_locale није наведен у манифесту.</translation>
 <translation id="2576842806987913196">Већ постоји CRX датотека са овим називом.</translation>
+<translation id="2743583586211388067">Приступ овом додатку је блокиран у складу са смерницама организације у вези са ризиком од додатака.</translation>
 <translation id="2785530881066938471">Учитавање датотеке „<ph name="RELATIVE_PATH" />“ за скрипту садржаја није успело. Нема UTF-8 шифровање.</translation>
 <translation id="2903070246402204397">Администратор је блокирао <ph name="EXTENSION_NAME" /> (ИД додатка је „<ph name="EXTENSION_ID" />“). <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Инсталација пакета није била могућа: „<ph name="ERROR_CODE" />“</translation>

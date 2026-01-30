@@ -26,6 +26,7 @@
 <translation id="1158134713295836892">Chrome 中的 Gemini</translation>
 <translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
 <translation id="1194807384646768652">Chrome 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
+<translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chrome 时，系统会提示您启用价格跟踪提醒。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
@@ -280,7 +281,6 @@
 <translation id="4022972681110646219">翻译屏幕</translation>
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">需要重新启动 Chrome 操作系统以应用更新。</translation>
-<translation id="4039097928859803404">总是显示 AI 模式快捷方式</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
 <translation id="408393047846373801">如需将密码等信息同步到您的所有设备上，请登录 Chrome。登录后，这个密码将保存到您的 Google 账号。</translation>
@@ -499,6 +499,7 @@
 <translation id="6321592572353357376">“<ph name="EXTENSION_NAME" />”扩展程序需要您登录 Chrome</translation>
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
 <translation id="6327105987658262776">没有可用的更新。</translation>
+<translation id="6333195756043503664">在电脑启动时打开 Chrome</translation>
 <translation id="6334815226785304306">将 Google Chrome 设为默认浏览器并固定到任务栏</translation>
 <translation id="63540178978900677">Chrome 不再是默认浏览器。要将 Chrome 设为默认浏览器吗？</translation>
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
@@ -608,6 +609,7 @@
 <translation id="7515191208480168435">您可以固定 Google 智能镜头以方便访问</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
 <translation id="7543146567111253230">如需在您的所有设备上获取此书签等内容，请登录 Chrome</translation>
+<translation id="756134248912568991">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chrome 时，系统会提示您使用标签页分组。</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7572537927358445944">已关闭 • Chrome 无法验证此扩展程序的来源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
@@ -652,7 +654,6 @@
 <translation id="7869620795354551924">如需使用已保存的密码，请扫描二维码、下载 iOS 版 Chrome 应用，并登录您的 Google 账号</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">选择要使用 Google 智能镜头搜索的文字</translation>
-<translation id="7887929410013642057">总是显示 AI 模式快捷方式</translation>
 <translation id="7890208801193284374">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chrome。</translation>
 <translation id="7896673875602241923">之前已有人在此计算机上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身份登录了 Chrome。请新建一个 Chrome 用户来单独保存您的信息。</translation>
 <translation id="7904985524660297937">试用 Google Chrome 中的 Gemini</translation>

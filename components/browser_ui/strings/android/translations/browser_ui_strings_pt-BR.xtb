@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Você pode pedir para ver a versão para computador dos sites</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
 <translation id="113098737392899175">Acessar páginas com um cursor de texto quando um teclado está conectado</translation>
+<translation id="1149644372535087155">Salvar senhas no Chrome</translation>
 <translation id="1178015372320901893">Página inferior "Meus atalhos"</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -172,6 +173,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="2682367912565197520">Excluir nível de zoom salvo</translation>
 <translation id="2683434792633810741">Excluir e redefinir?</translation>
 <translation id="2685514716378236873">Não permitidos</translation>
+<translation id="2710883118091822664">Faça login para continuar de onde parou em todos os seus dispositivos</translation>
 <translation id="2713106313042589954">Desativar câmera</translation>
 <translation id="2717722538473713889">Endereços de e-mail</translation>
 <translation id="2726059656860238749">Inicie o Chrome com a omnibox em foco, o que reduz o tempo de inicialização em dispositivos mais simples.</translation>
@@ -199,6 +201,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="3004438526346162184">Os sites podem usar esse recurso para gerenciar janelas em todas as telas</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
+<translation id="3026311960038210">Coleções de temas</translation>
 <translation id="3064871050034234884">Os sites podem tocar sons</translation>
 <translation id="3065787901655140044">A Proteção Avançada está ativada</translation>
 <translation id="3069226013421428034">Permita o login de terceiros em um site específico.</translation>
@@ -341,6 +344,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="4478158430052450698">Facilitar a personalização do zoom para sites diferentes</translation>
 <translation id="4479647676395637221">Perguntar antes de permitir que sites usem sua câmera (recomendado)</translation>
 <translation id="4505788138578415521">URL expandido</translation>
+<translation id="4523472416386354622">Fazer login para começar</translation>
 <translation id="4534723447064627427">Para permitir que o app <ph name="APP_NAME" /> acesse seu microfone, também é preciso ativá-lo nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
@@ -397,6 +401,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="512938610812707830">A página inferior de coleções de temas para a página "Nova guia" está aberta no tamanho máximo</translation>
 <translation id="5137460097045297858">A página inferior do feed do Discover está aberta na metade da altura</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Redução no preço nas guias abertas}one{Redução no preço nas guias abertas}other{Reduções nos preços nas guias abertas}}</translation>
+<translation id="5150048675001754041">Faça login em sites e apps com rapidez e facilidade</translation>
 <translation id="5186036860380548585">Opção disponível perto da parte superior da tela</translation>
 <translation id="5197729504361054390">Os contatos selecionados serão compartilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">A página inferior "Personalizar 'Nova guia'" está aberta</translation>
@@ -566,6 +571,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="6980861169612950611">Excluir dados do site? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="6991142177939282156">Permitida • Usando aproximada</translation>
+<translation id="6992014788289743568">Verifique as senhas para aumentar a segurança e proteger seus dados</translation>
 <translation id="6992289844737586249">Perguntar antes de permitir que sites usem o microfone (recomendado)</translation>
 <translation id="7000754031042624318">Desativada nas configurações do Android</translation>
 <translation id="702275896380648118">Este site determina seus interesses e sugere anúncios para outros sites. Ele também usa seus temas de anúncios do Chrome para mostrar anúncios mais relevantes.</translation>

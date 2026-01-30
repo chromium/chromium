@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">사이트의 데스크톱 버전을 표시하도록 요청할 수 있습니다.</translation>
 <translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
 <translation id="113098737392899175">키보드가 연결되어 있을 때 텍스트 커서로 페이지 탐색</translation>
+<translation id="1149644372535087155">Chrome에 비밀번호 저장</translation>
 <translation id="1178015372320901893">내 바로가기 하단 시트</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -172,6 +173,7 @@
 <translation id="2682367912565197520">저장된 확대/축소 수준 삭제</translation>
 <translation id="2683434792633810741">삭제하고 재설정하시겠습니까?</translation>
 <translation id="2685514716378236873">허용되지 않음</translation>
+<translation id="2710883118091822664">모든 기기에서 간편하게 이어 가려면 로그인하세요.</translation>
 <translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2717722538473713889">이메일 주소</translation>
 <translation id="2726059656860238749">검색주소창에 초점을 맞춘 Chrome을 실행하여 저사양 기기의 시작 시간을 줄입니다.</translation>
@@ -199,6 +201,7 @@
 <translation id="3004438526346162184">사이트에서 이 기능을 사용하여 모든 디스플레이의 창을 관리할 수 있습니다.</translation>
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="301521992641321250">자동으로 차단됨</translation>
+<translation id="3026311960038210">테마 컬렉션</translation>
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
 <translation id="3065787901655140044">고급 보호 기능이 사용 설정됨</translation>
 <translation id="3069226013421428034">특정 사이트에 대해 서드 파티 로그인을 허용합니다.</translation>
@@ -341,6 +344,7 @@
 <translation id="4478158430052450698">여러 사이트의 확대/축소 맞춤설정이 더 쉬워집니다.</translation>
 <translation id="4479647676395637221">사이트에서 카메라를 사용하도록 허용하기 전에 확인(권장)</translation>
 <translation id="4505788138578415521">URL 펼쳐짐</translation>
+<translation id="4523472416386354622">로그인하여 시작하기</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />에서 마이크에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 마이크를 사용 설정하세요.</translation>
 <translation id="4566417217121906555">마이크 음소거</translation>
 <translation id="4570913071927164677">세부정보</translation>
@@ -397,6 +401,7 @@
 <translation id="512938610812707830">새 탭 페이지 모양 테마 모음 하단 시트가 전체 높이로 열림</translation>
 <translation id="5137460097045297858">디스커버 피드 하단 시트가 절반 높이로 열림</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{열려 있는 탭의 가격 인하}other{열려 있는 탭의 가격 인하}}</translation>
+<translation id="5150048675001754041">사이트 및 앱에 빠르고 간편하게 로그인하세요.</translation>
 <translation id="5186036860380548585">화면 상단에서 옵션을 선택할 수 있습니다</translation>
 <translation id="5197729504361054390">선택한 연락처가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />과(와) 공유됩니다.</translation>
 <translation id="5198930230016462977">새 탭 페이지 맞춤설정 하단 시트가 닫힘</translation>
@@ -566,6 +571,7 @@
 <translation id="6980861169612950611"><ph name="SITE_NAME" /> 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="6991142177939282156">허용됨 • 대략적인 위치 사용 중</translation>
+<translation id="6992014788289743568">비밀번호를 확인하여 보안을 강화하고 데이터를 더 안전하게 보호하세요.</translation>
 <translation id="6992289844737586249">사이트에서 마이크를 사용하기 전에 확인(권장)</translation>
 <translation id="7000754031042624318">Android 설정에서 사용 중지됨</translation>
 <translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>

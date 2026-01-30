@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Methu â dadgodio'r llun: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Defnyddiwyd lleoleiddio, ond ni nodwyd default_locale yn y maniffest.</translation>
 <translation id="2576842806987913196">Mae ffeil CRX gyda'r enw hwn eisoes yn bodoli.</translation>
+<translation id="2743583586211388067">Mae mynediad at yr estyniad hwn wedi'i rwystro o dan bolisi risg estyniad eich sefydliad.</translation>
 <translation id="2785530881066938471">Ni ellid llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys. Nid yw wedi'i hencodio gan UTF-8.</translation>
 <translation id="2903070246402204397">Rhwystrir <ph name="EXTENSION_NAME" /> (rhif adnabod yr estyniad "<ph name="EXTENSION_ID" />") gan y gweinyddwr. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Wedi methu â gosod y pecyn: '<ph name="ERROR_CODE" />'</translation>

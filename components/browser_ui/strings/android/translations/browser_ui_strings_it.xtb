@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Puoi chiedere di visualizzare la versione desktop dei siti</translation>
 <translation id="1085696779717592361">Usa Chrome per impostazione predefinita</translation>
 <translation id="113098737392899175">Spostati da una pagina all'altra con un cursore di testo quando è collegata una tastiera</translation>
+<translation id="1149644372535087155">Salva le password in Chrome</translation>
 <translation id="1178015372320901893">Riquadro inferiore Le mie scorciatoie</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
@@ -172,6 +173,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2682367912565197520">Elimina il livello di zoom salvato</translation>
 <translation id="2683434792633810741">Vuoi eliminare e reimpostare?</translation>
 <translation id="2685514716378236873">Autorizzazione non concessa</translation>
+<translation id="2710883118091822664">Accedi per continuare facilmente su tutti i tuoi dispositivi</translation>
 <translation id="2713106313042589954">Disattiva videocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
 <translation id="2726059656860238749">Avvia Chrome con l'omnibox in primo piano per ridurre i tempi di avvio sui dispositivi di fascia bassa.</translation>
@@ -199,6 +201,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3004438526346162184">I siti possono usare questa funzionalità per gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
 <translation id="301521992641321250">Autorizzazione bloccata automaticamente</translation>
+<translation id="3026311960038210">Raccolte di temi</translation>
 <translation id="3064871050034234884">I siti possono riprodurre audio</translation>
 <translation id="3065787901655140044">La protezione avanzata è stata attivata</translation>
 <translation id="3069226013421428034">Consenti l'accesso di terze parti per un sito specifico.</translation>
@@ -341,6 +344,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="4478158430052450698">Semplifica la personalizzazione dello zoom per diversi siti</translation>
 <translation id="4479647676395637221">Chiedi conferma prima di consentire ai siti di utilizzare la fotocamera (opzione consigliata)</translation>
 <translation id="4505788138578415521">URL espanso</translation>
+<translation id="4523472416386354622">Accedi per iniziare</translation>
 <translation id="4534723447064627427">Per consentire all'app <ph name="APP_NAME" /> di accedere al tuo microfono, devi attivare il microfono anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Disattiva microfono</translation>
 <translation id="4570913071927164677">Dettagli</translation>
@@ -397,6 +401,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="512938610812707830">Riquadro inferiore di Raccolte di temi per l'aspetto della pagina Nuova scheda aperto a schermo intero</translation>
 <translation id="5137460097045297858">Riquadro inferiore del Feed personalizzato aperto nella parte inferiore dello schermo</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Calo di prezzo nelle schede aperte}other{Cali di prezzo nelle schede aperte}}</translation>
+<translation id="5150048675001754041">Accedi rapidamente e facilmente a siti e app</translation>
 <translation id="5186036860380548585">Opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Riquadro inferiore di Personalizza la pagina Nuova scheda chiuso</translation>
@@ -566,6 +571,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="6980861169612950611">Vuoi eliminare i dati del sito? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="6991142177939282156">Consentita • Approssimativa</translation>
+<translation id="6992014788289743568">Rafforza la tua sicurezza e proteggi meglio i tuoi dati controllando le password</translation>
 <translation id="6992289844737586249">Chiedi conferma prima di consentire ai siti di utilizzare il microfono (opzione consigliata)</translation>
 <translation id="7000754031042624318">Disattivata nelle impostazioni Android</translation>
 <translation id="702275896380648118">Questo sito stabilisce i tuoi interessi per poi suggerire annunci ad altri siti. Questo sito riceve anche gli argomenti degli annunci da Chrome per mostrarti annunci più pertinenti.</translation>

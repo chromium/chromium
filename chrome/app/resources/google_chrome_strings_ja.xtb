@@ -26,6 +26,7 @@
 <translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1184145431117212167">Windows のバージョンがサポートされていないためインストールできませんでした。</translation>
 <translation id="1194807384646768652">このダウンロードは Chrome でブロックされました。ファイル形式が一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
+<translation id="1197860368385086056">次回 <ph name="DEVICE_TYPE" /> で Chrome を開いたときに、価格トラッキングのアラートを有効にするよう促すメッセージが表示されます。</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="1290883685122687410">設定エラー: <ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
@@ -280,7 +281,6 @@
 <translation id="4022972681110646219">画面を翻訳</translation>
 <translation id="4023601594785368013">元の言語: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">更新を適用するには、ChromeOS を再起動する必要があります。</translation>
-<translation id="4039097928859803404">AI モードのショートカットを常に表示する</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
 <translation id="408393047846373801">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome にログインしてください。このパスワードは、ログイン後に Google アカウントに保存されます。</translation>
@@ -499,6 +499,7 @@
 <translation id="6321592572353357376">拡張機能「<ph name="EXTENSION_NAME" />」が Chrome へのログインを求めています</translation>
 <translation id="6326175484149238433">Chrome から削除</translation>
 <translation id="6327105987658262776">利用できるアップデートはありません。</translation>
+<translation id="6333195756043503664">パソコンの起動時に Chrome を開く</translation>
 <translation id="6334815226785304306">Google Chrome を既定のブラウザに設定してタスクバーに固定する</translation>
 <translation id="63540178978900677">Chrome は既定のブラウザではなくなりました。Chrome を既定のブラウザにしますか？</translation>
 <translation id="6360449101159168105">Chrome を高速に保つため、このタブがアクティブでないときにメモリを解放しました。このサイトを常にアクティブにするよう選択できます。</translation>
@@ -608,6 +609,7 @@
 <translation id="7515191208480168435">Google レンズを固定して簡単にアクセスできます</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">すべてのデバイスでこのブックマークなどを使用するには、Chrome にログインしてください</translation>
+<translation id="756134248912568991">次回 <ph name="DEVICE_TYPE" /> で Chrome を開いたときに、タブグループを使用するよう促すメッセージが表示されます。</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>
 <translation id="7572537927358445944">オフ • Chrome では、この拡張機能の提供元を確認できません</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> インストーラ</translation>
@@ -652,7 +654,6 @@
 <translation id="7869620795354551924">保存したパスワードを使用するには、QR コードのサイトから iOS 版 Chrome をダウンロードして Google アカウントにログインします</translation>
 <translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>
 <translation id="7886087451482920026">Google レンズでテキストを選択します</translation>
-<translation id="7887929410013642057">AI モードのショートカットを常に表示する</translation>
 <translation id="7890208801193284374">パソコンを共有している場合、友だちや家族はそれぞれ Chrome を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
 <translation id="7896673875602241923">前回このパソコンで別のユーザー（<ph name="ACCOUNT_EMAIL_LAST" />）が Chrome にログインしました。情報を個別に保持するには、新しい Chrome ユーザーを作成してください。</translation>
 <translation id="7904985524660297937">Gemini in Google Chrome にアクセス</translation>

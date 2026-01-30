@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chromium을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="1652887625750064647">AI 최적 일치</translation>
 <translation id="1653465303147789530">앱을 전환하지 않고 <ph name="PAYMENT_METHOD" />(으)로 결제</translation>
+<translation id="1655159794885649984">이 사이트에서 콘텐츠를 드래그할 수 없습니다</translation>
 <translation id="1656024727720460136">Chrome에서 페이지를 읽기 쉽도록 간소화했습니다. Chrome에서 보안 연결을 통해 원본 페이지를 가져왔습니다.</translation>
 <translation id="1656489000284462475">수령</translation>
 <translation id="1658111267661135323">TV 및 동영상</translation>
@@ -1678,6 +1679,7 @@
 <translation id="365641980390710834">일상복</translation>
 <translation id="3658742229777143148">개정</translation>
 <translation id="3659521826520353662">방문한 관리자 정의 웹사이트 및 방문 시기: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">이 IBAN은 다양한 Google 서비스에서 사용할 수 있도록 Google 월렛에 저장됩니다.</translation>
 <translation id="3664479564786885722">이 제품을 판매하는 다른 매장에서 더 많은 구매 옵션을 검색하세요.</translation>
 <translation id="3664782872746246217">키워드:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />자세히 알아보기<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@
 <translation id="6085149458302186532">라벨(색상 있음)</translation>
 <translation id="6087312102907839798">관련 검색어</translation>
 <translation id="6089505343295765444">Chrome 방문 기록에서 삭제한 탭은 비교 테이블에 계속 표시됩니다</translation>
+<translation id="6091115085465716987">Google 월렛 로고</translation>
 <translation id="6091691259076781835">더 빠르게 결제하려면 기기에 이 CVC를 저장하세요.</translation>
 <translation id="6093599771645355227">노란색 1</translation>
 <translation id="6093795393556121384">카드가 인증되었습니다.</translation>
@@ -3814,6 +3817,7 @@
 <translation id="7057567173736333354">이미지 설명 작성</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />에서 <ph name="ISSUER" /> 업체가 이 웹사이트 인증서를 발급했음을 확인했습니다.</translation>
 <translation id="7058774143982824355">CSV 비밀번호 파서 서비스</translation>
+<translation id="7062344833049251424">다음번에 더 빠르게 결제할 수 있도록 Google 월렛에 카드 및 청구서 수신 주소를 저장합니다.</translation>
 <translation id="706295145388601875">Chrome 설정에서 주소 추가 및 관리</translation>
 <translation id="7063157783216323487">녹색 2</translation>
 <translation id="7064443976734085921">소형차</translation>
@@ -4283,6 +4287,7 @@
 <translation id="7754587126786572336">업데이트가 시작되면 Chrome 탭과 앱이 닫힙니다</translation>
 <translation id="7755287808199759310">부모님이 차단 해제할 수 있습니다.</translation>
 <translation id="7755624218968747854">기본 롤</translation>
+<translation id="7756441544371887150">Google 월렛에 저장하면 Chrome에서 구매 시 이 카드를 자동 완성합니다.</translation>
 <translation id="7758069387465995638">방화벽이나 바이러스 백신 소프트웨어가 연결을 차단했을 수 있습니다.</translation>
 <translation id="7759147511335618829">MIDI 기기 제어 및 다시 프로그래밍</translation>
 <translation id="7759809451544302770">선택사항</translation>
@@ -5205,6 +5210,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{없음}=1{항목 1개}other{항목 #개}}</translation>
 <translation id="976522784004777030">5x8인치</translation>
 <translation id="977502174772294970">결혼식</translation>
+<translation id="978750072783101994">Google 월렛에 저장하면 Chromium에서 구매 시 이 카드를 자동 완성합니다.</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" />에서 브라우저와 프로필을 관리합니다</translation>
 <translation id="979189555234810423">박람회 및 컨벤션</translation>
 <translation id="979503328401807348">더 유용한 광고</translation>

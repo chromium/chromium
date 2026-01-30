@@ -286,7 +286,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS needs to be restarted to apply the update.</translation>
-<translation id="4039097928859803404">Always show AI Mode shortcuts</translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
 <translation id="408393047846373801">To get your passwords and more on all your devices, sign in to Chrome. This password will be saved in your Google Account after you sign in.</translation>
@@ -400,6 +399,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
 <translation id="5337648990166757586">Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
+<translation id="5346059693449184483">What's on your mind?</translation>
 <translation id="5346389065299425353">Deepen your search by adding multiple tabs, files and tools</translation>
 <translation id="5353252989841766347">Export Passwords From Chrome</translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
@@ -664,7 +664,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7869620795354551924">To use your saved passwords, follow the QR code, download Chrome for iOS and sign in to your Google Account</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>
 <translation id="7886087451482920026">Select text with Google Lens</translation>
-<translation id="7887929410013642057">Always show AI Mode shortcuts</translation>
 <translation id="7890208801193284374">If you share a computer, friends and family can browse separately and set up Chrome just the way they want.</translation>
 <translation id="7896673875602241923">Someone previously signed in to Chrome on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chrome user to keep your information separate.</translation>
 <translation id="7904985524660297937">Try Gemini in Google Chrome</translation>
@@ -694,6 +693,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8162006532256575008">Use Chrome without an account</translation>
 <translation id="8177472873527554730">Can't find content in page</translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
+<translation id="8223142476690844338">Hi <ph name="USER_NAME" />, what's on your mind?</translation>
 <translation id="8255190535488645436">Google Chrome is using your camera and microphone.</translation>
 <translation id="8267953129876836456">Chrome found some safety recommendations for your review</translation>
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>

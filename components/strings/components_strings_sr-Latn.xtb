@@ -421,6 +421,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1652862280638399816">Da biste koristili Menadžer lozinki sa macOS Keychain-om, ponovo pokrenite Chromium i dozvolite pristup Keychain-u. Kartice će se ponovo otvoriti posle ponovnog pokretanja.</translation>
 <translation id="1652887625750064647">Najbolje podudaranje pomoću veštačke inteligencije</translation>
 <translation id="1653465303147789530">Plaćajte bez menjanja aplikacije pomoću: <ph name="PAYMENT_METHOD" /></translation>
+<translation id="1655159794885649984">Prevlačenje sadržaja na ovom sajtu nije dozvoljeno</translation>
 <translation id="1656024727720460136">Chrome je pojednostavio ovu stranicu radi lakšeg čitanja. Chrome je preuzeo originalnu stranicu preko bezbedne veze.</translation>
 <translation id="1656489000284462475">Preuzimanje</translation>
 <translation id="1658111267661135323">TV i video</translation>
@@ -1678,6 +1679,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="365641980390710834">Ležerna odeća</translation>
 <translation id="3658742229777143148">Revizija</translation>
 <translation id="3659521826520353662">Koji veb-sajtovi koje je definisao administrator se posećuju i kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Ovaj IBAN se čuva u Google novčaniku da biste mogli da ga koristite u svim Google uslugama.</translation>
 <translation id="3664479564786885722">Pretražite još opcija kupovine u drugim prodavnicama koje prodaju ovaj proizvod.</translation>
 <translation id="3664782872746246217">Ključne reči:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Saznajte više<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6085149458302186532">Nalepnice (u boji)</translation>
 <translation id="6087312102907839798">Srodne pretrage</translation>
 <translation id="6089505343295765444">Kartice koje izbrišete iz istorije Chrome-a i dalje će se prikazivati u tabelama za poređenje</translation>
+<translation id="6091115085465716987">Logotip Google novčanika</translation>
 <translation id="6091691259076781835">Da biste brže plaćali, sačuvajte ovaj CVC na uređaju</translation>
 <translation id="6093599771645355227">Žuta 1</translation>
 <translation id="6093795393556121384">Kartica je verifikovana</translation>
@@ -3813,6 +3816,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7057567173736333354">Opišite sliku</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> je potvrdio da je <ph name="ISSUER" /> izdao sertifikat ovog veb-sajta.</translation>
 <translation id="7058774143982824355">Usluga raščlanjivača CSV lozinki</translation>
+<translation id="7062344833049251424">Da biste sledeći put platili brže, sačuvajte karticu i adresu za obračun u Google novčaniku</translation>
 <translation id="706295145388601875">Dodajte adrese i upravljajte njima u podešavanjima Chrome-a</translation>
 <translation id="7063157783216323487">Zelena 2</translation>
 <translation id="7064443976734085921">Kompaktni automobili</translation>
@@ -4283,6 +4287,7 @@ Dodatni detalji:
 <translation id="7754587126786572336">Chrome kartice i aplikacije će se zatvoriti kada ažuriranje počne</translation>
 <translation id="7755287808199759310">Roditelj može da ga odblokira za tebe</translation>
 <translation id="7755624218968747854">Primarni kotur</translation>
+<translation id="7756441544371887150">Automatski popunjavajte ovu karticu za kupovine u Chrome-u kada je sačuvate u Google novčaniku</translation>
 <translation id="7758069387465995638">Možda je zaštitni zid ili antivirusni softver blokirao vezu.</translation>
 <translation id="7759147511335618829">MIDI – Kontrola i reprogramiranje</translation>
 <translation id="7759809451544302770">Opcionalno</translation>
@@ -5207,6 +5212,7 @@ Dodatni detalji:
 <translation id="975560348586398090">{COUNT,plural, =0{None}=1{1 stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>
 <translation id="976522784004777030">5×8 in</translation>
 <translation id="977502174772294970">Venčanja</translation>
+<translation id="978750072783101994">Automatski popunjavajte ovu karticu za kupovine u Chromium-u kada je sačuvate u Google novčaniku</translation>
 <translation id="979107176848483472">Pregledačem i profilom upravlja <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Izložbe i konvencije</translation>
 <translation id="979503328401807348">Korisniji oglasi</translation>

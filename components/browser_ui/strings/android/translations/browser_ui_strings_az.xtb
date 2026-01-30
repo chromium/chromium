@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Saytların masaüstü versiyasına baxmağı istəyə bilərsiniz</translation>
 <translation id="1085696779717592361">Defolt olaraq Chrome istifadə edin</translation>
 <translation id="113098737392899175">Klaviatura qoşulduqda mətn kursoru ilə səhifələrə keçin</translation>
+<translation id="1149644372535087155">Parolları Chrome-da yadda saxlayın</translation>
 <translation id="1178015372320901893">Qısayollarım üzrə aşağıdakı vərəq</translation>
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="1181037720776840403">Silin</translation>
@@ -172,6 +173,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="2682367912565197520">Yadda saxlanılmış zum səviyyəsini silin</translation>
 <translation id="2683434792633810741">Silib, sıfırlansın?</translation>
 <translation id="2685514716378236873">İcazə verilməyib</translation>
+<translation id="2710883118091822664">Bütün cihazlarda asanlıqla davam etmək üçün daxil olun</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2717722538473713889">E-poçt ünvanları</translation>
 <translation id="2726059656860238749">Omnibox fokuslu Chrome-u işə salaraq aşağı keyfiyyətli cihazlarda işə başlama vaxtını azaldın.</translation>
@@ -199,6 +201,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3004438526346162184">Saytlar bu funksiyadan istifadə edərək bütün displeylərdəki pəncərələri idarə edə bilər</translation>
 <translation id="3008272652534848354">İcazələri sıfırlayın</translation>
 <translation id="301521992641321250">Avtomatik olaraq blok edildi</translation>
+<translation id="3026311960038210">Tema kolleksiyaları</translation>
 <translation id="3064871050034234884">Saytlar səs oxuda bilər</translation>
 <translation id="3065787901655140044">Qabaqcıl Qoruma aktivdir</translation>
 <translation id="3069226013421428034">Müəyyən bir sayt üçün üçüncü tərəfin girişinə icazə verin.</translation>
@@ -341,6 +344,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="4478158430052450698">Fərqli saytlar üçün miqyasdəyişməni fərdiləşdirməyi asanlaşdırın</translation>
 <translation id="4479647676395637221">Saytlara kameranızı istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="4505788138578415521">URL genişləndirilib</translation>
+<translation id="4523472416386354622">Başlamaq üçün hesaba daxil olun</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
@@ -397,6 +401,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="512938610812707830">Yeni tab səhifəsinin görünüş teması kolleksiyalarına aid aşağıdakı vərəq tam hündürlükdə açıldı</translation>
 <translation id="5137460097045297858">Lentin yarım hündürlükdə açılmış aşağıdakı vərəqini kəşf edin</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Açıq tablarda qiymət düşməsi}other{Açıq tablarda qiymət düşməsi}}</translation>
+<translation id="5150048675001754041">Sayt və tətbiqlərə sürətli və asan şəkildə daxil olun</translation>
 <translation id="5186036860380548585">Seçim ekranın yuxarısına yaxın yerdə əlçatandır</translation>
 <translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>
 <translation id="5198930230016462977">Yeni tab səhifəsinin aşağıdakı vərəqinin fərdiləşdirilməsi bağlandı</translation>
@@ -566,6 +571,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="6980861169612950611">Sayt datası silinsin? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>
 <translation id="6991142177939282156">İcazə verilir • Təxmini məkan istifadə edilir</translation>
+<translation id="6992014788289743568">Parolları yoxlamaqla təhlükəsizliyi gücləndirin və datanı daha təhlükəsiz saxlayın</translation>
 <translation id="6992289844737586249">Saytlara mikrofonunuzu istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="7000754031042624318">Android ayarlarında söndürülüb</translation>
 <translation id="702275896380648118">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir.</translation>

@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Dekodiranje slike nije uspjelo: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Korištena je lokalizacija, ali u deklaraciji nije naveden default_locale.</translation>
 <translation id="2576842806987913196">Već postoji CRX fajl s istim nazivom.</translation>
+<translation id="2743583586211388067">Pristup ovoj ekstenziji je blokiran u skladu s pravilima vaše organizacije o rizicima ekstenzija.</translation>
 <translation id="2785530881066938471">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo. Nije kodirano koristeći UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID ekstenzije "<ph name="EXTENSION_ID" />") je blokirao administrator. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Instaliranje paketa nije uspjelo: "<ph name="ERROR_CODE" />"</translation>

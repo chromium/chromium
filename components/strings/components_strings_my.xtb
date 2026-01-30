@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS Keychain ဖြင့် Password Manager သုံးရန် Chromium ကို ပြန်ဖွင့်ပြီး Keychain သုံးခွင့်ပြုပါ။ ပြန်ဖွင့်ပြီးနောက် သင့်တဘ်များ ပြန်ပွင့်ပါမည်။</translation>
 <translation id="1652887625750064647">AI အကောင်းဆုံးကိုက်ညီမှု</translation>
 <translation id="1653465303147789530">အက်ပ်များမပြောင်းဘဲ <ph name="PAYMENT_METHOD" /> ဖြင့် ငွေပေးချေခြင်း</translation>
+<translation id="1655159794885649984">ဤဝဘ်ဆိုက်တွင် အကြောင်းအရာကို ဖိဆွဲယူခွင့်မပြုပါ</translation>
 <translation id="1656024727720460136">ဤစာမျက်နှာကို ပိုမိုလွယ်ကူစွာဖတ်နိုင်ရန် Chrome က ရိုးရှင်းအောင်ပြုလုပ်ထားသည်။ Chrome သည် မူရင်းစာမျက်နှာကို လုံခြုံသည့် ချိတ်ဆက်မှုမှတစ်ဆင့် ရယူထားသည်။</translation>
 <translation id="1656489000284462475">ထုတ်ယူရန်</translation>
 <translation id="1658111267661135323">TV နှင့် ဗီဒီယို</translation>
@@ -622,7 +623,7 @@
 <translation id="1997774360448418989">စာရွက် (အပါး)</translation>
 <translation id="1999416967035780066">အခမဲ့ဆော့ဖ်ဝဲ၊ မျှသုံးဆော့ဖ်ဝဲ</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{နှင့် နောက်ထပ် ၁ ခု}other{နှင့် နောက်ထပ် # ခု}}</translation>
-<translation id="2001469757375372617">တစ်ခုခုမှားသွားသည်။ သင်၏အပြာင်းအလဲကို သိမ်းမထားပါ။</translation>
+<translation id="2001469757375372617">တစ်ခုခု မှားသွားသည်။ သင်၏အပြာင်းအလဲကို သိမ်းမထားပါ။</translation>
 <translation id="2002436619517051938">Chrome ဆက်တင်များတွင် အပြောင်းအလဲ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="2003709556000175978">သင့်စကားဝှက်ကို ယခု ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2003775180883135320">ထိပ်တွင် လေးချက်ဖောက်ရန်</translation>
@@ -1678,6 +1679,7 @@
 <translation id="365641980390710834">ပေါ့ပေါ့ပါးပါး အဝတ်အစား</translation>
 <translation id="3658742229777143148">ပြင်ဆင်ချက်</translation>
 <translation id="3659521826520353662">ဝင်ကြည့်ထားသော စီမံခန့်ခွဲသူ သတ်မှတ်ထားသည့် ဝဘ်ဆိုက်များနှင့် ကြည့်သည့်အချိန်- <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">ဤ IBAN ကို Google Wallet တွင် သိမ်းထားခြင်းဖြင့် Google ဝန်ဆောင်မှုများတွင် သုံးနိုင်သည်။</translation>
 <translation id="3664479564786885722">ဤကုန်ပစ္စည်းရောင်းသော အခြားဆိုင်များမှ ဝယ်ယူခြင်းဆိုင်ရာ နောက်ထပ်ရွေးစရာများကို ရှာနိုင်သည်။</translation>
 <translation id="3664782872746246217">အဓိကစကားလုံးများ-</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ပိုမိုလေ့လာရန်<ph name="LINK_END1" /></translation>
@@ -3199,6 +3201,7 @@
 <translation id="6085149458302186532">လေဘယ်လ် (အရောင်)</translation>
 <translation id="6087312102907839798">ဆက်စပ်သော ရှာဖွေမှုများ</translation>
 <translation id="6089505343295765444">သင့် Chrome မှတ်တမ်းမှ ဖျက်လိုက်သော တဘ်များကို သင်၏နှိုင်းယှဉ်မှုဇယားများတွင် ဆက်ပြပါမည်</translation>
+<translation id="6091115085465716987">Google Wallet လိုဂို</translation>
 <translation id="6091691259076781835">အမြန်ငွေရှင်းနိုင်ရန် ဤ CVC နံပါတ်ကို သင့်စက်တွင် သိမ်းပါ</translation>
 <translation id="6093599771645355227">အဝါ ၁</translation>
 <translation id="6093795393556121384">သင့်ကဒ်အား အတည်ပြုစိစစ်ပြီးဖြစ်၏</translation>
@@ -3814,6 +3817,7 @@
 <translation id="7057567173736333354">သင့်ပုံကို ဖော်ပြပါ</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> သည် ဤဝဘ်ဆိုက်၏ အသိအမှတ်ပြုလက်မှတ်ကို ထုတ်ပေးကြောင်း <ph name="BROWSER" /> က အတည်ပြုထားသည်။</translation>
 <translation id="7058774143982824355">CSV စကားဝှက် ပါဆာ ဝန်ဆောင်မှု</translation>
+<translation id="7062344833049251424">နောက်တစ်ကြိမ်တွင် ပိုမိုမြန်ဆန်စွာ ပေးချေနိုင်ရန် သင်၏ကတ်နှင့် ငွေတောင်းခံလွှာပို့သော လိပ်စာတို့ကို Google Wallet တွင် သိမ်းနိုင်သည်</translation>
 <translation id="706295145388601875">Chrome ဆက်တင်များတွင် လိပ်စာများထည့်ရန်နှင့် စီမံရန်</translation>
 <translation id="7063157783216323487">အစိမ်း ၂</translation>
 <translation id="7064443976734085921">ကားသေး</translation>
@@ -4284,6 +4288,7 @@
 <translation id="7754587126786572336">အပ်ဒိတ်စတင်သောအခါ Chrome တဘ်နှင့် အက်ပ်များ ပိတ်မည်</translation>
 <translation id="7755287808199759310">သင့်မိဘသည် ၎င်းကို သင့်အတွက် ဖွင့်ပေးနိုင်ပါသည်</translation>
 <translation id="7755624218968747854">ပင်မအလိပ်</translation>
+<translation id="7756441544371887150">ဤကတ်ကို Google Wallet တွင် သိမ်းထားသောအခါ Chrome ၌ ပြုလုပ်သော ဝယ်ယူမှုများအတွက် ၎င်းကို အော်တိုဖြည့်သည်</translation>
 <translation id="7758069387465995638">Firewall သို့မဟုတ် ဗိုင်းရက်တိုက်ဖျက်ရေးဆော့ဝဲသည် ချိတ်ဆက်မှုကို ပိတ်ဆို့ထားခြင်း ဖြစ်နိုင်သည်။</translation>
 <translation id="7759147511335618829">MIDI စက်စီမံခြင်း၊ ပရိုဂရမ်ပြန်လုပ်ခြင်း</translation>
 <translation id="7759809451544302770">လိုချင်မှ လုပ်ရန်</translation>
@@ -5208,6 +5213,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{အကြောင်းအရာ ၁ ခု}other{အကြောင်းအရာ # ခု}}</translation>
 <translation id="976522784004777030">၅ x ၈ လက်မ</translation>
 <translation id="977502174772294970">မင်္ဂလာပွဲများ</translation>
+<translation id="978750072783101994">ဤကတ်ကို Google Wallet တွင် သိမ်းထားသောအခါ Chromium ၌ ပြုလုပ်သော ဝယ်ယူမှုများအတွက် ၎င်းကို အော်တိုဖြည့်သည်</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" /> က သင့်ဘရောင်ဇာနှင့် ပရိုဖိုင်တို့ကို စီမံသည်</translation>
 <translation id="979189555234810423">ကုန်စည်ပြပွဲနှင့် ညီလာခံ</translation>
 <translation id="979503328401807348">ပိုမိုအသုံးဝင်သည့် ကြော်ငြာများ</translation>

@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Дүрсний кодыг тайлах боломжгүй байна: <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2350172092385603347">Байрлалыг ашигласан, анхдагч байрлалыг контентын жагсаалтанд зааж өгсөн.</translation>
 <translation id="2576842806987913196">Ийм нэртэй CRX файл аль хэдийн байна.</translation>
+<translation id="2743583586211388067">Энэ өргөтгөлд хандах эрхийг танай байгууллагын өргөтгөлийн эрсдэлийн бодлогын дагуу блоклосон.</translation>
 <translation id="2785530881066938471">Контентын бичвэрийн зорилгоор <ph name="RELATIVE_PATH" /> файлыг ачаалж чадсангүй. Энэ нь UTF-8 кодчилол биш байна.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />-г (өргөтгөлийн ID "<ph name="EXTENSION_ID" />") таны администратор блоклосон. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Багцыг суулгаж чадсангүй: '<ph name="ERROR_CODE" />'</translation>

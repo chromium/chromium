@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">ਚਿੱਤਰ ਡੀਕੋਡ ਨਹੀਂ ਕਰ ਸਕਿਆ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ਸਥਾਨੀਕਰਨ ਵਰਤਿਆ, ਪਰ default_locale ਮੈਨੀਫ਼ੈਸਟ ਵਿੱਚ ਨਹੀਂ ਦਿੱਤਾ ਹੋਇਆ ਸੀ।</translation>
 <translation id="2576842806987913196">ਇਸ ਨਾਮ ਨਾਲ ਪਹਿਲਾਂ ਹੀ ਇੱਕ CRX ਫਾਈਲ ਮੌਜੂਦ ਹੈ।</translation>
+<translation id="2743583586211388067">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਐਕਸਟੈਂਸ਼ਨ ਜੋਖਮ ਨੀਤੀ ਦੇ ਤਹਿਤ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਤੱਕ ਪਹੁੰਚ ਬਲਾਕ ਹੈ।</translation>
 <translation id="2785530881066938471">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ ਫ਼ਾਈਲ '<ph name="RELATIVE_PATH" />' ਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਇਹ UTF-8 ਇਨਕੋਡ ਵਿੱਚ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ਐਕਸਟੈਂਸ਼ਨ ਆਈ.ਡੀ. "<ph name="EXTENSION_ID" />") ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ। <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ਪੈਕੇਜ ਸਥਾਪਤ ਨਹੀਂ ਹੋ ਸਕਿਆ: '<ph name="ERROR_CODE" />'</translation>

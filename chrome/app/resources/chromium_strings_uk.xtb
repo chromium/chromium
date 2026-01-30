@@ -278,7 +278,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4023601594785368013">Мова оригіналу: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Відкривайте посилання з будь-якого додатка у вебпереглядачі Chromium і закріпіть його на панелі завдань для зручності.</translation>
 <translation id="4036079820698952681">Допоможіть покращити Chromium, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
-<translation id="4039097928859803404">Завжди показувати ярлики режиму ШІ</translation>
 <translation id="4050175100176540509">В останній версії покращено безпеку та додано нові функції.</translation>
 <translation id="4055805654398742145">М&amp;енеджер паролів</translation>
 <translation id="4061696872429826774">Інша програма на вашому комп’ютері додала розширення, яке може впливати на роботу Chromium.
@@ -482,6 +481,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6450948450282634257">Завантажте Chromium на телефон, щоб відстежувати ціни й отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="645458117210240797">Вимкнено • Chromium не може перевірити, звідки походить це розширення</translation>
 <translation id="6455857529632101747">Представляємо профілі Chromium</translation>
+<translation id="6460614424172581323">Коли ви наступного разу відкриєте Chromium на своєму пристрої <ph name="DEVICE_TYPE" />, з’явиться запит на використання груп вкладок.</translation>
 <translation id="6466344609055215035">Вилучити обліковий запис із Chromium</translation>
 <translation id="6475912303565314141">Також указує сторінку, яка відкривається під час запуску Chromium.</translation>
 <translation id="648319183876919572">Безпечний перегляд із розширеним захистом додатково захищає вас від небезпечних веб-сайтів і завантажень</translation>
@@ -611,7 +611,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7872446069773932638">Завантаження… Залишилося: <ph name="SECONDS" /> с.</translation>
 <translation id="7873537467422636035">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chromium у своєму обліковому записі<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">Запитати про це зображення</translation>
-<translation id="7887929410013642057">Завжди показувати ярлики режиму ШІ</translation>
 <translation id="7888981273428720788">Зробіть Chromium вебпереглядачем за умовчанням</translation>
 <translation id="7934340546140346950">Chromium автоматично переходить на протокол HTTPS, коли це можливо</translation>
 <translation id="7937630085815544518">Ви ввійшли в Chromium як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
@@ -628,6 +627,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8086881907087796310">Не вдалося встановити, оскільки ваш комп’ютер не відповідає мінімальним вимогам до апаратного забезпечення.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Веб-переглядачу Chromium потрібен дозвіл на доступ до геоданих для цього сайту</translation>
+<translation id="8107060931443639922">Коли ви наступного разу відкриєте Chromium на своєму пристрої <ph name="DEVICE_TYPE" />, з’явиться запит увімкнути сповіщення про відстеження цін.</translation>
 <translation id="8118331347066725040">Залиште відгук про пошук через Об’єктив</translation>
 <translation id="8133124826068723441">Chromium OS не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>
@@ -704,6 +704,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
 <translation id="8981150672034878610">Не вдалося запустити Chromium через помилку під час відкриття профілю. Перезапустіть Chromium.</translation>
 <translation id="8988036198400390003">Керувати профілями Chromium</translation>
+<translation id="9003988359820989654">Відкривати Chromium, коли запускається комп’ютер</translation>
 <translation id="9019929317751753759">Щоб зробити Chromium безпечнішим, ми вимкнули наведене нижче розширення, установлене не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додане без вашого відома.</translation>
 <translation id="904366664621834601">Вебпереглядач Chromium заблокував завантаження, оскільки в цьому архіві є файли, які можуть містити зловмисне програмне забезпечення</translation>
 <translation id="9062666675513499497">Входити в Chromium під час входу в інші сервіси Google</translation>

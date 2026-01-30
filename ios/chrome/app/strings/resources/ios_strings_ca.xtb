@@ -1523,6 +1523,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6556866813142980365">Refés</translation>
 <translation id="6559301491397835130">{count,plural, =1{L'adreça d'interès s'ha desat a "{title}", i només en aquest dispositiu.}other{Les adreces d'interès s'han desat a "{title}", i només en aquest dispositiu.}}</translation>
 <translation id="656065428026159829">Mostra'n més</translation>
+<translation id="6565899972286925956">Crea qualsevol cosa</translation>
 <translation id="6571070086367343653">Edita la targeta de crèdit</translation>
 <translation id="6574092468346088891">Activa les notificacions de Comprovació de seguretat</translation>
 <translation id="6579867704846662339">Pots triar si vols obrir els URL entrants d'altres aplicacions en incògnit.</translation>

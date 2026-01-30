@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Impossible de décoder l'image : "<ph name="IMAGE_NAME" />".</translation>
 <translation id="2350172092385603347">Localisation utilisée, mais les paramètres régionaux par défaut (default_locale) n'ont pas été indiqués dans le manifeste. </translation>
 <translation id="2576842806987913196">Un autre fichier CRX portant le même nom existe déjà.</translation>
+<translation id="2743583586211388067">L'accès à cette extension est bloqué en vertu de la règle de votre organisation sur les risques liés aux extensions.</translation>
 <translation id="2785530881066938471">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu, car ce fichier n'est pas codé en UTF-8.</translation>
 <translation id="2903070246402204397">L'administrateur a bloqué l'extension <ph name="EXTENSION_NAME" /> (ID : <ph name="EXTENSION_ID" />). <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Impossible d'installer le package : "<ph name="ERROR_CODE" />"</translation>

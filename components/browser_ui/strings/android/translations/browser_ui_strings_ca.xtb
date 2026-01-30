@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Pots sol·licitar que es mostri la versió per a ordinadors dels llocs web</translation>
 <translation id="1085696779717592361">Utilitza Chrome de manera predeterminada</translation>
 <translation id="113098737392899175">Navega per les pàgines amb un cursor de text quan hi hagi un teclat connectat</translation>
+<translation id="1149644372535087155">Desa les contrasenyes a Chrome</translation>
 <translation id="1178015372320901893">Full inferior Les meves dreceres</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
@@ -172,6 +173,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2682367912565197520">Suprimeix el nivell de zoom desat</translation>
 <translation id="2683434792633810741">Vols suprimir les dades i restablir els permisos?</translation>
 <translation id="2685514716378236873">No permès</translation>
+<translation id="2710883118091822664">Inicia la sessió per continuar fàcilment en tots els teus dispositius</translation>
 <translation id="2713106313042589954">Desactiva la càmera</translation>
 <translation id="2717722538473713889">Adreces electròniques</translation>
 <translation id="2726059656860238749">Inicia Chrome amb l'omnibox enfocat per reduir el temps d'inici en dispositius de gamma baixa.</translation>
@@ -199,6 +201,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3004438526346162184">Els llocs web poden utilitzar aquesta funció per gestionar finestres en totes les pantalles</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
+<translation id="3026311960038210">Col·leccions de temes</translation>
 <translation id="3064871050034234884">Els llocs web poden reproduir so</translation>
 <translation id="3065787901655140044">La Protecció avançada està activada</translation>
 <translation id="3069226013421428034">Permet l'inici de sessió de tercers en un lloc web concret.</translation>
@@ -341,6 +344,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="4478158430052450698">Facilita personalitzar el zoom per a diferents llocs web</translation>
 <translation id="4479647676395637221">Pregunta abans de permetre que els llocs web utilitzin la càmera (opció recomanada)</translation>
 <translation id="4505788138578415521">L'URL s'ha ampliat</translation>
+<translation id="4523472416386354622">Inicia la sessió per començar</translation>
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
@@ -397,6 +401,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="512938610812707830">Full inferior de les col·leccions de temes per a l'aparença de la pàgina Pestanya nova obert a alçada completa</translation>
 <translation id="5137460097045297858">Full inferior del feed de Discover obert a mitja alçada</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baixada de preu en les pestanyes obertes}other{Baixades de preu en les pestanyes obertes}}</translation>
+<translation id="5150048675001754041">Inicia la sessió ràpidament i fàcilment en llocs web i aplicacions</translation>
 <translation id="5186036860380548585">L'opció està disponible a prop de la part superior de la pantalla.</translation>
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Full inferior de personalització de la pàgina Pestanya nova tancat</translation>
@@ -566,6 +571,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6980861169612950611">Vols suprimir les dades del lloc web? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="6991142177939282156">Permès • S'utilitza una aproximació</translation>
+<translation id="6992014788289743568">Reforça la seguretat i protegeix encara més les teves dades comprovant les contrasenyes</translation>
 <translation id="6992289844737586249">Pregunta abans de permetre que els llocs web utilitzin el micròfon (opció recomanada)</translation>
 <translation id="7000754031042624318">Desactivat a la configuració d'Android</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants.</translation>

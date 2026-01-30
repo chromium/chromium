@@ -421,6 +421,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1652862280638399816">Para usar el Administrador de contraseñas con el llavero de macOS, reinicia Chromium y permite el acceso al llavero. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
 <translation id="1652887625750064647">Mejor coincidencia de IA</translation>
 <translation id="1653465303147789530">Paga con <ph name="PAYMENT_METHOD" /> sin cambiar de app</translation>
+<translation id="1655159794885649984">No se permite arrastrar contenido en este sitio</translation>
 <translation id="1656024727720460136">Chrome simplificó esta página para facilitar la lectura. Chrome recuperó la página original mediante una conexión segura.</translation>
 <translation id="1656489000284462475">Retiro</translation>
 <translation id="1658111267661135323">TV y video</translation>
@@ -1679,6 +1680,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="365641980390710834">Indumentaria casual</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3659521826520353662">Qué sitios web definidos por el administrador se visitan y cuándo: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Este IBAN se guardó en la Billetera de Google para que puedas usarlo en todos los servicios de Google.</translation>
 <translation id="3664479564786885722">Busca más opciones de compra en otras tiendas que vendan este producto.</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Más información<ph name="LINK_END1" /></translation>
@@ -3199,6 +3201,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6085149458302186532">Etiquetas (de color)</translation>
 <translation id="6087312102907839798">Búsquedas relacionadas</translation>
 <translation id="6089505343295765444">Las pestañas que borres de tu historial de Chrome seguirán apareciendo en tus tablas de comparación</translation>
+<translation id="6091115085465716987">Logotipo de Google Wallet</translation>
 <translation id="6091691259076781835">Para confirmar compras más rápido, guarda este CVC en tu dispositivo</translation>
 <translation id="6093599771645355227">Amarillo 1</translation>
 <translation id="6093795393556121384">Se verificó tu tarjeta.</translation>
@@ -3815,6 +3818,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7057567173736333354">Describe la imagen</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="7058774143982824355">Servicio del analizador de contraseñas CSV</translation>
+<translation id="7062344833049251424">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta y dirección de facturación en la Billetera de Google</translation>
 <translation id="706295145388601875">Agrega y administra direcciones en la configuración de Chrome</translation>
 <translation id="7063157783216323487">Verde 2</translation>
 <translation id="7064443976734085921">Vehículos compactos</translation>
@@ -4285,6 +4289,7 @@ Detalles adicionales:
 <translation id="7754587126786572336">Las pestañas y apps de Chrome se cerrarán cuando comience la actualización</translation>
 <translation id="7755287808199759310">Tu madre o padre puede desbloquearlo por ti</translation>
 <translation id="7755624218968747854">Rollo principal</translation>
+<translation id="7756441544371887150">Autocompleta esta tarjeta para las compras realizadas en Chrome cuando se guarde en la Billetera de Google</translation>
 <translation id="7758069387465995638">Es posible que un software antivirus o un firewall hayan bloqueado la conexión.</translation>
 <translation id="7759147511335618829">Control y reprogramación de MIDI</translation>
 <translation id="7759809451544302770">Opcional</translation>
@@ -5209,6 +5214,7 @@ Detalles adicionales:
 <translation id="975560348586398090">{COUNT,plural, =0{Ninguno}=1{1 elemento}other{# elementos}}</translation>
 <translation id="976522784004777030">12.7 × 20.3 cm (5 × 8 in)</translation>
 <translation id="977502174772294970">Bodas</translation>
+<translation id="978750072783101994">Autocompleta esta tarjeta para las compras realizadas en Chromium cuando se guarde en la Billetera de Google</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" /> administra tu navegador y tu perfil</translation>
 <translation id="979189555234810423">Exposiciones y convenciones</translation>
 <translation id="979503328401807348">Anuncios más útiles</translation>

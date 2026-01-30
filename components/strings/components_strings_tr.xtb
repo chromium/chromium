@@ -421,6 +421,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1652862280638399816">Şifre Yöneticisi'ni macOS Anahtar Zinciri ile kullanmak için Chromium'u yeniden başlatıp Anahtar Zinciri'ne erişim izni verin. Chromium yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
 <translation id="1652887625750064647">Yapay Zekaya Dayalı En İyi Eşleşme</translation>
 <translation id="1653465303147789530">Uygulama değiştirmeden <ph name="PAYMENT_METHOD" /> ile ödeme yapın</translation>
+<translation id="1655159794885649984">Bu sitede içerik sürüklemeye izin verilmiyor</translation>
 <translation id="1656024727720460136">Chrome, okumayı kolaylaştırmak için bu sayfayı basitleştirdi. Chrome, orijinal sayfayı güvenli bir bağlantı üzerinden aldı.</translation>
 <translation id="1656489000284462475">Alma</translation>
 <translation id="1658111267661135323">TV ve Video</translation>
@@ -1678,6 +1679,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="365641980390710834">Gündelik Giyim Ürünleri</translation>
 <translation id="3658742229777143148">Düzeltme</translation>
 <translation id="3659521826520353662">Yönetici tarafından tanımlanan hangi web sitelerinin ne zaman ziyaret edildiği: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Bu IBAN, diğer Google hizmetlerinde kullanabilmeniz için Google Cüzdan'a kaydedildi.</translation>
 <translation id="3664479564786885722">Bu ürünü satan diğer mağazalarda daha fazla satın alma seçeneği arayın.</translation>
 <translation id="3664782872746246217">Anahtar kelimeler:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Daha fazla bilgi<ph name="LINK_END1" />.</translation>
@@ -3198,6 +3200,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6085149458302186532">Etiketler (Renkli)</translation>
 <translation id="6087312102907839798">İlgili aramalar</translation>
 <translation id="6089505343295765444">Chrome geçmişinizden sildiğiniz sekmeler karşılaştırma tablolarınızda görünmeye devam eder</translation>
+<translation id="6091115085465716987">Google Cüzdan logosu</translation>
 <translation id="6091691259076781835">Daha hızlı ödeme yapmak için bu CVC'yi cihazınıza kaydedin</translation>
 <translation id="6093599771645355227">Sarı 1</translation>
 <translation id="6093795393556121384">Kartınız doğrulandı</translation>
@@ -3814,6 +3817,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7057567173736333354">Resminizi tarif edin</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />, bu web sitesinin sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
 <translation id="7058774143982824355">CSV Şifre Ayrıştırma Hizmeti</translation>
+<translation id="7062344833049251424">Bir dahaki sefere daha hızlı ödeme yapmak için kartınızı ve fatura adresinizi Google Cüzdan'a kaydedin</translation>
 <translation id="706295145388601875">Chrome ayarlarında adres ekleyip yönetin</translation>
 <translation id="7063157783216323487">Yeşil 2</translation>
 <translation id="7064443976734085921">Kompakt Otomobiller</translation>
@@ -4284,6 +4288,7 @@ Ek ayrıntılar:
 <translation id="7754587126786572336">Güncelleme başladığında Chrome sekmeleriniz ve uygulamalarınız kapatılacaktır</translation>
 <translation id="7755287808199759310">Ebeveyniniz engellemeyi sizin için kaldırabilir</translation>
 <translation id="7755624218968747854">Birincil Rulo</translation>
+<translation id="7756441544371887150">Bu kart, Google Cüzdan'a kaydedildiğinde Chrome'da yapılan satın alma işlemleri için otomatik doldurulur</translation>
 <translation id="7758069387465995638">Bağlantıyı güvenlik duvarı veya virüsten korunma yazılımı engellemiş olabilir.</translation>
 <translation id="7759147511335618829">MIDI cihaz kontrolü ve yeniden programlama</translation>
 <translation id="7759809451544302770">İsteğe bağlı</translation>
@@ -5207,6 +5212,7 @@ Ek ayrıntılar:
 <translation id="975560348586398090">{COUNT,plural, =0{Yok}=1{1 öğe}other{# öğe}}</translation>
 <translation id="976522784004777030">5 x 8 inç</translation>
 <translation id="977502174772294970">Düğünler</translation>
+<translation id="978750072783101994">Bu kart, Google Cüzdan'a kaydedildiğinde Chromium'da yapılan satın alma işlemleri için otomatik doldurulur</translation>
 <translation id="979107176848483472">Tarayıcınız ve profiliniz <ph name="DOMAIN" /> tarafından yönetiliyor</translation>
 <translation id="979189555234810423">Fuarlar ve Kongreler</translation>
 <translation id="979503328401807348">Daha yararlı reklamlar</translation>

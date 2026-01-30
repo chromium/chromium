@@ -421,6 +421,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1652862280638399816">Ak chcete používať Správcu hesiel s Kľúčenkou systému macOS, znova spustite Chromium a povoľte prístup ku Kľúčenke. Po opätovnom spustení sa karty znova otvoria.</translation>
 <translation id="1652887625750064647">Najlepšia zhoda vygenerovaná umelou inteligenciou</translation>
 <translation id="1653465303147789530">Plaťte spôsobom <ph name="PAYMENT_METHOD" /> bez prepínania aplikácií</translation>
+<translation id="1655159794885649984">Presúvanie obsahu na tomto webe nie je povolené</translation>
 <translation id="1656024727720460136">Chrome zjednodušil túto stránku, aby sa dala ľahšie prečítať. Chrome načítal pôvodnú stránku cez zabezpečené pripojenie.</translation>
 <translation id="1656489000284462475">Vyzdvihnutie</translation>
 <translation id="1658111267661135323">Televízia a video</translation>
@@ -1674,6 +1675,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="365641980390710834">Odevy na voľný čas</translation>
 <translation id="3658742229777143148">Verzia</translation>
 <translation id="3659521826520353662">Ktoré weby definované správcom budú navštívené a kedy: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Toto číslo IBAN je uložené v Peňaženke Google, takže ho môžete používať v službách Googlu.</translation>
 <translation id="3664479564786885722">Vyhľadajte ďalšie možnosti zakúpenia z iných obchodov, ktoré predávajú tento výrobok.</translation>
 <translation id="3664782872746246217">Kľúčové slová:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Ďalšie informácie<ph name="LINK_END1" /></translation>
@@ -3194,6 +3196,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6085149458302186532">Štítky (farebné)</translation>
 <translation id="6087312102907839798">Súvisiace vyhľadávania</translation>
 <translation id="6089505343295765444">Karty, ktoré odstránite z histórie Chromu, sa budú ďalej zobrazovať v porovnávacích tabuľkách</translation>
+<translation id="6091115085465716987">Logo aplikácie Peňaženka Google</translation>
 <translation id="6091691259076781835">Ak chcete platiť rýchlejšie, uložte si tento overovací kód karty do zariadenia</translation>
 <translation id="6093599771645355227">Žltá č. 1</translation>
 <translation id="6093795393556121384">Vaša karta je overená</translation>
@@ -3809,6 +3812,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7057567173736333354">Opíšte obrázok</translation>
 <translation id="7058163556978339998">Prehliadač <ph name="BROWSER" /> overil, že certifikát tohto webu bol vydaný spoločnosťou <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Služba na analýzu hesiel súboru CSV</translation>
+<translation id="7062344833049251424">Uložte si kartu a fakturačnú adresu do Peňaženky Google, aby ste nabudúce zaplatili rýchlejšie</translation>
 <translation id="706295145388601875">Pridávajte a spravujte adresy v nastaveniach Chromu</translation>
 <translation id="7063157783216323487">Zelená č. 2</translation>
 <translation id="7064443976734085921">Autá nižšej strednej triedy</translation>
@@ -4279,6 +4283,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7754587126786572336">Po spustení aktualizácie sa karty a aplikácie Chromu zatvoria</translation>
 <translation id="7755287808199759310">Váš rodič ho môže pre vás odblokovať</translation>
 <translation id="7755624218968747854">Hlavný kotúč</translation>
+<translation id="7756441544371887150">Keď si túto kartu uložíte do Peňaženky Google, pri nákupoch v Chrome sa budú automaticky dopĺňať jej údaje</translation>
 <translation id="7758069387465995638">Pripojenie mohla zablokovať brána firewall alebo antivírusový softvér.</translation>
 <translation id="7759147511335618829">Ovlád. a preprogramov. zar. MIDI</translation>
 <translation id="7759809451544302770">Voliteľné</translation>
@@ -5202,6 +5207,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="975560348586398090">{COUNT,plural, =0{Žiadne}=1{1 položka}few{# položky}many{# položky}other{# položiek}}</translation>
 <translation id="976522784004777030">5 × 8 palcov</translation>
 <translation id="977502174772294970">Svadby</translation>
+<translation id="978750072783101994">Keď si túto kartu uložíte do Peňaženky Google, pri nákupoch v prehliadači Chromium sa budú automaticky dopĺňať jej údaje</translation>
 <translation id="979107176848483472">Váš prehliadač aj profil sú spravované doménou <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Výstavy a kongresy</translation>
 <translation id="979503328401807348">Užitočnejšie reklamy</translation>

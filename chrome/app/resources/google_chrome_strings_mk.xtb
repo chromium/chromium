@@ -28,6 +28,7 @@
 <translation id="1158134713295836892">Gemini во Chrome</translation>
 <translation id="1184145431117212167">Инсталирањето не успеа бидејќи вашата верзија на Windows не е поддржана.</translation>
 <translation id="1194807384646768652">Chrome го блокираше преземањево затоа што видот датотека не се презема често и можеби е опасен</translation>
+<translation id="1197860368385086056">Следниот пат кога ќе го отворите Chrome на вашиот <ph name="DEVICE_TYPE" />, ќе видите барање да ги овозможите известувањата за следење цена.</translation>
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="1290883685122687410">Грешка при поставувањето: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -285,7 +286,6 @@
 <translation id="4022972681110646219">Преведи го екранот</translation>
 <translation id="4023601594785368013">Изворен јазик: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS треба да се рестартира за да се примени ажурирањето.</translation>
-<translation id="4039097928859803404">Секогаш прикажувај ги кратенките за „AI-режим“</translation>
 <translation id="4050175100176540509">Во најновата верзија се достапни значајни безбедносни подобрувања и нови карактеристики.</translation>
 <translation id="4053720452172726777">Приспособи го и контролирај го Google Chrome</translation>
 <translation id="408393047846373801">За да ги добиете лозинките и друго на сите ваши уреди, најавете се на Chrome. Откако ќе се најавите, лозинкава ќе се зачува во вашата сметка на Google.</translation>
@@ -508,6 +508,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6321592572353357376">Екстензијата „<ph name="EXTENSION_NAME" />“ сака да се најавите на Chrome</translation>
 <translation id="6326175484149238433">Отстрани од Chrome</translation>
 <translation id="6327105987658262776">Нема достапно ажурирање.</translation>
+<translation id="6333195756043503664">Отворај го Chrome кога ќе се стартува мојот компјутер</translation>
 <translation id="6334815226785304306">Поставете го Google Chrome како стандарден прелистувач и закачете го на „Лентата со задачи“</translation>
 <translation id="63540178978900677">Chrome веќе не е вашиот стандарден прелистувач. Да се постави Chrome како стандарден прелистувач?</translation>
 <translation id="6360449101159168105">Додека картичкава беше неактивна, се ослободи меморија за да продолжи Chrome брзо да работи. Може да изберете сајтов секогаш да се изоставува од неактивност.</translation>
@@ -617,6 +618,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7515191208480168435">Може да ја закачите Google Lens за лесен пристап</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">За да го добиете обележувачов, а и друго на сите ваши уреди, најавете се на Chrome</translation>
+<translation id="756134248912568991">Следниот пат кога ќе го отворите Chrome на вашиот <ph name="DEVICE_TYPE" />, ќе видите барање да користите групи картички.</translation>
 <translation id="756809126120519699">Податоците на Chrome се исчистени</translation>
 <translation id="7572537927358445944">Исклучено • Chrome не може да потврди од каде е екстензијава</translation>
 <translation id="7583399374488819119">Инсталатор на <ph name="COMPANY_NAME" /></translation>
@@ -661,7 +663,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7869620795354551924">За да ги користите зачуваните лозинки, следете го QR-кодот, преземете го Chrome за iOS и најавете се на вашата сметка на Google</translation>
 <translation id="7872446069773932638">Се презема… Уште <ph name="SECONDS" /> сек.</translation>
 <translation id="7886087451482920026">Изберете текст со Google Lens</translation>
-<translation id="7887929410013642057">Секогаш прикажувај ги кратенките за „AI-режим“</translation>
 <translation id="7890208801193284374">Доколку споделувате компјутер, пријателите и семејството може да прелистуваат одделно и да го поставуваат Chrome токму онака како што сакаат.</translation>
 <translation id="7896673875602241923">Некој претходно се најави на Chrome од овој компјутер како <ph name="ACCOUNT_EMAIL_LAST" />. Создајте нов корисник на Chrome за да ги чувате информациите одделно.</translation>
 <translation id="7904985524660297937">Испробајте го Gemini во Google Chrome</translation>

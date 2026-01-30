@@ -279,7 +279,6 @@
 <translation id="4023601594785368013">Түпнұсқа тілі: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Кез келген қолданба сілтемесін Chromium-нен ашыңыз. Оңай қол жеткізу үшін ол тапсырмалар жолағына бекітіледі.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Ағымдағы параметрлерді<ph name="END_LINK" /> хабарлау арқылы Chromium браузерін жақсартуға көмектесіңіз</translation>
-<translation id="4039097928859803404">AI режимінің жылдам пәрмендерін үнемі көрсету</translation>
 <translation id="4050175100176540509">Соңғы нұсқасында қауіпсіздік жақсартылып, жаңа мүмкіндіктер берілген.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
 <translation id="4061696872429826774">Компьютеріңіздегі басқа бір бағдарлама кеңейтім қосты, ол Chromium жұмысын өзгертуі мүмкін.
@@ -613,7 +612,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7872446069773932638">Жүктеп алынып жатыр… <ph name="SECONDS" /> секунд қалды.</translation>
 <translation id="7873537467422636035">Құпия фразаны ұмытып қалған болсаңыз немесе осы параметрді өзгерту керек болса, <ph name="BEGIN_LINK" />аккаунтыңыздағы Chromium деректерін жойыңыз<ph name="END_LINK" />.</translation>
 <translation id="7877212753140190672">Осы сурет жайында сұрау</translation>
-<translation id="7887929410013642057">AI режимінің жылдам пәрмендерін үнемі көрсету</translation>
 <translation id="7888981273428720788">Chromium-ді әдепкі браузер етіп орнату</translation>
 <translation id="7934340546140346950">Мүмкін болса, Chromium қауіпті байланыстарды HTTPS кеңейтіміне автоматты түрде жаңартады.</translation>
 <translation id="7937630085815544518">Chromium жүйесіне <ph name="USER_EMAIL_ADDRESS" /> ретінде кірдіңіз. Қайта кіру үшін бірдей аккаунтты пайдаланыңыз.</translation>

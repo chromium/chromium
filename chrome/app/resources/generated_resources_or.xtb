@@ -2572,6 +2572,7 @@
 <translation id="2724841811573117416">WebRTC ଲଗ୍</translation>
 <translation id="272488616838512378">ୟୁନିଟ୍ ରୂପାନ୍ତର</translation>
 <translation id="2725200716980197196">ନେଟ୍‍ୱାର୍କ ସଂଯୋଗ ପୁନଃସ୍ଥାପନ ହୋଇଛି</translation>
+<translation id="2725312032345042618">ଇଭେଣ୍ଟ ଇତିହାସ</translation>
 <translation id="2726776862643824793">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା କମ କରନ୍ତୁ</translation>
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> ମାଧ୍ୟମରେ ଇମେଜ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="2727633948226935816">ମୋତେ ପୁଣି ମନେ ପକାନ୍ତୁ ନାହିଁ</translation>
@@ -2913,6 +2914,7 @@
 <translation id="2950666755714083615">ମୋତେ ସାଇନ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="2953210795988451570">ସୁରକ୍ଷା ଅପଡେଟଗୁଡ଼ିକ ସମାପ୍ତ ହୋଇଯାଇଛି। ଏକ ନୂଆ Chromebookକୁ ଅପଗ୍ରେଡ କରନ୍ତୁ।</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> ପାଇଁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ। ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭିଜିଟ ସମୟରେ ଆପଣଙ୍କୁ ପୁଣି ପଚରାଯିବ।</translation>
+<translation id="2954777802959138493">ଅପଡେଟର ସ୍ଥିତିକୁ କ୍ୱେରୀ କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2955048943983973430">ସମ୍ବନ୍ଧିତ Google ସର୍ଭିସେସ</translation>
 <translation id="2956070239128776395">ଗୋଷ୍ଠୀରେ ବିଭାଗ ଅଛି: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">ଏହି ଏକ୍ସଟେନସନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଡେଭେଲପର ମୋଡ ଚାଲୁ କରନ୍ତୁ, ଯାହାକୁ Chrome Web Store ଦ୍ୱାରା ସମୀକ୍ଷା କରାଯାଇପାରିବ ନାହିଁ।</translation>
@@ -3363,7 +3365,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ଫାଇଲ୍}other{#ଟି ଫାଇଲ୍}}</translation>
 <translation id="3270965368676314374">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‍ରୁ ଫଟୋ, ସଙ୍ଗୀତ ଓ ଅନ୍ୟ ମିଡିଆ ପଢ଼ନ୍ତୁ, ପରିବର୍ତ୍ତନ କରନ୍ତୁ ଏବଂ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="3275464924531706548"><ph name="HEADER" />କୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
-<translation id="3275778809241512831">ଆପଣଙ୍କର ଆଭ୍ୟନ୍ତରୀଣ ସୁରକ୍ଷା କୀ ବର୍ତ୍ତମାନ ଅସୁରକ୍ଷିତ ଅଟେ। ଆପଣ ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସେବାଗୁଡ଼ିକରୁ ଦୟାକରି ଏହାକୁ କାଢ଼ି ଦିଅନ୍ତୁ। ସମସ୍ୟାର ସମାଧାନ କରିବା ପାଇଁ, ସୁରକ୍ଷା କୀକୁ ଦୟାକରି ରିସେଟ୍ କରନ୍ତୁ।</translation>
 <translation id="3275778913554317645">ୱିଣ୍ଡୋ ଭଳି ଖୋଲନ୍ତୁ</translation>
 <translation id="3277214528693754078">ଟେକ୍ସଟ କର୍ସର ମାଧ୍ୟମରେ ନାଭିଗେଟ କରନ୍ତୁ (କ୍ୟାରେଟ ବ୍ରାଉଜିଂ)</translation>
 <translation id="3277594800340743211">ବଡ଼ ଛାଇ</translation>
@@ -3566,7 +3567,6 @@
 <translation id="3417835166382867856">ଟାବଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3417836307470882032">24-ଘଣ୍ଟିଆ ଘଣ୍ଟା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3418798368381485936">ଏହି ଆକାଉଣ୍ଟକୁ ବ୍ୟବହାର କରି ଆପଣ ସାଇନ ଇନ କରିପାରିବେ ନାହିଁ</translation>
-<translation id="3420501302812554910">ଇଣ୍ଟର୍ନଲ୍ ସୁରକ୍ଷା କୀ ରିସେଟ୍ ଆବଶ୍ୟକ କରୁଛି</translation>
 <translation id="3421387094817716717">ଏଲିପ୍‌ଟିକ୍ କର୍ଭ ପବ୍ଲିକ୍ କୀ</translation>
 <translation id="3422989558057853751">ଶେଷ ଆଇଟମ ଚୟନ କରାଯାଇଛି, ଏହାକୁ ଅଚୟନ କରିବା ଦ୍ୱାରା ଆପଣ ଚୟନ ମୋଡରୁ ବାହାରି ଯିବେ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />ରେ ଫଳାଫଳ ମିଳିଛି</translation>
@@ -3647,6 +3647,7 @@
 <translation id="3468298837301810372">ଲେବଲ୍</translation>
 <translation id="3468999815377931311">Android ଫୋନ୍‌</translation>
 <translation id="3469583217479686109">ସିଲେକ୍ସନ ଟୁଲ</translation>
+<translation id="3471687177769494956">ନାଭିଗେସନ ସର୍ଟକଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="3471876058939596279">ଭିଡିଓ ପାଇଁ ସେହି ଏକା ସମୟରେ HDMI ଏବଂ USB ଟାଇପ୍-C ପୋର୍ଟ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଭିଡିଓ ପୋର୍ଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="3472469028191701821">ନୂଆ ଟାବରେ ଖୋଲେ</translation>
 <translation id="3473241910002674503">ଟାବଲେଟ୍ ମୋଡରେ ବଟନଗୁଡ଼ିକ ସାହାଯ୍ୟରେ ମୂଳ ପୃଷ୍ଠାକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ, ପଛକୁ ଫେରନ୍ତୁ ଏବଂ ଆପଗୁଡ଼ିକ ସ୍ୱିଚ୍ କରନ୍ତୁ।</translation>
@@ -4539,6 +4540,7 @@
 <translation id="4036778507053569103">ସର୍ଭରରୁ ଡାଉନ୍‌ଲୋଡ୍ ହୋଇଥିବା ନୀତି ଅବୈଧ ଅଟେ।</translation>
 <translation id="4037084878352560732">ଘୋଡା</translation>
 <translation id="403725336528835653">ପ୍ରଥମେ ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
+<translation id="4039835815168788100">ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ <ph name="SEARCH_PROVIDER" />ରେ ପରିବର୍ତ୍ତନ କରିବାକୁ "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ ଚେଷ୍ଟା କରିଛି। ନିମ୍ନରେ ଆପଣଙ୍କ ପସନ୍ଦକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="4039966970282098406">ମାଇକ୍ରୋଫୋନ, କେମେରା ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ଆକ୍ସେସ ନିୟନ୍ତ୍ରଣ କରି ଆପଣଙ୍କ ଗୋପନୀୟତା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4040041015953651705">ଏହି ଭାଷାରୁ ଅନୁବାଦ କରାଯିବ</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ପୃଷ୍ଠାରୁ ବାହାରି ଯାଆନ୍ତୁ}other{ପୃଷ୍ଠାରୁ ବାହାରି ଯାଆନ୍ତୁ}}</translation>
@@ -6857,6 +6859,7 @@
 <translation id="5659593005791499971">ଇମେଲ</translation>
 <translation id="5659964844710667266">ଏହି <ph name="DEVICE_TYPE" /> ପାଇଁ ପାସୱାର୍ଡ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="5662513737565158057">Linux ଆପ୍ସ କିପରି କାମ କରିବ ତାହା ବଦଳାନ୍ତୁ।</translation>
+<translation id="5663317829633858516">ବର୍ତ୍ତମାନ <ph name="EXTENSION_NAME" /> ଦ୍ୱାରା ଏଥିରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="5663459693447872156">ସ୍ଵଚାଳିତ ଭାବେ ହାଫୱିଡଥକୁ ସ୍ଵିଚ କରନ୍ତୁ</translation>
 <translation id="5663653125349867535">&amp;ପଢ଼ିବା ତାଲିକା</translation>
 <translation id="5663918299073387939">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ମ୍ୟୁଜିକ ତିଆରି କରିବା, ମ୍ୟୁଜିକ ଏଡିଟ କରିବା କିମ୍ବା ଡିଭାଇସ ଫାର୍ମୱେରଗୁଡ଼ିକୁ ଅପଡେଟ କରିବା ପାଇଁ MIDI ଡିଭାଇସଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରି ପୁଣି ପ୍ରୋଗ୍ରାମ କରିବାକୁ କହିଥାଏ</translation>
@@ -7078,6 +7081,7 @@
 <translation id="5828181959764767444">ସୂର୍ଯ୍ୟାସ୍ତ</translation>
 <translation id="5828545842856466741">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="5828633471261496623">ପ୍ରିଣ୍ଟିଂ...</translation>
+<translation id="5829544019044013776">Google Walletରେ ଆପଣଙ୍କ ପେମେଣ୍ଟ ପଦ୍ଧତି</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" />କୁ ଖୋଲା ଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5830512293931520102">ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି ଏବଂ କେହି ଦେଖିପାରିବେ ନାହିଁ</translation>
 <translation id="5830720307094128296">&amp;ଏହି ଭାବେ ପୃଷ୍ଠା ସେଭ୍ କରନ୍ତୁ...</translation>
@@ -7642,6 +7646,7 @@
 <translation id="6212168817037875041">ଡିସ୍‌ପ୍ଲେ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6212752530110374741">ଇମେଲ୍‍ ଲିଙ୍କ୍‌</translation>
 <translation id="6214106213498203737">ୱାଟରକଲର</translation>
+<translation id="6214157047210274853">Google Walletରେ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="621470880408090483">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="6215039389782910006">{1,plural, =1{ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ 1 ମିନିଟର ନିଷ୍କ୍ରିୟତା ପରେ <ph name="BRAND" /> ଲକ ହୋଇଯାଏ}other{ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ # ମିନିଟର ନିଷ୍କ୍ରିୟତା ପରେ <ph name="BRAND" /> ଲକ ହୋଇଯାଏ}}</translation>
 <translation id="6216154119179790291">ସ୍କ୍ରୋଲ କରି ପ୍ରଥମ ଟାବକୁ ଯାଆନ୍ତୁ</translation>
@@ -8888,6 +8893,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> ଗ୍ରୁପ - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA ଏନ୍‍କ୍ରିପ୍‌ସନ୍ ସହିତ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL ସାର୍ଟିଫିକେଟ୍‌ସ ଏବଂ ସେଟିଂସ୍ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="707772989579681711">ଆପଣଙ୍କ ପୂର୍ବ ପସନ୍ଦ</translation>
 <translation id="7077751457066325012">କୀବୋର୍ଡ ସର୍ଟକଟଗୁଡ଼ିକୁ ଭ୍ୟୁ କରି କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="7077829361966535409">ସାମ୍ପ୍ରତିକ ପ୍ରକ୍ସି ସେଟିଂସ୍ ବ୍ୟବହାର କରି ସାଇନ୍-ଇନ୍ ପୃଷ୍ଠା ଲୋଡ୍ କରିବାରେ ବିଫଳ ହେଲା। ଦୟାକରି <ph name="GAIA_RELOAD_LINK_START" />ପୁଣି ସାଇନ୍ ଇନ୍ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="GAIA_RELOAD_LINK_END" /> କିମ୍ବା ଭିନ୍ନ <ph name="PROXY_SETTINGS_LINK_START" />ପ୍ରକ୍ସି ସେଟିଂସ୍<ph name="PROXY_SETTINGS_LINK_END" /> ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7078120482318506217">ସମସ୍ତ ନେଟ୍‌ୱାର୍କ</translation>
@@ -10535,6 +10541,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" />କୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8195920051450756553">ସମାନ କୀ'କୁ ପୁଣି ସକ୍ରିୟ କରିବା ପୂର୍ବରୁ ବିଳମ୍ବ କରନ୍ତୁ</translation>
 <translation id="8197673340773315084">ୱାର୍କ କିମ୍ବା ବ୍ୟକ୍ତିଗତ ପରି ଏକ ନାମ କିମ୍ବା ଲେବଲ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="8198043456018523011">ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8198181050118789419">ଥିମ: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">କାଷ୍ଟିଂ ଟାବ୍</translation>
 <translation id="8199300056570174101">ନେଟ୍‍ୱାର୍କ (ସେବା) ଏବଂ ଡିଭାଇସ୍‍ର ଗୁଣଧର୍ମ</translation>
@@ -11287,6 +11294,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8703346390800944767">ବିଜ୍ଞାପନକୁ ଛାଡ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="8703372953981978786">ଏହି ଲିଙ୍କଟି କାମ କରୁନାହିଁ</translation>
 <translation id="8703766890819308134">ସର୍ଚ୍ଚ ସର୍ଟକଟ ଦେଖାନ୍ତୁ</translation>
+<translation id="8704248383043944131">କୀବୋର୍ଡ ସର୍ଟକଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="8704662571571150811">ଡୋମେନଗୁଡ଼ିକ</translation>
 <translation id="8705331520020532516">କ୍ରମିକ ସଂଖ୍ୟା</translation>
 <translation id="870536819717176711">ଆପଣ ବର୍ତ୍ତମାନର ଟାବକୁ Gemini ସହ ସେୟାର କରିବାକୁ ବାଛିଲେ, ଟାବର ସମ୍ପୂର୍ଣ୍ଣ ବିଷୟବସ୍ତୁ, ମିଡିଆ ଏବଂ URL Googleକୁ ପଠାଯାଏ।</translation>
@@ -11607,6 +11615,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8911914282056933784">ପ୍ରୋଜେକ୍ଟଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="8912362522468806198">Google ଆକାଉଣ୍ଟ</translation>
 <translation id="8912810933860534797">ସ୍ୱତଃ-ସ୍କାନ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="8913485523736543337">ଅପଡେଟର</translation>
 <translation id="8914030287343429787">ଆପଣ Chrome କିମ୍ବା Android ବ୍ୟବହାର କରୁନଥିଲେ ମଧ୍ୟ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />ରେ ସାଇନ ଇନ କରି ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="8914504000324227558">Chrome ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8915307125957890427">ଏକ ଟାବରେ ଡାହାଣ-କ୍ଲିକ କରି "ଗୋଷ୍ଠୀରେ ଟାବ ଯୋଗ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ ଏବଂ ତା'ପରେ "ନୂଆ ଗୋଷ୍ଠୀ" ଚୟନ କରନ୍ତୁ</translation>
@@ -11747,6 +11756,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8999560016882908256">ବିଭାଗ ସିଣ୍ଟାକ୍ସର ତ୍ରୁଟି: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">ସ୍କ୍ରିନରେ ମୁଭମେଣ୍ଟ ହ୍ରାସ ପାଇଛି</translation>
 <translation id="9000185763019430629">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ର ଡାହାଣ ପାର୍ଶ୍ୱରେ ଥିବା ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ। ଆପଣଙ୍କ ଟିପଚିହ୍ନ ଡାଟାକୁ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର କରାଯାଇଛି ଏବଂ ଏହାକୁ କେବେ ବି ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ କାଢ଼ି ଦିଆଯାଏ ନାହିଁ।</translation>
+<translation id="9000529821022336229">କୌଣସି ଅପଡେଟର ଇନଷ୍ଟଲେସନ ମିଳିଲା ନାହିଁ।</translation>
 <translation id="900267527532832868">ଏହି ପାସକୀ ଆଉ କାମ କରୁନାହିଁ। ଏହାକୁ ଶୀଘ୍ର <ph name="GOOGLE_PASSWORD_MANAGER" />ରୁ ଡିଲିଟ କରାଯିବ।</translation>
 <translation id="9003031149571024583">PINର 6 ଅଙ୍କ ମଧ୍ୟରୁ <ph name="NUM_DIGIT" /> ଲେଖନ୍ତୁ। ଶେଷ ଅଙ୍କକୁ କାଢ଼ି ଦେବା ପାଇଁ ବେକସ୍ପେସ କିମ୍ବା ଡିଲିଟକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9003185744423389627">'<ph name="STATUS_TEXT" />' ସ୍ଥିତି ସହ <ph name="FAILURE_TIME" />ରେ ଡିଭାଇସ ମ୍ୟାନେଜମେଣ୍ଟ ସର୍ଭର ସହ କନେକ୍ସନ ବିଫଳ ହୋଇଛି</translation>

@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Imaginea nu a putut fi decodificată: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">A fost utilizată localizarea, dar nu s-a specificat default_locale în manifest.</translation>
 <translation id="2576842806987913196">Există deja un fișier CRX cu acest nume.</translation>
+<translation id="2743583586211388067">Accesul la această extensie este blocat conform politicii organizației privind riscurile extensiilor.</translation>
 <translation id="2785530881066938471">Nu se poate încărca fișierul „<ph name="RELATIVE_PATH" />” pentru scriptul de conținut. Fișierul nu are codificare UTF-8.</translation>
 <translation id="2903070246402204397">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) este blocată de administrator. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Nu s-a putut instala pachetul: „<ph name="ERROR_CODE" />”</translation>

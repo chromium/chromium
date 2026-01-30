@@ -421,6 +421,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1652862280638399816">Google-ren Pasahitz-kudeatzailea macOS Keychain-ekin erabiltzeko, exekutatu berriro Chromium eta eman Keychain erabiltzeko baimena. Berriro exekutatu ondoren, berriro irekiko dira fitxak.</translation>
 <translation id="1652887625750064647">AA bidezko emaitzarik onena</translation>
 <translation id="1653465303147789530">Ordaindu <ph name="PAYMENT_METHOD" /> bidez aplikazioz aldatu gabe</translation>
+<translation id="1655159794885649984">Ezin da arrastatu edukirik webgune honetan</translation>
 <translation id="1656024727720460136">Chrome-k sinplifikatu egin du orri hau errazago irakurri ahal izan dadin. Konexio seguru baten bidez eskuratu du jatorrizko orria.</translation>
 <translation id="1656489000284462475">Jasotzea</translation>
 <translation id="1658111267661135323">Telebista eta bideoak</translation>
@@ -1674,6 +1675,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="365641980390710834">Arropa informala</translation>
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3659521826520353662">Administratzaileak definitutako zein webgune bisitatzen diren eta noiz: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">IBANa Google Diru-zorroa zerbitzuan gorde da; beraz, Google-ren zerbitzu guztietan erabil dezakezu.</translation>
 <translation id="3664479564786885722">Bilatu erosteko aukera gehiago produktu hau saltzen duten beste denda batzuetan.</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="LINK_END1" /></translation>
@@ -3194,6 +3196,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6085149458302186532">Etiketak (koloretakoak)</translation>
 <translation id="6087312102907839798">Erlazionatutako bilaketak</translation>
 <translation id="6089505343295765444">Chrome-ko historiatik ezabatzen dituzun fitxak konparazio-tauletan agertuko dira halere</translation>
+<translation id="6091115085465716987">Google Diru-zorroa zerbitzuaren logotipoa</translation>
 <translation id="6091691259076781835">Ordainketa-prozesua bizkortzeko, gorde CVC hau zure gailuan</translation>
 <translation id="6093599771645355227">Hori argia</translation>
 <translation id="6093795393556121384">Txartela egiaztatu da</translation>
@@ -3809,6 +3812,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7057567173736333354">Deskribatu irudia</translation>
 <translation id="7058163556978339998">Webgunearen ziurtagiria <ph name="ISSUER" /> hornitzaileak jaulki duela egiaztatu du <ph name="BROWSER" /> arakatzaileak.</translation>
 <translation id="7058774143982824355">Pasahitzen CSV formatuko fitxategiak analizatzeko zerbitzua</translation>
+<translation id="7062344833049251424">Hurrengoan bizkorrago ordaintzeko, gorde txartela eta fakturazio-helbidea Google Diru-zorroa zerbitzuan</translation>
 <translation id="706295145388601875">Gehitu eta kudeatu helbideak Chrome-ren ezarpenetan</translation>
 <translation id="7063157783216323487">Berdea</translation>
 <translation id="7064443976734085921">Auto konpaktuak</translation>
@@ -4278,6 +4282,7 @@ Xehetasun gehiago:
 <translation id="7754587126786572336">Eguneratzen hastean, Chrome-ko fitxak eta aplikazioak itxi egingo dira</translation>
 <translation id="7755287808199759310">Gurasoek desblokea diezazukete</translation>
 <translation id="7755624218968747854">Arrabola nagusia</translation>
+<translation id="7756441544371887150">Txartel hau Google Diru-zorroa zerbitzuan gordeta dagoenean, bete automatikoki Chrome-n zerbait erostean</translation>
 <translation id="7758069387465995638">Baliteke suebakiak edo birusen aurkako softwareak konexioa eten izatea.</translation>
 <translation id="7759147511335618829">MIDI gailuak kontrolatzea eta berriro programatzea</translation>
 <translation id="7759809451544302770">Aukerakoa</translation>
@@ -5200,6 +5205,7 @@ Xehetasun gehiago:
 <translation id="975560348586398090">{COUNT,plural, =0{Bat ere ez}=1{1 elementu}other{# elementu}}</translation>
 <translation id="976522784004777030">12,7 × 20,32 cm (5 × 8 in)</translation>
 <translation id="977502174772294970">Ezkontzak</translation>
+<translation id="978750072783101994">Txartel hau Google Diru-zorroa zerbitzuan gordeta dagoenean, bete automatikoki Chromium-en zerbait erostean</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" /> domeinuak kudeatzen ditu zure arakatzailea eta profila</translation>
 <translation id="979189555234810423">Erakusketak eta kongresuak</translation>
 <translation id="979503328401807348">Iragarki erabilgarriagoak</translation>

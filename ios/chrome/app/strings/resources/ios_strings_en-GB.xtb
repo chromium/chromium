@@ -1977,6 +1977,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8205564605687841303">Cancel</translation>
 <translation id="8206354486702514201">This setting is enforced by your administrator.</translation>
 <translation id="8209050860603202033">Open image</translation>
+<translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> models</translation>
 <translation id="8211030355252954494">You have received passwords for <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Connection is secure</translation>
 <translation id="8214293972734702249">Pinned, <ph name="TAB_TITLE" /></translation>

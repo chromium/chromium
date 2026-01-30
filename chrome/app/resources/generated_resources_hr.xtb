@@ -2577,6 +2577,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2724841811573117416">WebRTC zapisnici</translation>
 <translation id="272488616838512378">Pretvorba jedinica</translation>
 <translation id="2725200716980197196">Veza s mrežom ponovno je uspostavljena</translation>
+<translation id="2725312032345042618">Povijest događaja</translation>
 <translation id="2726776862643824793">smanjivanje svjetline zaslona</translation>
 <translation id="272741954544380994">Pretraži sliku pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Nemoj me više podsjećati</translation>
@@ -2918,6 +2919,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2950666755714083615">Želim se registrirati</translation>
 <translation id="2953210795988451570">Sigurnosna ažuriranja su završila. Nadogradite na novi Chromebook.</translation>
 <translation id="2953218713108551165">Obavijesti nisu dopuštene za <ph name="SITE" />. Pri sljedećem posjetu upit će se prikazati ponovo.</translation>
+<translation id="2954777802959138493">Upit o stanju alata za ažuriranje nije uspio.</translation>
 <translation id="2955048943983973430">Povezane Googleove usluge</translation>
 <translation id="2956070239128776395">Odjeljak je ugniježđen u grupi: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Uključite način rada razvojnog programera da biste upotrebljavali ovo proširenje koje Chrome web-trgovina ne može pregledati.</translation>
@@ -3367,7 +3369,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3269689705184377744">{COUNT,plural, =1{Datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="3270965368676314374">čitati, mijenjati i brisati fotografije, glazbu i ostale medije s vašeg računala</translation>
 <translation id="3275464924531706548">Sažmi <ph name="HEADER" /></translation>
-<translation id="3275778809241512831">Vaš interni sigurnosni ključ trenutačno nije siguran. Uklonite ga iz svih usluga za koje ste ga upotrebljavali. Da biste riješili taj problem, vratite sigurnosni ključ na zadano.</translation>
 <translation id="3275778913554317645">Otvori kao prozor</translation>
 <translation id="3277214528693754078">Krećite se pomoću pokazivača za tekst (pregledavanje kursorom)</translation>
 <translation id="3277594800340743211">Veliko sjenčenje</translation>
@@ -3570,7 +3571,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3417835166382867856">Pretraži kartice</translation>
 <translation id="3417836307470882032">24-satni brojčanik</translation>
 <translation id="3418798368381485936">Ne možete se prijaviti pomoću ovog računa</translation>
-<translation id="3420501302812554910">Potrebno je vratiti interni sigurnosni ključ na zadano</translation>
 <translation id="3421387094817716717">Javni ključ s eliptičnom krivuljom</translation>
 <translation id="3422989558057853751">Posljednja odabrana stavka, ako se poništi odabir, izlazi se iz načina odabira</translation>
 <translation id="3423111258700187173">Pronađeni su rezultati u mapi <ph name="FOLDER_TITLE" /></translation>
@@ -3651,6 +3651,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3468298837301810372">Oznaka</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Alat za odabir</translation>
+<translation id="3471687177769494956">Uredite prečac za navigaciju</translation>
 <translation id="3471876058939596279">HDMI priključci i USB priključci vrste C ne mogu se istovremeno upotrebljavati za videozapise. Koristite drugi videopriključak.</translation>
 <translation id="3472469028191701821">Otvara se u novoj kartici</translation>
 <translation id="3473241910002674503">U načinu rada tableta gumbima idite na početnu stranicu, natrag i prelazite s jedne aplikacije na drugu.</translation>
@@ -7082,6 +7083,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5828181959764767444">Zalazak sunca</translation>
 <translation id="5828545842856466741">Dodaj profil...</translation>
 <translation id="5828633471261496623">Ispis...</translation>
+<translation id="5829544019044013776">Vaši načini plaćanja u Google Walletu</translation>
 <translation id="5830205393314753525">Nije moguće otvoriti aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Vaša je zaporka šifrirana i nitko je ne može vidjeti</translation>
 <translation id="5830720307094128296">Spremi stranicu &amp;kao...</translation>
@@ -7646,6 +7648,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6212168817037875041">Isključi zaslon</translation>
 <translation id="6212752530110374741">Vezu pošalji e-poštom</translation>
 <translation id="6214106213498203737">Akvarel</translation>
+<translation id="6214157047210274853">Uredite u Google Walletu</translation>
 <translation id="621470880408090483">Ne dopuštaj web-lokacijama povezivanje s Bluetooth uređajima</translation>
 <translation id="6215039389782910006">{1,plural, =1{Radi zaštite vaših zaporki <ph name="BRAND" /> se zaključava nakon jedne minute neaktivnosti}one{Radi zaštite vaših zaporki <ph name="BRAND" /> se zaključava nakon # minute neaktivnosti}few{Radi zaštite vaših zaporki <ph name="BRAND" /> se zaključava nakon # minute neaktivnosti}other{Radi zaštite vaših zaporki <ph name="BRAND" /> se zaključava nakon # minuta neaktivnosti}}</translation>
 <translation id="6216154119179790291">Pomakni se na prvu karticu</translation>
@@ -11296,6 +11299,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8703346390800944767">Preskočite oglas</translation>
 <translation id="8703372953981978786">Ova veza ne funkcionira</translation>
 <translation id="8703766890819308134">Prikaži prečace za pretraživanje</translation>
+<translation id="8704248383043944131">Uredi tipkovni prečac</translation>
 <translation id="8704662571571150811">Domene</translation>
 <translation id="8705331520020532516">Serijski broj</translation>
 <translation id="870536819717176711">Kad odlučite podijeliti trenutačnu karticu s Geminijem, sav sadržaj, medijski sadržaj i URL kartice šalju se Googleu.</translation>
@@ -11618,6 +11622,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8911914282056933784">Sakrij projekte</translation>
 <translation id="8912362522468806198">Google Račun</translation>
 <translation id="8912810933860534797">Omogući automatsko traženje</translation>
+<translation id="8913485523736543337">Alat za ažuriranje</translation>
 <translation id="8914030287343429787">Pregledajte zaporke čak i kad ne upotrebljavate Chrome ili Android tako da se prijavite na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>
 <translation id="8915307125957890427">Kliknite karticu desnom tipkom i odaberite Dodaj karticu u grupu, a zatim odaberite Nova grupa</translation>
@@ -11758,6 +11763,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8999560016882908256">Sintaktička pogreška odjeljka: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Smanjeni pokreti na zaslonu</translation>
 <translation id="9000185763019430629">Dodirnite senzor otiska prsta na desnoj strani uređaja <ph name="DEVICE_TYPE" />. Podaci o otisku prsta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">Nije pronađena nijedna instalacija alata za ažuriranje.</translation>
 <translation id="900267527532832868">Taj pristupni ključ više ne funkcionira. Uskoro će se izbrisati iz usluge <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Unesite PIN broj <ph name="NUM_DIGIT" /> od 6. Upotrijebite tipku backspace ili delete da biste uklonili posljednju znamenku.</translation>
 <translation id="9003185744423389627">Povezivanje s poslužiteljem upravljanja uređajima nije uspjelo uz status "<ph name="STATUS_TEXT" />" u <ph name="FAILURE_TIME" /></translation>

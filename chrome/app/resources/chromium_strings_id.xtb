@@ -278,7 +278,6 @@
 <translation id="4023601594785368013">Bahasa asli: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Buka link di Chromium dari aplikasi apa pun. Selain itu, Chromium akan disematkan ke taskbar Anda untuk memudahkan akses.</translation>
 <translation id="4036079820698952681">Bantu Chromium jadi lebih baik dengan melaporkan <ph name="BEGIN_LINK" />setelan saat ini<ph name="END_LINK" /></translation>
-<translation id="4039097928859803404">Selalu tampilkan pintasan Mode AI</translation>
 <translation id="4050175100176540509">Peningkatan keamanan dan fitur baru yang penting tersedia di versi terbaru.</translation>
 <translation id="4055805654398742145">Pengelola S&amp;andi</translation>
 <translation id="4061696872429826774">Program lain di komputer Anda menambahkan ekstensi yang dapat mengubah cara kerja Chromium.
@@ -373,6 +372,7 @@
 <translation id="5289287148052354622">Dapatkan aplikasi Chromium</translation>
 <translation id="5294316920224716406">Jika menjelajah dalam mode Samaran, Chromium akan memperingatkan Anda sebelum memuat situs menggunakan koneksi yang tidak aman</translation>
 <translation id="5313228254328109263">Layanan Internal Chromium Updater</translation>
+<translation id="5346059693449184483">Apa yang sedang Anda pikirkan?</translation>
 <translation id="5346389065299425353">Perdalam penelusuran Anda dengan menambahkan beberapa tab, file, dan alat</translation>
 <translation id="5352264705793813212">Chromium menemukan beberapa rekomendasi keamanan untuk Anda tinjau</translation>
 <translation id="5352361688875342522">Profil Chromium Lainnya</translation>
@@ -612,7 +612,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7872446069773932638">Mendownload ... <ph name="SECONDS" /> detik lagi</translation>
 <translation id="7873537467422636035">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">Tanyakan info tentang gambar ini</translation>
-<translation id="7887929410013642057">Selalu Tampilkan Pintasan Mode AI</translation>
 <translation id="7888981273428720788">Setel Chromium sebagai browser default</translation>
 <translation id="7934340546140346950">Chromium mengupgrade koneksi yang tidak aman ke HTTPS secara otomatis jika memungkinkan</translation>
 <translation id="7937630085815544518">Anda telah masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Gunakan akun yang sama untuk masuk kembali.</translation>
@@ -638,6 +637,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8177472873527554730">Tidak dapat menemukan konten di halaman</translation>
 <translation id="8200109504272824693">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chromium di akun Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik di sini.</translation>
+<translation id="8223142476690844338">Halo <ph name="USER_NAME" />, apa yang sedang Anda pikirkan?</translation>
 <translation id="8223363452568144035">Untuk menggunakan kamera, beri Chromium akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium tidak dapat memverifikasi asal ekstensi ini, dan mungkin ekstensi ini tidak aman. Hapus dari Chromium agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="8248265253516264921">Jika gambar tidak memiliki deskripsi yang berguna, Chromium akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google. Anda dapat menonaktifkannya kapan saja di setelan.</translation>

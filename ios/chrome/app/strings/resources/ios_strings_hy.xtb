@@ -1523,6 +1523,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6556866813142980365">Կրկնել</translation>
 <translation id="6559301491397835130">{count,plural, =1{Էջանիշը պահվեց «{title}» պանակում։ Այն պահվում է միայն այս սարքում։}one{Էջանիշը պահվեց «{title}» պանակում։ Այն պահվում է միայն այս սարքում։}other{Էջանիշները պահվեցին «{title}» պանակում։ Դրանք պահվում են միայն այս սարքում։}}</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
+<translation id="6565899972286925956">Ստեղծեք ցանկացած բան</translation>
 <translation id="6571070086367343653">Փոխել վարկային քարտը</translation>
 <translation id="6574092468346088891">Միացրեք անվտանգության ստուգման ծանուցումները</translation>
 <translation id="6579867704846662339">Դուք կարող եք ընտրել, որ ինկոգնիտո ռեժիմում հնարավոր լինի բացել մուտքային URL-ներն այլ հավելվածներից։</translation>
@@ -1976,6 +1977,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8205564605687841303">Չեղարկել</translation>
 <translation id="8206354486702514201">Այս կարգավորումը պարտադրված է ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="8209050860603202033">Բացել պատկերը</translation>
+<translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> մոդելներ</translation>
 <translation id="8211030355252954494">Դուք <ph name="WEBSITE" /> կայքի համար գաղտնաբառեր եք ստացել</translation>
 <translation id="8211406090763984747">Կապն անվտանգ է</translation>
 <translation id="8214293972734702249">Ամրացված է, <ph name="TAB_TITLE" /></translation>

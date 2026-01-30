@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">您可以查看桌面版网站</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="113098737392899175">连接到键盘时，使用文本光标浏览网页</translation>
+<translation id="1149644372535087155">在 Chrome 中保存密码</translation>
 <translation id="1178015372320901893">“我的快捷方式”底部动作条</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -172,6 +173,7 @@
 <translation id="2682367912565197520">删除已保存的缩放级别</translation>
 <translation id="2683434792633810741">删除并重置？</translation>
 <translation id="2685514716378236873">不允许</translation>
+<translation id="2710883118091822664">登录后，即可在所有设备上无缝衔接，轻松继续</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
 <translation id="2726059656860238749">启动 Chrome 时将焦点放在多功能框上，从而缩短低端设备的启动时间。</translation>
@@ -199,6 +201,7 @@
 <translation id="3004438526346162184">网站可以使用此功能管理所有显示屏上的窗口</translation>
 <translation id="3008272652534848354">重置权限</translation>
 <translation id="301521992641321250">已被自动禁止</translation>
+<translation id="3026311960038210">主题集合</translation>
 <translation id="3064871050034234884">网站可以播放声音</translation>
 <translation id="3065787901655140044">高级保护已开启</translation>
 <translation id="3069226013421428034">允许使用第三方账号登录特定网站。</translation>
@@ -341,6 +344,7 @@
 <translation id="4478158430052450698">更轻松地自定义不同网站的缩放级别</translation>
 <translation id="4479647676395637221">在允许网站使用您的摄像头前先询问（推荐）</translation>
 <translation id="4505788138578415521">网址已展开</translation>
+<translation id="4523472416386354622">登录即可开始定制</translation>
 <translation id="4534723447064627427">若要允许 <ph name="APP_NAME" /> 使用您的麦克风，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启麦克风。</translation>
 <translation id="4566417217121906555">将麦克风静音</translation>
 <translation id="4570913071927164677">详情</translation>
@@ -397,6 +401,7 @@
 <translation id="512938610812707830">“新标签页”页面外观主题集合底部动作条已按最大高度显示</translation>
 <translation id="5137460097045297858">探索信息流底部动作条已按一半高度显示</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{您打开的标签页中有降价}other{您打开的标签页中有降价}}</translation>
+<translation id="5150048675001754041">快捷轻松地登录网站和应用</translation>
 <translation id="5186036860380548585">选项位于屏幕顶部附近</translation>
 <translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5198930230016462977">自定义新标签页页面底部动作条已关闭</translation>
@@ -566,6 +571,7 @@
 <translation id="6980861169612950611">要删除网站数据吗？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="6991142177939282156">允许 • 使用大致位置</translation>
+<translation id="6992014788289743568">检查密码，加强安全防护，让数据更安全</translation>
 <translation id="6992289844737586249">在允许网站使用您的麦克风前先询问（推荐）</translation>
 <translation id="7000754031042624318">已在 Android 设置中关闭</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>

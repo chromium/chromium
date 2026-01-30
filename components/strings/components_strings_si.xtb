@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS Keychain සමග මුරපද කළමනාකරු භාවිත කිරීමට, Chromium යළි දියත් කර Keychain ප්‍රවේශයට ඉඩ දෙන්න. ඔබේ පටිත්ත යළි දියත් කිරීමෙන් පසු නැවත විවෘත වෙයි.</translation>
 <translation id="1652887625750064647">AI හොඳම ගැළපීම</translation>
 <translation id="1653465303147789530">යෙදුම් මාරු නොකර <ph name="PAYMENT_METHOD" /> සමග ගෙවන්න</translation>
+<translation id="1655159794885649984">මෙම අඩවියේ අන්තර්ගතය ඇදගෙන යාමට ඉඩ නැත</translation>
 <translation id="1656024727720460136">මෙය කියවීමට පහසු කිරීමට Chrome මෙම පිටුව සරල කළා. Chrome ආරක්‍ෂිත සම්බන්ධතාවක් ඔස්සේ මූලික පිටුව ලබා ගත්තා.</translation>
 <translation id="1656489000284462475">භාර ගන්න</translation>
 <translation id="1658111267661135323">රූපවාහිනී සහ වීඩියෝ</translation>
@@ -1678,6 +1679,7 @@
 <translation id="365641980390710834">සාමාන්‍ය ඇඟලුම්</translation>
 <translation id="3658742229777143148">පුනරීක්ශණය</translation>
 <translation id="3659521826520353662">කුමන පරිපාලක විසින් නිර්වචනය කරන ලද වෙබ් අඩවි වෙත පිවිසෙන්නේ ද සහ කෙවිට ද: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">මෙම IBAN Google Wallet හි සුරකින බැවින් ඔබට එය Google සේවා හරහා භාවිත කළ හැක.</translation>
 <translation id="3664479564786885722">මෙම නිෂ්පාදනය විකුණන වෙනත් වෙළඳසැල් වලින් තවත් මිල දී ගැනීමේ විකල්ප සොයන්න.</translation>
 <translation id="3664782872746246217">මූලපද:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />තව දැන ගන්න<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@
 <translation id="6085149458302186532">ලේබල් (වර්ණ සහිත)</translation>
 <translation id="6087312102907839798">අදාළ සෙවීම්</translation>
 <translation id="6089505343295765444">ඔබ ඔබේ Chrome ඉතිහාසයෙන් මකා දැමූ පටිති තවමත් ඔබේ සංසන්දන වගු තුළ පෙන්වනු ඇත</translation>
+<translation id="6091115085465716987">Google Wallet ලාංඡනය</translation>
 <translation id="6091691259076781835">වේගවත් ගෙවා පිටවීම සඳහා, මෙම CVC එක ඔබේ උපාංගයෙහි සුරකින්න</translation>
 <translation id="6093599771645355227">කහ 1</translation>
 <translation id="6093795393556121384">ඔබේ කාඩ්පත සත්‍යාපනය කර ඇත</translation>
@@ -3814,6 +3817,7 @@
 <translation id="7057567173736333354">ඔබේ රූපය විස්තර කරන්න</translation>
 <translation id="7058163556978339998">මෙම වෙබ් අඩවියේ සහතිකය නිකුත් කළේ <ph name="ISSUER" /> බව <ph name="BROWSER" /> සත්‍යාපන කළා.</translation>
 <translation id="7058774143982824355">CSV මුරපද විග්‍රහක සේවය</translation>
+<translation id="7062344833049251424">මීළඟ වතාවේ වේගයෙන් ගෙවීමට, Google Wallet හි ඔබේ කාඩ්පත සහ බිල්පත් ලිපිනය සුරකින්න</translation>
 <translation id="706295145388601875">Chrome සැකසීම් තුළ ලිපින එක් කරන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="7063157783216323487">කොළ 2</translation>
 <translation id="7064443976734085921">සංයුක්ත මෝටර් රථ</translation>
@@ -4283,6 +4287,7 @@
 <translation id="7754587126786572336">යාවත්කාලීනය ආරම්භ වූ විට ඔබේ Chrome පටිති සහ යෙදුම් වැසෙනු ඇත</translation>
 <translation id="7755287808199759310">ඔබේ දෙමව්පියන්ගෙන් අයෙකුට එය ඔබ සඳහා අනවහිර කළ හැකිය</translation>
 <translation id="7755624218968747854">Primary Roll</translation>
+<translation id="7756441544371887150">මෙම කාඩ්පත Google Wallet හි සුරකින විට Chrome හි සිදු කරන ලද මිල දී ගැනීම් සඳහා ස්වයංව පුරවන්න</translation>
 <translation id="7758069387465995638">සුරැකුම් පවුර හෝ ප්‍රතිවයිරස මෘදුකාංග සබැඳුම අවහිර කර තිබෙනවා විය හැකිය.</translation>
 <translation id="7759147511335618829">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන්කරණය</translation>
 <translation id="7759809451544302770">වෛකල්පිත</translation>
@@ -5205,6 +5210,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{කිසිවක් නැත}=1{අයිතම 1ක්}one{අයිතම #ක්}other{අයිතම #ක්}}</translation>
 <translation id="976522784004777030">අඟ 5 x 8</translation>
 <translation id="977502174772294970">මංගල උත්සව</translation>
+<translation id="978750072783101994">මෙම කාඩ්පත Google Wallet හි සුරකින විට Chromium හි සිදු කරන ලද මිල දී ගැනීම් සඳහා ස්වයංව පුරවන්න</translation>
 <translation id="979107176848483472">ඔබේ බ්‍රවුසරය සහ පැතිකඩ කළමනා කරනු ලබන්නේ <ph name="DOMAIN" /> විසිනි</translation>
 <translation id="979189555234810423">ප්‍රදර්ශන සහ සම්මේලන</translation>
 <translation id="979503328401807348">වඩාත් ප්‍රයෝජනවත් දැන්වීම්</translation>

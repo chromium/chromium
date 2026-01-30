@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">macOS キーチェーンでパスワード マネージャーを使用するには、Chromium を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="1652887625750064647">AI ベストマッチ</translation>
 <translation id="1653465303147789530">アプリを切り替えずに <ph name="PAYMENT_METHOD" /> でお支払い</translation>
+<translation id="1655159794885649984">このサイトではコンテンツのドラッグは許可されていません</translation>
 <translation id="1656024727720460136">ページを見やすくするため、Chrome によって簡易表示されています。Chrome による元のページの取得は、保護された接続を介して行われました。</translation>
 <translation id="1656489000284462475">受け取り</translation>
 <translation id="1658111267661135323">テレビ＆動画</translation>
@@ -1678,6 +1679,7 @@
 <translation id="365641980390710834">カジュアル衣料</translation>
 <translation id="3658742229777143148">変更履歴</translation>
 <translation id="3659521826520353662">管理者が定義したウェブサイトとアクセスした日時: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">この IBAN は Google ウォレットに保存され、Google サービス全体で使用できるようになります。</translation>
 <translation id="3664479564786885722">この商品を販売している他のショップの購入オプションを検索します。</translation>
 <translation id="3664782872746246217">キーワード:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />詳細<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@
 <translation id="6085149458302186532">ラベル（カラー）</translation>
 <translation id="6087312102907839798">他のキーワード</translation>
 <translation id="6089505343295765444">Chrome 履歴から削除したタブも比較表には引き続き表示されます</translation>
+<translation id="6091115085465716987">Google ウォレットのロゴ</translation>
 <translation id="6091691259076781835">購入手続きをすばやく行うには、この CVC をデバイスに保存してください</translation>
 <translation id="6093599771645355227">黄 1</translation>
 <translation id="6093795393556121384">カードが確認されました</translation>
@@ -3814,6 +3817,7 @@
 <translation id="7057567173736333354">画像の説明を入力</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> で、このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであると確認されました。</translation>
 <translation id="7058774143982824355">CSV パスワード パーサー サービス</translation>
+<translation id="7062344833049251424">カードと請求先住所を Google ウォレットに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="706295145388601875">Chrome の設定で住所を追加、管理する</translation>
 <translation id="7063157783216323487">緑 2</translation>
 <translation id="7064443976734085921">コンパクトカー</translation>
@@ -4285,6 +4289,7 @@
 <translation id="7754587126786572336">更新が始まると Chrome のタブとアプリは閉じられます</translation>
 <translation id="7755287808199759310">ブロックの解除は保護者が行うことができます</translation>
 <translation id="7755624218968747854">メインロール</translation>
+<translation id="7756441544371887150">このカードを Google ウォレットに保存すると、Chrome で購入する際に自動入力されます</translation>
 <translation id="7758069387465995638">ファイアウォールまたはウイルス対策ソフトウェアによって接続がブロックされた可能性があります。</translation>
 <translation id="7759147511335618829">MIDI デバイスの操作と再プログラム</translation>
 <translation id="7759809451544302770">省略可</translation>
@@ -5208,6 +5213,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{なし}=1{1 件のアイテム}other{# 件のアイテム}}</translation>
 <translation id="976522784004777030">5x8 インチ</translation>
 <translation id="977502174772294970">ウェディング</translation>
+<translation id="978750072783101994">このカードを Google ウォレットに保存すると、Chromium で購入する際に自動入力されます</translation>
 <translation id="979107176848483472">お使いのブラウザとプロフィールは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="979189555234810423">展示会、コンベンション</translation>
 <translation id="979503328401807348">広告の有用性が向上</translation>

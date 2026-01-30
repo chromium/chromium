@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">ছবি ডিকোড করা যায়নি: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">স্থানীয়করণ ব্যবহৃত হয়েছে, কিন্তু default_locale তালিকাতে উল্লেখ ছিল না৷</translation>
 <translation id="2576842806987913196">এই নামের একটি CRX ফাইল ইতিমধ্যে বিদ্যমান আছে৷</translation>
+<translation id="2743583586211388067">আপনার সংস্থার এক্সটেনশন সংক্রান্ত ঝুঁকি নীতি অনুযায়ী এই এক্সটেনশনে অ্যাক্সেস ব্লক করা হয়েছে।</translation>
 <translation id="2785530881066938471">বর্তমান স্ক্রিপ্টটির জন্য <ph name="RELATIVE_PATH" /> ফাইলটি লোড করতে পারা যায়নি৷ এটি UTF-8 এনকোড হওয়া নেই৷</translation>
 <translation id="2903070246402204397">প্রশাসক <ph name="EXTENSION_NAME" /> (এক্সটেনশন আইডি "<ph name="EXTENSION_ID" />") ব্লক করেছে। <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">এই প্যাকেজটি ইনস্টল করা যায়নি: '<ph name="ERROR_CODE" />'</translation>

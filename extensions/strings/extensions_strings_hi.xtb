@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">इमेज को डीकोड नहीं किया जा सका: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">स्थानीय भाषा में लिखा गया है, लेकिन default_locale मेनिफ़ेस्ट में तय नहीं की गई थी.</translation>
 <translation id="2576842806987913196">इस नाम वाली CRX फ़ाइल पहले से ही मौजूद है.</translation>
+<translation id="2743583586211388067">आपके संगठन की एक्सटेंशन रिस्क पॉलिसी के तहत, इस एक्सटेंशन का ऐक्सेस ब्लॉक कर दिया गया है.</translation>
 <translation id="2785530881066938471">सामग्री स्क्रिप्ट के लिए '<ph name="RELATIVE_PATH" />' फ़ाइल लोड नहीं कर सका. यह UTF-8 एनकोड नहीं है.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (एक्सटेंशन आईडी "<ph name="EXTENSION_ID" />") को एडमिन ने ब्लॉक किया है. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">पैकेज इंस्टॉल नहीं कर सका: '<ph name="ERROR_CODE" />'</translation>

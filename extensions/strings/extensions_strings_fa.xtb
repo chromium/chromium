@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">رمزگشایی تصویر امکان‌پذیر نیست: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">‏بومی سازی استفاده شده است، اما default_locale در اظهارنامه مشخص نشده است.</translation>
 <translation id="2576842806987913196">‏یک فایل CRX در حال حاضر با این نام وجود دارد.</translation>
+<translation id="2743583586211388067">دسترسی به این افزونه تحت خط‌مشی ریسک افزونه سازمانتان مسدود شده است.</translation>
 <translation id="2785530881066938471">‏بارگیری فایل "<ph name="RELATIVE_PATH" />" برای اسکریپت محتوا ممکن نیست. رمزگذاری آن UTF-8 نیست.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (شناسه افزونه «<ph name="EXTENSION_ID" />») توسط سرپرست مسدود شده است. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">بسته نصب نشد: "<ph name="ERROR_CODE" />"</translation>

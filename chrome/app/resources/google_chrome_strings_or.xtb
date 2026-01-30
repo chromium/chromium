@@ -28,6 +28,7 @@
 <translation id="1158134713295836892">Chromeରେ Gemini</translation>
 <translation id="1184145431117212167">ଆପଣଙ୍କ Windows ଭର୍ସନ ସପୋର୍ଟ କରୁନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="1194807384646768652">Chrome ଏହି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି କାରଣ ଏହି ଫାଇଲ ପ୍ରକାରକୁ ସାଧାରଣତଃ ଡାଉନଲୋଡ କରାଯାଇନଥାଏ ଏବଂ ଏହା ବିପଦଜନକ ହୋଇପାରେ</translation>
+<translation id="1197860368385086056">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣ Chrome ଖୋଲିଲେ, ମୂଲ୍ୟ ଟ୍ରାକିଂ ଆଲର୍ଟଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବା ପାଇଁ ଆପଣ ଏକ ପ୍ରମ୍ପ୍ଟ ଦେଖିବେ।</translation>
 <translation id="1203500561924088507">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ। ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="1278833599417554002">&amp;Chrome ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1290883685122687410">ସେଟଅପ ତ୍ରୁଟି: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
@@ -284,7 +285,6 @@
 <translation id="4022972681110646219">ସ୍କ୍ରିନକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="4023601594785368013">ମୂଳ ଭାଷା: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ଅପଡେଟ ଲାଗୁ କରିବା ପାଇଁ ChromeOSକୁ ରିଷ୍ଟାର୍ଟ କରାଯିବା ଆବଶ୍ୟକ।</translation>
-<translation id="4039097928859803404">ସର୍ବଦା AI ମୋଡ ସର୍ଟକଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="4050175100176540509">ନବୀନତମ ସଂସ୍କରଣରେ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ସୁରକ୍ଷା ଉନ୍ନୟନ ଏବଂ ନୂତନ ବୈଶିଷ୍ଟ୍ୟ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="4053720452172726777">Google Chromeକୁ କଷ୍ଟମାଇଜ୍ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ।</translation>
 <translation id="408393047846373801">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ ସାଇନ ଇନ କରିବା ପରେ ଏହି ପାସୱାର୍ଡ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ ହେବ।</translation>
@@ -398,6 +398,7 @@
 <translation id="5334309298019785904">ଆପଣଙ୍କ ଡୋମେନ ପାଇଁ ସିଙ୍କ ଉପଲବ୍ଧ ନଥିବା ଯୋଗୁଁ ChromeOS ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="5334487786912937552">ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ Chrome ଷ୍ଟୋରେଜ୍ ଆକ୍ସେସ୍ କରିବାର ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="5337648990166757586">ଇଚ୍ଛାଧୀନ: Googleକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଏଗ୍ନୋଷ୍ଟିକ ଓ ବ୍ୟବହାର ଡାଟା ପଠାଇ ChromeOS ଫିଚର ଓ ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
+<translation id="5346059693449184483">ଆପଣଙ୍କର ମନରେ କ'ଣ ଅଛି?</translation>
 <translation id="5346389065299425353">ଏକାଧିକ ଟାବ, ଫାଇଲ ଏବଂ ଟୁଲ ଯୋଗ କରି ଆପଣଙ୍କ ସର୍ଚ୍ଚକୁ ଗଭୀର କରନ୍ତୁ</translation>
 <translation id="5353252989841766347">Chromeରୁ ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5368118228313795342">ଅତିରିକ୍ତ କୋଡ: <ph name="EXTRA_CODE" />।</translation>
@@ -507,6 +508,7 @@
 <translation id="6321592572353357376">ଆପଣ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ ଚାହୁଁଛି</translation>
 <translation id="6326175484149238433">Chromeରୁ କାଢ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="6327105987658262776">କୌଣସି ଅପଡେଟ ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="6333195756043503664">ମୋ କମ୍ପ୍ୟୁଟର ଆରମ୍ଭ ହେଲେ Chrome ଖୋଲନ୍ତୁ</translation>
 <translation id="6334815226785304306">Google Chromeକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରନ୍ତୁ ଏବଂ ଟାସ୍କବାରରେ ପିନ କରନ୍ତୁ</translation>
 <translation id="63540178978900677">Chrome ଆଉ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ନୁହେଁ। Chromeକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରିବେ?</translation>
 <translation id="6360449101159168105">ଏହି ଟାବ ନିଷ୍କ୍ରିୟ ଥିବା ସମୟରେ Chromeକୁ ଦ୍ରୁତ ରଖିବା ପାଇଁ ମେମୋରୀକୁ ଖାଲି କରାଯାଇଛି। ଆପଣ ଏହି ସାଇଟକୁ ନିଷ୍କ୍ରିୟ ହେବାରୁ ସର୍ବଦା ବାଦ ଦେବା ପାଇଁ ବାଛିପାରିବେ।</translation>
@@ -616,6 +618,7 @@
 <translation id="7515191208480168435">ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣ Google Lensକୁ ପିନ କରିପାରିବେ</translation>
 <translation id="7535429826459677826">Google Chrome ଡେଭ୍‍</translation>
 <translation id="7543146567111253230">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଏହି ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ, Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="756134248912568991">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣ Chrome ଖୋଲିଲେ, ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣ ଏକ ପ୍ରମ୍ପ୍ଟ ଦେଖିବେ।</translation>
 <translation id="756809126120519699">Chrome ଡାଟା ଖାଲି କରାଯାଇଛି</translation>
 <translation id="7572537927358445944">ବନ୍ଦ ଅଛି • ଏହି ଏକ୍ସଟେନସନ କେଉଁଠାରୁ ଆସିଛି ତାହା Chrome ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ଇନଷ୍ଟଲର</translation>
@@ -660,7 +663,6 @@
 <translation id="7869620795354551924">ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, QR କୋଡକୁ ଫଲୋ କରନ୍ତୁ, iOS ପାଇଁ Chrome ଡାଉନଲୋଡ କରି ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="7872446069773932638">ଡାଉନଲୋଡ ହେଉଛି… <ph name="SECONDS" /> ସେକେଣ୍ଡ ବାକି ଅଛି</translation>
 <translation id="7886087451482920026">Google Lens ମାଧ୍ୟମରେ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
-<translation id="7887929410013642057">ସର୍ବଦା AI ମୋଡ ସର୍ଟକଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="7890208801193284374">ଯଦି ଆପଣ ଗୋଟିଏ କମ୍ପ୍ୟୁଟର୍ ସେୟାର୍ କରନ୍ତି, ତେବେ, ସାଙ୍ଗମାନେ ଓ ପରିବାରର ସଦସ୍ୟମାନେ ଅଲଗା ଭାବରେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ସେମାନଙ୍କ ପସନ୍ଦ ଅନୁସାରେ Chromeକୁ ସେଟ୍ ଅପ୍ କରିପାରିବେ।</translation>
 <translation id="7896673875602241923">ଏହି କମ୍ପ୍ୟୁଟରରେ କେହି ଜଣେ ପୂର୍ବରୁ Chromeରେ <ph name="ACCOUNT_EMAIL_LAST" /> ଭାବରେ ସାଇନ ଇନ କରିଛନ୍ତି। ଦୟାକରି ଆପଣଙ୍କ ସୂଚନାକୁ ଅଲଗା ରଖିବା ପାଇଁ ଏକ ନୂଆ Chrome ୟୁଜର ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="7904985524660297937">Google Chromeରେ Gemini ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
@@ -690,6 +692,7 @@
 <translation id="8162006532256575008">କୌଣସି ଆକାଉଣ୍ଟ ବିନା Chrome ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8177472873527554730">ପୃଷ୍ଠାରେ ବିଷୟବସ୍ତୁ ଖୋଜାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8221491193165283816">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତି। ଏହି ସାଇଟ୍‌କୁ ଆପଣଙ୍କୁ ସୂଚିତ କରିବା ସୁବିଧା ଦେବା ପାଇଁ, ଏଠାରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
+<translation id="8223142476690844338">ହାଏ <ph name="USER_NAME" />, ଆପଣଙ୍କର ମନରେ କ'ଣ ଅଛି?</translation>
 <translation id="8255190535488645436">Google Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍‌କୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8267953129876836456">Chrome ଆପଣଙ୍କ ସମୀକ୍ଷା ପାଇଁ କିଛି ସୁରକ୍ଷା ସୁପାରିଶ ପାଇଛି</translation>
 <translation id="8286862437124483331">Google Chrome ପାସ୍‌ୱର୍ଡ ଦେଖାଇବାକୁ ଚାହୁଁଛି। ଏହାକୁ ଅନୁମତି ଦେବାପାଇଁ ଆପଣଙ୍କର Windows ପାସ୍‌ୱର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>

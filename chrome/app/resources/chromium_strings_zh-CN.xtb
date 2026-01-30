@@ -277,7 +277,6 @@
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">在任意应用内通过 Chromium 打开链接。此外，为了方便使用，Chromium 会固定到任务栏。</translation>
 <translation id="4036079820698952681">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chromium</translation>
-<translation id="4039097928859803404">总是显示 AI 模式快捷方式</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4055805654398742145">密码管理工具(&amp;A)</translation>
 <translation id="4061696872429826774">计算机上的其他程序添加了一个扩展程序，该扩展程序可能会改变 Chromium 的工作方式。
@@ -481,6 +480,7 @@
 <translation id="6450948450282634257">在手机上下载 Chromium，即可跟踪价格并在有网站降价时收到提醒</translation>
 <translation id="645458117210240797">已关闭 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
+<translation id="6460614424172581323">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chromium 时，系统会提示您使用标签页分组。</translation>
 <translation id="6466344609055215035">从 Chromium 中移除账号</translation>
 <translation id="6475912303565314141">它还能够控制Chromium启动后显示的页面。</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
@@ -610,7 +610,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7873537467422636035">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">询问此图片</translation>
-<translation id="7887929410013642057">总是显示 AI 模式快捷方式</translation>
 <translation id="7888981273428720788">将 Chromium 设为默认浏览器</translation>
 <translation id="7934340546140346950">Chromium 会尽可能将不安全的连接自动升级为 HTTPS</translation>
 <translation id="7937630085815544518">您之前登录 Chromium 时使用的账号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一账号再次登录。</translation>
@@ -627,6 +626,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium 需要为此网站授予位置信息权限</translation>
+<translation id="8107060931443639922">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chromium 时，系统会提示您启用价格跟踪提醒。</translation>
 <translation id="8118331347066725040">发送有关智能镜头搜索的反馈</translation>
 <translation id="8133124826068723441">由于您的网域不支持同步，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
@@ -703,6 +703,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="897581876605952338">Chromium 企业版徽标</translation>
 <translation id="8981150672034878610">无法启动 Chromium，因为打开您的个人资料时出了点问题。请尝试重启 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 个人资料</translation>
+<translation id="9003988359820989654">在电脑启动时打开 Chromium</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
 <translation id="904366664621834601">Chromium 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="9062666675513499497">登录其他 Google 服务时登录 Chromium</translation>

@@ -421,6 +421,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1652862280638399816">Als je Wachtwoordmanager wilt gebruiken met macOS-sleutelhanger, herstart je Chromium en sta je sleutelhangertoegang toe. Je tabbladen worden opnieuw geopend na de herstart.</translation>
 <translation id="1652887625750064647">Beste AI-overeenkomst</translation>
 <translation id="1653465303147789530">Betaal met <ph name="PAYMENT_METHOD" /> zonder van app te wisselen</translation>
+<translation id="1655159794885649984">Content slepen op deze site is niet toegestaan</translation>
 <translation id="1656024727720460136">Chrome heeft deze pagina vereenvoudigd om deze beter leesbaar te maken. Chrome heeft de originele pagina opgehaald via een beveiligde verbinding.</translation>
 <translation id="1656489000284462475">Ophaaltijd</translation>
 <translation id="1658111267661135323">Tv en video</translation>
@@ -1673,6 +1674,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="365641980390710834">Vrijetijdskleding</translation>
 <translation id="3658742229777143148">Revisie</translation>
 <translation id="3659521826520353662">Welke door de beheerder gedefinieerde websites worden bezocht en wanneer: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Dit IBAN is opgeslagen in Google Wallet, zodat je het in Google-services kunt gebruiken.</translation>
 <translation id="3664479564786885722">Zoek meer koopopties van andere winkels die dit product verkopen.</translation>
 <translation id="3664782872746246217">Zoekwoorden:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Meer informatie<ph name="LINK_END1" /></translation>
@@ -3192,6 +3194,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6085149458302186532">Labels (gekleurd)</translation>
 <translation id="6087312102907839798">Gerelateerde zoekopdrachten</translation>
 <translation id="6089505343295765444">Tabbladen die je uit je Chrome-geschiedenis verwijdert, worden nog steeds getoond in je vergelijkingstabellen</translation>
+<translation id="6091115085465716987">Google Wallet-logo</translation>
 <translation id="6091691259076781835">Sla deze CVC op je apparaat op om sneller te betalen</translation>
 <translation id="6093599771645355227">Geel 1</translation>
 <translation id="6093795393556121384">Je pas is geverifieerd</translation>
@@ -3807,6 +3810,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7057567173736333354">Beschrijf je afbeelding</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> heeft geverifieerd dat <ph name="ISSUER" /> het certificaat van deze website heeft uitgegeven.</translation>
 <translation id="7058774143982824355">Parserservice voor csv-bestand met wachtwoorden</translation>
+<translation id="7062344833049251424">Sla je kaart en factuuradres op in Google Wallet, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="706295145388601875">Adressen toevoegen en beheren in de Chrome-instellingen</translation>
 <translation id="7063157783216323487">Groen 2</translation>
 <translation id="7064443976734085921">Compacte auto's</translation>
@@ -4277,6 +4281,7 @@ Aanvullende informatie:
 <translation id="7754587126786572336">Je Chrome-tabbladen en apps worden gesloten als de update wordt gestart</translation>
 <translation id="7755287808199759310">Je ouder of voogd kan de blokkering voor je opheffen</translation>
 <translation id="7755624218968747854">Primaire rol</translation>
+<translation id="7756441544371887150">Vul deze kaart automatisch in voor aankopen die je doet in Chrome als de kaart is opgeslagen in Google Wallet</translation>
 <translation id="7758069387465995638">De verbinding is mogelijk geblokkeerd door de firewall of antivirussoftware.</translation>
 <translation id="7759147511335618829">MIDI-apparaatbediening en -herprogrammering</translation>
 <translation id="7759809451544302770">Optioneel</translation>
@@ -5199,6 +5204,7 @@ Aanvullende informatie:
 <translation id="975560348586398090">{COUNT,plural, =0{Geen}=1{1 item}other{# items}}</translation>
 <translation id="976522784004777030">5 x 8 inch</translation>
 <translation id="977502174772294970">Bruiloften</translation>
+<translation id="978750072783101994">Vul deze kaart automatisch in voor aankopen die je doet in Chromium als de kaart is opgeslagen in Google Wallet</translation>
 <translation id="979107176848483472">Je browser en profiel worden beheerd door <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Expo's en congressen</translation>
 <translation id="979503328401807348">Nuttigere advertenties</translation>

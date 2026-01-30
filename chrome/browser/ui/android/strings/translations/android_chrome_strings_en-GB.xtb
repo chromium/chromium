@@ -1893,6 +1893,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8856931513242997049">Notification permission flow closed</translation>
 <translation id="8863714995118816041">Permissions allowed again for <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>
+<translation id="8872506776304248286">Open in app</translation>
 <translation id="8890668505403261809">Search your Incognito tabs</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, selected recording Incognito tab</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>

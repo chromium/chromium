@@ -2588,6 +2588,7 @@
 <translation id="2724841811573117416">WebRTC लॉग</translation>
 <translation id="272488616838512378">यूनिट कन्वर्ज़न</translation>
 <translation id="2725200716980197196">नेटवर्क कनेक्टिविटी पुनर्स्थापित हो गई</translation>
+<translation id="2725312032345042618">गतिविधियों की वीडियो रिकॉर्डिंग</translation>
 <translation id="2726776862643824793">डिसप्ले की रोशनी कम करने वाला बटन</translation>
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
 <translation id="2727633948226935816">मुझे फिर से याद न दिलाएं</translation>
@@ -2929,6 +2930,7 @@
 <translation id="2950666755714083615">मुझे सदस्यता दें</translation>
 <translation id="2953210795988451570">सुरक्षा से जुड़े अपडेट मिलने बंद हो गए हैं. नए Chromebook पर अपग्रेड करें.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> को सूचनाएं भेजने की अनुमति नहीं है. अगली बार वेबसाइट पर आने पर, आपसे फिर से पूछा जाएगा.</translation>
+<translation id="2954777802959138493">अपडेटर की स्थिति के बारे में क्वेरी नहीं की जा सकी.</translation>
 <translation id="2955048943983973430">इससे जुड़ी Google की सेवाएं</translation>
 <translation id="2956070239128776395">सेक्शन समूह के अंदर मौजूद है: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">इस एक्सटेंशन का इस्तेमाल करने के लिए, डेवलपर मोड चालू करें. Chrome Web Store इस एक्सटेंशन की समीक्षा नहीं कर सकता.</translation>
@@ -3379,7 +3381,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="3270965368676314374">अपने कंप्यूटर के फ़ोटो, संगीत और दूसरे मीडिया पढ़ें, बदलें और मिटाएं</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> को छोटा करें</translation>
-<translation id="3275778809241512831">आपकी अंदरूनी सुरक्षा कुंजी फ़िलहाल सुरक्षित नहीं है. आपने जिन सेवाओं पर इसका इस्तेमाल किया है उन सभी सेवाओं से इसे हटाएं. इस समस्या को ठीक करने के लिए, कृपया सुरक्षा कुंजी को रीसेट करें.</translation>
 <translation id="3275778913554317645">विंडो के रूप में खोलें</translation>
 <translation id="3277214528693754078">टेक्स्ट कर्सर की मदद से नेविगेट करें (कैरेट ब्राउज़िंग)</translation>
 <translation id="3277594800340743211">बड़ा शैडो</translation>
@@ -3582,7 +3583,6 @@
 <translation id="3417835166382867856">टैब खोजें</translation>
 <translation id="3417836307470882032">24 घंटे वाली घड़ी का इस्तेमाल करें</translation>
 <translation id="3418798368381485936">इस खाते का इस्तेमाल करके, साइन इन नहीं किया जा सकता</translation>
-<translation id="3420501302812554910">अंदरूनी सुरक्षा कुंजी को रीसेट करने की ज़रूरत है</translation>
 <translation id="3421387094817716717">अंडाकार वक्र वाली सार्वजनिक कुंजी</translation>
 <translation id="3422989558057853751">यह चुना गया आखिरी आइटम है. इससे चुने हुए का निशान हटाने पर, चुनने वाला मोड बंद हो जाएगा</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> में नतीजे मिले</translation>
@@ -3663,6 +3663,7 @@
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फ़ोन</translation>
 <translation id="3469583217479686109">कोई खास हिस्सा चुनने का टूल</translation>
+<translation id="3471687177769494956">नेविगेशन शॉर्टकट में बदलाव करें</translation>
 <translation id="3471876058939596279">वीडियो के लिए एचडीएमआई पोर्ट और यूएसबी टाइप-सी पोर्ट को एक ही समय में इस्तेमाल नहीं किया जा सकता. कोई अलग पोर्ट इस्तेमाल करें.</translation>
 <translation id="3472469028191701821">लिंक नए टैब में खुलेगा</translation>
 <translation id="3473241910002674503">टैबलेट मोड में बटन की मदद से, होम पेज पर जाएं, वापस जाएं, और एक ऐप्लिकेशन से दूसरे पर जाएं.</translation>
@@ -4555,6 +4556,7 @@
 <translation id="4036778507053569103">सर्वर से डाउनलोड की गई नीति गलत है.</translation>
 <translation id="4037084878352560732">घोड़ा</translation>
 <translation id="403725336528835653">पहले इसे आज़माएं</translation>
+<translation id="4039835815168788100">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने आपके सर्च इंजन को <ph name="SEARCH_PROVIDER" /> में बदलने की कोशिश की. नीचे दिए गए विकल्पों में से अपनी पसंद की पुष्टि करें</translation>
 <translation id="4039966970282098406">माइक्रोफ़ोन, कैमरा वगैरह का ऐक्सेस कंट्रोल करके, अपनी निजता मैनेज करें</translation>
 <translation id="4040041015953651705">वह भाषा जिससे अनुवाद करना है</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{पेज से बाहर निकलें}one{पेज से बाहर निकलें}other{पेज से बाहर निकलें}}</translation>
@@ -6874,6 +6876,7 @@
 <translation id="5659593005791499971">ईमेल</translation>
 <translation id="5659964844710667266">इस <ph name="DEVICE_TYPE" /> के लिए पासवर्ड बनाएं</translation>
 <translation id="5662513737565158057">Linux ऐप्लिकेशन के काम करने का तरीका बदलें.</translation>
+<translation id="5663317829633858516">हाल ही में <ph name="EXTENSION_NAME" /> ने इसे बदला है</translation>
 <translation id="5663459693447872156">अपने आप आधी-चौड़ाई में स्विच करें</translation>
 <translation id="5663653125349867535">रीडिंग लिस्ट</translation>
 <translation id="5663918299073387939">आम तौर पर साइटें, संगीत बनाने, संगीत में बदलाव करने या डिवाइस के फ़र्मवेयर को अपडेट करने के लिए, एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करने की अनुमति मांगती हैं</translation>
@@ -7095,6 +7098,7 @@
 <translation id="5828181959764767444">सूर्यास्त</translation>
 <translation id="5828545842856466741">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="5828633471261496623">प्रिंट हो रहा है...</translation>
+<translation id="5829544019044013776">Google Wallet में पेमेंट के तरीके</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> को खोला नहीं जा सकता</translation>
 <translation id="5830512293931520102">आपका पासवर्ड एन्क्रिप्ट (सुरक्षित) किया जाता है और किसी को भी नहीं दिखता है</translation>
 <translation id="5830720307094128296">पेज को इस रूप में सेव करें...</translation>
@@ -7660,6 +7664,7 @@
 <translation id="6212168817037875041">डिसप्ले बंद करें</translation>
 <translation id="6212752530110374741">लिंक ईमेल करें</translation>
 <translation id="6214106213498203737">वॉटरकलर</translation>
+<translation id="6214157047210274853">Google Wallet में बदलाव करें</translation>
 <translation id="621470880408090483">साइटों को ब्लूटूथ डिवाइसों से कनेक्ट करने की अनुमति न दें</translation>
 <translation id="6215039389782910006">{1,plural, =1{आपके पासवर्ड को सुरक्षित रखने के लिए, 1 मिनट तक कोई गतिविधि न होने पर <ph name="BRAND" /> लॉक हो जाता है}one{आपके पासवर्ड को सुरक्षित रखने के लिए, # मिनट तक कोई गतिविधि न होने पर <ph name="BRAND" /> लॉक हो जाता है}other{आपके पासवर्ड को सुरक्षित रखने के लिए, # मिनट तक कोई गतिविधि न होने पर <ph name="BRAND" /> लॉक हो जाता है}}</translation>
 <translation id="6216154119179790291">स्क्रोल करके पहले टैब पर जाएं</translation>
@@ -8907,6 +8912,7 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> ग्रुप - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL प्रमाणपत्र और सेटिंग प्रबंधित करें</translation>
+<translation id="707772989579681711">आपका पिछला विकल्प</translation>
 <translation id="7077751457066325012">कीबोर्ड शॉर्टकट देखें और पसंद के मुताबिक बनाएं</translation>
 <translation id="7077829361966535409">मौजूदा प्रॉक्सी सेटिंग के इस्तेमाल करने से साइन इन पेज लोड नहीं हो सका. कृपया <ph name="GAIA_RELOAD_LINK_START" />फिर साइन इन करने की कोशिश करें<ph name="GAIA_RELOAD_LINK_END" />, या अलग-अलग <ph name="PROXY_SETTINGS_LINK_START" />प्रॉक्सी सेटिंग<ph name="PROXY_SETTINGS_LINK_END" /> का इस्तेमाल करें.</translation>
 <translation id="7078120482318506217">सभी नेटवर्क</translation>
@@ -10555,6 +10561,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> रोक दें</translation>
 <translation id="8195920051450756553">एक ही बटन के दोबारा ऐक्टिवेट होने में लगने वाला समय</translation>
 <translation id="8197673340773315084">नाम या लेबल जोड़ें. जैसे, ऑफ़िस या निजी</translation>
+<translation id="8198043456018523011">अपने डिफ़ॉल्ट सर्च इंजन की पुष्टि करें</translation>
 <translation id="8198181050118789419">थीम: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">कास्टिंग टैब</translation>
 <translation id="8199300056570174101">नेटवर्क (सेवा) और डिवाइस प्रॉपर्टी</translation>
@@ -11307,6 +11314,7 @@
 <translation id="8703346390800944767">विज्ञापन छोड़ें</translation>
 <translation id="8703372953981978786">यह लिंक काम नहीं करता</translation>
 <translation id="8703766890819308134">सर्च शॉर्टकट दिखाएं</translation>
+<translation id="8704248383043944131">कीबोर्ड शॉर्टकट में बदलाव करें</translation>
 <translation id="8704662571571150811">डोमेन</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
 <translation id="870536819717176711">मौजूदा टैब को Gemini के साथ शेयर करने का विकल्प चुनने पर, टैब का पूरा कॉन्टेंट, मीडिया, और यूआरएल Google को भेजा जाएगा.</translation>
@@ -11628,6 +11636,7 @@
 <translation id="8911914282056933784">प्रोजेक्ट छिपाएं</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8912810933860534797">अपने आप स्कैन करने की सुविधा चालू करें</translation>
+<translation id="8913485523736543337">अपडेटर</translation>
 <translation id="8914030287343429787">Chrome या Android का इस्तेमाल किए बिना भी अपने पासवर्ड देखें. इसके लिए, <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> पर जाकर साइन इन करें</translation>
 <translation id="8914504000324227558">Chrome को फिर से लॉन्‍च करें</translation>
 <translation id="8915307125957890427">टैब पर दायां क्लिक करें और "टैब को ग्रुप में जोड़ें" चुनें. इसके बाद, "नया ग्रुप" चुनें</translation>
@@ -11768,6 +11777,7 @@
 <translation id="8999560016882908256">सेक्शन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">स्क्रीन पर हलचल कम करें</translation>
 <translation id="9000185763019430629">अपने <ph name="DEVICE_TYPE" /> की दाईं ओर मौजूद फ़िंगरप्रिंट सेंसर को छुएं. आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
+<translation id="9000529821022336229">अपडेटर से जुड़ी कोई जानकारी नहीं मिली.</translation>
 <translation id="900267527532832868">यह पासकी अब काम नहीं करती है. इसे जल्द ही <ph name="GOOGLE_PASSWORD_MANAGER" /> से मिटा दिया जाएगा.</translation>
 <translation id="9003031149571024583">छह अंकों वाले पिन का <ph name="NUM_DIGIT" /> अंक डालें. पिछला अंक हटाने के लिए backspace या delete का इस्तेमाल करें.</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> पर '<ph name="STATUS_TEXT" />' की वजह से, डिवाइस मैनेजमेंट सर्वर से कनेक्ट नहीं किया जा सका</translation>

@@ -2588,6 +2588,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2724841811573117416">Registros WebRTC</translation>
 <translation id="272488616838512378">Conversão de unidades</translation>
 <translation id="2725200716980197196">Conectividade de rede restaurada</translation>
+<translation id="2725312032345042618">Histórico de eventos</translation>
 <translation id="2726776862643824793">diminuir o brilho da tela</translation>
 <translation id="272741954544380994">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Não me lembrar novamente</translation>
@@ -2928,6 +2929,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2950666755714083615">Fazer inscrição</translation>
 <translation id="2953210795988451570">As atualizações de segurança foram encerradas. Faça upgrade para um novo Chromebook.</translation>
 <translation id="2953218713108551165">Notificações não permitidas para <ph name="SITE" />. Vamos perguntar novamente na próxima visita.</translation>
+<translation id="2954777802959138493">Falha ao consultar o estado do atualizador.</translation>
 <translation id="2955048943983973430">Serviços do Google relacionados</translation>
 <translation id="2956070239128776395">Seção aninhada no grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Ative o modo de desenvolvedor para usar a extensão. Ela não pode ser analisada pela Chrome Web Store.</translation>
@@ -3378,7 +3380,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3269689705184377744">{COUNT,plural, =1{Arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="3270965368676314374">Ler, alterar e excluir fotos, músicas e outras mídias do seu computador</translation>
 <translation id="3275464924531706548">Fechar <ph name="HEADER" /></translation>
-<translation id="3275778809241512831">Sua chave de segurança interna não é segura no momento. Remova-a de todos os serviços com os quais ela foi utilizada. Para resolver o problema, redefina a chave de segurança.</translation>
 <translation id="3275778913554317645">Abrir como janela</translation>
 <translation id="3277214528693754078">Navegar com o cursor de texto (Caret Browsing)</translation>
 <translation id="3277594800340743211">Sombra grande</translation>
@@ -3582,7 +3583,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3417835166382867856">Pesquisar guias</translation>
 <translation id="3417836307470882032">Relógio de 24 horas</translation>
 <translation id="3418798368381485936">Não é possível fazer login com esta conta</translation>
-<translation id="3420501302812554910">A chave de segurança interna precisa ser redefinida</translation>
 <translation id="3421387094817716717">Chave pública de curva elíptica</translation>
 <translation id="3422989558057853751">Último item selecionado. Se você o desmarcar, sairá do modo de seleção</translation>
 <translation id="3423111258700187173">Resultados encontrados em <ph name="FOLDER_TITLE" /></translation>
@@ -3663,6 +3663,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Smartphone Android</translation>
 <translation id="3469583217479686109">Ferramenta de seleção</translation>
+<translation id="3471687177769494956">Editar atalho de navegação</translation>
 <translation id="3471876058939596279">As portas HDMI and USB-C não podem ser usadas para vídeo ao mesmo tempo. Use uma porta de vídeo diferente.</translation>
 <translation id="3472469028191701821">Abre em uma nova guia</translation>
 <translation id="3473241910002674503">Navegue para a tela inicial, volte e troque de app usando botões no modo tablet.</translation>
@@ -7099,6 +7100,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5828181959764767444">Pôr do sol</translation>
 <translation id="5828545842856466741">Adicionar perfil…</translation>
 <translation id="5828633471261496623">Imprimindo...</translation>
+<translation id="5829544019044013776">Suas formas de pagamento na Carteira do Google</translation>
 <translation id="5830205393314753525">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Sua senha é criptografada e nunca é vista por ninguém</translation>
 <translation id="5830720307094128296">Salvar página &amp;como...</translation>
@@ -7664,6 +7666,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6212168817037875041">Desligar a tela</translation>
 <translation id="6212752530110374741">Enviar link por e-mail</translation>
 <translation id="6214106213498203737">Aquarela</translation>
+<translation id="6214157047210274853">Editar na Carteira do Google</translation>
 <translation id="621470880408090483">Não permitir que os sites se conectem a dispositivos Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Para proteger suas senhas, o <ph name="BRAND" /> é bloqueado depois de 1 minuto de inatividade}one{Para proteger suas senhas, o <ph name="BRAND" /> é bloqueado depois de # minuto de inatividade}other{Para proteger suas senhas, o <ph name="BRAND" /> é bloqueado depois de # minutos de inatividade}}</translation>
 <translation id="6216154119179790291">Rolar até a primeira guia</translation>
@@ -11312,6 +11315,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8703346390800944767">Pular anúncio</translation>
 <translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8703766890819308134">Mostrar atalhos de pesquisa</translation>
+<translation id="8704248383043944131">Editar atalho do teclado</translation>
 <translation id="8704662571571150811">Domínios</translation>
 <translation id="8705331520020532516">Número de série</translation>
 <translation id="870536819717176711">Se você compartilhar a guia atual com o Gemini, o conteúdo, as mídias e o URL dela serão enviados ao Google.</translation>
@@ -11633,6 +11637,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8911914282056933784">Ocultar projetos</translation>
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8912810933860534797">Ativar leitura automática</translation>
+<translation id="8913485523736543337">Atualizador</translation>
 <translation id="8914030287343429787">Acesse suas senhas mesmo quando não estiver usando o Chrome ou o Android, basta fazer login em <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Reiniciar o Google Chrome</translation>
 <translation id="8915307125957890427">Clique com o botão direito do mouse em uma guia e selecione as opções "Adicionar guia ao grupo" e "Novo grupo"</translation>
@@ -11773,6 +11778,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8999560016882908256">Erro de sintaxe na seção: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Movimento reduzido na tela</translation>
 <translation id="9000185763019430629">Toque no sensor de impressão digital no lado direito do <ph name="DEVICE_TYPE" />. Seus dados de impressão digital são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">Nenhuma instalação do atualizador foi encontrada.</translation>
 <translation id="900267527532832868">Essa chave de acesso não funciona mais. Ela será excluída em breve do <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Informe o dígito <ph name="NUM_DIGIT" /> de 6 do PIN. Use a tecla Backspace ou Delete para remover o último dígito.</translation>
 <translation id="9003185744423389627">A conexão com o Servidor de gerenciamento de dispositivos falhou, apresentando o status "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />)</translation>

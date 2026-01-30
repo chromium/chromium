@@ -3380,7 +3380,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ஃபைல்}other{# ஃபைல்கள் }}</translation>
 <translation id="3270965368676314374">உங்கள் கம்ப்யூட்டரிலிருந்து படங்கள், இசை மற்றும் பிற மீடியாவைப் படிக்கலாம், மாற்றலாம் மேலும் நீக்கலாம்</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> ஐச் சுருக்கும்</translation>
-<translation id="3275778809241512831">உங்கள் அகப் பாதுகாப்பு விசை தற்சமயம் பாதுகாப்பாக இல்லை. ஏதேனும் சேவையுடன் இணைந்திருந்தால் அதனை அகற்றவும். இந்தச் சிக்கலை சரிசெய்ய பாதுகாப்பு விசையை ரீசெட் செய்யவும்.</translation>
 <translation id="3275778913554317645">சாளரமாகத் திற</translation>
 <translation id="3277214528693754078">எழுத்துக் கர்சரைப் பயன்படுத்தி உலாவு (சுட்டி உலாவல்)</translation>
 <translation id="3277594800340743211">அதிகளவில் கருமைச் சாயல்</translation>
@@ -3583,7 +3582,6 @@
 <translation id="3417835166382867856">தாவல்களைத் தேடும்</translation>
 <translation id="3417836307470882032">ராணுவ நேரம்</translation>
 <translation id="3418798368381485936">இந்தக் கணக்கைப் பயன்படுத்தி உங்களால் உள்நுழைய முடியாது</translation>
-<translation id="3420501302812554910">அகப் பாதுகாப்பு விசையை ரீசெட் செய்ய வேண்டும்</translation>
 <translation id="3421387094817716717">நீள்வட்ட வளைவான பொதுக் குறியீடு</translation>
 <translation id="3422989558057853751">இது மட்டுமே தேர்ந்தெடுக்கப்பட்டுள்ளது, இதைத் தேர்வுநீக்கினால் தேர்வுப் பயன்முறையில் இருந்து வெளியேறும்</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> இல் உள்ள முடிவுகள்</translation>
@@ -4558,6 +4556,7 @@
 <translation id="4036778507053569103">சேவையகத்திலிருந்து பதிவிறக்கிய கொள்கை தவறானது.</translation>
 <translation id="4037084878352560732">குதிரை</translation>
 <translation id="403725336528835653">முதலில் பயன்படுத்திப் பாருங்கள்</translation>
+<translation id="4039835815168788100">"<ph name="EXTENSION_NAME" />" நீட்டிப்பு உங்கள் தேடல் இன்ஜினை <ph name="SEARCH_PROVIDER" />க்கு மாற்ற முயன்றுள்ளது. கீழே உங்கள் விருப்பத்தை உறுதிசெய்யுங்கள்.</translation>
 <translation id="4039966970282098406">மைக்ரோஃபோன், கேமரா மற்றும் பலவற்றுக்கான அணுகலைக் கட்டுப்படுத்துவதன் மூலம் உங்கள் தனியுரிமையை நிர்வகிக்கலாம்</translation>
 <translation id="4040041015953651705">மூல மொழி</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{பக்கத்திலிருந்து வெளியேறு}other{பக்கங்களிலிருந்து வெளியேறு}}</translation>
@@ -6880,6 +6879,7 @@
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
 <translation id="5659964844710667266">இந்த <ph name="DEVICE_TYPE" /> சாதனத்திற்குக் கடவுச்சொல்லை உருவாக்குங்கள்</translation>
 <translation id="5662513737565158057">Linux ஆப்ஸ் வேலை செய்யும் விதத்தை மாற்றுங்கள்.</translation>
+<translation id="5663317829633858516"><ph name="EXTENSION_NAME" /> சமீபத்தில் மாற்றியுள்ளது</translation>
 <translation id="5663459693447872156">அரைஅகலத்திற்கு தானாகவே மாற்று</translation>
 <translation id="5663653125349867535">&amp;வாசிப்புப் பட்டியல்</translation>
 <translation id="5663918299073387939">இசையை உருவாக்குதல், இசையை மாற்றுதல், சாதன நிலைபொருளைப் புதுப்பித்தல் ஆகியவற்றுக்கு MIDI சாதனங்களைக் கட்டுப்படுத்தி மீண்டும் புரோகிராம் செய்ய, தளங்கள் வழக்கமாக அனுமதி கேட்கும்</translation>
@@ -8913,6 +8913,7 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> குழு - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA என்க்ரிப்ஷனுடன் PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL சான்றிதழ்களையும் அமைப்புகளையும் நிர்வகிக்கவும்</translation>
+<translation id="707772989579681711">உங்களின் முந்தைய தேர்வு</translation>
 <translation id="7077751457066325012">கீபோர்டு ஷார்ட்கட்களைப் பார்த்துப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="7077829361966535409">தற்போதைய பிராக்ஸி அமைப்புகளைப் பயன்படுத்தி உள்நுழைவுப் பக்கத்தை ஏற்றுவது தோல்வியடைந்தது. <ph name="GAIA_RELOAD_LINK_START" />மீண்டும் உள்நுழைய முயற்சிக்கவும்<ph name="GAIA_RELOAD_LINK_END" /> அல்லது வேறொரு <ph name="PROXY_SETTINGS_LINK_START" />பிராக்ஸி அமைப்புகளைப்<ph name="PROXY_SETTINGS_LINK_END" /> பயன்படுத்தவும்.</translation>
 <translation id="7078120482318506217">எல்லா நெட்வொர்க்குகளும்</translation>
@@ -10562,6 +10563,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> அம்சத்தை முடக்கு</translation>
 <translation id="8195920051450756553">ஒரே பட்டனை மீண்டும் செயல்படுத்துவதற்கு முன்பான தாமதம்</translation>
 <translation id="8197673340773315084">பெயரையோ 'பணி' அல்லது 'தனிப்பட்டது' போன்ற லேபிளையோ சேர்த்திடுக</translation>
+<translation id="8198043456018523011">உங்கள் இயல்புத் தேடல் இன்ஜினை உறுதிப்படுத்துங்கள்</translation>
 <translation id="8198181050118789419">தீம்: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">தாவலை அலைபரப்புகிறது</translation>
 <translation id="8199300056570174101">நெட்வொர்க் (சேவை) மற்றும் சாதனப் பண்புகள்</translation>

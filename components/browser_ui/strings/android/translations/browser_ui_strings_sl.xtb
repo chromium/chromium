@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Zahtevate lahko namizno različico spletnih mest</translation>
 <translation id="1085696779717592361">Privzeto uporabljajte Chrome</translation>
 <translation id="113098737392899175">Premikanje po straneh s kazalcem besedila, ko je priključena tipkovnica</translation>
+<translation id="1149644372535087155">Shranjevanje gesel v Chromu</translation>
 <translation id="1178015372320901893">Razdelek na dnu zaslona »Moje bližnjice«</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1181037720776840403">Odstrani</translation>
@@ -172,6 +173,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="2682367912565197520">Izbris shranjene stopnje povečave</translation>
 <translation id="2683434792633810741">Želite izbrisati in ponastaviti?</translation>
 <translation id="2685514716378236873">Ni dovoljeno</translation>
+<translation id="2710883118091822664">Prijavite se, če želite preprosto nadaljevati v vseh napravah</translation>
 <translation id="2713106313042589954">Izklopi kamero</translation>
 <translation id="2717722538473713889">E-poštni naslovi</translation>
 <translation id="2726059656860238749">Zaženite Chrome z aktivno naslovno vrstico, da skrajšate čas zagona v napravah nižjega cenovnega razreda.</translation>
@@ -199,6 +201,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3004438526346162184">Spletna mesta lahko s to funkcijo upravljajo okna na vseh prikazih</translation>
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
+<translation id="3026311960038210">Zbirke tem</translation>
 <translation id="3064871050034234884">Spletna mesta lahko predvajajo zvok.</translation>
 <translation id="3065787901655140044">Dodatna zaščita je vklopljena</translation>
 <translation id="3069226013421428034">Omogočanje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
@@ -341,6 +344,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4478158430052450698">Poenostavljeno nastavljanje povečave po meri za različna spletna mesta</translation>
 <translation id="4479647676395637221">Prikaži poziv, preden se spletnim mestom dovoli uporaba kamere (priporočeno)</translation>
 <translation id="4505788138578415521">URL je razširjen</translation>
+<translation id="4523472416386354622">Prijavite se, če želite začeti</translation>
 <translation id="4534723447064627427">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do mikrofona, mikrofon vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Izklopi mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
@@ -397,6 +401,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="512938610812707830">Razdelek na dnu zaslona z zbirkami tem za videz strani »Nov zavihek« odprt pri polni višini</translation>
 <translation id="5137460097045297858">Razdelek na dnu zaslona za vir Odkrivanje je odprt pri polovični višini</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Znižanje cene na odprtih zavihkih}one{Znižanja cen na odprtih zavihkih}two{Znižanja cen na odprtih zavihkih}few{Znižanja cen na odprtih zavihkih}other{Znižanja cen na odprtih zavihkih}}</translation>
+<translation id="5150048675001754041">Hitro in preprosto se prijavite na spletnih mestih in v aplikacijah</translation>
 <translation id="5186036860380548585">Možnosti so na voljo blizu vrha zaslona</translation>
 <translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Razdelek na dnu zaslona za prilagajanje strani »Nov zavihek« je zaprt</translation>
@@ -566,6 +571,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="6980861169612950611">Želite izbrisati podatke spletnega mesta? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="6991142177939282156">Dovoljeno • Uporaba približne lokacije</translation>
+<translation id="6992014788289743568">Preverite gesla, da okrepite varnost in poskrbite za večjo varnost podatkov</translation>
 <translation id="6992289844737586249">Prikaži poziv, preden se spletnim mestom dovoli uporaba mikrofona (priporočeno)</translation>
 <translation id="7000754031042624318">Izklopljeno v nastavitvah za Android</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>

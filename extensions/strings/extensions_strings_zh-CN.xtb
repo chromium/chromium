@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">无法对图片解码：“<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">已使用本地化功能，但未在清单中指定 default_locale。</translation>
 <translation id="2576842806987913196">已经有其他 CRX 文件使用了此名称。</translation>
+<translation id="2743583586211388067">根据组织的扩展程序风险政策，禁止使用此扩展程序。</translation>
 <translation id="2785530881066938471">无法为内容脚本加载“<ph name="RELATIVE_PATH" />”文件。该文件采用的不是 UTF-8 编码。</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />（扩展程序 ID为“<ph name="EXTENSION_ID" />”）已被管理员阻止。<ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">无法安装程序包：“<ph name="ERROR_CODE" />”</translation>

@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Je kunt vragen om de desktopversie van sites te bekijken</translation>
 <translation id="1085696779717592361">Chrome standaard gebruiken</translation>
 <translation id="113098737392899175">Navigeren op pagina's met een tekstcursor als er een toetsenbord is aangesloten</translation>
+<translation id="1149644372535087155">Wachtwoorden opslaan in Chrome</translation>
 <translation id="1178015372320901893">Blad onderaan voor Mijn snelkoppelingen</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
 <translation id="1569054338208717605">Sites versnellen met de V8-engine van Chrome, maar Chrome iets minder goed bestand maken tegen aanvallen</translation>
 <translation id="1593426485665524382">Er zijn nieuwe acties beschikbaar bovenaan het scherm</translation>
+<translation id="1594521731409209842">Knijp op het scherm om het formaat van de foto aan te passen</translation>
 <translation id="1601560923496285236">Toepassen</translation>
 <translation id="1615755956145364867">Sites kunnen vragen of ze beschermde content mogen afspelen</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -172,6 +174,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2682367912565197520">Opgeslagen zoomniveau verwijderen</translation>
 <translation id="2683434792633810741">Verwijderen en resetten?</translation>
 <translation id="2685514716378236873">Niet toegestaan</translation>
+<translation id="2710883118091822664">Log in om makkelijk verder te gaan op al je apparaten</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2717722538473713889">E-mailadressen</translation>
 <translation id="2726059656860238749">Start Chrome met de Omnibox gefocust om de opstarttijd op basisapparaten te verkorten.</translation>
@@ -199,6 +202,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3004438526346162184">Sites kunnen deze functie gebruiken om vensters te beheren op al je schermen</translation>
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
+<translation id="3026311960038210">Themacollecties</translation>
 <translation id="3064871050034234884">Sites kunnen geluiden afspelen</translation>
 <translation id="3065787901655140044">Geavanceerde beveiliging staat aan</translation>
 <translation id="3069226013421428034">Externe login toestaan voor een specifieke site.</translation>
@@ -341,6 +345,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4478158430052450698">Maak het makkelijker om op verschillende sites in te zoomen</translation>
 <translation id="4479647676395637221">Eerst vragen voordat sites je camera mogen gebruiken (aanbevolen)</translation>
 <translation id="4505788138578415521">URL uitgevouwen</translation>
+<translation id="4523472416386354622">Inloggen om te starten</translation>
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
@@ -397,6 +402,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="512938610812707830">Blad onderaan voor themacollecties voor het uiterlijk van de pagina Nieuw tabblad is op volledige hoogte geopend</translation>
 <translation id="5137460097045297858">Blad onderaan voor Discover-feed is op halve hoogte geopend</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prijsdaling op je geopende tabbladen}other{Prijsdalingen op je geopende tabbladen}}</translation>
+<translation id="5150048675001754041">Log snel en makkelijk in bij sites en apps</translation>
 <translation id="5186036860380548585">Optie beschikbaar boven aan het scherm</translation>
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Blad onderaan voor De pagina Nieuw tabblad aanpassen is gesloten</translation>
@@ -566,6 +572,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6980861169612950611">Sitegegevens verwijderen? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="6991142177939282156">Toegestaan • Geschatte locatie gebruiken</translation>
+<translation id="6992014788289743568">Verbeter je beveiliging en bescherm je gegevens beter door je wachtwoorden te checken</translation>
 <translation id="6992289844737586249">Eerst vragen voordat sites je microfoon mogen gebruiken (aanbevolen)</translation>
 <translation id="7000754031042624318">Uitgezet in Android-instellingen</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>

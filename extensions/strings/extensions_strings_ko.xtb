@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' 이미지를 디코딩하지 못했습니다.</translation>
 <translation id="2350172092385603347">번역한 언어를 이용하였지만 매니페스트에 기본 언어(default_locale)를 지정하지 않았습니다.</translation>
 <translation id="2576842806987913196">동일한 이름의 CRX 파일이 이미 있습니다.</translation>
+<translation id="2743583586211388067">조직의 확장 프로그램 위험 정책에 따라 이 확장 프로그램에 대한 액세스가 차단되었습니다.</translation>
 <translation id="2785530881066938471">콘텐츠 스크립트에 파일('<ph name="RELATIVE_PATH" />')을 로드할 수 없습니다. UTF-8로 인코딩되지 않았습니다.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />(확장 프로그램 ID '<ph name="EXTENSION_ID" />')은(는) 관리자에 의해 차단되었습니다. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">패키지를 설치할 수 없습니다. '<ph name="ERROR_CODE" />'</translation>

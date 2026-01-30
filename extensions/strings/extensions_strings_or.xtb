@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">ଛବି ଡିକୋଡ୍ କରିପାରିଲା ନାହିଁ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ସ୍ଥାନୀୟକରଣ ବ୍ୟବହାର କରାଯାଇଛି, କିନ୍ତୁ ମାନିଫେଷ୍ଟରେ default_locale ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇନାହିଁ।</translation>
 <translation id="2576842806987913196">ପୂର୍ବରୁ ଏହି ନାମରେ ଏକ CRX ଫାଇଲ୍‌ ଅଛି।</translation>
+<translation id="2743583586211388067">ଆପଣଙ୍କ ସଂସ୍ଥାର ଏକ୍ସଟେନସନ ରିସ୍କ ନୀତି ଅଧୀନରେ ଏହି ଏକ୍ସଟେନସନକୁ ଆକ୍ସେସ ବ୍ଲକ କରାଯାଇଛି।</translation>
 <translation id="2785530881066938471">ବିଷୟବସ୍ତୁ ସ୍କ୍ରିପ୍ଟ ପାଇଁ '<ph name="RELATIVE_PATH" />' ଫାଇଲ୍ ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା UTF-8ରେ ଏନ୍‌କୋଡ୍ କରାଯାଇ ନାହିଁ</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ଏକ୍ସଟେନ୍‌ସନ୍ ID"<ph name="EXTENSION_ID" />") ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ଵାରା ବ୍ଲକ୍ କରିଦିଆଯାଇଛି। <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ଏହି ପ୍ୟାକେଜ୍‌କୁ ଇନ୍‌ଷ୍ଟଲ୍ କରିପାରିଲା ନାହିଁ: '<ph name="ERROR_CODE" />'</translation>

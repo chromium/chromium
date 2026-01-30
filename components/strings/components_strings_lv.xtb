@@ -421,6 +421,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1652862280638399816">Lai izmantotu paroļu pārvaldnieku ar macOS sistēmu Keychain, atkārtoti palaidiet pārlūku Chromium un atļaujiet piekļuvi sistēmai Keychain. Jūsu cilnes tiks atkal atvērtas pēc atkārtotas palaišanas.</translation>
 <translation id="1652887625750064647">MI ģenerētā precīzākā atbilstība</translation>
 <translation id="1653465303147789530">Maksājiet ar <ph name="PAYMENT_METHOD" />, nepārslēdzot lietotnes</translation>
+<translation id="1655159794885649984">Satura vilkšana šajā vietnē nav atļauta</translation>
 <translation id="1656024727720460136">Chrome vienkāršoja šo lapu, lai atvieglotu lasīšanu. Chrome izguva sākotnējo lapu, izmantojot drošu savienojumu.</translation>
 <translation id="1656489000284462475">Informācija par saņemšanu</translation>
 <translation id="1658111267661135323">TV un video</translation>
@@ -1677,6 +1678,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="365641980390710834">Ikdienas apģērbs</translation>
 <translation id="3658742229777143148">Pārskatīšana</translation>
 <translation id="3659521826520353662">Administratora definētās vietnes, kuras tiek apmeklētas un to apmeklēšanas laiks: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Šis IBAN ir saglabāts lietotnē Google maks, tādējādi varat to izmantot Google pakalpojumos.</translation>
 <translation id="3664479564786885722">Meklējiet citas iegādes iespējas citos veikalos, kuros tiek pārdots šis produkts.</translation>
 <translation id="3664782872746246217">Atslēgvārdi:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Uzziniet vairāk<ph name="LINK_END1" />.</translation>
@@ -3196,6 +3198,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6085149458302186532">Etiķešu papīrs (krāsains)</translation>
 <translation id="6087312102907839798">Saistītie meklēšanas vaicājumi</translation>
 <translation id="6089505343295765444">No Chrome vēstures dzēstās cilnes joprojām būs redzamas salīdzinājuma tabulās.</translation>
+<translation id="6091115085465716987">Lietotnes Google maks logotips</translation>
 <translation id="6091691259076781835">Ātrākiem norēķiniem saglabājiet šo CVC kodu savā ierīcē.</translation>
 <translation id="6093599771645355227">Dzeltena 1</translation>
 <translation id="6093795393556121384">Jūsu karte ir verificēta.</translation>
@@ -3812,6 +3815,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7057567173736333354">Aprakstiet attēlu</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> apstiprināja, ka <ph name="ISSUER" /> izsniedza šīs vietnes sertifikātu.</translation>
 <translation id="7058774143982824355">CSV failā saglabātu paroļu parsētāja pakalpojums</translation>
+<translation id="7062344833049251424">Lai nākamreiz veiktu maksājumu ātrāk, saglabājiet kartes datus un norēķinu adresi lietotnē Google maks.</translation>
 <translation id="706295145388601875">Chrome iestatījumos pievienojiet un pārvaldiet adreses.</translation>
 <translation id="7063157783216323487">Zaļa 2</translation>
 <translation id="7064443976734085921">Kompaktās automašīnas</translation>
@@ -4282,6 +4286,7 @@ Papildu informācija:
 <translation id="7754587126786572336">Sākot atjaunināšanu, tiks aizvērtas jūsu Chrome cilnes un lietotnes.</translation>
 <translation id="7755287808199759310">Lai atbloķētu, vēsieties pie vecāka</translation>
 <translation id="7755624218968747854">Galvenais rullis</translation>
+<translation id="7756441544371887150">Automātiski aizpildiet šīs kartes datus pirkumiem, kas tiek veikti pārlūkā Chrome, kad šī karte ir saglabāta lietotnē Google maks.</translation>
 <translation id="7758069387465995638">Iespējams, savienojumu ir bloķējis ugunsmūris vai pretvīrusu programmatūra.</translation>
 <translation id="7759147511335618829">MIDI ierīču vadība un pārprogrammēšana</translation>
 <translation id="7759809451544302770">Neobligātas</translation>
@@ -5205,6 +5210,7 @@ Papildu informācija:
 <translation id="975560348586398090">{COUNT,plural, =0{Nav}=1{1 vienums}zero{# vienumi}one{# vienums}other{# vienumi}}</translation>
 <translation id="976522784004777030">5 x 8 collas</translation>
 <translation id="977502174772294970">Kāzas</translation>
+<translation id="978750072783101994">Automātiski aizpildiet šīs kartes datus pirkumiem, kas tiek veikti pārlūkā Chromium, kad šī karte ir saglabāta lietotnē Google maks.</translation>
 <translation id="979107176848483472">Jūsu pārlūku un profilu pārvalda <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Izstādes un sarīkojumi</translation>
 <translation id="979503328401807348">Noderīgākas reklāmas</translation>

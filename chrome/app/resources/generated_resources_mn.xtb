@@ -2584,6 +2584,7 @@
 <translation id="2724841811573117416">WebRTC бүртгэлүүд</translation>
 <translation id="272488616838512378">Нэгж хөрвүүлэлт</translation>
 <translation id="2725200716980197196">Сүлжээний холболтыг дахин сэргээсэн байна.</translation>
+<translation id="2725312032345042618">Үйл явдлын түүх</translation>
 <translation id="2726776862643824793">дэлгэцийн гэрэлтүүлгийг багасгах</translation>
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" />-р зургийг хайх</translation>
 <translation id="2727633948226935816">Надад дахин битгий сануул</translation>
@@ -2925,6 +2926,7 @@
 <translation id="2950666755714083615">Намайг бүртгэнэ үү</translation>
 <translation id="2953210795988451570">Аюулгүй байдлын шинэчлэлтүүд дууслаа. Шинэ Chromebook рүү сайжруулна уу.</translation>
 <translation id="2953218713108551165"><ph name="SITE" />-д мэдэгдлийг зөвшөөрөөгүй. Танаас дараагийн удаа зочлоход тань асууна.</translation>
+<translation id="2954777802959138493">Шинэчлэгчийн төлөвийг асууж чадсангүй.</translation>
 <translation id="2955048943983973430">Google-н холбогдох үйлчилгээ</translation>
 <translation id="2956070239128776395">Хэсэг нь бүлэг дотор байрлана: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Chrome Веб дэлгүүрийн шалгах боломжгүй энэ өргөтгөлийг ашиглахын тулд хөгжүүлэгчийн горимыг асаана уу.</translation>
@@ -3375,7 +3377,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файл}}</translation>
 <translation id="3270965368676314374">Компьютероосоо зураг, хөгжим болон бусад медиагаа уншуулах, өөрчлөх эсвэл устгах</translation>
 <translation id="3275464924531706548"><ph name="HEADER" />-г хураах</translation>
-<translation id="3275778809241512831">Таны дотоод аюулгүй байдлын түлхүүр одоогоор хамгаалалтгүй байна. Үүнийг хэрэглэсэн бүх үйлчилгээнээсээ устгана уу. Асуудлыг шийдвэрлэхийн тулд аюулгүй байдлын түлхүүрийг шинэчилнэ үү.</translation>
 <translation id="3275778913554317645">Цонх хэлбэрээр нээ</translation>
 <translation id="3277214528693754078">Текстийн курсороор шилжих (caret browsing)</translation>
 <translation id="3277594800340743211">Том сүүдэр</translation>
@@ -3578,7 +3579,6 @@
 <translation id="3417835166382867856">Табуудыг хайх</translation>
 <translation id="3417836307470882032">24 цагтай цаг ашиглах</translation>
 <translation id="3418798368381485936">Та энэ бүртгэлийг ашиглан нэвтрэх боломжгүй</translation>
-<translation id="3420501302812554910">Дотоод аюулгүй байдлын түлхүүрийг шинэчлэх шаардлагатай</translation>
 <translation id="3421387094817716717">Зууван муруй нийтийн түлхүүр</translation>
 <translation id="3422989558057853751">Сүүлийн зүйлийг сонгосон. Зүйлийн сонголтыг болиулах нь сонголтын горимоос гаргана</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />-с олдсон илэрцүүд</translation>
@@ -3659,6 +3659,7 @@
 <translation id="3468298837301810372">Шошго</translation>
 <translation id="3468999815377931311">Android утас</translation>
 <translation id="3469583217479686109">Сонголтын хэрэгсэл</translation>
+<translation id="3471687177769494956">Навигацын товчлолыг засах</translation>
 <translation id="3471876058939596279">HDMI болон USB C-Төрлийн портыг нэгэн зэрэг видеонд ашиглах боломжгүй. Өөр видео порт ашиглана уу.</translation>
 <translation id="3472469028191701821">Шинэ табд нээгдэнэ</translation>
 <translation id="3473241910002674503">Таблет горимд товчлуур ашиглан нүүр лүү шилжих, буцах, аппуудын хооронд сэлгэх.</translation>
@@ -4551,6 +4552,7 @@
 <translation id="4036778507053569103">Серверээс татсан удирдамж хүчингүй байна.</translation>
 <translation id="4037084878352560732">Морь</translation>
 <translation id="403725336528835653">Эхлээд туршиж үзэх</translation>
+<translation id="4039835815168788100">"<ph name="EXTENSION_NAME" />" өргөтгөл таны хайлтын системийг <ph name="SEARCH_PROVIDER" /> болгож өөрчлөхөөр оролдсон. Доорх сонголтоо баталгаажуулна уу</translation>
 <translation id="4039966970282098406">Микрофон, камер болон бусад зүйлийн хандалтыг хянаснаар нууцлалаа удирдах</translation>
 <translation id="4040041015953651705">Орчуулах хэл</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Хуудаснаас гарах}other{Хуудаснуудаас гарах}}</translation>
@@ -6873,6 +6875,7 @@
 <translation id="5659593005791499971">И-мэйл хаяг</translation>
 <translation id="5659964844710667266">Энэ <ph name="DEVICE_TYPE" />-д нууц үг үүсгэх</translation>
 <translation id="5662513737565158057">Linux аппууд хэрхэн ажиллахыг өөрчилнө үү.</translation>
+<translation id="5663317829633858516"><ph name="EXTENSION_NAME" /> саяхан өөрчилсөн</translation>
 <translation id="5663459693447872156">Хагас өргөнд автоматаар шилжиж</translation>
 <translation id="5663653125349867535">&amp;Унших жагсаалт</translation>
 <translation id="5663918299073387939">Сайтууд хөгжим үүсгэх болон засах эсвэл төхөөрөмжийн жижиг программыг шинэчлэхийн тулд MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг ихэвчлэн хүсдэг</translation>
@@ -7094,6 +7097,7 @@
 <translation id="5828181959764767444">Нар жаргах</translation>
 <translation id="5828545842856466741">Профайл нэмэх...</translation>
 <translation id="5828633471261496623">Хэвлэж байна...</translation>
+<translation id="5829544019044013776">Таны Google Wallet дахь төлбөрийн хэрэгсэл</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" />-г нээх боломжгүй</translation>
 <translation id="5830512293931520102">Таны нууц үг шифрлэгдсэн бөгөөд хэнд ч харагдахгүй</translation>
 <translation id="5830720307094128296">Хуудсыг  ... гэх хадгалах</translation>
@@ -7658,6 +7662,7 @@
 <translation id="6212168817037875041">Дэлгэцийг унтраах</translation>
 <translation id="6212752530110374741">Имэйлийн холбоос</translation>
 <translation id="6214106213498203737">Усан будаг</translation>
+<translation id="6214157047210274853">Google Wallet-д засах</translation>
 <translation id="621470880408090483">Сайтуудад Bluetooth төхөөрөмжүүдэд холбогдохыг бүү зөвшөөр</translation>
 <translation id="6215039389782910006">{1,plural, =1{Таны нууц үгнүүдийг аюулгүй байлгахын тулд <ph name="BRAND" /> 1 минут идэвхгүй байсны дараа түгжигдэнэ}other{Таны нууц үгнүүдийг аюулгүй байлгахын тулд <ph name="BRAND" /> # минут идэвхгүй байсны дараа түгжигдэнэ}}</translation>
 <translation id="6216154119179790291">Эхний таб руу гүйлгэнэ үү</translation>
@@ -8902,6 +8907,7 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> бүлэг - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA шифрлэлттэй PKCS# 1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL сертификат, тохиргоог удирдах</translation>
+<translation id="707772989579681711">Таны өмнөх сонголт</translation>
 <translation id="7077751457066325012">Товчлуурын шууд холбооснуудыг харах болон өөрчлөх</translation>
 <translation id="7077829361966535409">Прокси тохируулгыг ашигласан энэ үед нэвтрэх хуудас ачаалагдсангүй. <ph name="GAIA_RELOAD_LINK_START" />дахин нэвтрэх оролдлого<ph name="GAIA_RELOAD_LINK_END" /> хийнэ үү. Эсвэл өөр <ph name="PROXY_SETTINGS_LINK_START" />прокси тохируулга<ph name="PROXY_SETTINGS_LINK_END" /> ашиглана уу.</translation>
 <translation id="7078120482318506217">Бүх сүлжээ</translation>
@@ -10549,6 +10555,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" />-г идэвхгүй болгох</translation>
 <translation id="8195920051450756553">Нэг товчийг дахин идэвхжүүлэхээс өмнөх саатал</translation>
 <translation id="8197673340773315084">Ажил эсвэл Хувийн зэрэг нэр эсвэл шошго нэмнэ үү</translation>
+<translation id="8198043456018523011">Өгөгдмөл хайлтын системээ баталгаажуулна уу</translation>
 <translation id="8198181050118789419">Загвар: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Табыг дамжуулж байна</translation>
 <translation id="8199300056570174101">Сүлжээ (Үйлчилгээ) болон Төхөөрөмжийн тодруулга</translation>
@@ -11301,6 +11308,7 @@
 <translation id="8703346390800944767">Зарыг алгасах</translation>
 <translation id="8703372953981978786">Энэ холбоос ажиллахгүй байна</translation>
 <translation id="8703766890819308134">Хайлтын товчлолыг харуулах</translation>
+<translation id="8704248383043944131">Товчлуурын шууд холбоосыг засах</translation>
 <translation id="8704662571571150811">Домэйнүүд</translation>
 <translation id="8705331520020532516">Сери дугаар</translation>
 <translation id="870536819717176711">Таныг одоогийн табыг Gemini-тай хуваалцахаар сонгох үед тухайн табын бүрэн агуулга, медиа, URL-г Google-д илгээнэ.</translation>
@@ -11619,6 +11627,7 @@
 <translation id="8911914282056933784">Төслүүдийг нуух</translation>
 <translation id="8912362522468806198">Google Бүртгэл</translation>
 <translation id="8912810933860534797">Автомат сканыг идэвхжүүлэх</translation>
+<translation id="8913485523736543337">Шинэчлэгч</translation>
 <translation id="8914030287343429787">Та Chrome, Android-г ашиглаагүй үедээ ч <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />-д нэвтэрч нууц үгээ хараарай</translation>
 <translation id="8914504000324227558">Chrome-г дахин эхлүүлэх</translation>
 <translation id="8915307125957890427">Таб дээр баруун талыг товшоод, "Табыг бүлэгт нэмэх"-ийг сонгоод, дараа нь "Шинэ бүлэг"-ийг сонгоно уу</translation>
@@ -11759,6 +11768,7 @@
 <translation id="8999560016882908256">Хэсгийн дүрмийн алдаа: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Дэлгэц дээрх хөдөлгөөнийг багасгасан</translation>
 <translation id="9000185763019430629">Таны <ph name="DEVICE_TYPE" />-н баруун гар талд байх хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
+<translation id="9000529821022336229">Шинэчлэгчийн ямар ч суулгалт олж чадсангүй.</translation>
 <translation id="900267527532832868">Энэ нэвтрэх түлхүүр ажиллахаа больсон. Үүнийг удахгүй <ph name="GOOGLE_PASSWORD_MANAGER" />-с устгана.</translation>
 <translation id="9003031149571024583">ПИН кодын 6-аас <ph name="NUM_DIGIT" /> дахь орныг оруулна уу. Сүүлийн орныг хасахын тулд ухраах эсвэл устгах товчийг ашиглана уу.</translation>
 <translation id="9003185744423389627">'<ph name="STATUS_TEXT" />' төлөвтэй Төхөөрөмжийн менежментийн серверийн холболт <ph name="FAILURE_TIME" />-д амжилтгүй болсон</translation>

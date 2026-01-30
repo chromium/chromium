@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Kon nie prent ontsyfer nie: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Lokalisering is gebruik, maar verstek_ligging is nie in die manifes gespesifiseer nie.</translation>
 <translation id="2576842806987913196">Daar is reeds 'n CRX-lêer met hierdie naam.</translation>
+<translation id="2743583586211388067">Toegang tot hierdie uitbreiding word onder jou organisasie se uitbreidingrisikobeleid geblokkeer.</translation>
 <translation id="2785530881066938471">Kon nie lêer '<ph name="RELATIVE_PATH" />' vir inhoudskrip laai nie. Dit is nie in UTF-8 geënkodeer nie.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (uitbreiding-ID "<ph name="EXTENSION_ID" />") word deur die administrateur geblokkeer. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Kon nie die pakket installeer nie: '<ph name="ERROR_CODE" />'</translation>

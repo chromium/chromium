@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Kuvan koodin purkaminen epäonnistui: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Lokalisaatiota käytetään, mutta default_locale ei ole määritetty luettelossa.</translation>
 <translation id="2576842806987913196">Tämän niminen CRX-tiedosto on jo olemassa.</translation>
+<translation id="2743583586211388067">Pääsy tähän laajennukseen on estetty organisaation laajennusriskikäytännön mukaisesti.</translation>
 <translation id="2785530881066938471">Sisältökomentosarjan tiedoston <ph name="RELATIVE_PATH" /> lataus epäonnistui, sillä tiedoston merkistökoodaus ei ole UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (tunnus <ph name="EXTENSION_ID" />) on järjestelmänvalvojan estämä. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Paketin <ph name="ERROR_CODE" /> asentaminen epäonnistui.</translation>

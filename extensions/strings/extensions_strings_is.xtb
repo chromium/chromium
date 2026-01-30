@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Ekki var hægt að afkóða mynd: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Staðfærsla notuð en default_locale var ekki tilgreint í upplýsingaskránni.</translation>
 <translation id="2576842806987913196">CRX-skrá með þessu heiti er þegar til staðar.</translation>
+<translation id="2743583586211388067">Aðgangur að þessari viðbót er lokaður samkvæmt viðbótaráhættustefnu fyrirtækisins þíns.</translation>
 <translation id="2785530881066938471">Ekki var hægt að hlaða skrána „<ph name="RELATIVE_PATH" />“ fyrir efnisskriftu. Hún er ekki kóðuð með UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (auðkenni viðbótar „<ph name="EXTENSION_ID" />“) er læst af kerfisstjóra. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Ekki var hægt að setja upp pakkann: „<ph name="ERROR_CODE" />“</translation>

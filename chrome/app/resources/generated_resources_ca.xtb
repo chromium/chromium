@@ -2574,6 +2574,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2724841811573117416">Registres de WebRTC</translation>
 <translation id="272488616838512378">Conversió d'unitats</translation>
 <translation id="2725200716980197196">S'ha restablert la connectivitat de la xarxa</translation>
+<translation id="2725312032345042618">Historial d'esdeveniments</translation>
 <translation id="2726776862643824793">disminueix la brillantor de la pantalla</translation>
 <translation id="272741954544380994">Cerca la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">No m'ho tornis a recordar</translation>
@@ -2915,6 +2916,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2950666755714083615">Vull registrar-me</translation>
 <translation id="2953210795988451570">Ja no hi haurà més actualitzacions de seguretat. Compra't un Chromebook nou.</translation>
 <translation id="2953218713108551165">No es permeten les notificacions per a <ph name="SITE" />. Se't tornarà a preguntar a la propera visita.</translation>
+<translation id="2954777802959138493">No s'ha pogut consultar l'estat de l'actualitzador.</translation>
 <translation id="2955048943983973430">Serveis de Google relacionats</translation>
 <translation id="2956070239128776395">Secció imbricada en grup: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Activa el mode de desenvolupador per utilitzar aquesta extensió, que Chrome Web Store no pot revisar.</translation>
@@ -3363,7 +3365,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3269689705184377744">{COUNT,plural, =1{Fitxer}other{# fitxers}}</translation>
 <translation id="3270965368676314374">Llegeix, modifica i suprimeix fotos, música i altres elements multimèdia de l'ordinador</translation>
 <translation id="3275464924531706548">Replega <ph name="HEADER" /></translation>
-<translation id="3275778809241512831">En aquests moments la clau de seguretat interna no és segura. Suprimeix-la dels serveis en què l'hagis fet servir. Per resoldre aquest problema, restableix la clau de seguretat.</translation>
 <translation id="3275778913554317645">Obre com a finestra</translation>
 <translation id="3277214528693754078">Navega amb un cursor de text (navegació amb cursor de text)</translation>
 <translation id="3277594800340743211">Ombra gran</translation>
@@ -3566,7 +3567,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3417835166382867856">Cerca pestanyes</translation>
 <translation id="3417836307470882032">Hora militar</translation>
 <translation id="3418798368381485936">No pots iniciar la sessió amb aquest compte</translation>
-<translation id="3420501302812554910">Cal restablir la clau de seguretat interna</translation>
 <translation id="3421387094817716717">Clau pública de la corba el·líptica</translation>
 <translation id="3422989558057853751">Darrer element seleccionat. Si el desselecciones, sortiràs del mode de selecció.</translation>
 <translation id="3423111258700187173">Resultats trobats a <ph name="FOLDER_TITLE" /></translation>
@@ -3647,6 +3647,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telèfon Android</translation>
 <translation id="3469583217479686109">Eina de selecció</translation>
+<translation id="3471687177769494956">Edita la drecera de navegació</translation>
 <translation id="3471876058939596279">Els ports HDMI i USB tipus C no es poden utilitzar per a vídeo simultàniament. Utilitza un altre port de vídeo.</translation>
 <translation id="3472469028191701821">S'obre en una pestanya nova</translation>
 <translation id="3473241910002674503">Navega fins a la pàgina d'inici, ves enrere i canvia d'aplicació amb els botons en mode de tauleta.</translation>
@@ -7079,6 +7080,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5828181959764767444">Posta de sol</translation>
 <translation id="5828545842856466741">Afegeix un perfil...</translation>
 <translation id="5828633471261496623">S'està imprimint...</translation>
+<translation id="5829544019044013776">Les teves formes de pagament a Google Wallet</translation>
 <translation id="5830205393314753525">No es pot obrir <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">La contrasenya està encriptada i no l'ha vist mai ningú</translation>
 <translation id="5830720307094128296">Anomena i desa la pà&amp;gina...</translation>
@@ -7643,6 +7645,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6212168817037875041">Desactiva la pantalla</translation>
 <translation id="6212752530110374741">Envia l'enllaç per correu electrònic</translation>
 <translation id="6214106213498203737">Aquarel·la</translation>
+<translation id="6214157047210274853">Edita a Google Wallet</translation>
 <translation id="621470880408090483">No permetis que els llocs web es connectin a dispositius Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Per protegir les teves contrasenyes, <ph name="BRAND" /> es bloqueja després d'1 minut d'inactivitat}other{Per protegir les teves contrasenyes, <ph name="BRAND" /> es bloqueja després de # minuts d'inactivitat}}</translation>
 <translation id="6216154119179790291">Desplaça't fins a la primera pestanya</translation>
@@ -11289,6 +11292,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8703346390800944767">Omet l'anunci</translation>
 <translation id="8703372953981978786">Aquest enllaç no funciona</translation>
 <translation id="8703766890819308134">Mostra les dreceres de cerca</translation>
+<translation id="8704248383043944131">Edita les tecles de drecera</translation>
 <translation id="8704662571571150811">Dominis</translation>
 <translation id="8705331520020532516">Número de sèrie</translation>
 <translation id="870536819717176711">Quan decideixes compartir la pestanya actual amb Gemini, s'envien a Google l'URL, el contingut multimèdia i tot el contingut de la pestanya.</translation>
@@ -11609,6 +11613,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8911914282056933784">Amaga els projectes</translation>
 <translation id="8912362522468806198">Compte de Google</translation>
 <translation id="8912810933860534797">Activa la cerca automàtica</translation>
+<translation id="8913485523736543337">Actualitzador</translation>
 <translation id="8914030287343429787">Inicia la sessió a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> per veure les teves contrasenyes encara que no estiguis utilitzant Chrome o Android</translation>
 <translation id="8914504000324227558">Torna a iniciar Chrome</translation>
 <translation id="8915307125957890427">Fes clic amb el botó dret en una pestanya i selecciona Afegeix una pestanya al grup. A continuació, selecciona Grup nou.</translation>
@@ -11749,6 +11754,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8999560016882908256">Error de sintaxi de la secció: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Moviment reduït a la pantalla</translation>
 <translation id="9000185763019430629">Toca el sensor d'empremtes digitals que hi ha al costat dret del teu <ph name="DEVICE_TYPE" />. Les dades de la teva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">No s'ha trobat cap instal·lació de l'actualitzador.</translation>
 <translation id="900267527532832868">Aquesta clau d'accés ja no funciona. Aviat se suprimirà del <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Introdueix el dígit <ph name="NUM_DIGIT" /> del PIN de 6 dígits. Prem la tecla de retrocés o la de supressió per suprimir l'últim dígit.</translation>
 <translation id="9003185744423389627">La connexió al servidor de gestió de dispositius ha fallat amb l'estat "<ph name="STATUS_TEXT" />" a les <ph name="FAILURE_TIME" /></translation>

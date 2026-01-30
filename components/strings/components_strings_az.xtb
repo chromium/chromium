@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">MacOS Keychain ilə Parol Menecerindən istifadə üçün Chromium-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="1652887625750064647">AI ən yaxşı uyğunluq</translation>
 <translation id="1653465303147789530">Tətbiqləri dəyişmədən <ph name="PAYMENT_METHOD" /> ilə ödəniş edin</translation>
+<translation id="1655159794885649984">Bu saytda kontenti sürüşdürməyə icazə verilmir</translation>
 <translation id="1656024727720460136">Chrome bu səhifənin daha rahat oxunması üçün onu sadələşdirib. Chrome güvənli bağlantı üzərindən ilkin səhifəni açdı.</translation>
 <translation id="1656489000284462475">Götürmə</translation>
 <translation id="1658111267661135323">TV və video</translation>
@@ -1674,6 +1675,7 @@
 <translation id="365641980390710834">Gündəlik geyim</translation>
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3659521826520353662">Administratorun müəyyən etdiyi hansı veb-saytlara nə zaman daxil olunur: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Google xidmətlərində istifadə edə bilməyiniz üçün bu IBAN Google Pulqabıda yadda saxlanılır.</translation>
 <translation id="3664479564786885722">Bu məhsulu satan digər mağazalarda digər alış seçimlərini axtarın.</translation>
 <translation id="3664782872746246217">Açar sözlər:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Ətraflı məlumat<ph name="LINK_END1" /></translation>
@@ -3194,6 +3196,7 @@
 <translation id="6085149458302186532">Etiket (rəngli)</translation>
 <translation id="6087312102907839798">Əlaqəli axtarışlar</translation>
 <translation id="6089505343295765444">Chrome tarixçənizdən sildiyiniz tablar yenə də müqayisə cədvəllərində görünəcək</translation>
+<translation id="6091115085465716987">Google Pulqabı loqosu</translation>
 <translation id="6091691259076781835">Daha sürətli ödəmə üçün bu CVC-ni cihazınızda yadda saxlayın</translation>
 <translation id="6093599771645355227">Sarı 1</translation>
 <translation id="6093795393556121384">Kartlarınız doğrulanıb</translation>
@@ -3810,6 +3813,7 @@
 <translation id="7057567173736333354">Şəkli təsvir edin</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> təsdiq edir ki, <ph name="ISSUER" /> bu veb saytın sertifikatını təmin edib.</translation>
 <translation id="7058774143982824355">CSV Parol Təhlil Xidməti</translation>
+<translation id="7062344833049251424">Növbəti dəfə daha sürətli ödəniş etmək üçün kart və ödəmə ünvanını Google Pulqabıda yadda saxlayın</translation>
 <translation id="706295145388601875">Chrome ayarlarında ünvanlar əlavə edin və idarə edin</translation>
 <translation id="7063157783216323487">Yaşıl 2</translation>
 <translation id="7064443976734085921">Kompakt avtomobillər</translation>
@@ -4279,6 +4283,7 @@
 <translation id="7754587126786572336">Güncəllənmə başladıqda Chrome tabları və tətbiqlər bağlanacaq</translation>
 <translation id="7755287808199759310">Valideyniniz kilidi aça bilər</translation>
 <translation id="7755624218968747854">Əsas Rulon</translation>
+<translation id="7756441544371887150">Google Pulqabıda yadda saxlanıldıqda Chrome-da edilən satınalmalar üçün bu kartı avtomatik doldurun</translation>
 <translation id="7758069387465995638">Qoruyucu divar və ya antivirus proqramı bağlantını blok etmiş ola bilər.</translation>
 <translation id="7759147511335618829">MIDI cihaz idarəetməsi/təkrar proqramlaşdırma</translation>
 <translation id="7759809451544302770">İstəyə görə</translation>
@@ -5202,6 +5207,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{Yoxdur}=1{1 element}other{# element}}</translation>
 <translation id="976522784004777030">5 x 8 düym</translation>
 <translation id="977502174772294970">Toy mərasimləri</translation>
+<translation id="978750072783101994">Google Pulqabıda yadda saxlanıldıqda Chromium-da edilən satınalmalar üçün bu kartı avtomatik doldurun</translation>
 <translation id="979107176848483472">Brauzer və profili <ph name="DOMAIN" /> idarə edir</translation>
 <translation id="979189555234810423">Sərgi və toplantılar</translation>
 <translation id="979503328401807348">Digər faydalı reklamlar</translation>

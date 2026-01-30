@@ -277,7 +277,6 @@
 <translation id="4023601594785368013">زبان اصلی: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">‏پیوندها را از هر برنامه‌ای در Chromium باز کنید. همچنین برای دسترسی آسان، Chromium به نوار وظیفه شما سنجاق می‌شود.</translation>
 <translation id="4036079820698952681">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chromium کمک کنید</translation>
-<translation id="4039097928859803404">میان‌برهای «حالت هوشواره‌ای» همیشه نشان داده شوند</translation>
 <translation id="4050175100176540509">بهبودهای امنیتی مهم و ویژگی‌های جدید در جدیدترین نسخه در دسترس است.</translation>
 <translation id="4055805654398742145">مدیر گذرواژه</translation>
 <translation id="4061696872429826774">‏برنامه‌ای دیگر در رایانه شما یک افزونه اضافه کرده است که ممکن است نحوه کارکرد Chromium را تغییر دهد.
@@ -372,6 +371,7 @@
 <translation id="5289287148052354622">‏دریافت برنامه Chromium</translation>
 <translation id="5294316920224716406">‏هنگام مرور «درحالت ناشناس»، Chromium قبل‌از اینکه سایت را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
 <translation id="5313228254328109263">‏سرویس داخلی به‌روزرسان Chromium</translation>
+<translation id="5346059693449184483">در فکر چه هستید؟</translation>
 <translation id="5346389065299425353">جستجویتان را با افزودن چند زبانه، فایل، و ابزار عمیق‌تر کنید</translation>
 <translation id="5352264705793813212">‏Chromium چند توصیه ایمنی برای بررسی پیدا کرد</translation>
 <translation id="5352361688875342522">‏دیگر نمایه‌های Chromium</translation>
@@ -481,6 +481,7 @@
 <translation id="6450948450282634257">‏با بارگیری Chromium در تلفنتان، قیمت‌ها را پیگیری کنید و برای کاهش قیمت در هر سایتی هشدار دریافت کنید</translation>
 <translation id="645458117210240797">‏خاموش • Chromium نمی‌تواند منبع این افزونه را تأیید کند</translation>
 <translation id="6455857529632101747">‏به نمایه‌های Chromium خوش‌آمدید</translation>
+<translation id="6460614424172581323">‏دفعه بعد که Chromium را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای استفاده از گروه‌های زبانه خواهید دید.</translation>
 <translation id="6466344609055215035">‏برداشتن حساب از Chromium</translation>
 <translation id="6475912303565314141">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="648319183876919572">«مرور ایمن پیشرفته» کارهای بیشتری برای محافظت از شما درمقابل وب‌سایت‌ها و بارگیری‌های خطرناک انجام می‌دهد</translation>
@@ -609,7 +610,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7872446069773932638">درحال بارگیری… <ph name="SECONDS" /> ثانیه باقی مانده است</translation>
 <translation id="7873537467422636035">‏اگر گذرعبارت را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chromium ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" /></translation>
 <translation id="7877212753140190672">پرسش درباره این تصویر</translation>
-<translation id="7887929410013642057">میان‌برهای «حالت هوشواره‌ای» همیشه نشان داده شوند</translation>
 <translation id="7888981273428720788">‏تنظیم Chromium به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="7934340546140346950">‏‫Chromium اتصال‌های ناامن را درصورت امکان به‌طور خودکار به HTTPS ارتقا می‌دهد</translation>
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
@@ -626,6 +626,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8086881907087796310">نصب انجام نشد زیرا رایانه شما با حداقل شرایط سخت‌افزاری مطابقت ندارد.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">‏Chromium برای این سایت به اجازه مکان نیاز دارد</translation>
+<translation id="8107060931443639922">‏دفعه بعد که Chromium را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای فعال کردن هشدارهای ردگیری قیمت خواهید دید.</translation>
 <translation id="8118331347066725040">درباره جستجو با «لنز»، بازخورد ارسال کنید</translation>
 <translation id="8133124826068723441">‏ChromiumOS نتوانست داده‌هایتان را همگام‌سازی کند زیرا «همگام‌سازی» برای دامنه شما دردسترس نیست.</translation>
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
@@ -634,6 +635,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8177472873527554730">محتوای موردنظر در صفحه پیدا نشد</translation>
 <translation id="8200109504272824693">‏برای استفاده از داده‌های Chromium و ذخیره کردن آن‌ها در حسابتان (<ph name="USER_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
 <translation id="8221491193165283816">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان بفرستد، اینجا را کلیک کنید.</translation>
+<translation id="8223142476690844338">سلام <ph name="USER_NAME" />، در فکر چه هستید؟</translation>
 <translation id="8223363452568144035">‏برای استفاده از دوربین، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chromium دسترسی دهید</translation>
 <translation id="8232193495299001329">‏‫Chromium نمی‌تواند منبع این افزونه را تأیید کند و این افزونه ممکن است ناامن باشد. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما را (ازجمله اطلاعات شخصی) در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="8248265253516264921">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
@@ -702,6 +704,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="897581876605952338">‏نشان‌واره Chromium Enterprise</translation>
 <translation id="8981150672034878610">‏‫Chromium شروع نشد، زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. ‫Chromium را بازراه‌اندازی کنید.</translation>
 <translation id="8988036198400390003">‏مدیریت نمایه‌های Chromium</translation>
+<translation id="9003988359820989654">‏باز کردن Chromium هنگام راه‌اندازی رایانه</translation>
 <translation id="9019929317751753759">‏برای ایمن‌تر کردن Chromium، افزونه زیر را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد، غیرفعال کردیم.</translation>
 <translation id="904366664621834601">‏‫Chromium این بارگیری را مسدود کرد زیرا فایل بایگانی حاوی فایل‌های دیگری است که ممکن است بدافزار باشد</translation>
 <translation id="9062666675513499497">‏ورود به سیستم Chromium هنگام وارد شدن به سیستم دیگر سرویس‌های Google</translation>

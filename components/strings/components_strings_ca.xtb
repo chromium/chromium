@@ -421,6 +421,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1652862280638399816">Per utilitzar el gestor de contrasenyes amb el clauer de macOS, reinicia Chromium i permet l'accés al clauer. Les pestanyes es tornaran a obrir després de reiniciar.</translation>
 <translation id="1652887625750064647">Millor coincidència de la IA</translation>
 <translation id="1653465303147789530">Paga amb <ph name="PAYMENT_METHOD" /> sense canviar d'aplicació</translation>
+<translation id="1655159794885649984">No es permet arrossegar contingut en aquest lloc web</translation>
 <translation id="1656024727720460136">Chrome ha simplificat aquesta pàgina perquè sigui més fàcil de llegir. A més, ha recuperat la pàgina original amb una connexió segura.</translation>
 <translation id="1656489000284462475">Recollida</translation>
 <translation id="1658111267661135323">Televisió i vídeo</translation>
@@ -1678,6 +1679,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="365641980390710834">Moda informal</translation>
 <translation id="3658742229777143148">Revisió</translation>
 <translation id="3659521826520353662">Quins llocs web definits per l'administrador es visiten i quan: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Aquest IBAN s'ha desat a Google Wallet perquè el puguis utilitzar en tots els serveis de Google.</translation>
 <translation id="3664479564786885722">Cerca més opcions de compra en altres botigues que venen aquest producte.</translation>
 <translation id="3664782872746246217">Paraules clau:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Més informació<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6085149458302186532">Etiquetes (en color)</translation>
 <translation id="6087312102907839798">Cerques relacionades</translation>
 <translation id="6089505343295765444">Les pestanyes que suprimeixis de l'historial de Chrome es continuaran mostrant a les taules de comparació</translation>
+<translation id="6091115085465716987">Logotip de Google Wallet</translation>
 <translation id="6091691259076781835">Per pagar ràpidament, desa aquest CVC al dispositiu</translation>
 <translation id="6093599771645355227">Groc 1</translation>
 <translation id="6093795393556121384">La targeta s'ha verificat</translation>
@@ -3814,6 +3817,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7057567173736333354">Descriu la imatge</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ha verificat que <ph name="ISSUER" /> ha emès el certificat d'aquest lloc web.</translation>
 <translation id="7058774143982824355">Servei d'anàlisi de contrasenyes de CSV</translation>
+<translation id="7062344833049251424">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta i l'adreça de facturació a Google Wallet</translation>
 <translation id="706295145388601875">Afegeix i gestiona adreces a la configuració de Chrome</translation>
 <translation id="7063157783216323487">Verd 2</translation>
 <translation id="7064443976734085921">Cotxes compactes</translation>
@@ -4284,6 +4288,7 @@ Detalls addicionals:
 <translation id="7754587126786572336">Les pestanyes i les aplicacions de Chrome es tancaran quan comenci l'actualització</translation>
 <translation id="7755287808199759310">El teu pare o mare et poden desbloquejar el lloc</translation>
 <translation id="7755624218968747854">Corró principal</translation>
+<translation id="7756441544371887150">Emplena automàticament aquesta targeta per a les compres fetes a Chrome quan s'hagi desat a Google Wallet</translation>
 <translation id="7758069387465995638">És possible que l'antivirus o el tallafoc hagi bloquejat la connexió.</translation>
 <translation id="7759147511335618829">Control i reprogramació disp. MIDI</translation>
 <translation id="7759809451544302770">Opcional</translation>
@@ -5206,6 +5211,7 @@ Detalls addicionals:
 <translation id="975560348586398090">{COUNT,plural, =0{Cap}=1{1 element}other{# elements}}</translation>
 <translation id="976522784004777030">5 x 8 polzades</translation>
 <translation id="977502174772294970">Casaments</translation>
+<translation id="978750072783101994">Emplena automàticament aquesta targeta per a les compres fetes a Chromium quan s'hagi desat a Google Wallet</translation>
 <translation id="979107176848483472"><ph name="DOMAIN" /> gestiona el navegador i el perfil</translation>
 <translation id="979189555234810423">Exposicions i convencions</translation>
 <translation id="979503328401807348">Anuncis més útils</translation>

@@ -421,6 +421,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1652862280638399816">Če želite Googlovega upravitelja gesel uporabljati s shrambo poverilnic sistema macOS, Keychain, znova zaženite Chromium in omogočite dostop do shrambe poverilnic Keychain. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="1652887625750064647">Najboljše ujemanje z umetno inteligenco</translation>
 <translation id="1653465303147789530">Plačujte s storitvijo <ph name="PAYMENT_METHOD" /> brez preklapljanja aplikacij</translation>
+<translation id="1655159794885649984">Vlečenje vsebine na tem spletnem mestu ni dovoljeno</translation>
 <translation id="1656024727720460136">Chrome je prilagodil to stran za lažje branje. Chrome je prenesel izvirno stran prek varne povezave.</translation>
 <translation id="1656489000284462475">Prevzem</translation>
 <translation id="1658111267661135323">TV in videoposnetki</translation>
@@ -1678,6 +1679,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="365641980390710834">Oblačila za vsak dan</translation>
 <translation id="3658742229777143148">Različica</translation>
 <translation id="3659521826520353662">Katera spletna mesta, ki jih je določil skrbnik, so obiskana in kdaj: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Ta številka IBAN je shranjena v Google Denarnici in jo lahko uporabljate v Googlovih storitvah.</translation>
 <translation id="3664479564786885722">Poiščite več možnosti nakupa v drugih trgovinah, ki prodajajo ta izdelek.</translation>
 <translation id="3664782872746246217">Ključne besede:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Več o tem<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6085149458302186532">Labels (Colored)</translation>
 <translation id="6087312102907839798">Sorodna iskanja</translation>
 <translation id="6089505343295765444">Zavihki, ki jih izbrišete iz zgodovine uporabe Chroma, bodo še vedno prikazani v primerjalnih tabelah</translation>
+<translation id="6091115085465716987">Logotip Google Denarnice</translation>
 <translation id="6091691259076781835">Za hitrejši zaključek nakupa shranite to kodo CVC v napravi</translation>
 <translation id="6093599771645355227">Rumena 1</translation>
 <translation id="6093795393556121384">Vaša kartica je preverjena</translation>
@@ -3814,6 +3817,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7057567173736333354">Opišite sliko</translation>
 <translation id="7058163556978339998">Brskalnik <ph name="BROWSER" /> je preveril, ali je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="7058774143982824355">Storitev razčlenjevanja gesel CSV</translation>
+<translation id="7062344833049251424">Če želite naslednjič hitreje plačati, shranite kartico in naslov za izstavitev računa v Google Denarnici</translation>
 <translation id="706295145388601875">Dodajte in upravljajte naslove v Chromovih nastavitvah.</translation>
 <translation id="7063157783216323487">Zelena 2</translation>
 <translation id="7064443976734085921">Manjši družinski avtomobili</translation>
@@ -4284,6 +4288,7 @@ Dodatne podrobnosti:
 <translation id="7754587126786572336">Zavihki in aplikacije v Chromu se bodo ob začetku posodobitve zaprli.</translation>
 <translation id="7755287808199759310">Starš ga lahko odblokira</translation>
 <translation id="7755624218968747854">Glavni kolut</translation>
+<translation id="7756441544371887150">Samodejno izpolnjevanje te kartice za nakupe v Chromu, ko je shranjena v Google Denarnici</translation>
 <translation id="7758069387465995638">Povezavo je morda blokiral požarni zid ali protivirusni program.</translation>
 <translation id="7759147511335618829">Upravljanje in reprogramiranje naprav MIDI</translation>
 <translation id="7759809451544302770">Izbirno</translation>
@@ -5207,6 +5212,7 @@ Dodatne podrobnosti:
 <translation id="975560348586398090">{COUNT,plural, =0{Brez}=1{1 element}one{# element}two{# elementa}few{# elementi}other{# elementov}}</translation>
 <translation id="976522784004777030">5 x 8 palcev</translation>
 <translation id="977502174772294970">Poroke</translation>
+<translation id="978750072783101994">Samodejno izpolnjevanje te kartice za nakupe v Chromiumu, ko je shranjena v Google Denarnici</translation>
 <translation id="979107176848483472">Vaš brskalnik in profil upravlja <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Sejmi in konference</translation>
 <translation id="979503328401807348">Uporabnejši oglasi</translation>

@@ -421,6 +421,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1652862280638399816">Para magamit ang Password Manager sa macOS Keychain, ilunsad ulit ang Chromium at payagan ang access sa Keychain. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
 <translation id="1652887625750064647">Pinakamahusay na Tugma ng AI</translation>
 <translation id="1653465303147789530">Magbayad gamit ang <ph name="PAYMENT_METHOD" /> nang hindi lumilipat ng app</translation>
+<translation id="1655159794885649984">Hindi pinapayagan ang pag-drag ng content sa site na ito</translation>
 <translation id="1656024727720460136">Pinasimple ng Chrome ang page na ito para mas madali itong mabasa. Nakuha ng Chrome ang orihinal na page sa pamamagitan ng secure na koneksyon.</translation>
 <translation id="1656489000284462475">I-pick up</translation>
 <translation id="1658111267661135323">TV at Video</translation>
@@ -1678,6 +1679,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="365641980390710834">Casual na Kasuotan</translation>
 <translation id="3658742229777143148">Rebisyon</translation>
 <translation id="3659521826520353662">Aling mga website na tinukoy ng administrator ang binisita at kailan: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Na-save ang IBAN na ito sa Google Wallet para magamit mo ito sa mga serbisyo ng Google.</translation>
 <translation id="3664479564786885722">Maghanap pa ng mga opsyon sa pagbili mula sa iba pang store na nagbebenta ng produktong ito.</translation>
 <translation id="3664782872746246217">Mga Keyword:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Matuto pa<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6085149458302186532">Mga Label (May Kulay)</translation>
 <translation id="6087312102907839798">Mga kaugnay na paghahanap</translation>
 <translation id="6089505343295765444">Lalabas pa rin sa iyong mga talahanayan sa paghahambing ang mga tab na na-delete mo sa iyong history sa Chrome</translation>
+<translation id="6091115085465716987">Logo ng Google Wallet</translation>
 <translation id="6091691259076781835">Para sa mas mabilis na pag-checkout, i-save ang CVC na ito sa iyong device</translation>
 <translation id="6093599771645355227">Dilaw 1</translation>
 <translation id="6093795393556121384">Na-verify ang iyong card</translation>
@@ -3814,6 +3817,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7057567173736333354">Ilarawan ang iyong larawan</translation>
 <translation id="7058163556978339998">Na-verify ng <ph name="BROWSER" /> na ang <ph name="ISSUER" /> ang nag-isyu ng certificate na ito ng website.</translation>
 <translation id="7058774143982824355">Serbisyong Pang-parse ng CSV na Password</translation>
+<translation id="7062344833049251424">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card at billing address sa Google Wallet</translation>
 <translation id="706295145388601875">Magdagdag at mamahala ng mga address sa mga setting ng Chrome</translation>
 <translation id="7063157783216323487">Berde 2</translation>
 <translation id="7064443976734085921">Mga Compact na Kotse</translation>
@@ -4284,6 +4288,7 @@ Mga karagdagang detalye:
 <translation id="7754587126786572336">Magsasara ang iyong mga tab ng Chrome at Chrome app kapag nagsimula ang pag-update</translation>
 <translation id="7755287808199759310">Maaari itong i-unblock ng iyong magulang para sa iyo</translation>
 <translation id="7755624218968747854">Pangunahing Rolyo</translation>
+<translation id="7756441544371887150">I-autofill ang card na ito para sa mga pagbiling ginawa sa Chrome kapag na-save ito sa Google Wallet</translation>
 <translation id="7758069387465995638">Maaaring na-block ng firewall o antivirus software ang koneksyon.</translation>
 <translation id="7759147511335618829">Kontrol / reprogram: MIDI device</translation>
 <translation id="7759809451544302770">Opsyonal</translation>
@@ -5207,6 +5212,7 @@ Mga karagdagang detalye:
 <translation id="975560348586398090">{COUNT,plural, =0{Wala}=1{1 item}one{# item}other{# na item}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>
 <translation id="977502174772294970">Mga Kasalan</translation>
+<translation id="978750072783101994">I-autofill ang card na ito para sa mga pagbiling ginawa sa Chromium kapag na-save ito sa Google Wallet</translation>
 <translation id="979107176848483472">Pinapamahalaan ng <ph name="DOMAIN" /> ang iyong browser at profile</translation>
 <translation id="979189555234810423">Mga Expo at Convention</translation>
 <translation id="979503328401807348">Mga mas kapaki-pakinabang na ad</translation>

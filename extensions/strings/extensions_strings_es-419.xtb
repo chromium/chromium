@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">No se pudo decodificar la imagen "<ph name="IMAGE_NAME" />".</translation>
 <translation id="2350172092385603347">Se utiliza localización, pero default_locale no se especificó en el manifiesto.</translation>
 <translation id="2576842806987913196">Ya existe una archivo CRX con este nombre.</translation>
+<translation id="2743583586211388067">El acceso a esta extensión está bloqueado conforme a la política de riesgo de extensiones de tu organización.</translation>
 <translation id="2785530881066938471">No se pudo cargar el archivo "<ph name="RELATIVE_PATH" />" para la secuencia de comandos del contenido. No está codificado en UTF-8.</translation>
 <translation id="2903070246402204397">El administrador bloqueó la extensión <ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">No se pudo instalar el paquete: '<ph name="ERROR_CODE" />'</translation>

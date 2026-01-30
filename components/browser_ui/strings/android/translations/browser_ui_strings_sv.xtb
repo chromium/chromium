@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Du kan begära att se webbplatsernas datorversion</translation>
 <translation id="1085696779717592361">Använd Chrome som standard</translation>
 <translation id="113098737392899175">Navigera på sidor med en textmarkör när ett tangentbord är anslutet</translation>
+<translation id="1149644372535087155">Spara lösenord i Chrome</translation>
 <translation id="1178015372320901893">Ark på nedre delen av skärmen för Mina genvägar</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
@@ -172,6 +173,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2682367912565197520">Ta bort sparad zoomnivå</translation>
 <translation id="2683434792633810741">Vill du radera och återställa?</translation>
 <translation id="2685514716378236873">Tillåts ej</translation>
+<translation id="2710883118091822664">Logga in för att fortsätta smidigt på alla dina enheter</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
 <translation id="2726059656860238749">Starta Chrome med adressfältet i fokus för att minska starttiden på mindre avancerade enheter.</translation>
@@ -199,6 +201,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3004438526346162184">Webbplatser kan använda den här funktionen för att hantera fönster på alla skärmar</translation>
 <translation id="3008272652534848354">Återställ behörigheter</translation>
 <translation id="301521992641321250">Blockerades automatiskt</translation>
+<translation id="3026311960038210">Temasamlingar</translation>
 <translation id="3064871050034234884">Webbplatser får spela upp ljud</translation>
 <translation id="3065787901655140044">Avancerat skydd är aktiverat</translation>
 <translation id="3069226013421428034">Tillåt tredjepartsinloggning på en viss webbplats.</translation>
@@ -341,6 +344,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="4478158430052450698">Gör det enklare att anpassa zoomen för olika webbplatser</translation>
 <translation id="4479647676395637221">Fråga innan webbplatser tillåts att använda kameran (rekommenderas)</translation>
 <translation id="4505788138578415521">Webbadressen har utökats</translation>
+<translation id="4523472416386354622">Logga in när du vill komma igång</translation>
 <translation id="4534723447064627427">Om du vill ge <ph name="APP_NAME" /> åtkomst till mikrofonen måste du även aktivera mikrofonen i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Stäng av mikrofonen</translation>
 <translation id="4570913071927164677">Information</translation>
@@ -397,6 +401,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="512938610812707830">Arket på nedre delen av skärmen för temasamlingar för utseende på sidan Ny flik har öppnats över hela skärmen</translation>
 <translation id="5137460097045297858">Arket på nedre delen av skärmen för flödet Upptäck har öppnats över halva skärmen</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sänkt pris på öppna flikar}other{Sänkta priser på öppna flikar}}</translation>
+<translation id="5150048675001754041">Logga in snabbt och enkelt på webbplatser och i appar</translation>
 <translation id="5186036860380548585">Alternativet visas högt upp på skärmen</translation>
 <translation id="5197729504361054390">Kontakterna du väljer delas med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Arket på nedre delen av skärmen för att anpassa sidan ny flik har stängts</translation>
@@ -566,6 +571,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6980861169612950611">Vill du radera webbplatsdata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6991142177939282156">Tillåts • Använder ungefärlig</translation>
+<translation id="6992014788289743568">Öka säkerheten och skydda din data genom att kontrollera dina lösenord</translation>
 <translation id="6992289844737586249">Fråga innan webbplatser tillåts att använda mikrofonen (rekommenderas)</translation>
 <translation id="7000754031042624318">Inaktiverad i Android-inställningarna</translation>
 <translation id="702275896380648118">Den här webbplatsen avgör vad du gillar och föreslår sedan annonser till andra webbplatser. Webbplatsen hämtar dessutom dina annonsämnen från Chrome för att visa mer relevanta annonser för dig.</translation>

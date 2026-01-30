@@ -3377,7 +3377,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
 <translation id="3270965368676314374">讀取、變更及刪除您電腦中的相片、音樂及其他媒體</translation>
 <translation id="3275464924531706548">收合<ph name="HEADER" /></translation>
-<translation id="3275778809241512831">您目前的內部安全密鑰並不安全。請將其從所有您使用此密鑰的服務中移除。如要解決此問題，請重設安全密鑰。</translation>
 <translation id="3275778913554317645">在視窗中開啟</translation>
 <translation id="3277214528693754078">透過文字游標導覽 (鍵盤瀏覽)</translation>
 <translation id="3277594800340743211">大型陰影</translation>
@@ -3580,7 +3579,6 @@
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3417836307470882032">24 小時制</translation>
 <translation id="3418798368381485936">你無法使用此帳戶登入</translation>
-<translation id="3420501302812554910">必須重設內部安全密鑰</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3422989558057853751">呢個係最後一個揀選嘅項目，取消揀選之後就會結束揀選模式</translation>
 <translation id="3423111258700187173">在「<ph name="FOLDER_TITLE" />」中找到的結果</translation>

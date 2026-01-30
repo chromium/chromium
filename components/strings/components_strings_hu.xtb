@@ -421,6 +421,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1652862280638399816">Ha a Jelszókezelőt a macOS Keychain szolgáltatásával szeretné használni, indítsa újra a Chromiumot, és engedélyezze a Keychain-hozzáférést. Megnyitott lapjai az újraindítás után újra meg fognak nyílni.</translation>
 <translation id="1652887625750064647">AI szerinti legjobb egyezés</translation>
 <translation id="1653465303147789530">Alkalmazásváltás nélkül fizethet a(z) <ph name="PAYMENT_METHOD" /> szolgáltatással</translation>
+<translation id="1655159794885649984">Nem engedélyezett a tartalom húzása ezen a webhelyen</translation>
 <translation id="1656024727720460136">A Chrome egyszerűsítette ezt az oldalt, hogy könnyebben olvasható legyen. Az eredeti oldalt biztonságos kapcsolaton keresztül kérte le.</translation>
 <translation id="1656489000284462475">Átvétel</translation>
 <translation id="1658111267661135323">TV és videó</translation>
@@ -1676,6 +1677,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="365641980390710834">Alkalmi viselet</translation>
 <translation id="3658742229777143148">Ellenőrzés</translation>
 <translation id="3659521826520353662">Mely, rendszergazda által meghatározott webhelyek lettek felkeresve, és mikor: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Az IBAN el lett mentve a Google Walletbe, így használhatja a Google-szolgáltatásokban.</translation>
 <translation id="3664479564786885722">További vásárlási lehetőségek keresése más, ezt a terméket értékesítő üzleteknél.</translation>
 <translation id="3664782872746246217">Kulcsszavak:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />További információ.<ph name="LINK_END1" /></translation>
@@ -3195,6 +3197,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6085149458302186532">Címkék (színes)</translation>
 <translation id="6087312102907839798">Kapcsolódó keresések</translation>
 <translation id="6089505343295765444">A Chrome-előzményekből törölt lapok továbbra is meg fognak jelenni az összehasonlító táblázatokban</translation>
+<translation id="6091115085465716987">Google Wallet-logó</translation>
 <translation id="6091691259076781835">A gyorsabb fizetés érdekében mentheti ezt a CVC-t az eszközére.</translation>
 <translation id="6093599771645355227">Sárga 1</translation>
 <translation id="6093795393556121384">Kártyáját ellenőriztük</translation>
@@ -3811,6 +3814,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7057567173736333354">Írja le a képet</translation>
 <translation id="7058163556978339998">A <ph name="BROWSER" /> ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="7058774143982824355">Jelszavakat tartalmazó CSV-fájlt elemző szolgáltatás</translation>
+<translation id="7062344833049251424">A következő alkalommal gyorsabban fizethet, ha kártyáját és számlázási címét a Google Walletbe menti</translation>
 <translation id="706295145388601875">Címek hozzáadása és kezelése a Chrome-beállítások között</translation>
 <translation id="7063157783216323487">Zöld 2</translation>
 <translation id="7064443976734085921">Kompakt autók</translation>
@@ -4281,6 +4285,7 @@ További részletek:
 <translation id="7754587126786572336">A Chrome-lapok és -alkalmazások bezárulnak a frissítés elindításakor</translation>
 <translation id="7755287808199759310">A letiltást a szülő oldhatja fel</translation>
 <translation id="7755624218968747854">Elsődleges tekercs</translation>
+<translation id="7756441544371887150">Automatikusan kitöltheti ezt a kártyát a Chrome-ban végzett vásárlások során, ha elmenti a Google Walletbe</translation>
 <translation id="7758069387465995638">Előfordulhat, hogy a tűzfal vagy a vírusirtó szoftver tiltotta le a kapcsolatot.</translation>
 <translation id="7759147511335618829">MIDI-eszköz vezérlése/átprogramozása</translation>
 <translation id="7759809451544302770">Nem kötelező</translation>
@@ -5206,6 +5211,7 @@ További részletek:
 <translation id="975560348586398090">{COUNT,plural, =0{Nincs}=1{1 elem}other{# elem}}</translation>
 <translation id="976522784004777030">5 × 8 hüvelyk</translation>
 <translation id="977502174772294970">Esküvők</translation>
+<translation id="978750072783101994">Automatikusan kitöltheti ezt a kártyát a Chromiumban végzett vásárlások során, ha elmenti a Google Walletbe</translation>
 <translation id="979107176848483472">Profilját és böngészőjét a következő kezeli: <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Kiállítások és találkozók</translation>
 <translation id="979503328401807348">Hasznosabb hirdetések</translation>

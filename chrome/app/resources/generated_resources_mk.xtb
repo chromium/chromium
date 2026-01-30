@@ -2588,6 +2588,7 @@
 <translation id="2724841811573117416">WebRTC-дневници</translation>
 <translation id="272488616838512378">Конверзија на валути</translation>
 <translation id="2725200716980197196">Обновена мрежна поврзливост</translation>
+<translation id="2725312032345042618">Историја на настани</translation>
 <translation id="2726776862643824793">намалување на осветленоста на екранот</translation>
 <translation id="272741954544380994">Пребарајте ја сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Не потсетувај ме повторно</translation>
@@ -2929,6 +2930,7 @@
 <translation id="2950666755714083615">Регистрирај ме</translation>
 <translation id="2953210795988451570">Безбедносните ажурирања завршија. Надградете на нов Chromebook.</translation>
 <translation id="2953218713108551165">Известувања не се дозволени за <ph name="SITE" />. Ќе бидете прашани повторно при вашата следна посета.</translation>
+<translation id="2954777802959138493">Не можеше да се побара состојбата на компонентата за ажурирање.</translation>
 <translation id="2955048943983973430">Поврзани услуги на Google</translation>
 <translation id="2956070239128776395">Дел вгнезден во група: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Вклучете „Режим на програмер“ за да ја користите екстензијава, што не може да се прегледа од „Веб-продавницата на Chrome“.</translation>
@@ -3379,7 +3381,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="3270965368676314374">Прочитајте ги, променете ги и избришете ги фотографиите, музиката и другите медиуми од компјутерoт</translation>
 <translation id="3275464924531706548">Собери <ph name="HEADER" /></translation>
-<translation id="3275778809241512831">Вашиот внатрешен безбедносен клуч е небезбеден во моментов. Отстранете го од сите услуги со коишто сте го користеле. За да го решите проблемот, ресетирајте го безбедносниот клуч.</translation>
 <translation id="3275778913554317645">Отвори како прозорец</translation>
 <translation id="3277214528693754078">Движете се со курсорот за текст (прелистување со курсор)</translation>
 <translation id="3277594800340743211">Голема сенка</translation>
@@ -3582,7 +3583,6 @@
 <translation id="3417835166382867856">Пребарајте ги картичките</translation>
 <translation id="3417836307470882032">24-часовно време</translation>
 <translation id="3418798368381485936">Може да се најавите со сметкава</translation>
-<translation id="3420501302812554910">Потребно е ресетирање на внатрешен безбедносен клуч</translation>
 <translation id="3421387094817716717">Јавен клуч на елиптична крива</translation>
 <translation id="3422989558057853751">Последна избрана ставка, ако го поништите изборот, ќе излезете од режимот на избор</translation>
 <translation id="3423111258700187173">Најдени се резултати во <ph name="FOLDER_TITLE" /></translation>
@@ -3663,6 +3663,7 @@
 <translation id="3468298837301810372">Ознака</translation>
 <translation id="3468999815377931311">Телефон со Android</translation>
 <translation id="3469583217479686109">Алатка за избирање</translation>
+<translation id="3471687177769494956">Изменете ја кратенката за навигација</translation>
 <translation id="3471876058939596279">HDMI-портата и USB-портата од типот C не може да се користат за видео истовремено. Користете друга видеопорта.</translation>
 <translation id="3472469028191701821">Се отвора во нова картичка</translation>
 <translation id="3473241910002674503">Одете на почетен екран, вратете се назад и префрлајте меѓу апликации со копчиња во режим на таблет.</translation>
@@ -7098,6 +7099,7 @@
 <translation id="5828181959764767444">Зајдисонце</translation>
 <translation id="5828545842856466741">Додајте профил…</translation>
 <translation id="5828633471261496623">Се печати…</translation>
+<translation id="5829544019044013776">Вашите начини на плаќање во Google Wallet</translation>
 <translation id="5830205393314753525">Не може да се отвори <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Вашата лозинка е шифрирана и не може да ја види никој никогаш</translation>
 <translation id="5830720307094128296">Зачувај страница &amp;како...</translation>
@@ -7663,6 +7665,7 @@
 <translation id="6212168817037875041">Исклучи го екранот</translation>
 <translation id="6212752530110374741">Испрати е-порака со линк</translation>
 <translation id="6214106213498203737">Водена боица</translation>
+<translation id="6214157047210274853">Изменете во Google Wallet</translation>
 <translation id="621470880408090483">Не им дозволувај на сајтовите да се поврзуваат со уреди со Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{За да ја зачува безбедноста на лозинките, <ph name="BRAND" /> се заклучува по 1 минута неактивност}one{За да ја зачува безбедноста на лозинките, <ph name="BRAND" /> се заклучува по # минута неактивност}other{За да ја зачува безбедноста на лозинките, <ph name="BRAND" /> се заклучува по # минути неактивност}}</translation>
 <translation id="6216154119179790291">Лизгајте до првата картичка</translation>
@@ -11312,6 +11315,7 @@
 <translation id="8703346390800944767">Прескокни ја рекламата</translation>
 <translation id="8703372953981978786">Линков не функционира</translation>
 <translation id="8703766890819308134">Прикажи ги кратенките за пребарување</translation>
+<translation id="8704248383043944131">Изменете ја кратенката од тастатурата</translation>
 <translation id="8704662571571150811">Домени</translation>
 <translation id="8705331520020532516">Сериски број</translation>
 <translation id="870536819717176711">Кога ќе изберете да ја споделите тековната картичка со Gemini, сите содржини, аудиовизуелни содржини и URL-адресата на картичката се испраќаат до Google.</translation>
@@ -11633,6 +11637,7 @@
 <translation id="8911914282056933784">Скриј ги проектите</translation>
 <translation id="8912362522468806198">Сметка на Google</translation>
 <translation id="8912810933860534797">Овозможете автоматско скенирање</translation>
+<translation id="8913485523736543337">Компонента за ажурирање</translation>
 <translation id="8914030287343429787">Прегледајте ги вашите лозинки дури и кога не користите Chrome или Android така што ќе се најавите на <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Рестартирајте го Chrome</translation>
 <translation id="8915307125957890427">Кликнете со десно копче на картичка и изберете „Додајте картичка на група“, а потоа изберете „Нова група“</translation>
@@ -11773,6 +11778,7 @@
 <translation id="8999560016882908256">Синтаксичка грешка во делот: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Намалено движење на екранот</translation>
 <translation id="9000185763019430629">Допрете го сензорот за отпечатоци десно на вашиот <ph name="DEVICE_TYPE" />. Податоците за отпечатокот безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">Не можеше да се најдат инсталации за компонентата за ажурирање.</translation>
 <translation id="900267527532832868">Овој криптографски клуч веќе не функционира. Ќе се избрише од <ph name="GOOGLE_PASSWORD_MANAGER" /> наскоро.</translation>
 <translation id="9003031149571024583">Внесете ја цифрата <ph name="NUM_DIGIT" /> од 6 на PIN-кодот. Користете Backspace или Delete за да ја отстраните последната цифра.</translation>
 <translation id="9003185744423389627">Поврзувањето со серверот на „Управник со уреди“ не успеа и има статус „<ph name="STATUS_TEXT" />“ во <ph name="FAILURE_TIME" /></translation>

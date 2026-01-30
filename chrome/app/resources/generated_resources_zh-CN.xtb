@@ -2566,6 +2566,7 @@
 <translation id="2724841811573117416">WebRTC日志</translation>
 <translation id="272488616838512378">单位换算</translation>
 <translation id="2725200716980197196">网络连接已恢复</translation>
+<translation id="2725312032345042618">事件记录</translation>
 <translation id="2726776862643824793">调低显示屏亮度</translation>
 <translation id="272741954544380994">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="2727633948226935816">不再提醒</translation>
@@ -2907,6 +2908,7 @@
 <translation id="2950666755714083615">立即注册</translation>
 <translation id="2953210795988451570">安全更新已终止。请升级为新款 Chromebook。</translation>
 <translation id="2953218713108551165">不允许 <ph name="SITE" /> 传送通知。当您下次访问时，系统会再次询问您。</translation>
+<translation id="2954777802959138493">未能查询更新程序状态。</translation>
 <translation id="2955048943983973430">相关 Google 服务</translation>
 <translation id="2956070239128776395">有区段嵌套在分组中：<ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">开启开发者模式即可使用此扩展程序，但请注意，Chrome 应用商店无法审核此扩展程序。</translation>
@@ -3355,7 +3357,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{文件}other{# 个文件}}</translation>
 <translation id="3270965368676314374">读取、更改和删除您计算机上的照片、音乐和其他媒体</translation>
 <translation id="3275464924531706548">收起“<ph name="HEADER" />”</translation>
-<translation id="3275778809241512831">您的内部安全密钥目前不安全。请从所有使用了此密钥的服务中将其移除。要想解决该问题，请重置此安全密钥。</translation>
 <translation id="3275778913554317645">在窗口中打开</translation>
 <translation id="3277214528693754078">使用文本光标（光标浏览模式）进行导航</translation>
 <translation id="3277594800340743211">大阴影</translation>
@@ -3558,7 +3559,6 @@
 <translation id="3417835166382867856">搜索标签页</translation>
 <translation id="3417836307470882032">24 小时制</translation>
 <translation id="3418798368381485936">您无法使用此账号登录</translation>
-<translation id="3420501302812554910">需要重置内部安全密钥</translation>
 <translation id="3421387094817716717">椭圆曲线公共密钥</translation>
 <translation id="3422989558057853751">已选择最后一项内容，取消选择后会退出选择模式</translation>
 <translation id="3423111258700187173">在“<ph name="FOLDER_TITLE" />”中找到的结果</translation>
@@ -3639,6 +3639,7 @@
 <translation id="3468298837301810372">标签</translation>
 <translation id="3468999815377931311">Android 手机</translation>
 <translation id="3469583217479686109">选择工具</translation>
+<translation id="3471687177769494956">修改导航快捷键</translation>
 <translation id="3471876058939596279">HDMI 端口和 USB C 型端口无法同时用于视频。请另选一个视频端口。</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3473241910002674503">在平板电脑模式下，使用相应按钮转到主屏幕、返回以及切换应用。</translation>
@@ -7069,6 +7070,7 @@
 <translation id="5828181959764767444">日落</translation>
 <translation id="5828545842856466741">添加个人资料…</translation>
 <translation id="5828633471261496623">正在打印...</translation>
+<translation id="5829544019044013776">您在 Google 钱包中的支付方式</translation>
 <translation id="5830205393314753525">无法打开<ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">您的密码会经过加密处理，且不会向任何人显示</translation>
 <translation id="5830720307094128296">将页面存储为(&amp;A)...</translation>
@@ -7633,6 +7635,7 @@
 <translation id="6212168817037875041">关闭显示屏</translation>
 <translation id="6212752530110374741">通过电子邮件发送链接</translation>
 <translation id="6214106213498203737">水彩</translation>
+<translation id="6214157047210274853">在 Google 钱包中修改</translation>
 <translation id="621470880408090483">不允许网站连接到蓝牙设备</translation>
 <translation id="6215039389782910006">{1,plural, =1{为确保您的密码安全，<ph name="BRAND" />会在闲置 1 分钟后锁定}other{为确保您的密码安全，<ph name="BRAND" />会在闲置 # 分钟后锁定}}</translation>
 <translation id="6216154119179790291">滚动到第一个标签页</translation>
@@ -11279,6 +11282,7 @@
 <translation id="8703346390800944767">跳过广告</translation>
 <translation id="8703372953981978786">此链接无效</translation>
 <translation id="8703766890819308134">显示搜索快捷方式</translation>
+<translation id="8704248383043944131">修改键盘快捷键</translation>
 <translation id="8704662571571150811">域名</translation>
 <translation id="8705331520020532516">序列号</translation>
 <translation id="870536819717176711">当您选择与 Gemini 分享当前标签页时，系统会将该标签页的完整内容、媒体和网址发送给 Google。</translation>
@@ -11599,6 +11603,7 @@
 <translation id="8911914282056933784">隐藏项目</translation>
 <translation id="8912362522468806198">Google 账号</translation>
 <translation id="8912810933860534797">启用自动扫描</translation>
+<translation id="8913485523736543337">更新程序</translation>
 <translation id="8914030287343429787">登录 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />，即使在不使用 Chrome 或 Android 的情况下也能查看自己的密码</translation>
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8915307125957890427">右键点击某个标签页，选择“向组中添加标签页”，然后选择“新建组”</translation>
@@ -11739,6 +11744,7 @@
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">减少界面中的动画效果</translation>
 <translation id="9000185763019430629">轻触 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="9000529821022336229">找不到更新程序安装迹象。</translation>
 <translation id="900267527532832868">此通行密钥已失效，很快就会从 <ph name="GOOGLE_PASSWORD_MANAGER" />中删除。</translation>
 <translation id="9003031149571024583">请输入 PIN 码的第 <ph name="NUM_DIGIT" /> 位，共 6 位。可以使用退格键或 Delete 键移除最后一个数字。</translation>
 <translation id="9003185744423389627">未能成功连接到设备管理服务器，状态为“<ph name="STATUS_TEXT" />”，失败时间为 <ph name="FAILURE_TIME" /></translation>

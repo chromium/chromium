@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">若要将密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chromium 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="1652887625750064647">AI 最佳匹配</translation>
 <translation id="1653465303147789530">使用<ph name="PAYMENT_METHOD" />付款，无需切换应用</translation>
+<translation id="1655159794885649984">禁止在此网站上拖动内容</translation>
 <translation id="1656024727720460136">Chrome 已简化该页面，让内容更易于阅读，并且通过安全的连接检索到了原始网页。</translation>
 <translation id="1656489000284462475">取货</translation>
 <translation id="1658111267661135323">电视节目和视频</translation>
@@ -1674,6 +1675,7 @@
 <translation id="365641980390710834">休闲服装</translation>
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3659521826520353662">访问了哪些管理员定义的网站以及访问时间：<ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">此 IBAN 已保存到 Google 钱包中，方便您在各项 Google 服务中轻松使用。</translation>
 <translation id="3664479564786885722">搜索销售此商品的其他商店的更多购买选项。</translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />了解详情<ph name="LINK_END1" /></translation>
@@ -3194,6 +3196,7 @@
 <translation id="6085149458302186532">标签（彩色）</translation>
 <translation id="6087312102907839798">相关搜索</translation>
 <translation id="6089505343295765444">您从 Chrome 历史记录中删除的标签页仍会显示在比较表格中</translation>
+<translation id="6091115085465716987">Google 钱包徽标</translation>
 <translation id="6091691259076781835">为了加快结账速度，请将此银行卡验证码 (CVC) 保存到设备上</translation>
 <translation id="6093599771645355227">黄色 1</translation>
 <translation id="6093795393556121384">您的信用卡已成功验证</translation>
@@ -3809,6 +3812,7 @@
 <translation id="7057567173736333354">描述想生成的图片</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 已验证，此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="7058774143982824355">CSV 密码解析器服务</translation>
+<translation id="7062344833049251424">若想在下次购物时更快捷地付款，请将您的付款卡信息和账单邮寄地址保存到 Google 钱包中</translation>
 <translation id="706295145388601875">在 Chrome 设置中添加和管理地址</translation>
 <translation id="7063157783216323487">绿色 2</translation>
 <translation id="7064443976734085921">紧凑型汽车</translation>
@@ -4279,6 +4283,7 @@
 <translation id="7754587126786572336">开始更新时，您的 Chrome 标签页和应用会关闭</translation>
 <translation id="7755287808199759310">你的家长可为你取消屏蔽此网站</translation>
 <translation id="7755624218968747854">主卷</translation>
+<translation id="7756441544371887150">将此卡保存到 Google 钱包后，在 Chrome 中购物时即可自动填充相关信息。</translation>
 <translation id="7758069387465995638">防火墙或防病毒软件可能已阻止您连接到网络。</translation>
 <translation id="7759147511335618829">MIDI 设备控制和重新编程</translation>
 <translation id="7759809451544302770">可选</translation>
@@ -5202,6 +5207,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{无}=1{1 项内容}other{# 项内容}}</translation>
 <translation id="976522784004777030">5 x 8 英寸</translation>
 <translation id="977502174772294970">婚礼</translation>
+<translation id="978750072783101994">将此卡保存到 Google 钱包后，在 Chromium 中购物时即可自动填充相关信息。</translation>
 <translation id="979107176848483472">您的浏览器和个人资料由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="979189555234810423">展览与会议</translation>
 <translation id="979503328401807348">更实用的广告</translation>

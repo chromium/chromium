@@ -2575,6 +2575,7 @@
 <translation id="2724841811573117416">Журналы WebRTC</translation>
 <translation id="272488616838512378">Перавод адзінак вымярэння</translation>
 <translation id="2725200716980197196">Падключэнне да сеткі адноўлена</translation>
+<translation id="2725312032345042618">Гісторыя падзей</translation>
 <translation id="2726776862643824793">паменшыць яркасць дысплэя</translation>
 <translation id="272741954544380994">Пошук відарыса (выкарыстоўваецца <ph name="VISUAL_SEARCH_PROVIDER" />)</translation>
 <translation id="2727633948226935816">Больш не напамінаць</translation>
@@ -2916,6 +2917,7 @@
 <translation id="2950666755714083615">Падпісацца</translation>
 <translation id="2953210795988451570">Абнаўленняў сістэмы бяспекі больш не будзе. Перайдзіце на новы Chromebook.</translation>
 <translation id="2953218713108551165">Сайту <ph name="SITE" /> забаронена адпраўляць апавяшчэнні. Пры наступным наведванні ў вас зноў запытаюць дазвол на іх адпраўку.</translation>
+<translation id="2954777802959138493">Не ўдалося адправіць запыт пра стан сродку абнаўлення.</translation>
 <translation id="2955048943983973430">Звязаныя сэрвісы Google</translation>
 <translation id="2956070239128776395">Раздзел уложаны ў групу: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Уключыце рэжым распрацоўшчыка, каб выкарыстоўваць гэта пашырэнне, якое не было праверана вэб-крамай Chrome.</translation>
@@ -3366,7 +3368,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="3270965368676314374">Прагляд, змяненне і выдаленне з камп’ютара фота, музыкі і іншых файлаў мультымедыя</translation>
 <translation id="3275464924531706548">Згарнуць спіс "<ph name="HEADER" />"</translation>
-<translation id="3275778809241512831">Ваш унутраны ключ бяспекі зараз не забяспечвае абарону. Выдаліце яго з сэрвісаў, у якіх ён выкарыстоўваўся. Для вырашэння праблемы скіньце ключ бяспекі.</translation>
 <translation id="3275778913554317645">Адкрываць як акно</translation>
 <translation id="3277214528693754078">Ажыццяўляць навігацыю з дапамогай тэкставага курсора (навігацыю клавішамі)</translation>
 <translation id="3277594800340743211">Вялікі цень</translation>
@@ -3569,7 +3570,6 @@
 <translation id="3417835166382867856">Пошук укладак</translation>
 <translation id="3417836307470882032">24-гадзінны фармат</translation>
 <translation id="3418798368381485936">Вы не можаце ўвайсці праз гэты ўліковы запіс</translation>
-<translation id="3420501302812554910">Неабходна скінуць унутраны ключ бяспекі</translation>
 <translation id="3421387094817716717">Эліптычны адкрыты ключ</translation>
 <translation id="3422989558057853751">Апошні выбраны элемент, пры скасаванні выбару якога адбудзецца выхад з рэжыму выбару</translation>
 <translation id="3423111258700187173">Вынікі знойдзены ў папцы "<ph name="FOLDER_TITLE" />"</translation>
@@ -3650,6 +3650,7 @@
 <translation id="3468298837301810372">Метка</translation>
 <translation id="3468999815377931311">Тэлефон Android</translation>
 <translation id="3469583217479686109">Інструмент "Выбар"</translation>
+<translation id="3471687177769494956">Змяніць спалучэнне клавіш для навігацыі</translation>
 <translation id="3471876058939596279">Парты HDMI і USB Type-C не могуць выкарыстоўвацца для відэа адначасова. Паспрабуйце іншы відэапорт.</translation>
 <translation id="3472469028191701821">Адкрыецца ў новай укладцы</translation>
 <translation id="3473241910002674503">Пераход на Панэль запуску, вяртанне назад і пераключэнне праграм кнопкамі ў планшэтным рэжыме.</translation>
@@ -7082,6 +7083,7 @@
 <translation id="5828181959764767444">Захад сонца</translation>
 <translation id="5828545842856466741">Дадаць профіль...</translation>
 <translation id="5828633471261496623">Ідзе друк...</translation>
+<translation id="5829544019044013776">Вашы спосабы аплаты ў Google Кашальку</translation>
 <translation id="5830205393314753525">Не ўдалося адкрыць праграму "<ph name="APP_NAME" />"</translation>
 <translation id="5830512293931520102">Ваш пароль зашыфраваны, і яго ніхто і ніколі не ўбачыць</translation>
 <translation id="5830720307094128296">Захаваць старонку &amp;як...</translation>
@@ -7647,6 +7649,7 @@
 <translation id="6212168817037875041">Выключыць дысплэй</translation>
 <translation id="6212752530110374741">Адправіць спасылку па пошце</translation>
 <translation id="6214106213498203737">Акварэль</translation>
+<translation id="6214157047210274853">Змяніць у Google Кашальку</translation>
 <translation id="621470880408090483">Не дазваляць сайтам падключацца да прылад з Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Каб абараніць вашы паролі, <ph name="BRAND" /> блакіруецца праз 1 хвіліну бяздзейнасці}one{Каб абараніць вашы паролі, <ph name="BRAND" /> блакіруецца праз # хвіліну бяздзейнасці}few{Каб абараніць вашы паролі, <ph name="BRAND" /> блакіруецца праз # хвіліны бяздзейнасці}many{Каб абараніць вашы паролі, <ph name="BRAND" /> блакіруецца праз # хвілін бяздзейнасці}other{Каб абараніць вашы паролі, <ph name="BRAND" /> блакіруецца праз # хвіліны бяздзейнасці}}</translation>
 <translation id="6216154119179790291">Прагартаць да першай укладкі</translation>
@@ -11297,6 +11300,7 @@
 <translation id="8703346390800944767">Прапусціць рэкламу</translation>
 <translation id="8703372953981978786">Гэта спасылка не працуе</translation>
 <translation id="8703766890819308134">Паказаць ярлыкі для пошуку</translation>
+<translation id="8704248383043944131">Змяніць спалучэнне клавіш</translation>
 <translation id="8704662571571150811">Дамены</translation>
 <translation id="8705331520020532516">Серыйны нумар</translation>
 <translation id="870536819717176711">Калі ўключана абагульванне бягучай укладкі з Gemini, усё яе змесціва, мультымедыя і URL-адрас адпраўляюцца ў Google.</translation>
@@ -11620,6 +11624,7 @@
 <translation id="8911914282056933784">Схаваць праекты</translation>
 <translation id="8912362522468806198">Уліковы запіс Google</translation>
 <translation id="8912810933860534797">Уключыць аўтаматычнае сканіраванне</translation>
+<translation id="8913485523736543337">Сродак абнаўлення</translation>
 <translation id="8914030287343429787">Праглядайце паролі, нават калі не выкарыстоўваеце Chrome або Android. Для гэтага ўвайдзіце ў сістэму на сайце <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />.</translation>
 <translation id="8914504000324227558">Перазапусціць Chrome</translation>
 <translation id="8915307125957890427">Націсніце правай кнопкай мышы на ўкладку, выберыце "Дадаць укладку ў групу", а затым "Новая група"</translation>
@@ -11760,6 +11765,7 @@
 <translation id="8999560016882908256">Памылка сінтаксісу раздзела: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Менш рухаў на экране</translation>
 <translation id="9000185763019430629">Дакраніцеся да сканера адбіткаў пальцаў на правай бакавой частцы прылады <ph name="DEVICE_TYPE" />. Даныя адбіткаў пальцаў надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
+<translation id="9000529821022336229">Не ўдалося знайсці ўсталяваныя сродкі абнаўлення.</translation>
 <translation id="900267527532832868">Гэты ключ доступу больш не працуе. Неўзабаве ён будзе выдалены з праграмы "<ph name="GOOGLE_PASSWORD_MANAGER" />".</translation>
 <translation id="9003031149571024583">Увядзіце PIN-код. Лічба <ph name="NUM_DIGIT" /> з шасці. Каб выдаліць папярэднюю лічбу, націсніце клавішу Backspace ці Delete.</translation>
 <translation id="9003185744423389627">Не ўдалося падключыцца да сервера кіравання прыладамі (стан: "<ph name="STATUS_TEXT" />", <ph name="FAILURE_TIME" />)</translation>

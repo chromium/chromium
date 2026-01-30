@@ -1723,6 +1723,7 @@
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Ошибка. Не удалось найти указанный ресурс в сети.</translation>
 <translation id="2148248734299717598">Закрыть левую вкладку</translation>
+<translation id="2148401732477136168">Не удалось запросить данные об установленных приложениях.</translation>
 <translation id="2148756636027685713">Форматирование завершено</translation>
 <translation id="2148892889047469596">Трансляция содержимого вкладки</translation>
 <translation id="2149973817440762519">Закладка</translation>
@@ -3369,7 +3370,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="3270965368676314374">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение и удаление</translation>
 <translation id="3275464924531706548">Свернуть <ph name="HEADER" /></translation>
-<translation id="3275778809241512831">Внутренний электронный ключ ненадежен. Удалите его из всех сервисов. Чтобы устранить проблему, сбросьте настройки электронного ключа.</translation>
 <translation id="3275778913554317645">Открыть в отдельном окне</translation>
 <translation id="3277214528693754078">Навигация с помощью курсора (режим активного курсора)</translation>
 <translation id="3277594800340743211">Крупная тень</translation>
@@ -3572,7 +3572,6 @@
 <translation id="3417835166382867856">Поиск по вкладкам</translation>
 <translation id="3417836307470882032">24-часовой формат времени</translation>
 <translation id="3418798368381485936">Невозможно войти с этим аккаунтом</translation>
-<translation id="3420501302812554910">Необходимо сбросить настройки внутреннего электронного ключа</translation>
 <translation id="3421387094817716717">Открытый ключ на эллиптических кривых</translation>
 <translation id="3422989558057853751">Выбран последний объект. Если вы отмените выбор, то выйдете из режима выбора.</translation>
 <translation id="3423111258700187173">Результаты в папке "<ph name="FOLDER_TITLE" />"</translation>
@@ -4547,6 +4546,7 @@
 <translation id="4036778507053569103">Скачанная с сервера политика недействительна.</translation>
 <translation id="4037084878352560732">Лошадь</translation>
 <translation id="403725336528835653">Попробовать</translation>
+<translation id="4039835815168788100">Расширение "<ph name="EXTENSION_NAME" />" попыталось изменить поисковую систему на "<ph name="SEARCH_PROVIDER" />". Выберите вариант, который хотите использовать.</translation>
 <translation id="4039966970282098406">Настройки доступа к микрофону, камере и прочему</translation>
 <translation id="4040041015953651705">Исходный язык</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Закрыть страницу}one{Закрыть страницы}few{Закрыть страницы}many{Закрыть страницы}other{Закрыть страницы}}</translation>
@@ -6867,6 +6867,7 @@
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5659964844710667266">Установить пароль для <ph name="DEVICE_TYPE" /></translation>
 <translation id="5662513737565158057">Измените параметры работы приложений для Linux.</translation>
+<translation id="5663317829633858516">Недавно выбрано расширением "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5663459693447872156">Автоматически переключиться на половинную ширину</translation>
 <translation id="5663653125349867535">Список для чтения</translation>
 <translation id="5663918299073387939">Обычно сайты запрашивают разрешение на управление и перепрограммирование MIDI-устройств, чтобы создавать и изменять музыку, а также обновлять встроенное ПО устройства.</translation>
@@ -8098,6 +8099,7 @@
 <translation id="6532663472409656417">Зарегистрировано в корпоративном домене</translation>
 <translation id="6533315466883598769">Использовать Google Переводчик</translation>
 <translation id="65334502113648172">Увеличьте или уменьшите область просмотра при помощи клавиш со стрелками. Чтобы переместить область просмотра, нажмите Shift + Плюс (+) и используйте клавиши со стрелками.</translation>
+<translation id="6534018044332449019">Приложения не установлены.</translation>
 <translation id="6535331821390304775">Всегда разрешать сайту <ph name="ORIGIN" /> открывать ссылки этого типа в связанном приложении</translation>
 <translation id="653659894138286600">Сканирование документов и изображений</translation>
 <translation id="6538036594527795020">Изменить язык приложения "<ph name="APP" />". Сейчас используется <ph name="LANGUAGE" />.</translation>
@@ -8906,6 +8908,7 @@
 <translation id="7074703793383805632">Группа "<ph name="GROUP_NAME" />": <ph name="SHARED_STATE" />, <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 с шифрованием RSA</translation>
 <translation id="7075625805486468288">Управление настройками и сертификатами HTTPS/SSL</translation>
+<translation id="707772989579681711">Прошлый вариант</translation>
 <translation id="7077751457066325012">Просмотреть и настроить быстрые клавиши</translation>
 <translation id="7077829361966535409">При загрузке текущих настроек прокси-сервера на главной странице произошла ошибка. <ph name="GAIA_RELOAD_LINK_START" />Выполните вход повторно<ph name="GAIA_RELOAD_LINK_END" /> или измените <ph name="PROXY_SETTINGS_LINK_START" />параметры прокси-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Все сети</translation>
@@ -10161,6 +10164,7 @@
 <translation id="7941179291434537290">Готовность режима модема</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7942846369224063421">Предзагруженный компонент отрисовки интерфейса</translation>
+<translation id="7943271960579497371">Установленные приложения</translation>
 <translation id="7943368935008348579">Скачивать PDF-файлы</translation>
 <translation id="7943837619101191061">Добавить папку...</translation>
 <translation id="7944173382284143968">Для сохранения нового пароля на этом сайте требуется подтверждение с помощью одноразового кода. Чтобы завершить изменения, сделайте это вручную.</translation>
@@ -10554,6 +10558,7 @@
 <translation id="8195854162863398249">Выключить функцию "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8195920051450756553">Время задержки перед активацией повторно нажатой клавиши</translation>
 <translation id="8197673340773315084">Укажите название, например "Рабочий"</translation>
+<translation id="8198043456018523011">Подтвердите поисковую систему по умолчанию</translation>
 <translation id="8198181050118789419">Тема: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>

@@ -3378,7 +3378,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="3270965368676314374">మీ కంప్యూటర్‌లోని ఫోటోలు, సంగీతం మరియు ఇతర మీడియాని చదవడం, మార్చడం మరియు తొలగించడం</translation>
 <translation id="3275464924531706548"><ph name="HEADER" />ను కుదించండి</translation>
-<translation id="3275778809241512831">మీ అంతర్గత సెక్యూరిటీ కీ ప్రస్తుతం అసురక్షితంగా ఉంది. మీరు ఏవైనా సేవల కోసం దీనిని ఉపయోగించి ఉంటేే, వెంటనే వాటి నుండి తీసివేయండి. సమస్యను పరిష్కరించడానికి, దయచేసి సెక్యూరిటీ కీని రీసెట్ చేయండి.</translation>
 <translation id="3275778913554317645">విండో లాగా తెరవండి</translation>
 <translation id="3277214528693754078">టెక్స్ట్ కర్సర్‌తో నావిగేట్ చేయండి (కేరెట్ బ్రౌజింగ్)</translation>
 <translation id="3277594800340743211">పెద్ద షాడో</translation>
@@ -3581,7 +3580,6 @@
 <translation id="3417835166382867856">ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="3417836307470882032">మిలిటరీ సమయం</translation>
 <translation id="3418798368381485936">మీరు ఈ ఖాతాను ఉపయోగించి సైన్ ఇన్ చేయడం సాధ్యం కాదు</translation>
-<translation id="3420501302812554910">అంతర్గత సెక్యూరిటీ కీని రీసెట్ చేయడం అవసరం</translation>
 <translation id="3421387094817716717">దీర్ఘవృత్తాకార వక్రరేఖ పబ్లిక్ కీ</translation>
 <translation id="3422989558057853751">చివరిగా ఎంపిక చేయబడిన ఐటెమ్, దాని ఎంపికను రద్దు వలన ఎంపిక మోడ్ నుండి ఎగ్జిట్ అవుతుంది</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />‌లో ఫలితాలు కనుగొనబడ్డాయి</translation>
@@ -4556,6 +4554,7 @@
 <translation id="4036778507053569103">సర్వర్ నుండి డౌన్‌లోడ్ చేయబడిన విధానం చెల్లదు.</translation>
 <translation id="4037084878352560732">గుర్రం</translation>
 <translation id="403725336528835653">ముందు దీన్ని ట్రై చేయండి</translation>
+<translation id="4039835815168788100">"<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్ మీ సెర్చ్ ఇంజిన్‌ను <ph name="SEARCH_PROVIDER" />‌కు మార్చడానికి ట్రై చేసింది. కింద మీ ప్రాధాన్యతను నిర్ధారించండి</translation>
 <translation id="4039966970282098406">మైక్రోఫోన్, కెమెరా, మరిన్నింటికి యాక్సెస్‌ను కంట్రోల్ చేయడం ద్వారా మీ గోప్యతను మేనేజ్ చేయండి</translation>
 <translation id="4040041015953651705">ఈ భాష నుండి అనువదించాలి</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{పేజీ నుండి నిష్క్రమించండి}other{పేజీల నుండి నిష్క్రమించండి}}</translation>
@@ -6386,7 +6385,7 @@
 <translation id="5313967007315987356">సైట్‌ను జోడించండి</translation>
 <translation id="5315738755890845852">అదనపు వంకర కలుపు: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
-<translation id="5319712128756744240">కొత్త పరికరాన్ని పెయిర్ చేయండి</translation>
+<translation id="5319712128756744240">కొత్త డివైజ్‌ను పెయిర్ చేయండి</translation>
 <translation id="5320135788267874712">కొత్త పరికరం పేరు</translation>
 <translation id="532247166573571973">సర్వర్ అందుబాటులో లేకపోవచ్చు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5324300749339591280">యాప్‌ల లిస్ట్</translation>
@@ -6876,6 +6875,7 @@
 <translation id="5659593005791499971">ఈమెయిల్‌</translation>
 <translation id="5659964844710667266">ఈ <ph name="DEVICE_TYPE" /> కోసం పాస్‌వర్డ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="5662513737565158057">Linux యాప్‌లు పనిచేసే తీరును మార్చండి.</translation>
+<translation id="5663317829633858516">ఇటీవల <ph name="EXTENSION_NAME" /> ద్వారా మార్చబడింది</translation>
 <translation id="5663459693447872156">సగం వెడల్పుకు ఆటోమేటిక్‌గా మార్చు</translation>
 <translation id="5663653125349867535">&amp;చదవాల్సిన లిస్ట్</translation>
 <translation id="5663918299073387939">మ్యూజిక్‌ను క్రియేట్ చేయడానికి, మ్యూజిక్‌ను ఎడిట్ చేయడానికి లేదా, పరికరం ఫర్మ్‌వేర్‌ను అప్‌డేట్ చేయడానికి MIDI పరికరాలను కంట్రోల్ చేసి, రీప్రోగ్రామ్ చేయమని సైట్‌లు సాధారణంగా అడుగుతాయి.</translation>
@@ -8909,6 +8909,7 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> గ్రూప్ - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSLసర్టిఫికెట్లు మరియు సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
+<translation id="707772989579681711">మీ మునుపటి ఎంపిక</translation>
 <translation id="7077751457066325012">కీబోర్డ్ షార్ట్‌కట్‌లను చూడండి, అనుకూలంగా మార్చండి</translation>
 <translation id="7077829361966535409">సైన్ ఇన్ పేజీ ప్రస్తుత ప్రాక్సీ సెట్టింగ్‌లను ఉపయోగించి లోడ్ కావడంలో విఫలమైంది. దయచేసి <ph name="GAIA_RELOAD_LINK_START" />మళ్లీ సైన్ ఇన్ చేయడానికి ప్రయత్నించండి<ph name="GAIA_RELOAD_LINK_END" /> లేదా విభిన్న <ph name="PROXY_SETTINGS_LINK_START" />ప్రాక్సీ సెట్టింగ్‌ల<ph name="PROXY_SETTINGS_LINK_END" />ను ఉపయోగించండి.</translation>
 <translation id="7078120482318506217">అన్ని నెట్‌వర్క్‌లు</translation>
@@ -10555,6 +10556,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" />‌ను డిజేబుల్ చేయండి</translation>
 <translation id="8195920051450756553">ఏదైనా కీని మళ్లీ యాక్టివేట్ చేయడానికి ముందు అది యాక్టివేట్ అవ్వకుండా ఆలస్యం అయ్యేలా చేయండి</translation>
 <translation id="8197673340773315084">'ఆఫీస్', 'వ్యక్తిగతం' వంటి లేబుల్‌ను లేదా ఏదైనా పేరును జోడించండి</translation>
+<translation id="8198043456018523011">మీ ఆటోమేటిక్ సెట్టింగ్ సెర్చ్ ఇంజిన్‌ను నిర్ధారించండి</translation>
 <translation id="8198181050118789419">థీమ్: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>
 <translation id="8199300056570174101">నెట్‌వర్క్ (సేవ) మరియు పరికర లక్షణాలు</translation>
