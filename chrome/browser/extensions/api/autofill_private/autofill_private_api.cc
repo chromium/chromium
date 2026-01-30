@@ -1047,9 +1047,7 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
   }
   const bool obfuscate_sensitive_types =
       autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
-          autofill_client()->GetPrefs()) &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiReauthRequired);
+          autofill_client()->GetPrefs());
   std::vector<autofill_private::EntityInstanceWithLabels> result =
       autofill_ai_util::EntityInstancesToPrivateApiEntityInstancesWithLabels(
           entity_data_manager->GetEntityInstances(), obfuscate_sensitive_types,
@@ -1231,9 +1229,7 @@ AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::
 ExtensionFunction::ResponseAction
 AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::Run() {
   if (!autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
-          autofill_client()->GetPrefs()) ||
-      !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiReauthRequired)) {
+          autofill_client()->GetPrefs())) {
     return RespondNow(WithArguments(true));
   }
 

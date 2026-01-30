@@ -285,17 +285,14 @@ std::u16string GetFillValueForEntity(
   return should_obfuscate ? GetObfuscatedValue(fill_value) : fill_value;
 }
 
-bool ShouldReauthBeforeFilling(
-    const EntityInstance& entity,
-    base::span<const AutofillFieldWithAttributeType> fields,
-    std::string_view app_locale,
-    const PrefService& prefs) {
-  if (!prefs::IsAutofillAiReauthBeforeFillingEnabled(&prefs)) {
-    return false;
-  }
-
-  const bool will_fill_sensitive_field =
-      std::ranges::any_of(fields, [&](const AutofillFieldWithAttributeType& f) {
+bool WillFillSensitiveAttributes(const EntityInstance& entity,
+                                 const FormStructure& form,
+                                 const Section& section,
+                                 std::string_view app_locale) {
+  return std::ranges::any_of(
+      RationalizeAndDetermineAttributeTypes(form.fields(), section,
+                                            entity.type()),
+      [&entity, app_locale](const AutofillFieldWithAttributeType& f) {
         base::optional_ref<const AttributeInstance> attribute =
             entity.attribute(f.type);
         return entity.type() == f.type.entity_type() && attribute &&
@@ -305,9 +302,6 @@ bool ShouldReauthBeforeFilling(
                               app_locale, f.field->format_string())
                     .empty();
       });
-
-  return will_fill_sensitive_field &&
-         base::FeatureList::IsEnabled(features::kAutofillAiReauthRequired);
 }
 
 }  // namespace autofill

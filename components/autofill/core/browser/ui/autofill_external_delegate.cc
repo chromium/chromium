@@ -74,6 +74,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/plus_address_survey_type.h"
@@ -1379,9 +1380,9 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
   const base::optional_ref<const EntityInstance> entity =
       GetEntityInstance(suggestion);
   auto [form_structure, autofill_field] = GetQueriedFormAndField();
+  AutofillClient& client = manager_->client();
   if (!entity || !autofill_field) {
-    manager_->client().HideAutofillSuggestions(
-        SuggestionHidingReason::kAcceptSuggestion);
+    client.HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion);
     return;
   }
 
@@ -1403,15 +1404,15 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
           manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,
           query_field_.global_id(), *entity, GetTriggerSource())
           .Then(base::BindOnce(&AutofillClient::HideAutofillSuggestions,
-                               manager_->client().GetWeakPtr(),
+                               client.GetWeakPtr(),
                                SuggestionHidingReason::kAcceptSuggestion));
 
-  const bool should_reauth = ShouldReauthBeforeFilling(
-      *entity,
-      RationalizeAndDetermineAttributeTypes(
-          form_structure->fields(), autofill_field->section(), entity->type()),
-      manager_->client().GetAppLocale(),
-      CHECK_DEREF(manager_->client().GetPrefs()));
+  const bool is_sensitive = WillFillSensitiveAttributes(
+      *entity, *form_structure, autofill_field->section(),
+      client.GetAppLocale());
+  const bool should_reauth =
+      is_sensitive &&
+      prefs::IsAutofillAiReauthBeforeFillingEnabled(client.GetPrefs());
   if (!should_reauth) {
     std::move(fill_and_hide).Run(true);
     return;
@@ -1421,8 +1422,7 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
   if (base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
     AttemptToDisplayAutofillSuggestions(
         PrepareLoadingStateSuggestions(
-            base::ToVector(manager_->client().GetAutofillSuggestions()),
-            suggestion),
+            base::ToVector(client.GetAutofillSuggestions()), suggestion),
         trigger_source_,
         /*is_update=*/true, AutofillSuggestionsIgnoreFocusLoss(true));
   }

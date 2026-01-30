@@ -103,9 +103,7 @@ void AutofillPrivateEventRouter::OnEntityInstancesChanged() {
   PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
   const bool obfuscate_sensitive_types =
       pref_service &&
-      autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(pref_service) &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiReauthRequired);
+      autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(pref_service);
 
   base::ListValue args;
   args.Append(ToValueList(
