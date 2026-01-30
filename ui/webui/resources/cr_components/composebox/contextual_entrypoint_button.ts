@@ -51,7 +51,6 @@ export class ContextualEntrypointButtonElement extends
       // =========================================================================
       // Public properties
       // =========================================================================
-      inputsDisabled: {type: Boolean},
       fileNum: {type: Number},
       showContextMenuDescription: {type: Boolean},
       hasImageFiles: {
@@ -74,7 +73,6 @@ export class ContextualEntrypointButtonElement extends
     };
   }
 
-  accessor inputsDisabled: boolean = false;
   accessor fileNum: number = 0;
   accessor showContextMenuDescription: boolean = false;
   accessor hasImageFiles: boolean = false;
