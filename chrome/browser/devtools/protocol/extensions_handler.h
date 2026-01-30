@@ -24,6 +24,9 @@ class ExtensionsHandler : public protocol::Extensions::Backend {
   ~ExtensionsHandler() override;
 
  private:
+  protocol::DispatchResponse TriggerAction(
+      const protocol::String& extendsion_id,
+      const protocol::String& target_id) override;
   void LoadUnpacked(const protocol::String& path,
                     std::unique_ptr<LoadUnpackedCallback> callback) override;
   void OnLoaded(std::unique_ptr<LoadUnpackedCallback> callback,
@@ -66,6 +69,14 @@ class ExtensionsHandler : public protocol::Extensions::Backend {
       extensions::StorageFrontend::ResultStatus result);
 
   const std::string target_id_;
+
+  // This flag enables an extra security layer for `loadUnpacked`,
+  // `uninstall`, and `triggerAction`.
+  // This security is vital because these functions perform high-risk
+  // operations:
+  // -   `loadUnpacked` and `uninstall` interact with extensions
+  // stored in the user profile.
+  // -   `triggerAction` can grant powerful tab permissions to an extension.
   bool allow_loading_extensions_;
 
   std::unique_ptr<protocol::Extensions::Frontend> frontend_;

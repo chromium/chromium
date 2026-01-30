@@ -1,0 +1,11 @@
+{
+  "name": "On Clicked Action Event Dispatcher",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Dispatch an event"
+  }
+}

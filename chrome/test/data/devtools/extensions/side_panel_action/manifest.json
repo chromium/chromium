@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Simple Side Panel",
+  "version": "1.0",
+  "description": "A simple extension with a side panel.",
+  "permissions": ["sidePanel"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "side_panel.html"
+  }
+}

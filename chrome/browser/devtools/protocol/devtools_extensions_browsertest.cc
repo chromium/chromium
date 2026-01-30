@@ -5,19 +5,28 @@
 #include "base/features.h"
 #include "base/files/file.h"
 #include "base/path_service.h"
-#include "chrome/browser/browser_features.h"
-#include "chrome/browser/devtools/devtools_window.h"
+#include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/browser/extensions/browser_window_util.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window_deleter.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/api/storage/storage_area_namespace.h"
-#include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -28,7 +37,7 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
-
+#include "extensions/test/result_catcher.h"
 namespace {
 
 class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
@@ -54,6 +63,19 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
     params.Set("path", extension_path.AsUTF8Unsafe());
 
     return SendCommandSync("Extensions.loadUnpacked", std::move(params));
+  }
+
+  scoped_refptr<const extensions::Extension> InstallExtensionFromPath(
+      const std::string& path) {
+    extensions::ChromeTestExtensionLoader loader(browser()->profile());
+
+    base::FilePath extension_path =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .AppendASCII("devtools")
+            .AppendASCII("extensions")
+            .AppendASCII(path);
+
+    return loader.LoadExtension(extension_path);
   }
 
   const base::DictValue* SendStorageCommand(
@@ -442,4 +464,87 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   ASSERT_EQ(*error()->FindString("message"), "Extension not found.");
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       TriggerActionShowsSidePanel) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ExtensionTestMessageListener activated_listener("running");
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtensionFromPath("side_panel_action");
+  ASSERT_TRUE(activated_listener.WaitUntilSatisfied());
+
+  extensions::ResultCatcher result_catcher;
+  scoped_refptr<content::DevToolsAgentHost> page_host =
+      content::DevToolsAgentHost::GetOrCreateForTab(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  base::DictValue trigger_extension_params;
+  trigger_extension_params.Set("id", extension->id());
+  trigger_extension_params.Set("targetId", page_host->GetId());
+  const base::DictValue* trigger_result = SendCommandSync(
+      "Extensions.triggerAction", std::move(trigger_extension_params));
+  ASSERT_TRUE(trigger_result);
+
+  EXPECT_FALSE(trigger_result->FindDict("error"));
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  SidePanelUI* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_TRUE(side_panel_ui);
+  EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       TriggerActionShowsPopup) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  extensions::ResultCatcher result_catcher;
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtensionFromPath("popup_action");
+
+  scoped_refptr<content::DevToolsAgentHost> page_host =
+      content::DevToolsAgentHost::GetOrCreateForTab(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  base::DictValue trigger_extension_params;
+  trigger_extension_params.Set("id", extension->id());
+  trigger_extension_params.Set("targetId", page_host->GetId());
+  const base::DictValue* trigger_result = SendCommandSync(
+      "Extensions.triggerAction", std::move(trigger_extension_params));
+  ASSERT_TRUE(trigger_result);
+
+  EXPECT_FALSE(trigger_result->FindDict("error"));
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  BrowserWindowInterface* bwi =
+      extensions::browser_window_util::GetBrowserForTabContents(
+          *browser()->tab_strip_model()->GetActiveWebContents());
+  auto* extensions_container = ExtensionsContainer::From(*bwi);
+
+  ASSERT_TRUE(extensions_container);
+  auto* action_view = extensions_container->GetActionForId(extension->id());
+  ASSERT_TRUE(action_view);
+  EXPECT_TRUE(action_view->IsShowingPopup());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       TriggerActionDispatchesEvent) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  extensions::ResultCatcher result_catcher;
+
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtensionFromPath("on_clicked_action");
+
+  scoped_refptr<content::DevToolsAgentHost> page_host =
+      content::DevToolsAgentHost::GetOrCreateForTab(
+          browser()->tab_strip_model()->GetActiveWebContents());
+
+  base::DictValue trigger_extension_params;
+  trigger_extension_params.Set("id", extension->id());
+  trigger_extension_params.Set("targetId", page_host->GetId());
+  const base::DictValue* trigger_result = SendCommandSync(
+      "Extensions.triggerAction", std::move(trigger_extension_params));
+  ASSERT_TRUE(trigger_result);
+
+  EXPECT_FALSE(trigger_result->FindDict("error"));
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
 }  // namespace

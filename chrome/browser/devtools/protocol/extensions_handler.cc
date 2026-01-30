@@ -13,14 +13,16 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_utils.h"
 #include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_util.h"
 #include "extensions/browser/unpacked_installer.h"
 
 namespace {
@@ -157,6 +159,44 @@ GetExtensionAndStorageFrontendResult GetExtensionAndStorageFrontend(
 }
 
 }  // namespace
+
+protocol::DispatchResponse ExtensionsHandler::TriggerAction(
+    const std::string& extension_id,
+    const std::string& target_id) {
+  if (!allow_loading_extensions_) {
+    return protocol::Response::ServerError("Method not allowed");
+  }
+
+  auto host = content::DevToolsAgentHost::GetForId(target_id);
+  if (host == nullptr) {
+    return protocol::Response::ServerError(
+        "cannot retrieve host for the provided id");
+  }
+
+  if (host->GetType() != content::DevToolsAgentHost::kTypeTab) {
+    return protocol::Response::ServerError(
+        "Action can only be triggered on a tab target.");
+  }
+
+  content::WebContents* web_contents = host->GetWebContents();
+  if (web_contents == nullptr) {
+    return protocol::Response::ServerError("Tab target has no WebContents.");
+  }
+
+  BrowserWindowInterface* browser =
+      extensions::browser_window_util::GetBrowserForTabContents(*web_contents);
+
+  ExtensionsContainer* extension_container =
+      ExtensionsContainer::From(*browser);
+
+  ToolbarActionViewModel* extension_model =
+      extension_container->GetActionForId(extension_id);
+
+  extension_model->ExecuteUserAction(
+      ExtensionActionViewModel::InvocationSource::kCdp);
+
+  return protocol::DispatchResponse::Success();
+}
 
 ExtensionsHandler::ExtensionsHandler(protocol::UberDispatcher* dispatcher,
                                      const std::string& target_id,
