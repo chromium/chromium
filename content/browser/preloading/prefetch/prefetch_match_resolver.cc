@@ -876,6 +876,30 @@ void PrefetchMatchResolver::AttachPrefetchMatchPrerenderDebugMetrics() {
       return;
     }
 
+    // Prevent mysterious crash of `GetPrefetchStatus()`
+    //
+    // To reach here and `GetPrefetchStatus()` crash, the following conditions
+    // must be satisfied:
+    //
+    // - The navigation is prerender.
+    // - The corresponding prefetch ahead of prerender is triggered and exists
+    //   in `PrefetchService`. (It implies that
+    //   `features::kPrerender2FallbackPrefetchSpecRules` is enabled.)
+    // - The prefetch hasn't passed the initial eligibility check.
+    //   (`PrefetchContainer::prefetch_status_` in null.)
+    //
+    // On the other hand, if `features::kPrerender2FallbackPrefetchSpecRules` is
+    // enabled, `PrefetchMatchResolver` waits for the eligibility check. So,
+    // basically we don't expect the crash happens.
+    //
+    // To prevent crash, we check `HasPrefetchStatus()` and ignore the false
+    // case.
+    //
+    // TODO(crbug.com/479983093): Fix the root cause.
+    if (!prefetch_container->HasPrefetchStatus()) {
+      return;
+    }
+
     metrics->prefetch_ahead_of_prerender_debug_metrics =
         std::make_unique<PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics>();
     metrics->prefetch_ahead_of_prerender_debug_metrics->prefetch_status =
