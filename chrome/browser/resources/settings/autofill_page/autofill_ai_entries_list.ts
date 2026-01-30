@@ -22,7 +22,6 @@ import '../simple_confirmation_dialog.js';
 import './autofill_ai_add_or_edit_dialog.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
-
 // </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -174,6 +173,11 @@ export class SettingsAutofillAiEntriesListElement extends
         value: false,
       },
 
+      activeEntityInstanceDeleteTitle_: {
+        type: String,
+        value: '',
+      },
+
       entityInstances_: {
         type: Array,
         value: () => [],
@@ -206,16 +210,18 @@ export class SettingsAutofillAiEntriesListElement extends
   declare listTitle: string;
   declare allowEditingPref: chrome.settingsPrivate.PrefObject<boolean>|null;
   declare private allowEditing_: boolean;
-  declare private activeEntityInstance_: EntityInstance|null;
   declare private completeEntityTypesList_: EntityType[];
+  declare private activeEntityInstance_: EntityInstance|null;
   declare private showAddOrEditEntityInstanceDialog_: boolean;
   declare private addOrEditEntityInstanceDialogTitle_: string;
   declare private showRemoveEntityInstanceDialog_: boolean;
+  declare private activeEntityInstanceDeleteTitle_: string;
   declare private entityInstances_: EntityInstanceWithLabels[];
   declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
 
+  private activeEntityInstanceGuid_: string|null = null;
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
   private entityDataManager_: EntityDataManagerProxy =
@@ -342,12 +348,9 @@ export class SettingsAutofillAiEntriesListElement extends
   /**
    * Open the action menu.
    */
-  private async onMoreButtonClick_(
-      e: DomRepeatEvent<EntityInstanceWithLabels>) {
+  private onMoreButtonClick_(e: DomRepeatEvent<EntityInstanceWithLabels>) {
     const moreButton = e.target as HTMLElement;
-    this.activeEntityInstance_ =
-        await this.entityDataManager_.getEntityInstanceByGuid(
-            e.model.item.guid);
+    this.activeEntityInstanceGuid_ = e.model.item.guid;
     this.$.actionMenu.get().showAt(moreButton);
   }
 
@@ -356,17 +359,15 @@ export class SettingsAutofillAiEntriesListElement extends
    */
   private async onMenuEditEntityInstanceClick_(e: Event) {
     e.preventDefault();
-    const entityRequiresAuth =
-        this.activeEntityInstance_?.shouldAuthenticateToView;
-    if (entityRequiresAuth) {
-      const success = await this.entityDataManager_
-                          .authenticateUserBeforeViewingEntityData();
-      if (!success) {
-        return;
-      }
+
+    this.activeEntityInstance_ =
+        await this.entityDataManager_.getEntityInstanceByGuid(
+            this.activeEntityInstanceGuid_!);
+
+    if (!this.activeEntityInstance_) {
+      return;
     }
 
-    assert(this.activeEntityInstance_);
     this.addOrEditEntityInstanceDialogTitle_ =
         this.activeEntityInstance_.type.editEntityTypeString;
     this.showAddOrEditEntityInstanceDialog_ = true;
@@ -378,6 +379,16 @@ export class SettingsAutofillAiEntriesListElement extends
    */
   private onMenuRemoveEntityInstanceClick_(e: Event) {
     e.preventDefault();
+
+    const instanceWithLabels = this.entityInstances_.find(
+        instance => instance.guid === this.activeEntityInstanceGuid_);
+    if (!instanceWithLabels) {
+      return;
+    }
+
+    this.activeEntityInstanceDeleteTitle_ =
+        instanceWithLabels.type.deleteEntityTypeString;
+
     this.showRemoveEntityInstanceDialog_ = true;
     this.$.actionMenu.get().close();
   }
@@ -399,12 +410,11 @@ export class SettingsAutofillAiEntriesListElement extends
             .querySelector<SettingsSimpleConfirmationDialogElement>(
                 '#removeEntityInstanceDialog')!.wasConfirmed();
     if (wasDeletionConfirmed) {
-      assert(this.activeEntityInstance_);
       this.entityDataManager_.removeEntityInstance(
-          this.activeEntityInstance_.guid);
+          this.activeEntityInstanceGuid_!);
     }
     this.showRemoveEntityInstanceDialog_ = false;
-    this.activeEntityInstance_ = null;
+    this.activeEntityInstanceGuid_ = null;
   }
 
   // Adjusts the opt-in state when address autofill status changes.

@@ -468,7 +468,7 @@ namespace autofillPrivate {
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
   callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
-  callback GetEntityInstanceByGuid = void(EntityInstance entityInstance);
+  callback GetEntityInstanceByGuid = void(optional EntityInstance entityInstance);
   callback GetWritableEntityTypesCallback = void(EntityType[] entityTypes);
   callback GetAttributeTypesCallback = void(AttributeType[] attributeTypes);
   callback GetAutofillAiOptInStatusCallback = void(boolean optedIn);
@@ -614,7 +614,8 @@ namespace autofillPrivate {
     // Returns all of the user's entity instances with labels.
     static void loadEntityInstances(LoadEntityInstancesCallback callback);
 
-    // Returns the entity instance by its guid.
+    // Returns the entity instance by its guid or null if authentication is required to
+    // view the entity and the attempted Reauth was unsuccessful.
     static void getEntityInstanceByGuid(
         DOMString guid, GetEntityInstanceByGuid callback);
 

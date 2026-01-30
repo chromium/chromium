@@ -1059,6 +1059,12 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
 ////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateGetEntityInstanceByGuidFunction
 
+AutofillPrivateGetEntityInstanceByGuidFunction::
+    AutofillPrivateGetEntityInstanceByGuidFunction() = default;
+
+AutofillPrivateGetEntityInstanceByGuidFunction::
+    ~AutofillPrivateGetEntityInstanceByGuidFunction() = default;
+
 ExtensionFunction::ResponseAction
 AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
   std::optional<autofill_private::GetEntityInstanceByGuid::Params> parameters =
@@ -1079,10 +1085,56 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
   if (!entity_instance.has_value()) {
     return RespondNow(Error(kErrorAutofillAiEntityInstanceNotFound));
   }
-  return RespondNow(ArgumentList(
-      api::autofill_private::GetEntityInstanceByGuid::Results::Create(
-          autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-              entity_instance.value(), autofill_client()->GetAppLocale()))));
+
+  authenticator_.reset();
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiReauthRequired)) {
+    authenticator_ = autofill_client()->GetDeviceAuthenticator(
+        /*histogram=*/"Autofill.Ai.Reauth.ViewEntity");
+  }
+
+  const bool should_authenticate_to_view =
+      autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+          autofill_client()->GetPrefs()) &&
+      authenticator_ &&
+      authenticator_->CanAuthenticateWithBiometricOrScreenLock() &&
+      std::ranges::any_of(
+          entity_instance->attributes(),
+          [](const autofill::AttributeInstance& attribute_instance) {
+            return attribute_instance.type().is_obfuscated() &&
+                   !attribute_instance.GetCompleteRawInfo().empty();
+          });
+
+  if (!should_authenticate_to_view) {
+    return RespondNow(ArgumentList(
+        api::autofill_private::GetEntityInstanceByGuid::Results::Create(
+            autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+                entity_instance.value(), autofill_client()->GetAppLocale()))));
+  }
+
+  std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  message = l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_VIEWING_REAUTH);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  authenticator_->AuthenticateWithMessage(
+      message,
+      base::BindOnce(
+          &AutofillPrivateGetEntityInstanceByGuidFunction::OnReauthCompleted,
+          base::RetainedRef(this), entity_instance.value()));
+  return RespondLater();
+}
+
+void AutofillPrivateGetEntityInstanceByGuidFunction::OnReauthCompleted(
+    const autofill::EntityInstance& entity_instance,
+    bool auth_succeeded) {
+  if (auth_succeeded) {
+    Respond(ArgumentList(
+        api::autofill_private::GetEntityInstanceByGuid::Results::Create(
+            autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+                entity_instance, autofill_client()->GetAppLocale()))));
+    return;
+  }
+  Respond(NoArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

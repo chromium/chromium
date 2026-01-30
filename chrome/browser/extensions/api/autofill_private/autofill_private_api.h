@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
 
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -503,7 +504,7 @@ class AutofillPrivateLoadEntityInstancesFunction
 class AutofillPrivateGetEntityInstanceByGuidFunction
     : public AutofillPrivateExtensionFunction {
  public:
-  AutofillPrivateGetEntityInstanceByGuidFunction() = default;
+  AutofillPrivateGetEntityInstanceByGuidFunction();
   AutofillPrivateGetEntityInstanceByGuidFunction(
       const AutofillPrivateGetEntityInstanceByGuidFunction&) = delete;
   AutofillPrivateGetEntityInstanceByGuidFunction& operator=(
@@ -512,10 +513,16 @@ class AutofillPrivateGetEntityInstanceByGuidFunction
                              AUTOFILLPRIVATE_GETENTITYINSTANCEBYGUID)
 
  protected:
-  ~AutofillPrivateGetEntityInstanceByGuidFunction() override = default;
+  ~AutofillPrivateGetEntityInstanceByGuidFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  void OnReauthCompleted(const autofill::EntityInstance& entity_instance,
+                         bool auth_succeeded);
+
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 };
 
 class AutofillPrivateGetWritableEntityTypesFunction
