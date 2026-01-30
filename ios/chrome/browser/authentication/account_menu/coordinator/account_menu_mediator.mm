@@ -39,10 +39,12 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
 @interface AccountMenuMediator () <AuthenticationFlowDelegate,
+                                   AuthenticationServiceObserving,
                                    IdentityManagerObserverBridgeDelegate,
                                    SyncObserverModelBridge>
 
@@ -58,6 +60,8 @@
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
   raw_ptr<PrefService> _prefs;
   // The access point from which this account menu was triggered.
   AccountMenuAccessPoint _accessPoint;
@@ -99,6 +103,7 @@
                         accessPoint:(AccountMenuAccessPoint)accessPoint
                                 URL:(const GURL&)url
                prepareChangeProfile:(ProceduralBlock)prepareChangeProfile {
+  CHECK(authService->SigninEnabled(), base::NotFatalUntil::M152);
   self = [super init];
   if (self) {
     CHECK(syncService);
@@ -114,6 +119,9 @@
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            _authenticationService, self);
     _prefs = prefs;
     _accessPoint = accessPoint;
     _url = url;
@@ -129,14 +137,19 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_authenticationService, base::NotFatalUntil::M152);
+}
+
 - (void)disconnect {
+  _identityManagerObserver.reset();
+  _authServiceObserverBridge.reset();
+  _syncObserver.reset();
   _blockUpdates = YES;
   _accountManagerService = nullptr;
   _authenticationService = nullptr;
-  _identityManagerObserver.reset();
   _identityManager = nullptr;
   _prefs = nullptr;
-  _syncObserver.reset();
   _syncService = nullptr;
   _identities = nil;
   _primaryIdentityBeforeSignin = nullptr;
@@ -494,6 +507,20 @@
   void (^completion)() = base::CallbackToBlock(
       base::BindOnce(std::move(readyCompletion), std::move(continuation)));
   [self.delegate profileWillSwitchWithCompletion:completion];
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authenticationService->SigninEnabled()) {
+    _blockUpdates = YES;
+    self.userInteractionsBlocked = YES;
+    [self.delegate
+        mediatorWantsToBeDismissed:self
+             withCancelationReason:signin_ui::CancelationReason::kFailed
+                    signedIdentity:nil
+                   userTappedClose:NO];
+  }
 }
 
 #pragma mark - Private

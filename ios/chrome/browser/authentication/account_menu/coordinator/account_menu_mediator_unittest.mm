@@ -9,6 +9,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator_delegate.h"
@@ -648,4 +649,16 @@ TEST_F(AccountMenuMediatorTest, TestErrorSectionUpdatedWhenErrorCleared) {
       kSyncPassphrase);
   test_sync_service_->FireStateChanged();
   EXPECT_THAT([mediator_ accountErrorUIInfo], IsNull());
+}
+
+// Tests that the mediator informs the delegate when sign-in becomes disabled.
+TEST_F(AccountMenuMediatorTest, TestSigninDisabled) {
+  OCMExpect([delegate_mock_
+      mediatorWantsToBeDismissed:mediator_
+           withCancelationReason:signin_ui::CancelationReason::kFailed
+                  signedIdentity:nil
+                 userTappedClose:NO]);
+  OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
 }
