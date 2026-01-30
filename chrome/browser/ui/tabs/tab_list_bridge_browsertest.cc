@@ -600,12 +600,11 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, HighlightTabs) {
 
   EXPECT_EQ(1, tab_strip_model->active_index());
 
-  // Verify that the tab with `url4` is still selected since it was the previous
-  // active tab (which is selected), but the tab with `url3` is not selected.
+  // Verify that only tab indices 0 and 1 are selected.
   EXPECT_TRUE(tab_strip_model->IsTabSelected(0));
   EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
   EXPECT_FALSE(tab_strip_model->IsTabSelected(2));
-  EXPECT_TRUE(tab_strip_model->IsTabSelected(3));
+  EXPECT_FALSE(tab_strip_model->IsTabSelected(3));
 }
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,

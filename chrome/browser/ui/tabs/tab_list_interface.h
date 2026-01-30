@@ -89,10 +89,9 @@ class TabListInterface {
   // Otherwise, returns -1.
   virtual int GetIndexOfTab(tabs::TabHandle tab) = 0;
 
-  // Highlights a set of tabs, adding them to the multi-selection set and
-  // activating one of them. This is an additive operation; it does not clear
-  // other currently selected tabs. The `tab_to_activate` becomes the active
-  // tab. The `tab_to_activate` must be present in `tabs`.
+  // Highlights a set of tabs. This will clear any initially-selected tabs and
+  // highlight the new set.  The `tab_to_activate` becomes the active tab and
+  // must be present in `tabs`.
   virtual void HighlightTabs(tabs::TabHandle tab_to_activate,
                              const std::set<tabs::TabHandle>& tabs) = 0;
 
