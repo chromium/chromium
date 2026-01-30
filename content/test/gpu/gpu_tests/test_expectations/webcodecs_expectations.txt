@@ -157,7 +157,7 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hv
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
-crbug.com/371802469 [ graphite-disabled intel no-asan sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
+crbug.com/371802469 [ angle-opengl graphite-disabled intel no-asan sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 crbug.com/371802469 [ intel sonoma ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 # Same with prefer-hardware
 crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
@@ -335,8 +335,6 @@ crbug.com/452841787 [ win11 qualcomm-0x36334330 ] WebCodecs_FrameSizeChange_av01
 
 # vaInitialize fails on chromeos-board-amd64-generic VMs
 crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_copyTo_offscreen [ Failure ]
-crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_EncodeDecode_capture_vp8_prefer-software [ Failure ]
-crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_EncodeDecode_capture_avc1.42001E_prefer-software [ Failure ]
 
 # Flakily times out on M2 devices.
 crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
