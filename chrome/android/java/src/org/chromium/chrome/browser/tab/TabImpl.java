@@ -1510,11 +1510,9 @@ class TabImpl implements Tab {
 
             boolean needsInitWebContents = true;
             boolean createWebContents = webContents == null;
-            // TODO(crbug.com/448420873): For HeadlessTabModel we might not have a WindowAndroid.
-            // For archived tabs, we don't want to create a WebContents. Archived and headless tab
-            // models are not associated with BrowserWindowInterface so this shouldn't be an issue
-            // for now. In future we should reconsider whether these tab models should even hold a
-            // TabImpl vs some kind of light weight tab representation.
+            // Headless tab model will not have a WindowAndroid and for archived tabs, we don't want
+            // to create a WebContents. Archived and headless tab models are not associated with
+            // BrowserWindowInterface so this shouldn't be an issue for now.
             mInitializedWithWindowAndroid = mWindowAndroid != null;
             if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled()
                     && mInitializedWithWindowAndroid
@@ -1537,6 +1535,7 @@ class TabImpl implements Tab {
                             WebContentsFactory.createWebContents(
                                     mProfile, initiallyHidden, initializeRenderer);
                 }
+                assert webContents != null;
             } else {
                 // If there is a frozen WebContents state or a pending lazy load, don't create a new
                 // WebContents. Restoring will be done when showing the tab in the foreground.
