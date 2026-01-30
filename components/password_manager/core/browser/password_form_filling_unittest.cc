@@ -519,8 +519,6 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadForSingleUsernameForm) {
 }
 
 TEST_F(PasswordFormFillingTest, NoFillOnPageLoadWhileActorTaskIsActive) {
-  base::test::ScopedFeatureList feature_list{
-      features::kActorActiveDisablesFillingOnPageLoad};
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> best_matches = {saved_match_};
   const std::vector<PasswordForm> federated_matches = {};

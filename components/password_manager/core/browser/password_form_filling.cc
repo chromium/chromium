@@ -276,9 +276,7 @@ LikelyFormFilling SendFillInformationToRenderer(
         WaitForUsernameReason::kAcceptsWebAuthnCredentials;
   } else if (observed_form.IsSingleUsername()) {
     wait_for_username_reason = WaitForUsernameReason::kSingleUsernameForm;
-  } else if (client->IsActorTaskActive() &&
-             base::FeatureList::IsEnabled(
-                 features::kActorActiveDisablesFillingOnPageLoad)) {
+  } else if (client->IsActorTaskActive()) {
     wait_for_username_reason = WaitForUsernameReason::kActorTaskOngoing;
   } else if (client->IsPasswordChangeOngoing() ||
              IsEligibleForPasswordChange(client, preferred_match)) {

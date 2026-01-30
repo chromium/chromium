@@ -10,8 +10,6 @@
 
 namespace password_manager::features {
 #if !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kActorActiveDisablesFillingOnPageLoad,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLogin, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginFieldVisibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginGetCredentialsNoLoginForm,
