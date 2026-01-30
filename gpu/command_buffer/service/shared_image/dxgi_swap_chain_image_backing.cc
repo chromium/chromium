@@ -64,8 +64,8 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   HRESULT hr = d3d11_device.As(&dxgi_device);
   CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-  DCHECK(dxgi_adapter);
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIFactory2> dxgi_factory;
   dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory));
   DCHECK(dxgi_factory);

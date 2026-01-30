@@ -146,8 +146,8 @@ bool GetActiveAdapterLuid(LUID* luid) {
   CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
-  if (FAILED(dxgi_device->GetAdapter(&adapter)))
-    return false;
+  hr = dxgi_device->GetAdapter(&adapter);
+  CHECK_EQ(hr, S_OK);
 
   DXGI_ADAPTER_DESC desc;
   CHECK_EQ(S_OK, adapter->GetDesc(&desc));

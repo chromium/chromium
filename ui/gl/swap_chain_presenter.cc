@@ -1389,8 +1389,8 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     hr = d3d11_device_.As(&dxgi_device);
     CHECK_EQ(hr, S_OK);
     Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-    dxgi_device->GetAdapter(&dxgi_adapter);
-    DCHECK(dxgi_adapter);
+    hr = dxgi_device->GetAdapter(&dxgi_adapter);
+    CHECK_EQ(hr, S_OK);
     Microsoft::WRL::ComPtr<IDXGIFactoryMedia> media_factory;
     dxgi_adapter->GetParent(IID_PPV_ARGS(&media_factory));
     DCHECK(media_factory);
@@ -2459,8 +2459,8 @@ bool SwapChainPresenter::ReallocateSwapChain(
   HRESULT hr = d3d11_device_.As(&dxgi_device);
   CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-  DCHECK(dxgi_adapter);
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIFactoryMedia> media_factory;
   dxgi_adapter->GetParent(IID_PPV_ARGS(&media_factory));
   DCHECK(media_factory);

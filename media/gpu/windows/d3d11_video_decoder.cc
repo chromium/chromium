@@ -1064,8 +1064,7 @@ void D3D11VideoDecoder::LogDecoderAdapterLUID() {
 
   ComDXGIAdapter dxgi_adapter;
   hr = dxgi_device->GetAdapter(&dxgi_adapter);
-  if (FAILED(hr))
-    return;
+  CHECK_EQ(hr, S_OK);
 
   DXGI_ADAPTER_DESC adapter_desc{};
   hr = dxgi_adapter->GetDesc(&adapter_desc);

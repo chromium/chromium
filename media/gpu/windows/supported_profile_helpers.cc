@@ -545,9 +545,7 @@ UINT GetGPUVendorID(ComDXGIDevice dxgi_device) {
   }
   ComDXGIAdapter dxgi_adapter;
   HRESULT hr = dxgi_device->GetAdapter(&dxgi_adapter);
-  if (FAILED(hr)) {
-    return 0;
-  }
+  CHECK_EQ(hr, S_OK);
   DXGI_ADAPTER_DESC desc{};
   hr = dxgi_adapter->GetDesc(&desc);
   if (FAILED(hr)) {

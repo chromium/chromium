@@ -69,11 +69,8 @@ class GpuMemoryBufferHandleSharedState {
       CHECK_EQ(hr, S_OK);
 
       Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter = nullptr;
-      hr = FAILED(angle_dxgi_device->GetAdapter(&dxgi_adapter));
-      if (FAILED(hr)) {
-        DLOG(ERROR) << "GetAdapter failed with error 0x" << std::hex << hr;
-        return nullptr;
-      }
+      hr = angle_dxgi_device->GetAdapter(&dxgi_adapter);
+      CHECK_EQ(hr, S_OK);
 
       // If adapter is not null, driver type must be D3D_DRIVER_TYPE_UNKNOWN
       // otherwise D3D11CreateDevice will return E_INVALIDARG.
@@ -521,8 +518,8 @@ bool D3DImageBackingFactory::CreateSwapChainInternal(
   HRESULT hr = d3d11_device_.As(&dxgi_device);
   CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-  DCHECK(dxgi_adapter);
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIFactory2> dxgi_factory;
   dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory));
   DCHECK(dxgi_factory);

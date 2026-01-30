@@ -519,10 +519,8 @@ void QueryVideoProcessorCustomExtForHDR() {
   CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter))) {
-    DLOG(ERROR) << "Failed to retrieve DXGI adapter";
-    return;
-  }
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  CHECK_EQ(hr, S_OK);
 
   DXGI_ADAPTER_DESC adapter_desc;
   if (FAILED(dxgi_adapter->GetDesc(&adapter_desc))) {
@@ -1087,11 +1085,11 @@ bool DXGISwapChainTearingSupported() {
       return false;
     }
     Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-    const HRESULT hr = d3d11_device.As(&dxgi_device);
+    HRESULT hr = d3d11_device.As(&dxgi_device);
     CHECK_EQ(hr, S_OK);
     Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-    dxgi_device->GetAdapter(&dxgi_adapter);
-    DCHECK(dxgi_adapter);
+    hr = dxgi_device->GetAdapter(&dxgi_adapter);
+    CHECK_EQ(hr, S_OK);
     Microsoft::WRL::ComPtr<IDXGIFactory5> dxgi_factory;
     if (FAILED(dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory)))) {
       LOG(ERROR) << "Not using swap chain tearing because failed to retrieve "

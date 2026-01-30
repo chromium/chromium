@@ -59,12 +59,12 @@ void HDRMetadataHelperWin::UpdateDisplayMetadata() {
     return;
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  const HRESULT hr = d3d11_device_.As(&dxgi_device);
+  HRESULT hr = d3d11_device_.As(&dxgi_device);
   CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter)))
-    return;
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIFactory> dxgi_factory;
   if (FAILED(dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory))))

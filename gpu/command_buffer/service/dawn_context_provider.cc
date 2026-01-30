@@ -326,10 +326,8 @@ bool GetANGLED3D11DeviceLUID(LUID* luid) {
   CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  if (!SUCCEEDED(dxgi_device->GetAdapter(&dxgi_adapter))) {
-    LOG(ERROR) << "Failed to get IDXGIAdapter from ANGLE.";
-    return false;
-  }
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  CHECK_EQ(hr, S_OK);
 
   DXGI_ADAPTER_DESC adapter_desc;
   if (!SUCCEEDED(dxgi_adapter->GetDesc(&adapter_desc))) {
