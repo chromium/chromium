@@ -321,6 +321,13 @@ bool HTMLInputElement::SupportsWebMCP() const {
 
 void HTMLInputElement::FillWebMCPData(JSONValue& data) {
   CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
+  if (type() == input_type_names::kCheckbox) {
+    bool checked = false;
+    if (data.AsBoolean(&checked)) {
+      SetChecked(checked, TextFieldEventBehavior::kDispatchChangeEvent);
+    }
+    return;
+  }
   String selected_value = GetMCPJSONValue(data);
   SetValue(selected_value);
 }

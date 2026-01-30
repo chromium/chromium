@@ -787,4 +787,63 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput_MaxOnly) {
   EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="check1" type="checkbox">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "check1": {
+           "type": "boolean"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_Checkbox) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id="check1" name="check1" type="checkbox">
+      <input id="check2" name="check2" type="checkbox" checked>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "check1": true,
+          "check2": false
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* check1 = GetInputElement("check1");
+  HTMLInputElement* check2 = GetInputElement("check2");
+  ASSERT_TRUE(check1);
+  ASSERT_TRUE(check2);
+
+  EXPECT_TRUE(check1->Checked());
+  EXPECT_FALSE(check2->Checked());
+}
+
 }  // namespace blink
