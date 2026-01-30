@@ -31,6 +31,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.util.ApplicationTestUtils.waitForActivityWithClass;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
@@ -886,6 +887,43 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 .perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
         onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        acceptHistorySyncAndVerifyFlowCompletion(
+                /* checkRootDialog= */ false, /* hasSignedIn= */ true);
+        addAccountStateWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signInWithAddedAccount_activityKilled_legacy() {
+        HistogramWatcher addAccountStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.SUCCEEDED,
+                                State.ACTIVITY_DESTROYED)
+                        .build();
+
+        // User clicked "Choose another account"
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.REQUIRED);
+
+        // Select "Add Account to device" on the shown expanded sign-in bottom-sheet.
+        onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
+                .perform(click());
+        mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
+
+        // Recreate base activity then confirm account addition.
+        SigninAndHistorySyncActivity activity =
+                waitForActivityWithClass(
+                        mActivity.getClass(), Stage.CREATED, () -> mActivity.recreate());
+        mActivityTestRule.setActivity(activity);
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+
         acceptHistorySyncAndVerifyFlowCompletion(
                 /* checkRootDialog= */ false, /* hasSignedIn= */ true);
         addAccountStateWatcher.assertExpected();

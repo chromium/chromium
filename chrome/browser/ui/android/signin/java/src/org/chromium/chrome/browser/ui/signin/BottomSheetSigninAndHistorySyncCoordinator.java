@@ -90,9 +90,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private @Nullable PropertyModel mDialogModel;
     private boolean mDidShowSigninStep;
     private boolean mFlowInitialized;
+
     // Each access point use a different key as a same activity can host different instances of this
     // coordinator.
     private @Nullable String mRegisteredActivityKey;
+    private @Nullable String mPendingAddedAccountEmail;
     private @ColorInt int mScrimStatusBarColor = Color.TRANSPARENT;
 
     /**
@@ -323,15 +325,15 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
      */
     @Override
     public void onAccountAdded(String accountEmail) {
-        // If the activity was killed during the add account flow (reason why the flow is not yet
-        // initialized), proceed as if the user started the sign-in flow for the first time.
+        // If the activity was killed during the "add account" flow, the account email is cached.
+        // Once the sign-in flow is initialized, sign-in will start automatically using this cached
+        // email. This ensures consistent behavior regardless of whether the base activity was
+        // destroyed in the background during the "add account" flow.
         if (!mFlowInitialized) {
-            // TODO(crbug.com/41493767): Select added account or sign in once done loading.
+            mPendingAddedAccountEmail = accountEmail;
+            return;
         }
-
-        if (mSigninBottomSheetCoordinator != null) {
-            mSigninBottomSheetCoordinator.onAccountAdded(accountEmail);
-        }
+        notifyAccountAdded(accountEmail);
     }
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
@@ -474,6 +476,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                 .getAccounts()
                 .then(
                         accounts -> {
+                            mFlowInitialized = true;
                             finishLoadingAndSelectSigninFlow(accounts);
                         });
     }
@@ -493,6 +496,10 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         if (!accounts.isEmpty()) {
             showSigninBottomSheet();
             SigninMetricsUtils.logSigninStarted(mSigninAccessPoint);
+            if (mPendingAddedAccountEmail != null) {
+                notifyAccountAdded(mPendingAddedAccountEmail);
+                mPendingAddedAccountEmail = null;
+            }
             return;
         }
 
@@ -673,6 +680,12 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         }
         if (mActivityDelegate.isHistorySyncShownFullScreen()) {
             mActivityDelegate.setStatusBarColor(getHistorySyncBackgroundColor());
+        }
+    }
+
+    private void notifyAccountAdded(String accountEmail) {
+        if (mSigninBottomSheetCoordinator != null) {
+            mSigninBottomSheetCoordinator.onAccountAdded(accountEmail);
         }
     }
 }
