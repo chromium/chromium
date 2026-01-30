@@ -1364,7 +1364,7 @@ void AutofillExternalDelegate::MaybeAuthenticateBeforeFilling(
 
   if (!authenticator ||
       !authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
-    std::move(callback).Run(/*auth_suceeded=*/true);
+    std::move(callback).Run(/*auth_succeeded=*/true);
     return;
   }
 
@@ -1386,23 +1386,19 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
     return;
   }
 
-  // A callback that fills if the argument is `true`. Regardless of the
-  // argument, it always hides the popup.
-  // We bind a lambda instead of binding `FillOrPreviewForm` directly
-  // to make sure that `entity`'s lifetime is long enough.
-  base::OnceCallback<void(bool)> fill_and_hide =
+  base::OnceCallback<void(std::optional<EntityInstance>)> fill_and_hide =
       base::BindOnce(
           [](base::WeakPtr<BrowserAutofillManager> manager,
              const FormData& form, const FieldGlobalId& field_id,
-             const EntityInstance& entity, AutofillTriggerSource trigger_source,
-             bool auth_suceeded) {
-            if (manager && auth_suceeded) {
+             AutofillTriggerSource trigger_source,
+             std::optional<EntityInstance> entity) {
+            if (manager && entity) {
               manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                         field_id, &entity, trigger_source);
+                                         field_id, &*entity, trigger_source);
             }
           },
           manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,
-          query_field_.global_id(), *entity, GetTriggerSource())
+          query_field_.global_id(), GetTriggerSource())
           .Then(base::BindOnce(&AutofillClient::HideAutofillSuggestions,
                                client.GetWeakPtr(),
                                SuggestionHidingReason::kAcceptSuggestion));
@@ -1410,21 +1406,45 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
   const bool is_sensitive = WillFillSensitiveAttributes(
       *entity, *form_structure, autofill_field->section(),
       client.GetAppLocale());
+  const bool should_fetch_from_server =
+      is_sensitive && entity->IsMaskedServerEntity() &&
+      base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
+  if (should_fetch_from_server) {
+    fill_and_hide = base::BindOnce(
+        [](base::OnceCallback<void(std::optional<EntityInstance>)> callback,
+           std::optional<EntityInstance> masked_entity) {
+          if (!masked_entity) {
+            // Reauth failed - call with std::nullopt to close the popup.
+            std::move(callback).Run(std::nullopt);
+            return;
+          }
+          // TODO(crbug.com/477845712): Replace this placeholder by a call to an
+          // actual function that does the fetching. Once that is done, also add
+          // tests that the fetching functions are actually called.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+              FROM_HERE,
+              base::BindOnce(std::move(callback), std::move(masked_entity)),
+              base::Seconds(3));
+        },
+        std::move(fill_and_hide));
+  }
+
   const bool should_reauth =
       is_sensitive &&
       prefs::IsAutofillAiReauthBeforeFillingEnabled(client.GetPrefs());
-  if (!should_reauth) {
-    std::move(fill_and_hide).Run(true);
-    return;
-  }
-
-  // Show a loading state.
-  if (base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+  // Show a loading state during fetching or reauth.
+  if ((should_fetch_from_server || should_reauth) &&
+      base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
     AttemptToDisplayAutofillSuggestions(
         PrepareLoadingStateSuggestions(
             base::ToVector(client.GetAutofillSuggestions()), suggestion),
         trigger_source_,
         /*is_update=*/true, AutofillSuggestionsIgnoreFocusLoss(true));
+  }
+
+  if (!should_reauth) {
+    std::move(fill_and_hide).Run(*entity);
+    return;
   }
 
   // Authenticate and fill on success.
@@ -1434,8 +1454,16 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
       base::UTF8ToUTF16(autofill_field->origin().host());
   message = l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH, origin);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  MaybeAuthenticateBeforeFilling(message, "Autofill.Ai.ReauthToFill",
-                                 std::move(fill_and_hide));
+  base::OnceCallback<std::optional<EntityInstance>(bool)>
+      convert_auth_response = base::BindOnce(
+          [](EntityInstance masked_entity, bool auth_succeeded) {
+            return auth_succeeded ? std::move(masked_entity)
+                                  : std::optional<EntityInstance>();
+          },
+          *entity);
+  MaybeAuthenticateBeforeFilling(
+      message, "Autofill.Ai.ReauthToFill",
+      std::move(convert_auth_response).Then(std::move(fill_and_hide)));
 }
 
 void AutofillExternalDelegate::OnReauthCompleted(
