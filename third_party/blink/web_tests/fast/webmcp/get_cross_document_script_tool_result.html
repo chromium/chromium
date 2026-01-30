@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<iframe name="target"></iframe>
+<form toolautosubmit
+      toolname="declarative_tool"
+      tooldescription="A declarative WebMCP tool"
+      action="resources/get_cross_document_script_tool_result_target.html"
+      target="target">
+  <input type="text" name="text">
+</form>
+<script>
+function print(message) {
+    document.getElementById("console").appendChild(document.createTextNode(message + "\n"));
+}
+
+async function runTests() {
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+    }
+
+    if (!window.navigator.modelContext) {
+        print("FAIL: modelContext API disabled");
+        if (window.testRunner) testRunner.notifyDone();
+        return;
+    }
+
+    if (!window.navigator.modelContextTesting) {
+        print("FAIL: Testing API disabled");
+        if (window.testRunner) testRunner.notifyDone();
+        return;
+    }
+
+    try {
+        const frame = document.querySelector("iframe");
+        const frameLoaded = new Promise((r) => (frame.onload = r));
+
+        const result = await navigator.modelContextTesting.executeTool(
+            "declarative_tool",
+            JSON.stringify({ text: "testing" }),
+        );
+
+        if (result != null) {
+            print(`FAIL: Expected null but got '${result}'`);
+            if (window.testRunner) testRunner.notifyDone();
+            return;
+        }
+
+        await frameLoaded;
+        if (!frame.contentWindow.location.href.endsWith("?text=testing")) {
+            print(`FAIL: Expected frame URL to end with '?text=testing'`);
+            if (window.testRunner) testRunner.notifyDone();
+            return;
+        }
+
+        const crossDocumentResult =
+            await frame.contentWindow.navigator.modelContextTesting.getCrossDocumentScriptToolResult();
+        let json;
+        try {
+            json = JSON.parse(crossDocumentResult);
+        } catch (error) {
+            print(`FAIL: Expected cross document result to be parsed as json`);
+            if (window.testRunner) testRunner.notifyDone();
+            return;
+        }
+
+        if (
+            json.length == 1 &&
+            json[0]["@context"] === "https://schema.org" &&
+            json[0]["@type"] === "Message" &&
+            json[0]["text"] == "testing"
+        ) {
+            print(`PASS`);
+        } else {
+            print(`FAIL: Expected [{"@context":"https://schema.org","@type":"Message","text":"testing"}] but got '${crossDocumentResult}'`);
+        }
+    } catch (error) {
+        print(`FAIL: ${error.message}`);
+    }
+
+    if (window.testRunner) {
+        testRunner.notifyDone();
+    }
+}
+</script>
+</head>
+<body onload="runTests();">
+This tests that navigator.modelContextTesting.getCrossDocumentScriptToolResult works correctly.
+<pre id="console">
+</pre>
+</body>
+</html>

@@ -25,6 +25,7 @@ class CORE_EXPORT ModelContextTesting : public ScriptWrappable {
                                                     String tool_name,
                                                     String input_arguments);
   void registerToolsChangedCallback(V8ToolsChangedCallback* callback);
+  ScriptPromise<IDLString> getCrossDocumentScriptToolResult(ScriptState* state);
 
   void Trace(Visitor*) const override;
 

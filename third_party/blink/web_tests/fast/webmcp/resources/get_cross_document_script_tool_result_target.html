@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "echoed value"
+    }
+    </script>
+</head>
+<body>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const textValue = params.get('text');
+
+        if (textValue) {
+            const jsonLd = document.querySelector('script[type="application/ld+json"]');
+            const data = JSON.parse(jsonLd.textContent);
+            data.text = textValue;
+            jsonLd.textContent = JSON.stringify(data);
+        }
+    </script>
+</body>
+</html>

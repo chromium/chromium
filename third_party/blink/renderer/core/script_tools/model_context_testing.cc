@@ -90,6 +90,29 @@ void ModelContextTesting::registerToolsChangedCallback(
       &ModelContextTesting::OnToolsChanged, WrapWeakPersistent(this)));
 }
 
+ScriptPromise<IDLString> ModelContextTesting::getCrossDocumentScriptToolResult(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+
+  ScriptPromise promise = resolver->Promise();
+
+  auto callback = [](ScriptPromiseResolver<IDLString>* resolver,
+                     String result) {
+    if (!resolver->GetScriptState() ||
+        !resolver->GetScriptState()->ContextIsValid()) {
+      return;
+    }
+
+    resolver->Resolve(result);
+  };
+
+  model_context_->GetCrossDocumentScriptToolResult(
+      blink::BindOnce(callback, WrapPersistent(resolver)));
+
+  return promise;
+}
+
 void ModelContextTesting::OnToolsChanged() {
   if (!tools_changed_callback_) {
     return;

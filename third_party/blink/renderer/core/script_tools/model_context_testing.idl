@@ -17,4 +17,5 @@ callback ToolsChangedCallback = void ();
   // Returns null when a navigation is triggered.
   [CallWith=ScriptState] Promise<DOMString?> executeTool(DOMString tool_name, DOMString input_arguments);
   undefined registerToolsChangedCallback(ToolsChangedCallback callback);
+  [CallWith=ScriptState] Promise<DOMString> getCrossDocumentScriptToolResult();
 };
