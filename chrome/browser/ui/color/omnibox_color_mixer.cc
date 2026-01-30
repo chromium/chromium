@@ -148,6 +148,13 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxComposeboxChipBackground] = {ui::kColorSysSurface3};
   mixer[kColorOmniboxComposeboxDivider] = {ui::kColorSysDivider};
   mixer[kColorOmniboxComposeboxFaviconBackground] = {ui::kColorSysSurface};
+  mixer[kColorOmniboxComposeboxFileThumbnailOverlay] = {
+      ui::kColorSysStateScrim};
+
+  // TODO(b/478054110): Using sys/white is a temporary solution. Revert to
+  // sys/on-error once the dark theme color is fixed.
+  mixer[kColorOmniboxComposeboxFileThumbnailOverlayIcon] = {ui::kColorSysWhite};
+
   mixer[kColorOmniboxComposeboxForegroundDisabled] = {
       ui::kColorSysStateDisabled};
   mixer[kColorOmniboxComposeboxPrimaryAction] = {ui::kColorSysPrimary};
