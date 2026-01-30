@@ -33,7 +33,6 @@ static_library("vm") {
   deps = [
     "//ash/constants",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini",
