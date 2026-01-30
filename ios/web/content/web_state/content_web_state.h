@@ -200,6 +200,7 @@ class ContentWebState : public WebState,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
+  void CloseContents(content::WebContents* source) override;
   int GetTopControlsHeight() override;
   int GetTopControlsMinHeight() override;
   int GetBottomControlsHeight() override;

@@ -756,6 +756,10 @@ content::WebContents* ContentWebState::AddNewContents(
   return nullptr;
 }
 
+void ContentWebState::CloseContents(content::WebContents* source) {
+  CloseWebState();
+}
+
 int ContentWebState::GetTopControlsHeight() {
   return ([web_view_ maxViewportInsets].top -
           [web_view_ minViewportInsets].top) *
