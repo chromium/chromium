@@ -27,12 +27,6 @@ using ::testing::AtLeast;
 
 namespace media {
 
-// Note that we are continuing to skip some tests when MappableSI is enabled
-// until we port over facilities that the tests were using to force failure
-// of GMB creation.
-// TODO(crbug.com/366375486): Convert the currently skipped tests.
-const bool SkipTestWithMappableSI = true;
-
 class MappableSharedImageVideoFramePoolTest : public ::testing::Test {
  public:
   MappableSharedImageVideoFramePoolTest() = default;
@@ -887,13 +881,10 @@ TEST_F(MappableSharedImageVideoFramePoolTest, CreateMappableSharedImageFail) {
 }
 
 TEST_F(MappableSharedImageVideoFramePoolTest,
-       CreateGpuMemoryBufferFailAfterShutdown) {
-  if (SkipTestWithMappableSI) {
-    return;
-  }
+       CreateMappableSharedImageFailAfterShutdown) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
-  mock_gpu_factories_->SetFailToMapGpuMemoryBufferForTesting(true);
+  sii_->SetFailSharedImageCreationWithBufferUsage(true);
   mappable_shared_image_pool_->MaybeCreateHardwareFrame(
       software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
   mappable_shared_image_pool_.reset();
