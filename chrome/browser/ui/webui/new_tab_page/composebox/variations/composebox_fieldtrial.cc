@@ -266,10 +266,6 @@ const base::FeatureParam<bool> kShowToolsAndModels(&kNtpComposebox,
                                                    "ShowToolsAndModels",
                                                    false);
 
-const base::FeatureParam<bool> kShowCanvas(&kNtpComposebox,
-                                           "ShowCanvas",
-                                           false);
-
 const base::FeatureParam<bool> kShowModelPicker(&kNtpComposebox,
                                                 "ShowModelPicker",
                                                 false);

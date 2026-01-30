@@ -1656,11 +1656,6 @@ const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
     {"ShowComposeboxZps", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
 };
-const FeatureEntry::FeatureParam kShowCanvasAndModelPicker[] = {
-    {"ShowContextMenu", "true"},   {"ShowToolsAndModels", "true"},
-    {"ShowCanvas", "true"},        {"ShowModelPicker", "true"},
-    {"ShowComposeboxZps", "true"}, {"ShowComposeboxTypedSuggest", "true"},
-};
 const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"ShowContextMenu", "true"},
     {"ShowContextMenuTabPreviews", "true"},
@@ -1700,7 +1695,7 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"ShowSubmit", "true"},
     {"EnableEphemeralContextMenuDescription", "true"},
 };
-const FeatureEntry::FeatureParam kComposeboxNextWithCanvasAndModelPicker[] = {
+const FeatureEntry::FeatureParam kComposeboxNextWithModelPicker[] = {
     {"ShowContextMenu", "true"},
     {"ShowComposeboxZps", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
@@ -1710,7 +1705,6 @@ const FeatureEntry::FeatureParam kComposeboxNextWithCanvasAndModelPicker[] = {
     {"ShowSubmit", "true"},
     {"EnableEphemeralContextMenuDescription", "true"},
     {"EnableThreadsRail", "true"},
-    {"ShowCanvas", "true"},
     {"ShowModelPicker", "true"},
 };
 
@@ -1729,8 +1723,6 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      nullptr},
     {"- Show Contextual Input Menu and Suggest with Tools and Models",
      kShowToolsAndModels, std::size(kShowToolsAndModels), nullptr},
-    {"- Show Contextual Input Menu with Canvas and Model Picker",
-     kShowCanvasAndModelPicker, std::size(kShowCanvasAndModelPicker), nullptr},
     {"- Next Experience", kComposeboxNext, std::size(kComposeboxNext), nullptr},
     {"- Next Experience Single Context", kComposeboxNextSingleContext,
      std::size(kComposeboxNextSingleContext), nullptr},
@@ -1739,9 +1731,8 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Next Experience Single Context for Realbox Next",
      kComposeboxNextSingleContextForRealboxNext,
      std::size(kComposeboxNextSingleContextForRealboxNext), nullptr},
-    {"- Next Experience with Canvas and Model Picker",
-     kComposeboxNextWithCanvasAndModelPicker,
-     std::size(kComposeboxNextWithCanvasAndModelPicker), nullptr},
+    {"- Next Experience with Model Picker", kComposeboxNextWithModelPicker,
+     std::size(kComposeboxNextWithModelPicker), nullptr},
 };
 
 const FeatureEntry::FeatureParam kShowNextRealboxTallTopContext[] = {
