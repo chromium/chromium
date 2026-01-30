@@ -23,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "fuchsia_web/common/fuchsia_dir_scheme.h"
@@ -181,10 +182,9 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
     std::optional<std::string> mime_type;
     base::MemoryMappedFile metadata_mmap;
     if (MapFile(std::move(metadata_channel), &metadata_mmap)) {
-      std::optional<base::Value> metadata_parsed = base::JSONReader::Read(
-          std::string_view(reinterpret_cast<char*>(metadata_mmap.data()),
-                           metadata_mmap.length()),
-          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+      std::optional<base::Value> metadata_parsed =
+          base::JSONReader::Read(base::as_string_view(metadata_mmap.bytes()),
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
       if (metadata_parsed && metadata_parsed->is_dict()) {
         const auto& dict = metadata_parsed->GetDict();
@@ -202,9 +202,9 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
     // from the file's contents.
     if (!mime_type) {
       if (!net::SniffMimeType(
-              std::string_view(reinterpret_cast<char*>(mmap_.data()),
-                               std::min(mmap_.length(), kMaxBytesToSniff)),
-              request.url, {} /* type_hint */,
+              base::as_string_view(mmap_.bytes().first(std::min(
+                  mmap_.length(), static_cast<size_t>(kMaxBytesToSniff)))),
+              request.url, /*type_hint=*/{},
               net::ForceSniffFileUrlsForHtml::kDisabled,
               &mime_type.emplace())) {
         if (!mime_type) {
@@ -247,9 +247,8 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
     body_writer_->Write(
         std::make_unique<mojo::StringDataSource>(
-            std::string_view(reinterpret_cast<char*>(
-                                 UNSAFE_TODO(mmap_.data() + start_offset)),
-                             content_length),
+            base::as_string_view(
+                mmap_.bytes().subspan(start_offset, content_length)),
             mojo::StringDataSource::AsyncWritingMode::
                 STRING_STAYS_VALID_UNTIL_COMPLETION),
         base::BindOnce(&ContentDirectoryURLLoader::OnWriteComplete,
