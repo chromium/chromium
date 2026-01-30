@@ -100,7 +100,6 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             @delete-tab-context="${this.onDeleteFile_}"
             @tool-click="${this.onToolClick_}"
             .hasImageFiles="${this.hasImageFiles()}"
-            .hideEntrypointButton="${this.shouldHideEntrypointButton_}"
             .disabledTabIds="${this.addedTabsIds_}"
             .fileNum="${this.files_.size}"
             .searchboxLayoutMode="${this.searchboxLayoutMode}"

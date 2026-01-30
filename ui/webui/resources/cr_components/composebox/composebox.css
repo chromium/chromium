@@ -197,6 +197,10 @@ search-animated-glow {
   padding-inline: var(--text-input-inline-start-spacing) 0;
 }
 
+:host([show-model-picker_]:not([has-allowed-inputs_])) #textContainer {
+  padding-inline-start: 10px;
+}
+
 #iconContainer {
   --text-input-top-spacing: 8px;
   align-items: center;

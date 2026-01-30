@@ -98,7 +98,11 @@ export class ContextualEntrypointButtonElement extends
   }
 
   closeMenu() {
-    this.$.menu.close();
+    const menu =
+        this.shadowRoot.querySelector<ContextualActionMenuElement>('#menu');
+    if (menu) {
+      menu.close();
+    }
   }
 
   protected onEntrypointClick_(e: Event) {
@@ -139,6 +143,13 @@ export class ContextualEntrypointButtonElement extends
     assert(entrypoint);
     entrypoint?.classList.add('menu-open');
     this.$.menu.showAt(entrypoint);
+  }
+
+  protected hasAllowedInputs_(): boolean {
+    return !!this.inputState &&
+        (this.inputState.allowedModels.length > 0 ||
+         this.inputState.allowedTools.length > 0 ||
+         this.inputState.allowedInputTypes.length > 0);
   }
 }
 
