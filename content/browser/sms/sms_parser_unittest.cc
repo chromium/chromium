@@ -5,6 +5,7 @@
 #include "content/browser/sms/sms_parser.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,14 +16,14 @@ namespace content {
 
 namespace {
 
-url::Origin ParseOrigin(const std::string& message) {
+url::Origin ParseOrigin(std::string_view message) {
   SmsParser::Result result = SmsParser::Parse(message);
   if (!result.IsValid())
     return url::Origin();
   return result.top_origin;
 }
 
-std::string ParseOTP(const std::string& message) {
+std::string ParseOTP(std::string_view message) {
   SmsParser::Result result = SmsParser::Parse(message);
   if (!result.IsValid())
     return "";

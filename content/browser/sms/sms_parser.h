@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SMS_SMS_PARSER_H_
 #define CONTENT_BROWSER_SMS_SMS_PARSER_H_
 
+#include <string>
 #include <string_view>
 
 #include "content/common/content_export.h"
@@ -30,27 +31,40 @@ class CONTENT_EXPORT SmsParser {
 
   struct CONTENT_EXPORT Result {
     // Creates Result when the parsing has succeeded.
-    Result(const url::Origin& top_origin,
-           const url::Origin& embedded_origin,
-           const std::string& one_time_code);
+    Result(url::Origin top_origin,
+           url::Origin embedded_origin,
+           std::string_view one_time_code);
     // Creates Result when the parsing has failed.
     explicit Result(SmsParsingStatus);
-    Result(const Result& other);
+
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+
+    Result(Result&&);
+    Result& operator=(Result&&);
+
     ~Result();
 
     bool IsValid() const { return parsing_status == SmsParsingStatus::kParsed; }
 
     // The origin list consists of the origin that made the OTP request followed
     // by its cross-origin ancestor's origin if such an ancestor exists.
-    SmsFetcher::OriginList GetOriginList() const;
+    //
+    // This `Result` is no longer usable after this method is called.
+    SmsFetcher::OriginList TakeOriginList() &&;
 
-    const url::Origin top_origin;
-    const url::Origin embedded_origin;
-    const std::string one_time_code;
+    url::Origin top_origin;
+    url::Origin embedded_origin;
+    std::string one_time_code;
     SmsParsingStatus parsing_status;
   };
 
   static Result Parse(std::string_view sms);
+
+  // This class contains only static methods.
+  SmsParser() = delete;
+  SmsParser(const SmsParser&) = delete;
+  SmsParser& operator=(const SmsParser&) = delete;
 };
 
 }  // namespace content
