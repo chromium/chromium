@@ -634,8 +634,17 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // refers to the edge of the window being sized.
   void SizeWindowToAspectRatio(UINT param, gfx::Rect* rect);
 
-  // Get the cursor position, which may be mocked if running a test
+  // Get the cursor position, which may be mocked if running a test.
   POINT GetCursorPos() const;
+
+  // Remove the current window's reference from `fullscreen_monitor_map_`.
+  void RemoveCurrentWindowFromFullscreenMonitorMap();
+
+  // Update `fullscreen_monitor_map_` to remove the invalid HMONITOR handle
+  // corresponding to the current window handle. This is called when the
+  // WM_DISPLAYCHANGE message is received (i.e., when the display configuration
+  // changes).
+  void UpdateFullscreenMonitorMap();
 
   raw_ptr<HWNDMessageHandlerDelegate> delegate_;
 

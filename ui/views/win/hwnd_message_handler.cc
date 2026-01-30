@@ -1928,12 +1928,7 @@ void HWNDMessageHandler::OnDestroy() {
   delegate_->HandleDestroying();
   // If the window going away is a fullscreen window then remove its references
   // from the full screen window map.
-  auto& map = fullscreen_monitor_map_.Get();
-  const auto i = std::ranges::find(
-      map, this, &FullscreenWindowMonitorMap::value_type::second);
-  if (i != map.end()) {
-    map.erase(i);
-  }
+  RemoveCurrentWindowFromFullscreenMonitorMap();
 
   if (auto& ax_platform = ui::AXPlatform::GetInstance();
       ax_platform.HasServicedUiaClients()) {
@@ -1968,6 +1963,10 @@ void HWNDMessageHandler::OnDisplayChange(UINT bits_per_pixel,
   // updates of the global ScreenWin DisplayInfos state. See
   // https://crbug.com/1413940 for more info.
   display::win::GetScreenWin()->UpdateDisplayInfosIfNeeded();
+
+  // Update `fullscreen_monitor_map_`, as the user may have disconnected a
+  // monitor, causing the HMONITOR handle to become invalid.
+  UpdateFullscreenMonitorMap();
 
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   delegate_->HandleDisplayChange();
@@ -3889,6 +3888,25 @@ POINT HWNDMessageHandler::GetCursorPos() const {
   ::GetCursorPos(&cursor_pos);
 
   return cursor_pos;
+}
+
+void HWNDMessageHandler::RemoveCurrentWindowFromFullscreenMonitorMap() {
+  auto& map = fullscreen_monitor_map_.Get();
+  const auto i = std::ranges::find(
+      map, this, &FullscreenWindowMonitorMap::value_type::second);
+  if (i != map.end()) {
+    map.erase(i);
+  }
+}
+
+void HWNDMessageHandler::UpdateFullscreenMonitorMap() {
+  HMONITOR hmonitor = MonitorFromWindow(hwnd(), MONITOR_DEFAULTTONULL);
+  if (!hmonitor) {
+    // A null `hmonitor` indicates that the monitor where the current window
+    // resides has been disconnected. Remove the HMONITOR corresponding to the
+    // current window.
+    RemoveCurrentWindowFromFullscreenMonitorMap();
+  }
 }
 
 // static
