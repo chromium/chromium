@@ -106,14 +106,14 @@ class MEDIA_EXPORT LegacyAudioFileReader {
   std::unique_ptr<FFmpegGlue> glue_;
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> codec_context_;
 
-  int stream_index_;
+  int stream_index_ = 0;
   raw_ptr<FFmpegURLProtocol, DanglingUntriaged> protocol_;
-  AudioCodec audio_codec_;
-  int channels_;
-  int sample_rate_;
+  AudioCodec audio_codec_ = AudioCodec::kUnknown;
+  int channels_ = 0;
+  int sample_rate_ = 0;
 
   // AVSampleFormat initially requested; not Chrome's SampleFormat.
-  int av_sample_format_;
+  int av_sample_format_ = 0;
 };
 
 }  // namespace media

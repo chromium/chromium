@@ -31,12 +31,7 @@ static const int kAACPrimingFrameCount = 2112;
 static const int kAACRemainderFrameCount = 519;
 
 LegacyAudioFileReader::LegacyAudioFileReader(FFmpegURLProtocol* protocol)
-    : stream_index_(0),
-      protocol_(protocol),
-      audio_codec_(AudioCodec::kUnknown),
-      channels_(0),
-      sample_rate_(0),
-      av_sample_format_(0) {}
+    : protocol_(protocol) {}
 
 LegacyAudioFileReader::~LegacyAudioFileReader() {
   Close();
@@ -253,9 +248,10 @@ bool LegacyAudioFileReader::OnNewFrame(
     int* total_frames,
     std::vector<std::unique_ptr<AudioBus>>* decoded_audio_packets,
     AVFrame* frame) {
-  int frames_read = frame->nb_samples;
-  if (frames_read < 0)
+  if (frame->nb_samples < 0) {
     return false;
+  }
+  size_t frames_read = static_cast<size_t>(frame->nb_samples);
 
   const int channels = frame->ch_layout.nb_channels;
   if (frame->sample_rate != sample_rate_ || channels != channels_ ||
@@ -281,18 +277,19 @@ bool LegacyAudioFileReader::OnNewFrame(
         UNSAFE_TODO(glue_->format_context()->streams[stream_index_])->time_base,
         frame->duration + std::min(static_cast<int64_t>(0), frame->pts));
     const base::TimeDelta frame_duration =
-        base::Seconds(frames_read / static_cast<double>(sample_rate_));
+        AudioTimestampHelper::FramesToTime(frames_read, sample_rate_);
 
     if (pkt_duration < frame_duration && pkt_duration.is_positive()) {
-      const int new_frames_read =
+      const size_t new_frames_read =
           base::ClampFloor(frames_read * (pkt_duration / frame_duration));
       DVLOG(2) << "Shrinking AAC frame from " << frames_read << " to "
                << new_frames_read << " based on packet duration.";
       frames_read = new_frames_read;
 
       // The above process may delete the entire packet.
-      if (!frames_read)
+      if (!frames_read) {
         return true;
+      }
     }
   }
 
@@ -302,29 +299,54 @@ bool LegacyAudioFileReader::OnNewFrame(
   decoded_audio_packets->emplace_back(AudioBus::Create(channels, frames_read));
   AudioBus* audio_bus = decoded_audio_packets->back().get();
 
+  // SAFETY: `total_samples` is used in multiple paths below to determine the
+  // size of `data[0]`, instead of `frame->linesize`, which may contain padding.
+  // `frame->nb_samples` (e.g. `frames_read`) contains the number of samples per
+  // channel, and `frame->ch_layout.nb_channels` (e.g. `channels`) contains the
+  // total number of channels.
+  const size_t total_samples =
+      base::CheckMul(frames_read, channels).Cast<size_t>().ValueOrDie();
+
   if (codec_context_->sample_fmt == AV_SAMPLE_FMT_FLT) {
-    audio_bus->FromInterleaved<Float32SampleTypeTraits>(
-        reinterpret_cast<float*>(frame->data[0]), frames_read);
+    // SAFETY: per documentation, `AV_SAMPLE_FMT_FLT` represents interleaved
+    // float data. See note about `total_samples` above.
+    auto source = UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<float*>(frame->data[0]), total_samples));
+    audio_bus->FromInterleaved<Float32SampleTypeTraits>(source);
   } else if (codec_context_->sample_fmt == AV_SAMPLE_FMT_FLTP) {
     for (int ch = 0; ch < audio_bus->channels(); ++ch) {
-      audio_bus->channel(ch).copy_from_nonoverlapping(UNSAFE_TODO(
-          base::span(reinterpret_cast<float*>(frame->extended_data[ch]),
-                     static_cast<size_t>(frames_read))));
+      // SAFETY: per documentation, `AV_SAMPLE_FMT_FLTP` represents planar
+      // float data, and `frames_read` represents the number of samples per
+      // channel.
+      audio_bus->channel(ch).copy_from_nonoverlapping(UNSAFE_BUFFERS(base::span(
+          reinterpret_cast<float*>(frame->extended_data[ch]), frames_read)));
     }
   } else {
     int bytes_per_sample = av_get_bytes_per_sample(codec_context_->sample_fmt);
     switch (bytes_per_sample) {
       case 1:
-        audio_bus->FromInterleaved<UnsignedInt8SampleTypeTraits>(
-            reinterpret_cast<const uint8_t*>(frame->data[0]), frames_read);
+        // SAFETY: per documentation, `AV_SAMPLE_FMT_U8` represents interleaved
+        // uint8_t data. See note about `total_samples` above.
+        CHECK_EQ(AV_SAMPLE_FMT_U8, codec_context_->sample_fmt);
+        audio_bus->FromInterleaved<UnsignedInt8SampleTypeTraits>(UNSAFE_BUFFERS(
+            base::span(reinterpret_cast<const uint8_t*>(frame->data[0]),
+                       total_samples)));
         break;
       case 2:
-        audio_bus->FromInterleaved<SignedInt16SampleTypeTraits>(
-            reinterpret_cast<const int16_t*>(frame->data[0]), frames_read);
+        // SAFETY: per documentation, `AV_SAMPLE_FMT_S16` represents interleaved
+        // int16_t data. See note about `total_samples` above.
+        CHECK_EQ(AV_SAMPLE_FMT_S16, codec_context_->sample_fmt);
+        audio_bus->FromInterleaved<SignedInt16SampleTypeTraits>(UNSAFE_BUFFERS(
+            base::span(reinterpret_cast<const int16_t*>(frame->data[0]),
+                       total_samples)));
         break;
       case 4:
-        audio_bus->FromInterleaved<SignedInt32SampleTypeTraits>(
-            reinterpret_cast<const int32_t*>(frame->data[0]), frames_read);
+        // SAFETY: per documentation, `AV_SAMPLE_FMT_S32` represents interleaved
+        // int32_t data. See note about `total_samples` above.
+        CHECK_EQ(AV_SAMPLE_FMT_S32, codec_context_->sample_fmt);
+        audio_bus->FromInterleaved<SignedInt32SampleTypeTraits>(UNSAFE_BUFFERS(
+            base::span(reinterpret_cast<const int32_t*>(frame->data[0]),
+                       total_samples)));
         break;
       default:
         NOTREACHED() << "Unsupported bytes per sample encountered: "
