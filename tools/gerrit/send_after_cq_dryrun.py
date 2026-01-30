@@ -69,12 +69,19 @@ def get_issue_info():
 
 class ReviewMonitor:
 
-    def __init__(self, issue_id, host, patchset, reviewers, dry_run=False):
+    def __init__(self,
+                 issue_id,
+                 host,
+                 patchset,
+                 reviewers,
+                 dry_run=False,
+                 verbose=False):
         self.issue_id = issue_id
         self.host = host
         self.patchset = patchset
         self.reviewers = reviewers
         self.dry_run = dry_run
+        self.verbose = verbose
         self.gerrit_client = find_gerrit_client()
         if not self.gerrit_client:
             print("❌ Could not find gerrit_client.py in your PATH.")
@@ -130,7 +137,9 @@ class ReviewMonitor:
         # wraps others into a (200) error if the response isn't JSON.
         ignorable_msgs.append("409")
 
-        print(f"      {' '.join(cmd)}")
+        if self.verbose:
+            print(f"      {' '.join(cmd)}")
+
         if self.dry_run:
             return
 
@@ -298,6 +307,9 @@ def main():
     parser.add_argument('--dry-run',
                         action='store_true',
                         help='Test monitoring logic')
+    parser.add_argument('--verbose',
+                        action='store_true',
+                        help='Print internal commands')
     args = parser.parse_args()
 
     if not args.dry_run and not args.reviewers:
@@ -315,7 +327,8 @@ def main():
                             host=host,
                             patchset=target_patchset,
                             reviewers=final_reviewers,
-                            dry_run=args.dry_run)
+                            dry_run=args.dry_run,
+                            verbose=args.verbose)
     monitor.monitor()
 
 
