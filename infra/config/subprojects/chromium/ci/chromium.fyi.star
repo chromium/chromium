@@ -2674,6 +2674,7 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "x64",
+            "android_with_static_analysis",
         ],
     ),
     targets = targets.bundle(
