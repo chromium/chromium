@@ -269,6 +269,39 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies) {
       net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    HttpCookieBrowserTest,
+    SendSameSiteCookies_CrossSiteFrameCausesParentNavigation) {
+  SetSameSiteCookies(kHostA);
+  SetSameSiteCookies(kHostB);
+  // Cross-site iframe (B embedded in A) sends only None cookies, even for a
+  // top-level navigation to A.
+  ASSERT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(),
+          FrameTreeForUrl(EchoCookiesUrl(https_server(), kHostB)), {0}),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+
+  ASSERT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+                     JsReplace(R"(
+      const a = document.createElement('a');
+      a.id = "myLink";
+      a.target = "_parent";
+      a.href = $1;
+      document.body.appendChild(a);
+      )",
+                               EchoCookiesUrl(https_server(), kHostB))));
+
+  ASSERT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0), R"(
+      document.getElementById('myLink').click();
+      )"));
+
+  EXPECT_THAT(
+      ExtractFrameContent(
+          ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+}
+
 IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies_Redirect) {
   SetSameSiteCookies(kHostA);
 
