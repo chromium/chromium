@@ -1194,7 +1194,8 @@ Element& Element::CloneWithChildren(
 
 Element& Element::CloneWithoutChildren() const {
   NodeCloningData data;
-  return CloneWithoutChildren(data, /*registry*/ nullptr);
+  auto* registry = CustomElementRegistry::DefaultRegistry(GetDocument());
+  return CloneWithoutChildren(data, registry);
 }
 
 Element& Element::CloneWithoutChildren(NodeCloningData& data,

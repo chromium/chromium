@@ -2972,7 +2972,8 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/custom-elements/"
+      "external/wpt/custom-elements/",
+      "custom-elements/"
     ],
     "args": [
       "--enable-blink-features=ScopedCustomElementRegistry"
