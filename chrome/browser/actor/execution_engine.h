@@ -19,7 +19,6 @@
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -57,6 +56,7 @@ class Origin;
 
 namespace actor {
 
+struct ActionResultWithLatencyInfo;
 class ActorTask;
 class ToolRequest;
 namespace ui {
@@ -139,8 +139,12 @@ class ExecutionEngine : public ToolDelegate {
   void FailCurrentTool(mojom::ActionResultCode reason);
 
   // Performs the given tool actions and invokes the callback when completed.
+  using ActCallback =
+      base::OnceCallback<void(mojom::ActionResultPtr,
+                              std::optional<size_t>,
+                              std::vector<ActionResultWithLatencyInfo>)>;
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
-           ActorTask::ActCallback callback);
+           ActCallback callback);
 
   // Invalidated anytime `action_sequence_` is reset.
   base::WeakPtr<ExecutionEngine> GetWeakPtr();
@@ -357,7 +361,7 @@ class ExecutionEngine : public ToolDelegate {
   base::flat_map<url::Origin, url::Origin> affiliated_origin_map_;
 
   std::vector<std::unique_ptr<ToolRequest>> action_sequence_;
-  ActorTask::ActCallback act_callback_;
+  ActCallback act_callback_;
 
   // The index of the next action that will be started when ExecuteNextAction is
   // reached.

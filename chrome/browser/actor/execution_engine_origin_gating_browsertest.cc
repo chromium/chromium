@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   )json");
 
   OpenGlicAndCreateTask();
-  actor_task().GetExecutionEngine()->AddWritableMainframeOrigins(
+  actor_task().GetExecutionEngine().AddWritableMainframeOrigins(
       {url::Origin::Create(blocked_url)});
 
   // Start on example.com.

@@ -89,7 +89,7 @@ ActorNavigationThrottle::ActorNavigationThrottle(
     const ActorTask& task)
     : content::NavigationThrottle(registry),
       task_id_(task.id()),
-      execution_engine_(task.GetExecutionEngine()->GetWeakPtr()) {}
+      execution_engine_(task.GetExecutionEngine().GetWeakPtr()) {}
 
 ActorNavigationThrottle::~ActorNavigationThrottle() = default;
 

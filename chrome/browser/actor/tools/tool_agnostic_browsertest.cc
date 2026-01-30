@@ -543,17 +543,17 @@ IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
 
   // Tabs are added asynchronously so the execution engine isn't started until
   // tabs are added. Wait until tabs are added.
-  ASSERT_EQ(actor_task().GetExecutionEngine()->state(),
+  ASSERT_EQ(actor_task().GetExecutionEngine().state(),
             ExecutionEngine::State::kInit);
   base::test::TestFuture<void> started_future;
   ExecutionEngineStateWaiter waiter(started_future.GetCallback(),
-                                    *actor_task().GetExecutionEngine(),
+                                    actor_task().GetExecutionEngine(),
                                     ExecutionEngine::State::kStartAction);
   ASSERT_TRUE(started_future.Wait());
 
   // Now that tabs have been added the execution engine should be in an async
   // site policy checks state before the tool is created.
-  ASSERT_EQ(actor_task().GetExecutionEngine()->state(),
+  ASSERT_EQ(actor_task().GetExecutionEngine().state(),
             ExecutionEngine::State::kStartAction);
   ASSERT_FALSE(result.IsReady());
 
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithDeferWhileInterrupted,
   base::test::TestFuture<void> tool_invoked_future;
   actor_task()
       .GetExecutionEngine()
-      ->set_tool_invoke_complete_callback_for_testing(
+      .set_tool_invoke_complete_callback_for_testing(
           tool_invoked_future.GetCallback());
 
   // Inject a click action that causes a navigation. However, the navigation
@@ -624,17 +624,17 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithDeferWhileInterrupted,
   // complete since the actor task is paused. This also means the ActorTask::Act
   // callback isn't replied to.
   TinyWait();
-  EXPECT_EQ(actor_task().GetExecutionEngine()->state(),
+  EXPECT_EQ(actor_task().GetExecutionEngine().state(),
             ExecutionEngine::State::kToolInvoke);
   EXPECT_FALSE(act_result.IsReady());
 
-  actor_task().GetExecutionEngine()->FailCurrentTool(
+  actor_task().GetExecutionEngine().FailCurrentTool(
       mojom::ActionResultCode::kNavigateCommittedErrorPage);
 
   // Uninterrupting the task should unblock everything to completion.
   base::test::TestFuture<void> completion_future;
   ExecutionEngineStateWaiter waiter(completion_future.GetCallback(),
-                                    *actor_task().GetExecutionEngine(),
+                                    actor_task().GetExecutionEngine(),
                                     ExecutionEngine::State::kComplete);
   actor_task().Uninterrupt(ActorTask::State::kActing);
   ASSERT_TRUE(completion_future.Wait());
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
   ActResultFuture result;
   base::test::TestFuture<void> start_future;
   ExecutionEngineStateWaiter state_waiter(start_future.GetCallback(),
-                                          *actor_task().GetExecutionEngine(),
+                                          actor_task().GetExecutionEngine(),
                                           ExecutionEngine::State::kToolInvoke);
 
   std::unique_ptr<ToolRequest> action =
@@ -687,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
   // Wait until the tab has been associated with the task but before the tool
   // finishes invoking in ExecutionEngine.
   ASSERT_TRUE(start_future.Wait());
-  ASSERT_EQ(actor_task().GetExecutionEngine()->state(),
+  ASSERT_EQ(actor_task().GetExecutionEngine().state(),
             ExecutionEngine::State::kToolInvoke);
   ASSERT_TRUE(actor_task().GetTabs().contains(tab_handle));
   ASSERT_FALSE(result.IsReady());
@@ -720,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
 
   base::test::TestFuture<void> tool_invoke_future;
   ExecutionEngineStateWaiter waiter(tool_invoke_future.GetCallback(),
-                                    *actor_task().GetExecutionEngine(),
+                                    actor_task().GetExecutionEngine(),
                                     ExecutionEngine::State::kToolInvoke);
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());

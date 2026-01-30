@@ -442,12 +442,11 @@ void GlicActorTaskManager::ResumeActorTask(
 
   actor::mojom::ActionResultCode resume_response_code =
       actor::mojom::ActionResultCode::kOk;
-  if (actor::ExecutionEngine* execution_engine = task->GetExecutionEngine()) {
-    resume_response_code = execution_engine->user_take_over_result().value_or(
-        actor::mojom::ActionResultCode::kOk);
-    // Reset the takeover result
-    execution_engine->set_user_take_over_result(std::nullopt);
-  }
+  actor::ExecutionEngine& execution_engine = task->GetExecutionEngine();
+  resume_response_code = execution_engine.user_take_over_result().value_or(
+      actor::mojom::ActionResultCode::kOk);
+  // Reset the takeover result
+  execution_engine.set_user_take_over_result(std::nullopt);
 
   // TODO(crbug.com/420669167): GetLastActedTabs should only ever have 1 tab in
   // it for now but once we support multi-tab we'll need to grab observations
@@ -562,8 +561,7 @@ void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
     return;
   }
   actor::ActorTask::State next_state = actor::ActorTask::State::kReflecting;
-  if (task->GetExecutionEngine() &&
-      task->GetExecutionEngine()->HasActionSequence()) {
+  if (task->GetExecutionEngine().HasActionSequence()) {
     next_state = actor::ActorTask::State::kActing;
   }
   task->Uninterrupt(next_state);

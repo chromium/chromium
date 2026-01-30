@@ -169,7 +169,7 @@ class ActorTask {
   bool IsCompleted() const;
   static bool IsCompletedState(State state);
 
-  ExecutionEngine* GetExecutionEngine() const;
+  ExecutionEngine& GetExecutionEngine() const;
 
   // Add/remove the given TabHandle to the set of tabs this task is operating
   // over and notify the UI if this is a new tab for the task. Added tabs will

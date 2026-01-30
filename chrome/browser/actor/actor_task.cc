@@ -145,8 +145,9 @@ void ActorTask::SetIdForTesting(int id) {
   id_ = TaskId(id);
 }
 
-ExecutionEngine* ActorTask::GetExecutionEngine() const {
-  return execution_engine_.get();
+ExecutionEngine& ActorTask::GetExecutionEngine() const {
+  CHECK(execution_engine_);
+  return *execution_engine_;
 }
 
 ActorTask::State ActorTask::GetState() const {
@@ -851,6 +852,7 @@ std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
 
 void ActorTask::SetExecutionEngineForTesting(
     std::unique_ptr<ExecutionEngine> engine) {
+  CHECK(engine);
   execution_engine_.reset(std::move(engine.release()));
   execution_engine_->SetOwner(this);
 }

@@ -179,7 +179,7 @@ content::RenderFrameHost* ActorToolsTest::main_frame() {
 }
 
 ExecutionEngine& ActorToolsTest::execution_engine() {
-  return *actor_task().GetExecutionEngine();
+  return actor_task().GetExecutionEngine();
 }
 
 ActorTask& ActorToolsTest::actor_task() const {

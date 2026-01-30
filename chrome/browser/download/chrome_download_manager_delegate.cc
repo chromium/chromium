@@ -569,7 +569,7 @@ actor::ExecutionEngine* GetExecutionEngineForDownloadItem(
 
   if (const actor::ActorTask* actor_task =
           actor_service->GetActingActorTaskForWebContents(web_contents)) {
-    return actor_task->GetExecutionEngine();
+    return &actor_task->GetExecutionEngine();
   }
 
   return nullptr;
