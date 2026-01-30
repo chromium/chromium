@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.html.js';
 
+import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './user_skills_page.css.js';
@@ -26,7 +27,11 @@ export class UserSkillsPageElement extends CrLitElement {
   }
 
   protected onExploreButtonClick_() {
-    this.fire('navigate-to', {path: '/discover-skills'});
+    const path = '/discover-skills';
+    // CRRouter sets the path, but doesn't trigger a popstate event, so we need
+    // to dispatch a route-click event to update the page.
+    CrRouter.getInstance().setPath(path);
+    this.fire('route-click', {path});
   }
 }
 

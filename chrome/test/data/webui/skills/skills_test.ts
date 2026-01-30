@@ -109,4 +109,35 @@ suite('SkillsAppPage', function() {
     await microtasksFinished();
     assertTrue(app.$.drawer.open);
   });
+
+  test('BackNavigationWorksAfterMultipleTabClicks', async function() {
+    navigateTo('/user-skills');
+    await microtasksFinished();
+
+    const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
+        '.cr-nav-menu-item');
+    const userSkillsTab = tabs[0]!;
+    const discoverSkillsTab = tabs[1]!;
+
+    discoverSkillsTab.click();
+    await microtasksFinished();
+    assertEquals('/discover-skills', CrRouter.getInstance().getPath());
+    userSkillsTab.click();
+    await microtasksFinished();
+    assertEquals('/user-skills', CrRouter.getInstance().getPath());
+    discoverSkillsTab.click();
+    await microtasksFinished();
+    assertEquals('/discover-skills', CrRouter.getInstance().getPath());
+
+    const backPromise = eventToPromise('popstate', window);
+    window.history.back();
+    await backPromise;
+    await microtasksFinished();
+    assertEquals('/user-skills', CrRouter.getInstance().getPath());
+    const backPromise2 = eventToPromise('popstate', window);
+    window.history.back();
+    await backPromise2;
+    await microtasksFinished();
+    assertEquals('/discover-skills', CrRouter.getInstance().getPath());
+  });
 });

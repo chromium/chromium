@@ -10,11 +10,11 @@ export function getHtml(this: SkillsSidebarElement) {
   // clang-format off
   return html`
 <cr-menu-selector selectable="a" selected-attribute="selected"
-    @iron-select="${this.onMenuItemSelect_}" .selected="${this.selectedPage}"
-    attr-for-selected="href">
+    @iron-activate="${this.onMenuItemActivate_}" .selected="${this.selectedPage}"
+    attr-for-selected="data-path">
   ${this.menuItems.map(menuItem => html`
-    <a role="menuitem" href="${menuItem.page}" class="cr-nav-menu-item"
-        @click="${this.onMenuItemClick_}">
+    <a role="menuitem" href="/${menuItem.page}" class="cr-nav-menu-item"
+        @click="${this.onMenuItemClick_}" data-path="${menuItem.page}">
       <cr-icon icon="${menuItem.icon}"></cr-icon>
       <div class="name">${menuItem.name}</div>
     </a>

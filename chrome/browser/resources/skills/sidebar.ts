@@ -58,12 +58,13 @@ export class SkillsSidebarElement extends CrLitElement {
     return getCss();
   }
 
-  protected onMenuItemSelect_(e: CustomEvent<{item: HTMLAnchorElement}>): void {
+  protected onMenuItemActivate_(e: CustomEvent<{item: HTMLAnchorElement}>):
+      void {
     const newUrl = new URL(e.detail.item.href);
     CrRouter.getInstance().setPath(newUrl.pathname);
     // setPath() doesn't trigger a popstate event, so we need to dispatch a
-    // navigate-to event to update the page.
-    this.fire('navigate-to', {path: newUrl.pathname});
+    // route-click event to update the page.
+    this.fire('route-click', {path: newUrl.pathname});
   }
 
   // Prevent clicks on sidebar items from navigating and reloading the page.

@@ -63,6 +63,9 @@ export class SkillsAppElement extends CrLitElement {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
     const router = CrRouter.getInstance();
+    // Dwell time prevents polluting the browser history with rapid changes.
+    // 0 to make sure every click is able to be navigated back to.
+    router.setDwellTime(0);
     // Initial load.
     this.onPathChanged_(router.getPath());
     // Listen for path changes, only triggers via popstate.
@@ -70,7 +73,7 @@ export class SkillsAppElement extends CrLitElement {
         router, 'cr-router-path-changed',
         (e: Event) => this.onPathChanged_((e as CustomEvent<string>).detail));
     // Event-driven navigation changes.
-    this.eventTracker_.add(document, 'navigate-to', (e: Event) => {
+    this.eventTracker_.add(document, 'route-click', (e: Event) => {
       const detail = (e as CustomEvent<{path: string}>).detail;
       this.onPathChanged_(detail.path);
     });
