@@ -286,7 +286,11 @@ class ListPicker extends Picker {
     if (this.selectElement_.scrollHeight > this.selectElement_.clientHeight)
       desiredWindowWidth -= scrollbarWidth;
     let expectingScrollbar = false;
-    if (desiredWindowHeight > maxHeight) {
+    if (!this.selectElement_.children.length) {
+      // If there are no options, then instead of rendering just the border we
+      // should render a small empty box. See http://crbug.com/40703853
+      desiredWindowHeight = 8;
+    } else if (desiredWindowHeight > maxHeight) {
       desiredWindowHeight = maxHeight;
       // Setting overflow to auto does not increase width for the scrollbar
       // so we need to do it manually.
