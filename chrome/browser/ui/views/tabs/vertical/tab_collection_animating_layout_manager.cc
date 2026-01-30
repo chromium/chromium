@@ -298,83 +298,94 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
   // animation.
   result.host_size = target_layout_.host_size;
 
-  for (const auto& target_child : target_layout_.child_layouts) {
-    views::ChildLayout interpolated_child = target_child;
-    auto it = start_view_layout_map_.find(target_child.child_view);
+  for (views::View* child_view : host_view()->children()) {
+    auto target_it = target_view_layout_map_.find(child_view);
+    if (target_it != target_view_layout_map_.end()) {
+      views::ChildLayout interpolated_child = target_it->second;
 
-    if (it != start_view_layout_map_.end()) {
-      // Moved child.
-      // Interpolate between start and target bounds.
-      interpolated_child.bounds = gfx::Tween::RectValueBetween(
-          value, it->second.bounds, target_child.bounds);
-      // Snap visibility to target.
-      interpolated_child.visible = target_child.visible;
-    } else if (!delegate_ ||
-               (!delegate_->IsViewDragging(*target_child.child_view) &&
-                !delegate_->ShouldSnapToTarget(*target_child.child_view))) {
-      // Added child.
-      // Animate-in new Views from empty bounds.
-      gfx::Rect* previous_container_bounds =
-          target_child.child_view->GetProperty(kPreviousCollectionBounds);
-      if (previous_container_bounds) {
-        gfx::Rect initial_bounds = views::View::ConvertRectFromScreen(
-            host_view(), *previous_container_bounds);
+      auto start_it = start_view_layout_map_.find(child_view);
+      if (start_it != start_view_layout_map_.end()) {
+        // Moved child.
+        // Interpolate between start and target bounds.
         interpolated_child.bounds = gfx::Tween::RectValueBetween(
-            value, initial_bounds, target_child.bounds);
-      } else {
-        gfx::Rect initial_bounds = target_child.bounds;
-        if (animation_axis_ == AnimationAxis::kVertical) {
-          initial_bounds.set_height(0);
+            value, start_it->second.bounds, target_it->second.bounds);
+        // Snap visibility to target.
+        interpolated_child.visible = target_it->second.visible;
+      } else if (!delegate_ || (!delegate_->IsViewDragging(*child_view) &&
+                                !delegate_->ShouldSnapToTarget(*child_view))) {
+        // Added child.
+        // Animate-in new Views from empty bounds.
+        gfx::Rect* previous_container_bounds =
+            child_view->GetProperty(kPreviousCollectionBounds);
+        if (previous_container_bounds) {
+          gfx::Rect initial_bounds = views::View::ConvertRectFromScreen(
+              host_view(), *previous_container_bounds);
+          interpolated_child.bounds = gfx::Tween::RectValueBetween(
+              value, initial_bounds, target_it->second.bounds);
         } else {
-          initial_bounds.set_width(0);
+          gfx::Rect initial_bounds = target_it->second.bounds;
+          if (animation_axis_ == AnimationAxis::kVertical) {
+            initial_bounds.set_height(0);
+          } else {
+            initial_bounds.set_width(0);
+          }
+          interpolated_child.bounds = gfx::Tween::RectValueBetween(
+              value, initial_bounds, target_it->second.bounds);
         }
-        interpolated_child.bounds = gfx::Tween::RectValueBetween(
-            value, initial_bounds, target_child.bounds);
+      } else {
+        // This branch results in new children being snapped to target bounds
+        // (e.g. drag-and-drop or split-tabs which explicitly requires no
+        // animated transition).
       }
-    } else {
-      // This branch results in new children being snapped to target bounds
-      // (e.g. drag-and-drop or split-tabs which explicitly requires no animated
-      // transition).
+      result.child_layouts.push_back(interpolated_child);
+      continue;
     }
-    result.child_layouts.push_back(interpolated_child);
-  }
 
-  for (const auto& start_child : starting_layout_.child_layouts) {
+    // Note: `start_view_layout_map_` will only contain start ChildLayouts for
+    // the views that are still parented to `host_view()`. This is not the case
+    // for `start_layout_`.
     // Animate-out only pending delete views that were present in the previous
     // layout.
-    if (start_view_layout_map_.contains(start_child.child_view) &&
-        start_child.child_view->GetProperty(kPendingDeletion)) {
+    auto start_it = start_view_layout_map_.find(child_view);
+    if (start_it != start_view_layout_map_.end() &&
+        child_view->GetProperty(kPendingDeletion)) {
       // Removed child.
       // Pending delete Views will remain in the Views hierarchy until they are
       // no longer needed for animation (i.e. they are no longer in
       // `starting_layout_`), at which point they will be removed by
       // `RemoveNonAnimatingPendingDeleteViews()`.
-      views::ChildLayout interpolated_child = start_child;
-      gfx::Rect target_bounds = start_child.bounds;
+      views::ChildLayout interpolated_child = start_it->second;
+      gfx::Rect target_bounds = start_it->second.bounds;
       if (animation_axis_ == AnimationAxis::kVertical) {
         target_bounds.set_height(0);
       } else {
         target_bounds.set_width(0);
       }
       interpolated_child.bounds = gfx::Tween::RectValueBetween(
-          value, start_child.bounds, target_bounds);
+          value, start_it->second.bounds, target_bounds);
       result.child_layouts.push_back(interpolated_child);
+      continue;
     }
-  }
 
-  // Animate out any child views moved into `host_view()` with their
-  // TabCollectioNode subsequently destroyed before a layout and animation has
-  // had the chance to occur. In such cases where the child view's
-  // TabCollectionNode is destroyed it will not appear in proposed layouts
-  // (which are based on the current TabStripCollection model). This can occur
-  // in compound model updates involving moving tabs into their parent
-  // collection after which the tab and its source collection are destroyed.
-  for (views::View* child_view : host_view()->children()) {
+    // Animate out any child views moved into `host_view()` with their
+    // TabCollectioNode subsequently destroyed before a layout and animation has
+    // had the chance to occur. In such cases where the child view's
+    // TabCollectionNode is destroyed it will not appear in proposed layouts
+    // (which are based on the current TabStripCollection model). This can occur
+    // in compound model updates involving moving tabs into their parent
+    // collection after which the tab and its source collection are destroyed.
+    // Note: Guard against container views that update target layouts without
+    // directly removing the view children from the view tree. This can happen
+    // during teardown for e.g. where a container node is reset and animated
+    // away before removing and/or animating out its children. The target layout
+    // of the container in this case would have no view children since its
+    // TabCollectionNode is destroyed, despite these views still being present
+    // in the start layout.
     gfx::Rect* previous_collection_bounds =
         child_view->GetProperty(kPreviousCollectionBounds);
+    DCHECK(!target_view_layout_map_.contains(child_view));
     if (previous_collection_bounds &&
-        !start_view_layout_map_.contains(child_view) &&
-        !target_view_layout_map_.contains(child_view)) {
+        !start_view_layout_map_.contains(child_view)) {
       const gfx::Rect start_bounds = views::View::ConvertRectFromScreen(
           host_view(), *previous_collection_bounds);
 
