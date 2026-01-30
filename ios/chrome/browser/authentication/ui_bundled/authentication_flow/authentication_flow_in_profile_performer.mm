@@ -109,9 +109,7 @@
 - (void)registerUserPolicy:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
-  CoreAccountId accountID =
-      IdentityManagerFactory::GetForProfile(profile)->PickAccountIdForAccount(
-          identity.gaiaId, userEmail);
+  const CoreAccountId accountID = CoreAccountId::FromGaiaId(identity.gaiaId);
 
   policy::UserPolicySigninService* userPolicyService =
       policy::UserPolicySigninServiceFactory::GetForProfile(profile);

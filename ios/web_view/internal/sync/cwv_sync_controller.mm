@@ -143,8 +143,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   _identityManager->GetDeviceAccountsSynchronizer()
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountId());
 
-  const CoreAccountId accountId = _identityManager->PickAccountIdForAccount(
-      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.email));
+  const GaiaId gaiaId(identity.gaiaID);
+  const CoreAccountId accountId = CoreAccountId::FromGaiaId(gaiaId);
   CHECK(_identityManager->HasAccountWithRefreshToken(accountId));
 
   _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(

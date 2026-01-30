@@ -71,14 +71,6 @@ enum class IOSDeviceRestoreSignedinState : int {
   kMaxValue = kUserSignedInBeforeAndAfterDeviceRestore,
 };
 
-// Returns the account id associated with `identity`.
-CoreAccountId SystemIdentityToAccountID(
-    signin::IdentityManager* identity_manager,
-    id<SystemIdentity> identity) {
-  std::string email = base::SysNSStringToUTF8([identity userEmail]);
-  return identity_manager->PickAccountIdForAccount(identity.gaiaId, email);
-}
-
 // Same as signin::MultiProfileSignOutForProfile, but does nothing if the
 // profile is deallocated.
 void MultiProfileSignOutForProfile(
@@ -386,8 +378,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   identity_manager_->GetDeviceAccountsSynchronizer()
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountId());
 
-  const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail));
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(identity.gaiaId);
 
   // Ensure that the account the user is trying to sign into has been loaded
   // from the SSO library.
@@ -577,8 +568,7 @@ AuthenticationService::PerformProfileInitializationIfNecessary() {
 
 id<RefreshAccessTokenError> AuthenticationService::GetCachedMDMError(
     id<SystemIdentity> identity) {
-  CoreAccountId account_id =
-      SystemIdentityToAccountID(identity_manager_, identity);
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(identity.gaiaId);
   auto it = cached_mdm_errors_.find(account_id);
   if (it == cached_mdm_errors_.end()) {
     return nil;
@@ -654,8 +644,7 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
           identity, ActiveIdentities(), error,
           base::BindOnce(&AuthenticationService::MDMErrorHandled,
                          weak_pointer_factory_.GetWeakPtr(), identity))) {
-    CoreAccountId account_id =
-        SystemIdentityToAccountID(identity_manager_, identity);
+    const CoreAccountId account_id = CoreAccountId::FromGaiaId(identity.gaiaId);
     DUMP_WILL_BE_CHECK(!account_id.empty())
         << "Unexpected identity with empty account id: [gaiaID = "
         << identity.gaiaId.ToNSString()
@@ -683,8 +672,7 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
 }
 
 void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
-  const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail));
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(identity.gaiaId);
   if (!identity_manager_->HasAccountWithRefreshToken(account_id)) {
     return;
   }

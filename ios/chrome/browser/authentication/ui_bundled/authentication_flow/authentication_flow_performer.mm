@@ -225,13 +225,11 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
     return;
   }
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto* identityManager = IdentityManagerFactory::GetForProfile(profile);
+  const CoreAccountId accountID = CoreAccountId::FromGaiaId(identity.gaiaId);
   _accountLevelSigninRestrictionPolicyFetcher
-      ->GetManagedAccountsSigninRestriction(
-          identity_manager,
-          identity_manager->PickAccountIdForAccount(
-              identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail)),
-          std::move(callback));
+      ->GetManagedAccountsSigninRestriction(identityManager, accountID,
+                                            std::move(callback));
 }
 
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
