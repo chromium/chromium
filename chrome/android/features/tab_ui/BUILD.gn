@@ -54,6 +54,7 @@ android_resources("java_resources") {
     "java/res/drawable/tab_grid_card_background.xml",
     "java/res/drawable/tab_grid_card_highlight.xml",
     "java/res/drawable/tab_grid_dialog_background.xml",
+    "java/res/drawable/tab_grid_focus_ring.xml",
     "java/res/drawable/tab_grid_selection_list_icon.xml",
     "java/res/drawable/tab_group_color_background.xml",
     "java/res/drawable/tab_group_dialog_color_icon.xml",

@@ -109,7 +109,7 @@ public class TabGridViewRenderTest {
                                             .inflate(R.layout.tab_grid_card_item, view, false);
                     view.addView(mTabGridView);
 
-                    initModel();
+                    mModel = createModel(false);
                     PropertyModelChangeProcessor.create(
                             mModel, mTabGridView, TabGridViewBinder::bindTab);
                 });
@@ -142,6 +142,36 @@ public class TabGridViewRenderTest {
         mRenderTestRule.render(mTabGridView, "tab_grid_view_highlight_incognito");
     }
 
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testCardView_Focused() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel = createModel(false);
+                    PropertyModelChangeProcessor.create(
+                            mModel, mTabGridView, TabGridViewBinder::bindTab);
+                    mTabGridView.setFocusable(true);
+                    mTabGridView.requestFocus();
+                });
+        mRenderTestRule.render(mTabGridView, "tab_grid_view_focused");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testCardView_FocusedIncognito() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel = createModel(true);
+                    PropertyModelChangeProcessor.create(
+                            mModel, mTabGridView, TabGridViewBinder::bindTab);
+                    mTabGridView.setFocusable(true);
+                    mTabGridView.requestFocus();
+                });
+        mRenderTestRule.render(mTabGridView, "tab_grid_view_focused_incognito");
+    }
+
     public void pollForHighlight(boolean isHighlighted) {
         View cardWrapper = mTabGridView.findViewById(R.id.card_wrapper);
         int neededVisibility = isHighlighted ? View.VISIBLE : View.INVISIBLE;
@@ -152,15 +182,14 @@ public class TabGridViewRenderTest {
                                 && cardWrapper.getAlpha() == neededAlpha);
     }
 
-    public void initModel() {
-        mModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(TabProperties.TAB_ACTION_STATE, TabActionState.CLOSABLE)
-                        .with(TabProperties.IS_INCOGNITO, false)
-                        .with(TabProperties.TAB_ID, Tab.INVALID_TAB_ID)
-                        .with(TabProperties.IS_SELECTED, false)
-                        .with(TabProperties.THUMBNAIL_FETCHER, mNullThumbnailFetcher)
-                        .with(TabProperties.GRID_CARD_SIZE, new Size(500, 600))
-                        .build();
+    public PropertyModel createModel(boolean isIncognito) {
+        return new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                .with(TabProperties.TAB_ACTION_STATE, TabActionState.CLOSABLE)
+                .with(TabProperties.IS_INCOGNITO, isIncognito)
+                .with(TabProperties.TAB_ID, Tab.INVALID_TAB_ID)
+                .with(TabProperties.IS_SELECTED, false)
+                .with(TabProperties.THUMBNAIL_FETCHER, mNullThumbnailFetcher)
+                .with(TabProperties.GRID_CARD_SIZE, new Size(500, 600))
+                .build();
     }
 }

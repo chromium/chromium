@@ -23,7 +23,8 @@ found in the LICENSE file.
         android:id="@+id/content_view"
         android:duplicateParentState="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:foreground="@drawable/tab_grid_focus_ring">
         <View
           android:id="@+id/card_wrapper"
           android:layout_width="0dp"
