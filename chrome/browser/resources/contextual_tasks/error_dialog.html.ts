@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {ContextualTasksErrorDialogElement} from './error_dialog.js';
 
@@ -11,11 +10,11 @@ import type {ContextualTasksErrorDialogElement} from './error_dialog.js';
 export function getHtml(this: ContextualTasksErrorDialogElement) {
   return html`<!--_html_template_start_-->
   <cr-dialog id="dialog" no-cancel>
-    <div slot="title">${loadTimeData.getString('oauthErrorDialogTitle')}</div>
-    <div slot="body">${loadTimeData.getString('oauthErrorDialogBody')}</div>
+    <div slot="title">$i18n{oauthErrorDialogTitle}</div>
+    <div slot="body">$i18n{oauthErrorDialogBody}</div>
     <div slot="button-container">
       <cr-button class="action-button" @click="${this.onReloadClick_}">
-        ${loadTimeData.getString('oauthErrorDialogReloadButton')}
+        $i18n{oauthErrorDialogReloadButton}
       </cr-button>
     </div>
   </cr-dialog>

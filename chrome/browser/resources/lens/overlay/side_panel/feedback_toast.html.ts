@@ -6,25 +6,25 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {FeedbackToastElement} from './feedback_toast.js';
 
 export function getHtml(this: FeedbackToastElement) {
-  return html`
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <cr-toast id="feedbackToast" duration="0">
-  <div id="feedbackToastMessage">${
-      loadTimeData.getString('feedbackToastMessage')}</div>
+  <div id="feedbackToastMessage">$i18n{feedbackToastMessage}</div>
   <div id="feedbackButtonContainer">
     <cr-button id="sendFeedbackButton" @click="${this.onSendFeedbackClick}">
-      ${loadTimeData.getString('sendFeedbackButtonText')}
+      $i18n{sendFeedbackButtonText}
     </cr-button>
     <cr-icon-button id="closeFeedbackToastButton"
-        aria-label="${
-      loadTimeData.getString('closeFeedbackToastAccessibilityLabel')}"
+        aria-label="$i18n{closeFeedbackToastAccessibilityLabel}"
         iron-icon="cr:close" @click="${this.onHideFeedbackToastClick}">
     </cr-icon-button>
   </div>
-</cr-toast>`;
+</cr-toast>
+<!--_html_template_end_-->`;
+  // clang-format on
 }
