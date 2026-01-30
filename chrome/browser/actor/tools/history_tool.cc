@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/actor/tools/validate_url_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -28,12 +29,6 @@ namespace {
 // The polling interval used to update the pending_navigations_ list.
 constexpr base::TimeDelta kPendingNavigationPollingInterval =
     base::Milliseconds(100);
-
-mojom::ActionResultPtr UrlCheckToActionResult(MayActOnUrlBlockReason reason) {
-  return reason == MayActOnUrlBlockReason::kAllowed
-             ? MakeOkResult()
-             : MakeResult(mojom::ActionResultCode::kUrlBlocked);
-}
 
 }  // namespace
 
@@ -69,9 +64,8 @@ void HistoryTool::Validate(ToolCallback callback) {
   validated_entry_id_ = entry->GetUniqueID();
 
   // Check if the destination URL is blocked.
-  tool_delegate().IsAcceptableNavigationDestination(
-      entry->GetURL(),
-      base::BindOnce(&UrlCheckToActionResult).Then(std::move(callback)));
+  ValidateUrlIsAcceptableNavigationDestination(entry->GetURL(), tool_delegate(),
+                                               std::move(callback));
 }
 
 mojom::ActionResultPtr HistoryTool::TimeOfUseValidation(

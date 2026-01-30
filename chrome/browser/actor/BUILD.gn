@@ -150,6 +150,8 @@ source_set("impl") {
     "tools/tool_controller.cc",
     "tools/tool_request.cc",
     "tools/type_tool_request.cc",
+    "tools/validate_url_util.cc",
+    "tools/validate_url_util.h",
     "tools/wait_tool.cc",
     "tools/wait_tool.h",
     "tools/wait_tool_request.cc",
