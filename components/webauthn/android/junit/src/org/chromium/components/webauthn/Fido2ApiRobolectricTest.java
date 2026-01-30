@@ -16,11 +16,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
-// TODO(crbug.com/450954710): This test fails on SDK 36.
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 29, manifest = Config.NONE)
+@Config(manifest = Config.NONE)
 public class Fido2ApiRobolectricTest {
     private static final byte[] sCredentialId = new byte[] {1, 2, 3, 4};
 
@@ -29,8 +29,8 @@ public class Fido2ApiRobolectricTest {
     public void testParseCredentialList_fromCacheIsDiscoverableTrue() {
         Parcel p = Parcel.obtain();
         p.writeInt(1); // One credential in list.
-        p.writeInt(4); // VAL_PARCELABLE
-        p.writeString("com.google.android.gms.fido.fido2.api.common.DiscoverableCredentialInfo");
+        writeParcelable(
+                p, "com.google.android.gms.fido.fido2.api.common.DiscoverableCredentialInfo");
         writeCredential(p, sCredentialId, /* isDiscoverable= */ true);
 
         p.setDataPosition(0);
@@ -41,15 +41,13 @@ public class Fido2ApiRobolectricTest {
         assertThat(credentials.get(0).mCredentialId).isEqualTo(sCredentialId);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testParseCredentialList_notFromCacheIsDiscoverableTrue() {
         Parcel p = Parcel.obtain();
         p.writeInt(1); // One credential in list.
-        p.writeInt(4); // VAL_PARCELABLE
-        p.writeString("com.google.android.gms.fido.fido2.api.common.DiscoverableCredentialInfo");
+        writeParcelable(
+                p, "com.google.android.gms.fido.fido2.api.common.DiscoverableCredentialInfo");
         writeCredential(p, sCredentialId, /* isDiscoverable= */ true);
 
         p.setDataPosition(0);
@@ -60,15 +58,13 @@ public class Fido2ApiRobolectricTest {
         assertThat(credentials.get(0).mCredentialId).isEqualTo(sCredentialId);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testParseCredentialList_notFromCacheIsDiscoverableFalse() {
         Parcel p = Parcel.obtain();
         p.writeInt(1); // One credential in list.
-        p.writeInt(4); // VAL_PARCELABLE
-        p.writeString("com.google.android.gms.fido.fido2.api.common.DiscoverableCredentialInfo");
+        writeParcelable(
+                p, "com.google.android.gms.fido.fido2.api.common.DiscoverableCredentialInfo");
         writeCredential(p, sCredentialId, /* isDiscoverable= */ false);
 
         p.setDataPosition(0);
@@ -118,5 +114,21 @@ public class Fido2ApiRobolectricTest {
         parcel.setDataPosition(pos);
         parcel.writeInt(totalLength - pos - 4);
         parcel.setDataPosition(totalLength);
+    }
+
+    private static boolean doesParcelUseLengthPrefix() {
+        Parcel parcel = Parcel.obtain();
+        parcel.writeValue(new ArrayList<>());
+        boolean ret = parcel.dataPosition() == 12;
+        parcel.recycle();
+        return ret;
+    }
+
+    private void writeParcelable(Parcel p, String className) {
+        p.writeInt(4); // VAL_PARCELABLE
+        if (doesParcelUseLengthPrefix()) {
+            p.writeInt(0); // length prefix; ignored by Fido2Api.parseCredentialList
+        }
+        p.writeString(className);
     }
 }
