@@ -181,7 +181,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
     decoder_selector_ =
         std::make_unique<DecoderSelector<TypeParam::kStreamType>>(
             scheduler::GetSingleThreadTaskRunnerForTesting(),
-            BindRepeating(&Self::CreateDecoders, Unretained(this)),
+            BindRepeating(&Self::CreateDecoders, Unretained(this)), &media_log_,
             blink::BindRepeating(&Self::OnOutput, Unretained(this)));
   }
 

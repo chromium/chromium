@@ -44,6 +44,7 @@ class DecoderSelector {
   // be Post()'ed.
   DecoderSelector(scoped_refptr<base::SequencedTaskRunner> task_runner,
                   CreateDecodersCB create_decoders_cb,
+                  media::MediaLog* media_log,
                   typename Decoder::OutputCB output_cb);
 
   // Aborts any pending decoder selection.
@@ -75,6 +76,8 @@ class DecoderSelector {
                          DecoderOrError decoder_or_error,
                          std::unique_ptr<media::DecryptingDemuxerStream>);
 
+  const raw_ptr<media::MediaLog> media_log_;
+
   // Implements heavy lifting for decoder selection.
   media::DecoderSelector<StreamType> impl_;
 
@@ -86,9 +89,6 @@ class DecoderSelector {
 
   // Repeating callback for decoder outputs.
   typename Decoder::OutputCB output_cb_;
-
-  // TODO(chcunningham): Route MEDIA_LOG for WebCodecs.
-  media::NullMediaLog null_media_log_;
 
   base::WeakPtrFactory<DecoderSelector<StreamType>> weak_factory_{this};
 };

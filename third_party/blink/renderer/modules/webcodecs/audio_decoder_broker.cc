@@ -101,6 +101,7 @@ class MediaAudioTaskWrapper {
         // consistent in using weak pointers.
         BindRepeating(&MediaAudioTaskWrapper::OnCreateDecoders,
                       Unretained(this)),
+        media_log_.get(),
         blink::BindRepeating(&MediaAudioTaskWrapper::OnDecodeOutput,
                              weak_factory_.GetWeakPtr()));
 
@@ -231,13 +232,12 @@ class MediaAudioTaskWrapper {
   base::WeakPtr<CrossThreadAudioDecoderClient> weak_client_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  std::unique_ptr<media::MediaLog> media_log_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
   std::unique_ptr<WebCodecsAudioDecoderSelector> selector_;
   std::unique_ptr<media::DefaultDecoderFactory> decoder_factory_;
   std::unique_ptr<media::AudioDecoder> decoder_;
   gfx::ColorSpace target_color_space_;
-
-  std::unique_ptr<media::MediaLog> media_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

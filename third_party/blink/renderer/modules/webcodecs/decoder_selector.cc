@@ -87,14 +87,17 @@ template <media::DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::DecoderSelector(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     CreateDecodersCB create_decoders_cb,
+    media::MediaLog* media_log,
     typename Decoder::OutputCB output_cb)
-    : impl_(std::move(task_runner),
+    : media_log_(media_log),
+      impl_(std::move(task_runner),
             std::move(create_decoders_cb),
-            &null_media_log_,
+            media_log_,
             /*enable_priority_based_selection=*/true),
       demuxer_stream_(new NullDemuxerStream<StreamType>()),
       stream_traits_(CreateStreamTraits()),
       output_cb_(output_cb) {
+  CHECK(media_log_);
   impl_.Initialize(stream_traits_.get(), demuxer_stream_.get(),
                    nullptr /*CdmContext*/, media::WaitingCB());
 }
@@ -124,14 +127,13 @@ std::unique_ptr<WebCodecsAudioDecoderSelector::StreamTraits>
 DecoderSelector<media::DemuxerStream::AUDIO>::CreateStreamTraits() {
   // TODO(chcunningham): Consider plumbing real hw channel layout.
   return std::make_unique<DecoderSelector::StreamTraits>(
-      &null_media_log_, media::CHANNEL_LAYOUT_NONE,
-      media::kUnknownSampleFormat);
+      media_log_, media::CHANNEL_LAYOUT_NONE, media::kUnknownSampleFormat);
 }
 
 template <>
 std::unique_ptr<WebCodecsVideoDecoderSelector::StreamTraits>
 DecoderSelector<media::DemuxerStream::VIDEO>::CreateStreamTraits() {
-  return std::make_unique<DecoderSelector::StreamTraits>(&null_media_log_);
+  return std::make_unique<DecoderSelector::StreamTraits>(media_log_);
 }
 
 template <media::DemuxerStream::Type StreamType>

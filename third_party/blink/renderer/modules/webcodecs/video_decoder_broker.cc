@@ -127,6 +127,7 @@ class MediaVideoTaskWrapper {
         // consistent in using weak pointers.
         BindRepeating(&MediaVideoTaskWrapper::OnCreateDecoders,
                       Unretained(this)),
+        media_log_.get(),
         blink::BindRepeating(&MediaVideoTaskWrapper::OnDecodeOutput,
                              weak_factory_.GetWeakPtr()));
 
