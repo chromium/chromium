@@ -5541,6 +5541,10 @@ inline constexpr char kReaderModeSupportNewFontsName[] =
 inline constexpr char kReaderModeSupportNewFontsDescription[] =
     "Enables new accessible font options in Reader Mode.";
 
+inline constexpr char kReaderModeToggleLinksName[] = "Reader Mode toggle links";
+inline constexpr char kReaderModeToggleLinksDescription[] =
+    "Enables the ability to toggle links in Reader Mode.";
+
 inline constexpr char kReaderModeUseReadabilityName[] =
     "Reader Mode use readability";
 inline constexpr char kReaderModeUseReadabilityDescription[] =

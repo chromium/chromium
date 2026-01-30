@@ -47,6 +47,7 @@ public class DomDistillerFeatures {
     public static final String READER_MODE_DISTILL_IN_APP = "ReaderModeDistillInApp";
     public static final String READER_MODE_IMPROVEMENTS = "ReaderModeImprovements";
     public static final String READER_MODE_SUPPORT_NEW_FONTS = "ReaderModeSupportNewFonts";
+    public static final String READER_MODE_TOGGLE_LINKS = "ReaderModeToggleLinks";
     public static final String READER_MODE_USE_READABILITY = "ReaderModeUseReadability";
 
     // Feature flags -- alphabetical ordering.
@@ -56,6 +57,8 @@ public class DomDistillerFeatures {
             newMutableFlagWithSafeDefault(READER_MODE_IMPROVEMENTS, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeSupportNewFonts =
             newMutableFlagWithSafeDefault(READER_MODE_SUPPORT_NEW_FONTS, /* defaultValue= */ false);
+    public static final MutableFlagWithSafeDefault sReaderModeToggleLinks =
+            newMutableFlagWithSafeDefault(READER_MODE_TOGGLE_LINKS, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeUseReadability =
             newMutableFlagWithSafeDefault(READER_MODE_USE_READABILITY, /* defaultValue= */ false);
 
