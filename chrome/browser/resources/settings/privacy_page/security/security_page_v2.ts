@@ -363,6 +363,10 @@ export class SettingsSecurityPageV2Element extends
         SecurityPageV2Interaction.SECURE_DNS_V2_TOGGLE_CLICK);
   }
 
+  private onSecureDnsToggleClick_() {
+    this.interactions_.add(SecurityPageV2Interaction.SECURE_DNS_TOGGLE_CLICK);
+  }
+
   /**
    * Handles changes of the radio button selection inside the secure DNS
    * settings row.

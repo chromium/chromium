@@ -422,7 +422,8 @@
         on-change="onPasswordsLeakToggleChange_">
     </settings-toggle-button>
     <template is="dom-if" if="[[!enableBundledSecuritySettingsSecureDnsV2_]]">
-      <settings-secure-dns id="secureDnsRow" prefs="{{prefs}}" class="no-hr">
+      <settings-secure-dns id="secureDnsRow" prefs="{{prefs}}" class="no-hr"
+          on-change="onSecureDnsToggleClick_">
       </settings-secure-dns>
     </template>
     <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">

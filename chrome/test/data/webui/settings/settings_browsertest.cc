@@ -1851,6 +1851,13 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
           "runMochaSuite('SecurityPageV2HappinessTrackingSurveys')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
+                       SecurityPageHappinessTrackingSurveys_SecureDnsLegacy) {
+  RunTest("settings/security_page_v2_test.js",
+          "runMochaSuite('SecurityPageV2HappinessTrackingSurveys_"
+          "SecureDnsLegacy')");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 using SettingsSpellCheckPageTest = SettingsBrowserTest;
 

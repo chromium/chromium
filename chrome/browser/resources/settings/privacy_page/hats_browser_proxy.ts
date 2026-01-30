@@ -46,6 +46,7 @@ export enum SecurityPageV2Interaction {
   BALANCED_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK = 12,
   STRICT_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK = 13,
   PASSWORD_LEAK_DETECTION_TOGGLE_CLICK = 14,
+  SECURE_DNS_TOGGLE_CLICK = 15,
 }
 
 /** Enumeration of all security settings bundle modes.*/

@@ -443,6 +443,46 @@ TEST_F(HatsHandlerTest, HandleSecurityPageHatsRequest_PasswordLeakInteraction) {
   task_environment()->RunUntilIdle();
 }
 
+TEST_F(HatsHandlerTest, HandleSecurityPageHatsRequest_SecureDnsInteraction) {
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+
+  SurveyStringData expected_product_specific_data = {
+      {"Security page user actions", "secure_dns_toggle_clicked"},
+      {"Safe browsing setting when security page opened",
+       "standard_protection"},
+      {"Security settings bundle setting when security page opened",
+       "standard_protection"},
+      {"Safe browsing setting when security page closed",
+       "standard_protection"},
+      {"Security settings bundle setting when security page closed",
+       "standard_protection"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+      {"Client channel", "stable"},
+#else
+      {"Client channel", "unknown"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"Time on page (bucketed seconds)",
+       base::NumberToString(ukm::GetExponentialBucketMinForUserTiming(20))},
+  };
+
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _,
+                           expected_product_specific_data, _, _))
+      .Times(1);
+
+  base::ListValue interactions;
+  interactions.Append(static_cast<int>(
+      HatsHandler::SecurityPageV2Interaction::SECURE_DNS_TOGGLE_CLICK));
+
+  base::ListValue args;
+  args.Append(std::move(interactions));
+  args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
+  args.Append(20000);
+  args.Append(static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
+
+  handler()->HandleSecurityPageHatsRequest(args);
+}
+
 TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   // Check that interactions relevant to the T&S sentiment service are
   // correctly reported.

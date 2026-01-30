@@ -230,6 +230,10 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
         interaction_strings.push_back("password_leak_detection_toggle_clicked");
         break;
       }
+      case SecurityPageV2Interaction::SECURE_DNS_TOGGLE_CLICK: {
+        interaction_strings.push_back("secure_dns_toggle_clicked");
+        break;
+      }
     }
   }
   if (interaction_strings.empty()) {

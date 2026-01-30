@@ -56,6 +56,8 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
       HandleSecurityPageHatsRequest_PasswordLeakInteraction);
+  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest,
+                           HandleSecurityPageHatsRequest_SecureDnsInteraction);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
@@ -99,6 +101,7 @@ class HatsHandler : public SettingsPageUIHandler {
     BALANCED_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK = 12,
     STRICT_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK = 13,
     PASSWORD_LEAK_DETECTION_TOGGLE_CLICK = 14,
+    SECURE_DNS_TOGGLE_CLICK = 15,
   };
 
   // Requests the appropriate HaTS survey, which may be none, for |interaction|.
