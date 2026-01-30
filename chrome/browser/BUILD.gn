@@ -6220,6 +6220,10 @@ static_library("browser") {
       "//components/reporting/storage:storage_configuration",
       "//components/reporting/storage:storage_module",
     ]
+    if (!is_android) {
+      deps +=
+          [ "//chrome/browser/ui/webui/default_browser:modal_mojo_bindings" ]
+    }
   }
 
   if (enable_glic) {

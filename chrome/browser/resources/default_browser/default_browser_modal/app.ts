@@ -10,6 +10,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {BrowserProxy} from './browser_proxy.js';
 
 export class DefaultBrowserModalAppElement extends CrLitElement {
   static get is() {
@@ -36,8 +37,13 @@ export class DefaultBrowserModalAppElement extends CrLitElement {
   accessor useSettingsIllustration: boolean =
       loadTimeData.getBoolean('useSettingsIllustration');
 
-  protected onCancelClick_() {}
-  protected onConfirmClick_() {}
+  protected onCancelClick_() {
+    BrowserProxy.getInstance().handler.cancel();
+  }
+
+  protected onConfirmClick_() {
+    BrowserProxy.getInstance().handler.confirm();
+  }
 }
 
 

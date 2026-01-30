@@ -1,0 +1,29 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module default_browser_modal.mojom;
+
+// Interface for browser-to-page events. This interface should be implemented
+// by the WebUI page.
+interface Page {
+
+};
+
+// Interface that implements page-to-browser events. This interface is
+// implemented by Browser DefaultBrowserModalHandler.
+interface PageHandler {
+  // Invokes the C++ logic to set the browser as default.
+  Confirm();
+
+  // Invokes the C++ logic to close the dialog.
+  Cancel();
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication. This
+// interface is implemented by Browser DefaultBrowserModalHandler.
+interface PageHandlerFactory {
+  // Creates and binds a new PageHandler instance for the requesting page.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};

@@ -192,6 +192,12 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/default_browser/default_browser_features.h"
+#include "chrome/browser/ui/webui/default_browser/default_browser_modal.mojom.h"
+#include "chrome/browser/ui/webui/default_browser/default_browser_modal_ui.h"
+#endif
+
 namespace chrome::internal {
 
 using content::RegisterWebUIControllerInterfaceBinder;
@@ -592,6 +598,14 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       unexportable_keys_internals::mojom::PageHandlerFactory,
       UnexportableKeysInternalsUI>(map);
 #endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  if (default_browser::IsDefaultBrowserFrameworkEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        default_browser_modal::mojom::PageHandlerFactory,
+        DefaultBrowserModalUI>(map);
+  }
+#endif
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(

@@ -2,12 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 assert(!is_android && !is_chromeos)
 
 source_set("default_browser_modal") {
   sources = [
     "default_browser_modal_dialog_delegate.cc",
     "default_browser_modal_dialog_delegate.h",
+    "default_browser_modal_handler.cc",
+    "default_browser_modal_handler.h",
     "default_browser_modal_ui.cc",
     "default_browser_modal_ui.h",
   ]
@@ -16,9 +20,11 @@ source_set("default_browser_modal") {
 
   deps = [
     "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/default_browser",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/default_browser/default_browser_modal:resources",
     "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/webui/default_browser:modal_mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//content/public/browser",
@@ -28,6 +34,11 @@ source_set("default_browser_modal") {
     "//ui/webui",
     "//url",
   ]
+}
+
+mojom("modal_mojo_bindings") {
+  sources = [ "default_browser_modal.mojom" ]
+  webui_module_path = "/"
 }
 
 source_set("pixel_tests") {

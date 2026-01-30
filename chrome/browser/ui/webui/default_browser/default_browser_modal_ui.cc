@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_ui.h"
 
 #include <string>
+#include <utility>
 
 #include "base/containers/span.h"
+#include "chrome/browser/ui/webui/default_browser/default_browser_modal_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/default_browser_modal_resources.h"
@@ -65,3 +67,17 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
 WEB_UI_CONTROLLER_TYPE_IMPL(DefaultBrowserModalUI)
 
 DefaultBrowserModalUI::~DefaultBrowserModalUI() = default;
+
+void DefaultBrowserModalUI::CreatePageHandler(
+    mojo::PendingRemote<default_browser_modal::mojom::Page> page,
+    mojo::PendingReceiver<default_browser_modal::mojom::PageHandler> receiver) {
+  page_handler_ = std::make_unique<DefaultBrowserModalHandler>(
+      web_ui(), std::move(receiver));
+}
+
+void DefaultBrowserModalUI::BindInterface(
+    mojo::PendingReceiver<default_browser_modal::mojom::PageHandlerFactory>
+        receiver) {
+  factory_receiver_.reset();
+  factory_receiver_.Bind(std::move(receiver));
+}
