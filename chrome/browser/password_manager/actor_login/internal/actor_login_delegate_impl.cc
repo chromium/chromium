@@ -14,6 +14,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/buildflags.h"
@@ -21,7 +22,9 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_credentials_fetcher.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_get_credentials_helper.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_password_credentials_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -30,6 +33,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -121,8 +125,26 @@ void ActorLoginDelegateImpl::GetCredentials(
   mqls_logger->SetDomainAndLanguage(
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents()),
       request_origin.GetURL());
+
+  std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
+  fetchers.push_back(std::make_unique<ActorLoginPasswordCredentialsFetcher>(
+      request_origin, client_, driver->GetPasswordManager(), mqls_logger));
+
+  fetchers.push_back(std::make_unique<ActorLoginFederatedCredentialsFetcher>(
+      request_origin,
+      base::BindRepeating(
+          [](base::WeakPtr<content::WebContents> web_contents)
+              -> content::webid::IdentityCredentialSource* {
+            if (!web_contents) {
+              return nullptr;
+            }
+            return content::webid::IdentityCredentialSource::FromPage(
+                web_contents->GetPrimaryPage());
+          },
+          GetWebContents().GetWeakPtr())));
+
   get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
-      request_origin, client_, driver->GetPasswordManager(), mqls_logger,
+      std::move(fetchers),
       base::BindOnce(&ActorLoginDelegateImpl::OnGetCredentialsCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

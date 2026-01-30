@@ -5,36 +5,19 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_GET_CREDENTIALS_HELPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_GET_CREDENTIALS_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "components/optimization_guide/proto/features/actor_login.pb.h"
-#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
-#include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
-#include "components/password_manager/core/browser/form_fetcher.h"
-#include "url/gurl.h"
-#include "url/origin.h"
-
-namespace password_manager {
-class PasswordManagerClient;
-class PasswordManagerInterface;
-class PasswordFormManager;
-}  // namespace password_manager
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_credentials_fetcher.h"
 
 namespace actor_login {
 
-class ActorLoginFormFinder;
-
 // Helper class to get credentials for the Actor Login feature.
-class ActorLoginGetCredentialsHelper
-    : public password_manager::FormFetcher::Consumer {
+// It starts multiple fetchers in parallel and merges the results once all are
+// done. It then responds with the result asynchronously.
+class ActorLoginGetCredentialsHelper {
  public:
   ActorLoginGetCredentialsHelper(
-      const url::Origin& origin,
-      password_manager::PasswordManagerClient* client,
-      password_manager::PasswordManagerInterface* password_manager,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers,
       CredentialsOrErrorReply callback);
 
   ActorLoginGetCredentialsHelper(const ActorLoginGetCredentialsHelper&) =
@@ -42,51 +25,30 @@ class ActorLoginGetCredentialsHelper
   ActorLoginGetCredentialsHelper& operator=(
       const ActorLoginGetCredentialsHelper&) = delete;
 
-  ~ActorLoginGetCredentialsHelper() override;
+  ~ActorLoginGetCredentialsHelper();
 
  private:
-  void OnEligibleLoginFormManagersRetrieved(
-      FormFinderResult form_finder_result);
+  struct FetchResult {
+    FetchResult();
+    FetchResult(std::vector<Credential> credentials,
+                std::unique_ptr<ActorLoginCredentialsFetcher::Status> status);
+    FetchResult(const FetchResult&) = delete;
+    FetchResult& operator=(const FetchResult&) = delete;
+    FetchResult(FetchResult&&);
+    FetchResult& operator=(FetchResult&&);
+    ~FetchResult();
 
-  // password_manager::FormFetcher::Consumer:
-  void OnFetchCompleted() override;
+    std::vector<Credential> credentials;
+    std::unique_ptr<ActorLoginCredentialsFetcher::Status> status;
+  };
 
-  // Populates data into `get_credentials_logs_` at the end of credential
-  // fetching.
-  void BuildGetCredentialsOutcome(const std::vector<Credential>& result);
+  void OnAllFetchesCompleted(std::vector<FetchResult> results);
 
-  url::Origin request_origin_;
+  std::vector<Credential> MergeCredentials(std::vector<FetchResult> results);
 
+  std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers_;
   CredentialsOrErrorReply callback_;
 
-  raw_ptr<password_manager::PasswordManagerInterface> password_manager_ =
-      nullptr;
-
-  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
-
-  // Logs entry to be given to `mqls_logger` when the request ends.
-  optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
-      get_credentials_logs_;
-
-  // Helper class that sends MQLS logs about full actor login attempt
-  // (GetCredentials + AttemptLogin). Owned by AttemptLoginTool.
-  // TODO(crbug.com/460025687): Use raw_ptr instead.
-  base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
-
-  // Used to compute the request duration.
-  base::TimeTicks start_time_;
-
-  // Helper object for finding login forms.
-  std::unique_ptr<ActorLoginFormFinder> login_form_finder_;
-
-  std::unique_ptr<password_manager::FormFetcher> owned_form_fetcher_;
-  // The form fetcher from which credentials will be retrieved. If a
-  // `PasswordFormManager` for a sign-in form already exists, this will be a
-  // non-owning pointer to its `FormFetcher`. Otherwise, this class will own
-  // the `FormFetcher` via `owned_form_fetcher_`.
-  raw_ptr<password_manager::FormFetcher> form_fetcher_ = nullptr;
-
-  bool immediately_available_to_login_ = false;
   base::WeakPtrFactory<ActorLoginGetCredentialsHelper> weak_ptr_factory_{this};
 };
 
