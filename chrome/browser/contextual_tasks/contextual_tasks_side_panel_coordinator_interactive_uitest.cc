@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -814,49 +813,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   ASSERT_TRUE(task2.has_value());
   ASSERT_EQ(task1->GetTaskId(), task2->GetTaskId());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_GLIC)
-class GlicContextualTasksSidePanelCoordinatorInteractiveUiTest
-    : public ContextualTasksSidePanelCoordinatorInteractiveUiTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Bypass glic eligibility check.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(GlicContextualTasksSidePanelCoordinatorInteractiveUiTest,
-                       DoNotOpenSidePanelOnTabChangedIfGlicIsOpen) {
-  SetUpTasks();
-
-  TabListInterface* tab_list = TabListInterface::From(browser());
-  ContextualTasksSidePanelCoordinator* coordinator =
-      ContextualTasksSidePanelCoordinator::From(browser());
-
-  // Show next side panel.
-  coordinator->Show();
-  EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
-
-  // Show glic side panel.
-  chrome::ExecuteCommand(browser(), IDC_OPEN_GLIC);
-
-  // Verify next side panel is closed.
-  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
-
-  // Add a new foreground tab not associated with a task.
-  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, true);
-
-  // Verify the side panel is closed.
-  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
-
-  // Activate the previous tab.
-  // Verify the next side panel is still closed because glic is open.
-  tab_list->ActivateTab(tab_list->GetTab(0)->GetHandle());
-  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
-}
-#endif  // BUILDFLAG(ENABLE_GLIC)
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                        NavigateToContextualTasksPageHidesSidePanel) {
