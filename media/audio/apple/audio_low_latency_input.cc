@@ -75,10 +75,8 @@ constexpr base::TimeDelta kMaxErrorTimeout = base::Seconds(1);
 // if input callbacks have started, and false otherwise.
 constexpr base::TimeDelta kInputCallbackStartTimeout = base::Seconds(5);
 
-// TODO(crbug.com/354625679): For now, our pipeline is set for only
-// kSampleFormatS16 only. We plan to implement changes to take higher bit depths
-// such as 24bit or 32bit float.
-constexpr SampleFormat kSampleFormat = kSampleFormatS16;
+constexpr char kChosenSampleFormatHistogram[] =
+    "Media.Audio.Capture.Mac.AUAudioInputStream.ChosenSampleFormat";
 
 // Returns true if the format flags in |format_flags| has the "non-interleaved"
 // flag (kAudioFormatFlagIsNonInterleaved) cleared (set to 0).
@@ -180,13 +178,13 @@ AUAudioInputStream::AUAudioInputStream(
   format_.mSampleRate = input_params.sample_rate();
   format_.mFormatID = kAudioFormatLinearPCM;
   format_.mFormatFlags =
-      kLinearPCMFormatFlagIsPacked | kLinearPCMFormatFlagIsSignedInteger;
+      kLinearPCMFormatFlagIsPacked | kLinearPCMFormatFlagIsFloat;
   DCHECK(FormatIsInterleaved(format_.mFormatFlags));
-  format_.mBitsPerChannel = SampleFormatToBitsPerChannel(kSampleFormat);
+  format_.mBitsPerChannel = SampleFormatToBitsPerChannel(sample_format_);
   format_.mChannelsPerFrame = input_params.channels();
   format_.mFramesPerPacket = 1;  // uncompressed audio
   format_.mBytesPerPacket = format_.mBytesPerFrame =
-      input_params.GetBytesPerFrame(kSampleFormat);
+      input_params.GetBytesPerFrame(sample_format_);
   format_.mReserved = 0;
 
   DVLOG(1) << __FUNCTION__ << " this " << this;
@@ -433,13 +431,15 @@ bool AUAudioInputStream::OpenAUHAL() {
   // Set up the the desired (output) format.
   // For obtaining input from a device, the device format is always expressed
   // on the output scope of the AUHAL's Element 1.
-  result = AudioUnitSetProperty(audio_unit_, kAudioUnitProperty_StreamFormat,
-                                kAudioUnitScope_Output, AUElement::INPUT,
-                                &format_, sizeof(format_));
+  result = ConfigureFormat();
+
   if (result != noErr) {
+    base::UmaHistogramEnumeration(kChosenSampleFormatHistogram,
+                                  kUnknownSampleFormat);
     HandleError(result);
     return false;
   }
+  base::UmaHistogramEnumeration(kChosenSampleFormatHistogram, sample_format_);
 
   // Finally, initialize the audio unit and ensure that it is ready to render.
   // Allocates memory according to the maximum number of audio frames
@@ -572,34 +572,17 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
                       static_cast<UInt32>(input_params_.frames_per_buffer()))
       << "AUHAL is using best match of IO buffer size: " << buffer_frame_size;
 
-  // The built-in device claims to be stereo. VPAU claims 5 channels (for me)
-  // but refuses to work in stereo. Just accept stero for now, use mono
-  // internally and upmix.
-  AudioStreamBasicDescription mono_format = format_;
-  if (format_.mChannelsPerFrame == 2) {
-    mono_format.mChannelsPerFrame = 1;
-    mono_format.mBytesPerPacket = mono_format.mBitsPerChannel / 8;
-    mono_format.mBytesPerFrame = mono_format.mBytesPerPacket;
-  }
-
-  // Set up the the desired (output) format.
+  // Set up the the desired input and output format.
   // For obtaining input from a device, the device format is always expressed
   // on the output scope of the AUHAL's Element 1.
-  result = AudioUnitSetProperty(audio_unit_, kAudioUnitProperty_StreamFormat,
-                                kAudioUnitScope_Output, AUElement::INPUT,
-                                &mono_format, sizeof(mono_format));
+  result = ConfigureFormatForVoiceProcessing();
   if (result != noErr) {
+    base::UmaHistogramEnumeration(kChosenSampleFormatHistogram,
+                                  kUnknownSampleFormat);
     HandleError(result);
     return false;
   }
-
-  result = AudioUnitSetProperty(audio_unit_, kAudioUnitProperty_StreamFormat,
-                                kAudioUnitScope_Input, AUElement::OUTPUT,
-                                &mono_format, sizeof(mono_format));
-  if (result != noErr) {
-    HandleError(result);
-    return false;
-  }
+  base::UmaHistogramEnumeration(kChosenSampleFormatHistogram, sample_format_);
 
   // Finally, initialize the audio unit and ensure that it is ready to render.
   // Allocates memory according to the maximum number of audio frames
@@ -613,6 +596,76 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   UndoDucking(output_device_id_for_aec_);
 #endif
   return true;
+}
+
+OSStatus AUAudioInputStream::SetInputStreamFormat(
+    const AudioStreamBasicDescription& format,
+    SampleFormat uma_format) {
+  OSStatus res = AudioUnitSetProperty(
+      audio_unit_, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output,
+      AUElement::INPUT, &format, sizeof(format));
+
+  if (res == noErr) {
+    sample_format_ = uma_format;
+  }
+  return res;
+}
+
+AudioStreamBasicDescription AUAudioInputStream::GetFallbackFormat(
+    const AudioStreamBasicDescription& source_format) {
+  AudioStreamBasicDescription s16 = source_format;
+  s16.mFormatFlags =
+      kLinearPCMFormatFlagIsPacked | kLinearPCMFormatFlagIsSignedInteger;
+  s16.mBitsPerChannel = SampleFormatToBitsPerChannel(kSampleFormatS16);
+  s16.mBytesPerPacket = s16.mBytesPerFrame =
+      s16.mChannelsPerFrame * SampleFormatToBytesPerChannel(kSampleFormatS16);
+
+  return s16;
+}
+
+OSStatus AUAudioInputStream::ConfigureFormatForVoiceProcessing() {
+  // The built-in device claims to be stereo. VPAU claims 5 channels (for me)
+  // but refuses to work in stereo. Just accept stereo for now, use mono
+  // internally and upmix.
+  AudioStreamBasicDescription mono_format = format_;
+  if (format_.mChannelsPerFrame == 2) {
+    mono_format.mChannelsPerFrame = 1;
+    mono_format.mBytesPerPacket = mono_format.mBitsPerChannel / 8;
+    mono_format.mBytesPerFrame = mono_format.mBytesPerPacket;
+  }
+
+  OSStatus result = SetInputStreamFormat(mono_format, kSampleFormatF32);
+
+  if (result == noErr) {
+    return AudioUnitSetProperty(audio_unit_, kAudioUnitProperty_StreamFormat,
+                                kAudioUnitScope_Input, AUElement::OUTPUT,
+                                &mono_format, sizeof(mono_format));
+  }
+
+  LOG(WARNING) << "F32 format rejected for VPAU. Falling back to S16.";
+
+  mono_format = GetFallbackFormat(mono_format);
+  format_ = GetFallbackFormat(format_);
+  result = SetInputStreamFormat(mono_format, kSampleFormatS16);
+  if (result == noErr) {
+    result = AudioUnitSetProperty(audio_unit_, kAudioUnitProperty_StreamFormat,
+                                  kAudioUnitScope_Input, AUElement::OUTPUT,
+                                  &mono_format, sizeof(mono_format));
+  }
+  return result;
+}
+
+OSStatus AUAudioInputStream::ConfigureFormat() {
+  OSStatus result = SetInputStreamFormat(format_, kSampleFormatF32);
+
+  if (result == noErr) {
+    return result;
+  }
+
+  LOG(WARNING) << "F32 format rejected. Falling back to S16.";
+
+  format_ = GetFallbackFormat(format_);
+  return SetInputStreamFormat(format_, kSampleFormatS16);
 }
 
 void AUAudioInputStream::SetSystemAGC(bool enable) {
@@ -1122,10 +1175,10 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   capture_time -= AudioTimestampHelper::FramesToTime(fifo_.GetAvailableFrames(),
                                                      format_.mSampleRate);
 
-  peak_detector_.FindPeak(audio_data_span, kSampleFormat);
+  peak_detector_.FindPeak(audio_data_span, sample_format_);
 
   // Copy captured (and interleaved) data into FIFO.
-  fifo_.Push(audio_data_span, number_of_frames, kSampleFormat);
+  fifo_.Push(audio_data_span, number_of_frames, sample_format_);
 
   // Consume and deliver the data when the FIFO has a block of available data.
   while (fifo_.available_blocks()) {

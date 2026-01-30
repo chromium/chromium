@@ -53,6 +53,7 @@
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/sample_format.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "media/audio/mac/audio_manager_mac.h"
@@ -133,6 +134,25 @@ class MEDIA_EXPORT AUAudioInputStream
                    AudioBufferList* io_data,
                    const AudioTimeStamp* time_stamp);
 
+  // Attempts to set the audio format to Float32. If rejected by the OS, falls
+  // back to SignedInt16. Returns the OSStatus of the AudioUnitSetProperty
+  // attempt.
+  OSStatus ConfigureFormat();
+
+  // Attempts to set the audio format to Float32 for VoiceProcessing streams. If
+  // rejected by the OS, fall back to SignedInt16. Returns the OSStatus of the
+  // AudioUnitSetProperty attempt.
+  OSStatus ConfigureFormatForVoiceProcessing();
+
+  // Returns a copy of `source_format` configured for 16-bit signed integer
+  // (S16) samples. Used as a fallback when F32 is not supported.
+  AudioStreamBasicDescription GetFallbackFormat(
+      const AudioStreamBasicDescription& source_format);
+
+  // Sets the stream format property on the Audio Unit.
+  OSStatus SetInputStreamFormat(const AudioStreamBasicDescription& format,
+                                SampleFormat uma_format);
+
   // Gets the current capture time.
   base::TimeTicks GetCaptureTime(const AudioTimeStamp* input_time_stamp);
 
@@ -196,6 +216,10 @@ class MEDIA_EXPORT AUAudioInputStream
 
   // Provides a mechanism for encapsulating one or more buffers of audio data.
   AudioBufferList audio_buffer_list_;
+
+  // SampleFormat chosen for audio input. Could be downgraded to S16 if F32 is
+  // not supported.
+  SampleFormat sample_format_ = kSampleFormatF32;
 
   // Temporary storage for recorded data. The InputProc() renders into this
   // array as soon as a frame of the desired buffer size has been recorded.

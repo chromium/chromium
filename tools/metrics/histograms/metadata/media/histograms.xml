@@ -856,6 +856,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Mac.AUAudioInputStream.ChosenSampleFormat"
+    enum="SampleFormat" expires_after="2026-07-26">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The SampleFormat macOS chooses when initializing audio input capture. Used
+    to determine which proportion of devices do not support Float32 and fallback
+    to SignedInt16. This is logged once per stream initialization. This accounts
+    for both regular input streams and VoiceProcessing input streams. There are
+    only two valid options, F32 and S16. All other cases will be recorded as
+    kUnknownSampleFormat.
+  </summary>
+</histogram>
+
 <histogram
     name="Media.Audio.Capture.Mac.MicSystemPermission.FixedTime.SinceFirstFailure"
     units="ms" expires_after="2024-03-17">
