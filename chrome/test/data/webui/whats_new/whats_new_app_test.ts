@@ -7,16 +7,23 @@ import 'chrome://whats-new/whats_new_app.js';
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {formatModuleName} from 'chrome://whats-new/format_module_name.js';
+import type {DebugInfo} from 'chrome://whats-new/types.js';
 import {ModulePosition, ScrollDepth} from 'chrome://whats-new/whats_new.mojom-webui.js';
 import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
 import {TestWhatsNewBrowserProxy} from './test_whats_new_browser_proxy.js';
 
 const whatsNewURL = 'chrome://webui-test/whats_new/test.html';
+
+declare const window: Window&{
+  chromeWhatsNew: {
+    debugInfo: () => DebugInfo,
+  },
+};
 
 function getUrlForFixture(filename: string, query?: string): string {
   if (query) {
@@ -48,7 +55,7 @@ suite('WhatsNewAppTest', function() {
   });
 
   test('with version as query parameter', async () => {
-    const proxy = new TestWhatsNewBrowserProxy(whatsNewURL + '?version=m98');
+    const proxy = new TestWhatsNewBrowserProxy(whatsNewURL + '?version=98');
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '?auto=true');
     const whatsNewApp = document.createElement('whats-new-app');
@@ -59,7 +66,28 @@ suite('WhatsNewAppTest', function() {
     const iframe =
         whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
-    assertEquals(whatsNewURL + '?version=m98&updated=true', iframe.src);
+    assertEquals(whatsNewURL + '?version=98&updated=true', iframe.src);
+    assertEquals(window.chromeWhatsNew.debugInfo().requestedVersion, 98);
+  });
+
+  test('with enabled and rolled parameters', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        whatsNewURL + '?enabled=abc,def&rolled=xyz');
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '?auto=true');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+    await proxy.handler.whenCalled('getServerUrl');
+    await microtasksFinished();
+
+    const iframe =
+        whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
+    assertTrue(!!iframe);
+    assertDeepEquals(
+        window.chromeWhatsNew.debugInfo().requestedEnabledFeatures,
+        ['abc', 'def']);
+    assertDeepEquals(
+        window.chromeWhatsNew.debugInfo().requestedRolledFeatures, ['xyz']);
   });
 
   test('no query parameters', async () => {
@@ -117,6 +145,10 @@ suite('WhatsNewAppTest', function() {
     const contentLoadedCallCount =
         proxy.handler.getCallCount('recordTimeToLoadContent');
     assertEquals(1, contentLoadedCallCount);
+    assertEquals(window.chromeWhatsNew.debugInfo().renderedVersion, 128);
+    assertDeepEquals(
+        window.chromeWhatsNew.debugInfo().renderedModules,
+        ['Module1', 'Module2']);
   });
 
   test('with module_impression metrics from embedded page', async () => {
@@ -357,6 +389,9 @@ suite('WhatsNewAppTest', function() {
               whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>(
                   '#staging-indicator');
           assertEquals(Boolean(stagingIndicator), isStagingEnabled);
+          assertEquals(
+              window.chromeWhatsNew.debugInfo().environment,
+              isStagingEnabled ? 'staging' : 'production');
         });
   });
 });

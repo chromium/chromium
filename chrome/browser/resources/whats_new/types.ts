@@ -6,6 +6,17 @@ import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.
 
 import {ModulePosition} from './whats_new.mojom-webui.js';
 
+export interface DebugInfo {
+  error?: string;
+  environment?: 'production'|'staging';
+  autoOpened?: boolean;
+  requestedVersion?: number;
+  requestedEnabledFeatures?: string[];
+  requestedRolledFeatures?: string[];
+  renderedVersion?: string|number;
+  renderedModules?: string[];
+}
+
 export enum EventType {
   BROWSER_COMMAND = 'browser_command',
   PAGE_LOADED = 'page_loaded',
@@ -116,6 +127,7 @@ interface GeneralLinkClickMetric {
 
 interface ModulesRenderedMetric {
   event: EventType.MODULES_RENDERED;
+  spotlight_modules: string[];
 }
 
 interface VideoStartedMetric {

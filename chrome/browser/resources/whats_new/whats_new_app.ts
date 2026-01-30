@@ -12,10 +12,34 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {handleBrowserCommand, handleModuleEvent, handlePageLoadMetric, handleScrollDepthMetric, handleTimeOnPageMetric} from './handlers.js';
 import {EventType} from './types.js';
-import type {EventData} from './types.js';
+import type {DebugInfo, EventData} from './types.js';
 import {getCss} from './whats_new_app.css.js';
 import {getHtml} from './whats_new_app.html.js';
 import {WhatsNewProxyImpl} from './whats_new_proxy.js';
+
+declare const window: Window&{
+  chromeWhatsNew: {
+    debugInfo: () => DebugInfo,
+  },
+};
+
+// Parse URLSearchParams from a full url string.
+function parseQueryParams(url: string): URLSearchParams {
+  const parsedUrl = URL.parse(url);
+  return new URLSearchParams(parsedUrl?.search);
+}
+
+// Parse the version query param. Returns 0 on failure.
+function getRequestedVersion(params: URLSearchParams): number {
+  const version = Number.parseInt(params.get('version') ?? '');
+  return Number.isNaN(version) ? 0 : version;
+}
+
+// Parse a string array param. Returns empty array when missing.
+function getArrayParam(params: URLSearchParams, key: string): string[] {
+  const str = params.get(key) ?? '';
+  return str.length ? str.split(',') : [];
+}
 
 export class WhatsNewAppElement extends CrLitElement {
   static get is() {
@@ -40,14 +64,20 @@ export class WhatsNewAppElement extends CrLitElement {
   protected accessor url_: string = '';
   protected accessor isStaging_: boolean = loadTimeData.getBoolean('isStaging');
 
-  private isAutoOpen_: boolean = false;
-  private eventTracker_: EventTracker = new EventTracker();
-  private heartbeatTimeOnPage_: number = 0;
   private beforeUnloadHandlerBound_:
       () => void = this.beforeUnloadHandler_.bind(this);
+  private debugInfo_: DebugInfo = {error: 'whats_new_app not created'};
+  private eventTracker_: EventTracker = new EventTracker();
+  private heartbeatTimeOnPage_: number = 0;
+  private isAutoOpen_: boolean = false;
 
   constructor() {
     super();
+
+    // Set up window API.
+    window.chromeWhatsNew = {
+      debugInfo: () => this.debugInfo_,
+    };
 
     const queryParams = new URLSearchParams(window.location.search);
 
@@ -57,6 +87,11 @@ export class WhatsNewAppElement extends CrLitElement {
     // There are no subpages in What's New. Also remove the query param here
     // since its value is recorded.
     window.history.replaceState(undefined /* stateObject */, '', '/');
+
+    this.debugInfo_ = {
+      environment: this.isStaging_ ? 'staging' : 'production',
+      autoOpened: this.isAutoOpen_,
+    };
   }
 
   override connectedCallback() {
@@ -104,6 +139,13 @@ export class WhatsNewAppElement extends CrLitElement {
     this.eventTracker_.add(
         window, 'message',
         (event: Event) => this.handleMessage_(event as MessageEvent));
+
+    const parsedParams = parseQueryParams(this.url_);
+    this.debugInfo_.requestedVersion = getRequestedVersion(parsedParams);
+    this.debugInfo_.requestedEnabledFeatures =
+        getArrayParam(parsedParams, 'enabled');
+    this.debugInfo_.requestedRolledFeatures =
+        getArrayParam(parsedParams, 'rolled');
   }
 
   private handleMessage_(event: MessageEvent) {
@@ -127,9 +169,10 @@ export class WhatsNewAppElement extends CrLitElement {
         break;
       case EventType.PAGE_LOADED:
         handlePageLoadMetric(data, this.isAutoOpen_);
+        this.debugInfo_.renderedVersion = data.version ?? data.page_uid;
         break;
       case EventType.MODULES_RENDERED:
-        // Ignored.
+        this.debugInfo_.renderedModules = data.spotlight_modules;
         break;
       case EventType.EXPLORE_MORE_OPEN:
         WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(true);
