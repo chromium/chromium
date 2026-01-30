@@ -47,6 +47,20 @@ mojom::PasswordComplexity LocalAuthFactorsComplexityToMojom(
   }
 }
 
+void ObtainContextImpl(
+    base::Location from_here,
+    const std::string& auth_token,
+    base::OnceCallback<void(std::unique_ptr<UserContext>)> callback) {
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  ash::AuthSessionStorage::Get()->BorrowAsync(from_here, auth_token,
+                                              std::move(callback));
+}
+
+#define ObtainContext(...) ObtainContextImpl(FROM_HERE, __VA_ARGS__)
+
 // The synchronous implementation of `CheckLocalPasswordComplexity`. The
 // provided `password` string must be valid UTF-8.
 mojom::PasswordComplexity CheckLocalPasswordComplexityImpl(
@@ -100,12 +114,6 @@ void PasswordFactorEditor::UpdateOrSetLocalPassword(
     const std::string& auth_token,
     const std::string& new_password,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-    LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-    return;
-  }
-
   // Mojo strings are valid UTF-8, so the `CheckLocalPasswordComplexityImpl`
   // call is OK.
   if (CheckLocalPasswordComplexityImpl(new_password) !=
@@ -114,8 +122,8 @@ void PasswordFactorEditor::UpdateOrSetLocalPassword(
     return;
   }
 
-  ash::AuthSessionStorage::Get()->BorrowAsync(
-      FROM_HERE, auth_token,
+  ObtainContext(
+      auth_token,
       base::BindOnce(&PasswordFactorEditor::UpdateOrSetPasswordWithContext,
                      weak_factory_.GetWeakPtr(), auth_token, new_password,
                      cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
@@ -151,17 +159,11 @@ void PasswordFactorEditor::UpdateOrSetOnlinePassword(
     const std::string& auth_token,
     const std::string& new_password,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-    LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-    return;
-  }
-
   // No complexity check for online passwords, it is controlled
   // on the server side by identity provider.
 
-  ash::AuthSessionStorage::Get()->BorrowAsync(
-      FROM_HERE, auth_token,
+  ObtainContext(
+      auth_token,
       base::BindOnce(&PasswordFactorEditor::UpdateOrSetPasswordWithContext,
                      weak_factory_.GetWeakPtr(), auth_token, new_password,
                      cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
@@ -180,13 +182,8 @@ void PasswordFactorEditor::SetLocalPassword(
     return;
   }
 
-  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-    LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-    return;
-  }
-  ash::AuthSessionStorage::Get()->BorrowAsync(
-      FROM_HERE, auth_token,
+  ObtainContext(
+      auth_token,
       base::BindOnce(&PasswordFactorEditor::SetPasswordWithContext,
                      weak_factory_.GetWeakPtr(), auth_token, new_password,
                      cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
@@ -197,13 +194,8 @@ void PasswordFactorEditor::SetOnlinePassword(
     const std::string& auth_token,
     const std::string& new_password,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-    LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-    return;
-  }
-  ash::AuthSessionStorage::Get()->BorrowAsync(
-      FROM_HERE, auth_token,
+  ObtainContext(
+      auth_token,
       base::BindOnce(&PasswordFactorEditor::SetPasswordWithContext,
                      weak_factory_.GetWeakPtr(), auth_token, new_password,
                      cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
@@ -343,17 +335,10 @@ void PasswordFactorEditor::OnPasswordConfigured(
 void PasswordFactorEditor::RemovePassword(
     const std::string& auth_token,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-    LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-    return;
-  }
-
-  ash::AuthSessionStorage::Get()->BorrowAsync(
-      FROM_HERE, auth_token,
-      base::BindOnce(&PasswordFactorEditor::RemovePasswordWithContext,
-                     weak_factory_.GetWeakPtr(), auth_token,
-                     std::move(callback)));
+  ObtainContext(auth_token,
+                base::BindOnce(&PasswordFactorEditor::RemovePasswordWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token,
+                               std::move(callback)));
 }
 
 void PasswordFactorEditor::RemovePasswordWithContext(
