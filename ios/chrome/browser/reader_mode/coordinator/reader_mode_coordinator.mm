@@ -108,12 +108,10 @@
 }
 
 - (void)hideReaderModeOptions {
-  if ([_mediator BWGAvailableForProfile]) {
-    id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), PageActionMenuCommands);
-    [pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
-    return;
-  }
+  id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageActionMenuCommands);
+  [pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
+
   if (!_optionsCoordinator) {
     // If the Reader mode options UI is already dismissed then there is nothing
     // to do.
