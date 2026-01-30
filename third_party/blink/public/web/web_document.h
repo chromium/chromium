@@ -225,6 +225,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   enum class ScriptToolError {
     kInvalidToolName,
     kInvalidInputArguments,
+    kMissingRequiredSubmitButton,
     kToolInvocationFailed
   };
   using ScriptToolExecutedCallback =

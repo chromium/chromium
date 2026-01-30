@@ -502,6 +502,10 @@ enum ActionResultCode {
   // navigation was committed.
   kScriptToolCrossOriginNavigation = 1204,
 
+  // Tool was not executed due to missing required submit button in the form
+  // associated with the declarative tool.
+  kScriptToolMissingRequiredSubmitButton = 1205,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

@@ -38,8 +38,10 @@ class HTMLFormMcpToolTest : public PageTestBase {
     CHECK(form_element.active_webmcp_tool_);
     bool require_submit_button = false;
     HTMLFormControlElement* submit_button;
-    return form_element.active_webmcp_tool_->FillFormControls(
-        input_arguments, require_submit_button, &submit_button);
+    std::optional<WebDocument::ScriptToolError> error =
+        form_element.active_webmcp_tool_->FillFormControls(
+            input_arguments, require_submit_button, &submit_button);
+    return !error.has_value();
   }
 
   static String ComputeInputSchema(HTMLFormElement& form_element) {

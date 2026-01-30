@@ -18,6 +18,8 @@ String GetToolErrorMessage(WebDocument::ScriptToolError error) {
       return "Tool was not executed due to invalid name.";
     case WebDocument::ScriptToolError::kInvalidInputArguments:
       return "Tool was not executed due to invalid input arguments.";
+    case WebDocument::ScriptToolError::kMissingRequiredSubmitButton:
+      return "Tool was not executed due to missing required submit button.";
     case WebDocument::ScriptToolError::kToolInvocationFailed:
       return "Tool was executed but the invocation failed. For example, the "
              "script function threw an error.";

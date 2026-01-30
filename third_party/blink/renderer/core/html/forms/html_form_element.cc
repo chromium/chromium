@@ -167,11 +167,11 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
   bool require_submit_button =
       !form_->FastHasAttribute(html_names::kToolautosubmitAttr);
   HTMLFormControlElement* submit_button = nullptr;
-  if (!FillFormControls(input_arguments, require_submit_button,
-                        &submit_button)) {
-    return std::move(done_callback)
-        .Run(base::unexpected(
-            WebDocument::ScriptToolError::kInvalidInputArguments));
+  std::optional<WebDocument::ScriptToolError> error =
+      FillFormControls(input_arguments, require_submit_button, &submit_button);
+
+  if (error.has_value()) {
+    return std::move(done_callback).Run(base::unexpected(error.value()));
   }
 
   // Success. Now we can either submit the form or focus the submit button.
@@ -197,19 +197,20 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
   }
 }
 
-bool HTMLFormElement::HTMLFormMcpTool::FillFormControls(
+std::optional<WebDocument::ScriptToolError>
+HTMLFormElement::HTMLFormMcpTool::FillFormControls(
     const String& input_arguments,
     bool require_submit_button,
     HTMLFormControlElement** submit_button) {
   *submit_button = nullptr;
   std::unique_ptr<JSONValue> json = ParseJSON(input_arguments);
   if (!json) {
-    return false;
+    return WebDocument::ScriptToolError::kInvalidInputArguments;
   }
 
   std::unique_ptr<JSONObject> json_obj = JSONObject::From(std::move(json));
   if (!json_obj) {
-    return false;
+    return WebDocument::ScriptToolError::kInvalidInputArguments;
   }
 
   HeapHashMap<String, Member<HTMLFormControlElement>> controls_map;
@@ -225,7 +226,7 @@ bool HTMLFormElement::HTMLFormMcpTool::FillFormControls(
     }
   }
   if (!*submit_button && require_submit_button) {
-    return false;
+    return WebDocument::ScriptToolError::kMissingRequiredSubmitButton;
   }
 
   // For each entry in `json_obj`, we find the corresponding form control
@@ -242,7 +243,7 @@ bool HTMLFormElement::HTMLFormMcpTool::FillFormControls(
     blink::JSONValue* contents = entry.second;
     auto it = controls_map.find(parameter_name);
     if (it == controls_map.end()) {
-      return false;
+      return WebDocument::ScriptToolError::kInvalidInputArguments;
     }
     // TODO(crbug.com/475992364): Maybe validate the data here.
     controls_to_fill.push_back(std::make_pair(it->value, contents));
@@ -251,7 +252,7 @@ bool HTMLFormElement::HTMLFormMcpTool::FillFormControls(
   for (const auto& [form_control, json_value] : controls_to_fill) {
     form_control->FillWebMCPData(*json_value);
   }
-  return true;
+  return std::nullopt;
 }
 
 void HTMLFormElement::HTMLFormMcpTool::CallDoneCallback(

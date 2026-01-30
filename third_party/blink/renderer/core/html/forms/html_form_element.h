@@ -267,12 +267,13 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
         base::OnceCallback<void(McpToolCallbackResult)> done_callback) override;
     // Fill form controls with data as provided by `input_arguments`.
     //
-    // If 'true' is returned, then all specified tool parameters (form controls)
-    // were filled successfully. Otherwise, the state of all form controls
-    // are left unchanged.
-    bool FillFormControls(const String& input_arguments,
-                          bool require_submit_button,
-                          HTMLFormControlElement** submit_button);
+    // If no error is returned, then all specified tool parameters (form
+    // controls) were filled successfully. Otherwise, the state of all form
+    // controls are left unchanged.
+    std::optional<WebDocument::ScriptToolError> FillFormControls(
+        const String& input_arguments,
+        bool require_submit_button,
+        HTMLFormControlElement** submit_button);
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }
     bool IsValidTool() const { return !tool_name_.IsNull(); }

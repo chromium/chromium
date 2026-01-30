@@ -34,6 +34,9 @@ mojom::ActionResultPtr OnToolExecuted(
       case blink::WebDocument::ScriptToolError::kInvalidInputArguments:
         return MakeResult(
             mojom::ActionResultCode::kScriptToolInvalidInputArguments);
+      case blink::WebDocument::ScriptToolError::kMissingRequiredSubmitButton:
+        return MakeResult(
+            mojom::ActionResultCode::kScriptToolMissingRequiredSubmitButton);
       case blink::WebDocument::ScriptToolError::kToolInvocationFailed:
         return MakeResult(mojom::ActionResultCode::kScriptToolInvocationFailed);
     }
