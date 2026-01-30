@@ -1534,7 +1534,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the custom passphrase is remembered per account, kept across signout,
 // and cleared when account is removed from device.
+// TODO(crbug.com/384646508): Re-enable after the fix on iOS 17.
 - (void)testRememberCustomPassphraseAfterSignout {
+  if (!@available(iOS 18.0, *)) {
+    EARL_GREY_TEST_SKIPPED(@"Failed on iOS 17");
+  }
   // Enable custom passphrase.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
