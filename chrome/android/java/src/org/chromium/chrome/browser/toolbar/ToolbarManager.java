@@ -116,6 +116,7 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegateImpl;
@@ -771,6 +772,7 @@ public class ToolbarManager
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
      * @param pageZoomManager The {@link PageZoomManager} used to manage the page zoom.
+     * @param omniboxChipManager The {@link OmniboxChipManager} to show chips in the omnibox.
      */
     public ToolbarManager(
             AppCompatActivity activity,
@@ -824,7 +826,8 @@ public class ToolbarManager
             MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             PageZoomManager pageZoomManager,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            @Nullable OmniboxChipManager omniboxChipManager) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -1254,7 +1257,7 @@ public class ToolbarManager
                             mLocationBarModel,
                             mActionModeController.getActionModeCallback(),
                             windowAndroid,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             modalDialogManagerSupplier,
                             shareDelegateSupplier,
                             mIncognitoStateProvider,
@@ -1290,7 +1293,8 @@ public class ToolbarManager
                             TabFavicon::getBitmap,
                             multiInstanceManager,
                             snackbarManager,
-                            bottomContainerView);
+                            bottomContainerView,
+                            omniboxChipManager);
             mToolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);

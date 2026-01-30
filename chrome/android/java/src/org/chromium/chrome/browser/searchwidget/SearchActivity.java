@@ -324,7 +324,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         mSearchBoxDataProvider,
                         null,
                         assertNonNull(getWindowAndroid()),
-                        /* activityTabSupplier= */ () -> null,
+                        /* activityTabSupplier= */ ObservableSuppliers.alwaysNull(),
                         (Supplier<@Nullable ModalDialogManager>) getModalDialogManagerSupplier(),
                         /* shareDelegateSupplier= */ null,
                         /* incognitoStateProvider= */ null,
@@ -388,7 +388,8 @@ public class SearchActivity extends AsyncInitializationActivity
                         TabFavicon::getBitmap,
                         /* multiInstanceManager= */ null,
                         mSnackbarManager,
-                        findViewById(R.id.bottom_container));
+                        findViewById(R.id.bottom_container),
+                        /* omniboxChipManager= */ null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         assumeNonNull(mLocationBarCoordinator.getOmniboxStub()).addUrlFocusChangeListener(this);

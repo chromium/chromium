@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.open_in_app;
 
+import android.content.Context;
+
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -18,15 +20,17 @@ public abstract class OpenInAppEntryPoint
     private @Nullable Tab mCurrentTab;
     private @Nullable OpenInAppDelegate mOpenInAppDelegate;
     private OpenInAppDelegate.@Nullable OpenInAppInfo mOpenInAppInfo;
+    protected final Context mContext;
 
     /**
      * Constructor for this class.
      *
      * @param tabSupplier A supplier that notifies of tab changes.
+     * @param context The {@link Context} to get resources from.
      */
-    public OpenInAppEntryPoint(NullableObservableSupplier<Tab> tabSupplier) {
+    public OpenInAppEntryPoint(NullableObservableSupplier<Tab> tabSupplier, Context context) {
         mTabSupplierObserver =
-                new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
+                new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ false) {
                     @Override
                     protected void onObservingDifferentTab(@Nullable Tab tab) {
                         mCurrentTab = tab;
@@ -44,6 +48,11 @@ public abstract class OpenInAppEntryPoint
                                         : null);
                     }
                 };
+        mContext = context;
+
+        if (mOpenInAppDelegate != null) {
+            mOpenInAppInfo = mOpenInAppDelegate.getCurrentOpenInAppInfo();
+        }
     }
 
     public void destroy() {
@@ -62,7 +71,9 @@ public abstract class OpenInAppEntryPoint
     }
 
     @Override
-    public OpenInAppDelegate.@Nullable OpenInAppInfo getOpenInAppInfo() {
+    public OpenInAppDelegate.@Nullable OpenInAppInfo getOpenInAppInfoForMenuItem() {
+        // TODO(crbug.com/450253146): This should only return the info if the omnibox chip isn't
+        // being shown.
         return mOpenInAppInfo;
     }
 }

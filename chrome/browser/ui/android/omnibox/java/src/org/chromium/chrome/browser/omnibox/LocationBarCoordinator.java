@@ -31,6 +31,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -191,6 +192,7 @@ public class LocationBarCoordinator
      *     soft keyboard is not visible.
      * @param onLongClickListener for the url bar.
      * @param pageZoomManager The {@link PageZoomManager} for managing the page zoom.
+     * @param omniboxChipManager The {@link OmniboxChipManager} to show chips in the omnibox.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -199,7 +201,7 @@ public class LocationBarCoordinator
             LocationBarDataProvider locationBarDataProvider,
             ActionMode.@Nullable Callback actionModeCallback,
             WindowAndroid windowAndroid,
-            Supplier<@Nullable Tab> activityTabSupplier,
+            NullableObservableSupplier<Tab> activityTabSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable IncognitoStateProvider incognitoStateProvider,
@@ -232,7 +234,8 @@ public class LocationBarCoordinator
             Function<Tab, @Nullable Bitmap> tabFaviconFunction,
             @Nullable MultiInstanceManager multiInstanceManager,
             SnackbarManager snackbarManager,
-            View bottomContainerView) {
+            View bottomContainerView,
+            @Nullable OmniboxChipManager omniboxChipManager) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -322,7 +325,8 @@ public class LocationBarCoordinator
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         multiInstanceManager,
-                        locationBarEmbedder);
+                        locationBarEmbedder,
+                        omniboxChipManager);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }

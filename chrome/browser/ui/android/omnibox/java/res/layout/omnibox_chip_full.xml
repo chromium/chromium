@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- TODO(crbug.com/450253146): Update the styling to match the spec including incognito. -->
+<Button
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+    android:paddingStart="4dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    app:iconTint="@null"
+    app:iconPadding="4dp"
+    app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.Xsmall" />

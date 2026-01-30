@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageControll
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -2895,6 +2896,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
+        if (id == R.id.open_in_app_menu_id) {
+            doOpenInApp(currentTab);
+            return true;
+        }
+
         return false;
     }
 
@@ -3167,6 +3173,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (readAloudController != null) {
             readAloudController.playTab(currentTab, ReadAloudController.Entrypoint.OVERFLOW_MENU);
         }
+    }
+
+    private void doOpenInApp(Tab currentTab) {
+        var info = OpenInAppDelegate.from(currentTab).getCurrentOpenInAppInfo();
+        if (info != null) {
+            info.action.run();
+        }
+
+        RecordHistogram.recordBooleanHistogram(
+                "Android.OpenInApp.Clicked.AppMenuItem", info != null);
     }
 
     /**

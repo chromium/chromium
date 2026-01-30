@@ -295,7 +295,6 @@ public class LocationBarMediatorTest {
         doReturn(mAppBannerManager)
                 .when(mAppBannerManagerJni)
                 .getJavaBannerManagerForWebContents(mWebContents);
-
         mMediator =
                 new LocationBarMediator(
                         mContext,
@@ -319,7 +318,8 @@ public class LocationBarMediatorTest {
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mMultiInstanceManager,
-                        mLocationBarEmbedder);
+                        mLocationBarEmbedder,
+                        /* omniboxChipManager= */ null);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
@@ -358,7 +358,8 @@ public class LocationBarMediatorTest {
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mMultiInstanceManager,
-                        mLocationBarEmbedder);
+                        mLocationBarEmbedder,
+                        /* omniboxChipManager= */ null);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         return tabletMediator;
@@ -1129,7 +1130,8 @@ public class LocationBarMediatorTest {
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mMultiInstanceManager,
-                        mLocationBarEmbedder);
+                        mLocationBarEmbedder,
+                        /* omniboxChipManager= */ null);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);

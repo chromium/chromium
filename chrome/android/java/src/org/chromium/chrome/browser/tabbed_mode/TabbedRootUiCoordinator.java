@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -933,7 +935,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (OpenInAppUtils.isOpenInAppAvailable()) {
             mOpenInAppEntryPoint =
-                    new TabbedOpenInAppEntryPoint(mActivityTabProvider.asObservable());
+                    new TabbedOpenInAppEntryPoint(
+                            mActivityTabProvider.asObservable(),
+                            assumeNonNull(mOmniboxChipManager),
+                            mActivity);
         }
     }
 

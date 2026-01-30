@@ -121,11 +121,13 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxActionDelegateImpl;
+import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.open_in_app.OpenInAppEntryPoint;
 import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
+import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
@@ -412,6 +414,7 @@ public class RootUiCoordinator
     protected final SettableMonotonicObservableSupplier<ReaderModeIphController>
             mReaderModeIphControllerSupplier = ObservableSuppliers.createMonotonic();
     protected @Nullable OpenInAppEntryPoint mOpenInAppEntryPoint;
+    protected @Nullable OmniboxChipManager mOmniboxChipManager;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -834,6 +837,11 @@ public class RootUiCoordinator
             }
             mToolbarManager.destroy();
             mToolbarManager = null;
+        }
+
+        if (mOmniboxChipManager != null) {
+            mOmniboxChipManager.destroy();
+            mOmniboxChipManager = null;
         }
 
         if (mAdaptiveToolbarUiCoordinator != null) {
@@ -1796,6 +1804,12 @@ public class RootUiCoordinator
                             TabWindowManagerSingleton::getInstance,
                             this::bringTabToFront);
 
+            if (OpenInAppUtils.isOpenInAppAvailable()) {
+                ViewGroup omniboxChipContainer =
+                        controlContainer.findViewById(R.id.omnibox_chip_container);
+                mOmniboxChipManager = new OmniboxChipManager(omniboxChipContainer);
+            }
+
             mToolbarManager =
                     new ToolbarManager(
                             mActivity,
@@ -1851,7 +1865,8 @@ public class RootUiCoordinator
                             mTopInsetProviderSupplier,
                             mXrSpaceModeObservableSupplier,
                             mPageZoomManager,
-                            mSnackbarManagerSupplier.get());
+                            mSnackbarManagerSupplier.get(),
+                            mOmniboxChipManager);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

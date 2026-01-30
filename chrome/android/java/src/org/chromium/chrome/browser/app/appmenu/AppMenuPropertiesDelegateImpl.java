@@ -23,6 +23,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.common.primitives.UnsignedLongs;
@@ -37,8 +38,10 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -1322,14 +1325,30 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     /** Returns whether to show the open in app menu item. */
+    @EnsuresNonNullIf("mOpenInAppMenuItemProvider")
     protected boolean shouldShowOpenInAppItem() {
         return mOpenInAppMenuItemProvider != null
-                && mOpenInAppMenuItemProvider.getOpenInAppInfo() != null;
+                && mOpenInAppMenuItemProvider.getOpenInAppInfoForMenuItem() != null;
     }
 
     /** Returns a new open in app menu item. */
+    @RequiresNonNull("mOpenInAppMenuItemProvider")
     protected ListItem buildOpenInAppItem() {
-        // TODO(crbug.com/450253146): Build the actual item.
-        return new ListItem(AppMenuItemType.STANDARD, new PropertyModel());
+        var info = mOpenInAppMenuItemProvider.getOpenInAppInfoForMenuItem();
+        assert info != null;
+
+        PropertyModel model =
+                buildBaseModelForTextItem(R.id.open_in_app_menu_id)
+                        .with(AppMenuItemProperties.TITLE, mContext.getString(R.string.open_in_app))
+                        .build();
+        if (info.appIcon != null) {
+            model.set(AppMenuItemProperties.ICON, info.appIcon);
+            model.set(AppMenuItemProperties.ICON_NO_TINT, true);
+        } else {
+            model.set(
+                    AppMenuItemProperties.ICON,
+                    ContextCompat.getDrawable(mContext, R.drawable.open_in_new_tab));
+        }
+        return new ListItem(AppMenuItemType.STANDARD, model);
     }
 }

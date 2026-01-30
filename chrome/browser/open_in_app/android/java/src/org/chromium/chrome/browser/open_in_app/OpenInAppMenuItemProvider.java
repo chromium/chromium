@@ -12,5 +12,5 @@ import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate.OpenInAppInfo;
 @NullMarked
 public interface OpenInAppMenuItemProvider {
     /** Returns the {@link OpenInAppInfo} for the "Open in App" menu item. */
-    @Nullable OpenInAppInfo getOpenInAppInfo();
+    @Nullable OpenInAppInfo getOpenInAppInfoForMenuItem();
 }

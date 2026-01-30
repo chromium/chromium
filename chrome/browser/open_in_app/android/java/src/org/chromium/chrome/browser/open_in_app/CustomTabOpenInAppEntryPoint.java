@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.open_in_app;
 
+import android.content.Context;
+
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
@@ -11,7 +13,8 @@ import org.chromium.chrome.browser.tab.Tab;
 /** Entry point for Open in App in Custom Tab activity. */
 @NullMarked
 public class CustomTabOpenInAppEntryPoint extends OpenInAppEntryPoint {
-    public CustomTabOpenInAppEntryPoint(NullableObservableSupplier<Tab> tabSupplier) {
-        super(tabSupplier);
+    public CustomTabOpenInAppEntryPoint(
+            NullableObservableSupplier<Tab> tabSupplier, Context context) {
+        super(tabSupplier, context);
     }
 }

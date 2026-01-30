@@ -254,6 +254,7 @@ class LocationBarMediator
     private final ButtonToolbarWidthConsumer mLensButtonToolbarWidthConsumer;
     private final ButtonToolbarWidthConsumer mZoomButtonToolbarWidthConsumer;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
+    private final @Nullable OmniboxChipManager mOmniboxChipManager;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -277,7 +278,8 @@ class LocationBarMediator
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
             FuseboxCoordinator fuseboxCoordinator,
             @Nullable MultiInstanceManager multiInstanceManager,
-            LocationBarEmbedder locationBarEmbedder) {
+            LocationBarEmbedder locationBarEmbedder,
+            @Nullable OmniboxChipManager omniboxChipManager) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -350,6 +352,7 @@ class LocationBarMediator
                 .getFuseboxStateSupplier()
                 .addObserver(mCallbackController.makeCancelable(this::onFuseboxStateChanged));
         mFuseboxCoordinator.addAttachmentChangeListener(this);
+        mOmniboxChipManager = omniboxChipManager;
     }
 
     /**
@@ -2295,6 +2298,10 @@ class LocationBarMediator
 
     /* package */ ToolbarWidthConsumer getZoomButtonToolbarWidthConsumer() {
         return mZoomButtonToolbarWidthConsumer;
+    }
+
+    /* package */ @Nullable ToolbarWidthConsumer getOmniboxChipToolbarWidthConsumer() {
+        return mOmniboxChipManager;
     }
 
     private static class ButtonToolbarWidthConsumer implements ToolbarWidthConsumer {

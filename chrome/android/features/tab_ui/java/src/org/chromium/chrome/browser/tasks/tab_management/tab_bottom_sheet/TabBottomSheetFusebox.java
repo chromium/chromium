@@ -74,7 +74,7 @@ public class TabBottomSheetFusebox {
                         mDataProvider,
                         /* actionModeCallback */ null,
                         windowAndroid,
-                        /* activityTabSupplier= */ () -> null,
+                        /* activityTabSupplier= */ ObservableSuppliers.alwaysNull(),
                         windowAndroid::getModalDialogManager,
                         /* shareDelegateSupplier= */ null,
                         /* incognitoStateProvider= */ null,
@@ -107,7 +107,8 @@ public class TabBottomSheetFusebox {
                         /* tabFaviconFunction= */ (tab) -> null,
                         /* multiInstanceManager= */ null,
                         snackbarManager,
-                        bottomContainer);
+                        bottomContainer,
+                        /* omniboxChipManager= */ null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.onFinishNativeInitialization();
     }

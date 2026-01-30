@@ -4817,6 +4817,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Preview
       </message>
 
+      <!-- Open in app -->
+      <message name="IDS_OPEN_IN_APP" desc="Chip displayed in the omnibox or item displayed in the app menu that opens the current page in the relevant app. [CHAR_LIMIT=32]">
+        Open in app
+      </message>
+
       <!-- Voice search -->
       <message name="IDS_VOICE_SEARCH_ERROR" desc="Toast when the voice search activity couldn't be started. [CHAR_LIMIT=40]">
         No enabled voice search available

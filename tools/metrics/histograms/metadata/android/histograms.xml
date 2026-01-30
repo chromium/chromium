@@ -4354,6 +4354,17 @@ chromium-metrics-reviews@google.com.
   <summary>Records how the omnibox was focused.</summary>
 </histogram>
 
+<histogram name="Android.OpenInApp.Clicked.AppMenuItem" enum="Boolean"
+    expires_after="2027-01-28">
+  <owner>sinansahin@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Recorded when the user clicks the Open in App item in the App Menu. A true
+    value indicates OpenInAppInfo was non-null for the current tab when the item
+    was clicked, and vice versa.
+  </summary>
+</histogram>
+
 <histogram name="Android.OverscrollFromBottom.BottomControlsStatus"
     enum="BottomControlsStatus" expires_after="2026-02-24">
   <owner>wenyufu@chromium.org</owner>
