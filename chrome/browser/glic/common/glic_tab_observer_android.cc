@@ -23,6 +23,10 @@ TabCreationType ToTypeCreationType(TabModel::TabLaunchType type) {
     case TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND:
     case TabModel::TabLaunchType::FROM_RECENT_TABS:
       return TabCreationType::kUserInitiated;
+    case TabModel::TabLaunchType::FROM_LINK:
+    case TabModel::TabLaunchType::FROM_LONGPRESS_FOREGROUND:
+    case TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND:
+      return TabCreationType::kFromLink;
     default:
       return TabCreationType::kUnknown;
   }
@@ -138,7 +142,9 @@ void GlicTabObserverAndroid::DidAddTab(TabAndroid* tab,
   CHECK(tab_model);
 
   tabs::TabInterface* old_tab = GetLastActiveTab(tab_model);
-  callback_.Run(TabCreationEvent(tab, old_tab, ToTypeCreationType(type)));
+  tabs::TabInterface* opener = tab_model->GetOpenerForTab(tab->GetHandle());
+  callback_.Run(
+      TabCreationEvent{tab, old_tab, opener, ToTypeCreationType(type)});
 }
 
 void GlicTabObserverAndroid::DidSelectTab(TabAndroid* tab,

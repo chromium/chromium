@@ -59,7 +59,9 @@ void GlicTabObserverImpl::OnTabStripModelChanged(
       tabs::TabInterface* new_tab =
           tab_strip_model->GetTabAtIndex(content.index);
       TabCreationType type = DetermineTabCreationType(new_tab);
-      callback_.Run(TabCreationEvent{new_tab, selection.old_tab, type});
+      tabs::TabInterface* opener =
+          tab_strip_model->GetOpenerOfTabAt(content.index);
+      callback_.Run(TabCreationEvent{new_tab, selection.old_tab, opener, type});
     }
     return;
   }
@@ -101,6 +103,11 @@ TabCreationType GlicTabObserverImpl::DetermineTabCreationType(
   if (ui::PageTransitionCoreTypeIs(entry->GetTransitionType(),
                                    ui::PAGE_TRANSITION_TYPED)) {
     return TabCreationType::kUserInitiated;
+  }
+
+  if (ui::PageTransitionCoreTypeIs(entry->GetTransitionType(),
+                                   ui::PAGE_TRANSITION_LINK)) {
+    return TabCreationType::kFromLink;
   }
 
   return TabCreationType::kUnknown;

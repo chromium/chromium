@@ -20,6 +20,7 @@ class TabInterface;
 
 enum class TabCreationType {
   kUserInitiated,
+  kFromLink,
   kUnknown,
 };
 
@@ -31,6 +32,10 @@ struct TabCreationEvent {
   // The previously active tab, if any. Only valid for the duration of the
   // callback.
   raw_ptr<tabs::TabInterface> old_tab = nullptr;
+
+  // The tab that opened the new tab, if known. Only valid for the duration of
+  // the callback.
+  raw_ptr<tabs::TabInterface> opener = nullptr;
 
   TabCreationType creation_type = TabCreationType::kUnknown;
 };

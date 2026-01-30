@@ -41,6 +41,7 @@
 struct TestTabCreationEvent {
   base::WeakPtr<tabs::TabInterface> new_tab;
   base::WeakPtr<tabs::TabInterface> old_tab;
+  base::WeakPtr<tabs::TabInterface> opener;
   TabCreationType creation_type = TabCreationType::kUnknown;
 };
 
@@ -56,6 +57,7 @@ TestGlicTabEvent ConvertToTestEvent(const GlicTabEvent& event) {
   if (const auto* c = std::get_if<TabCreationEvent>(&event)) {
     return TestTabCreationEvent{c->new_tab ? c->new_tab->GetWeakPtr() : nullptr,
                                 c->old_tab ? c->old_tab->GetWeakPtr() : nullptr,
+                                c->opener ? c->opener->GetWeakPtr() : nullptr,
                                 c->creation_type};
   } else if (const auto* a = std::get_if<TabActivationEvent>(&event)) {
     return TestTabActivationEvent{
@@ -383,4 +385,25 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabActivation) {
   ASSERT_TRUE(activation);
   EXPECT_EQ(activation->new_active_tab.get(), initial_tab);
   EXPECT_EQ(activation->old_active_tab.get(), second_tab);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickTracking) {
+  GlicTabEventCollector collector(GetProfile());
+
+  // 1. Get initial tab
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(first_tab);
+
+  // 2. Simulate opening a link in a new tab
+  content::OpenURLParams params(GURL("about:blank"), content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+  first_tab->GetContents()->OpenURL(params, base::DoNothing());
+
+  const TestTabCreationEvent* creation = collector.WaitForCreation();
+  ASSERT_TRUE(creation);
+  ASSERT_TRUE(creation->new_tab);
+
+  EXPECT_EQ(creation->creation_type, TabCreationType::kFromLink);
 }
