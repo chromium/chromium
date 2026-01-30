@@ -128,11 +128,14 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
                                 getJobInfoNetworkTypeFromTaskNetworkType(
                                         taskInfo.getRequiredNetworkType()));
 
+        boolean isUserInitiated = false;
         if (BuildCompat.isAtLeastU()) {
             builder.setUserInitiated(taskInfo.isUserInitiated());
+            isUserInitiated = taskInfo.isUserInitiated();
         }
 
-        JobInfoBuilderVisitor jobInfoBuilderVisitor = new JobInfoBuilderVisitor(builder, jobExtras);
+        JobInfoBuilderVisitor jobInfoBuilderVisitor =
+                new JobInfoBuilderVisitor(builder, jobExtras, isUserInitiated);
         taskInfo.getTimingInfo().accept(jobInfoBuilderVisitor);
         builder = jobInfoBuilderVisitor.getBuilder();
 
@@ -140,10 +143,13 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
     }
 
     private static class JobInfoBuilderVisitor implements TaskInfo.TimingInfoVisitor {
+        private final boolean mIsUserInitiated;
         private final JobInfo.Builder mBuilder;
         private final PersistableBundle mJobExtras;
 
-        JobInfoBuilderVisitor(JobInfo.Builder builder, PersistableBundle jobExtras) {
+        JobInfoBuilderVisitor(
+                JobInfo.Builder builder, PersistableBundle jobExtras, boolean isUserInitiated) {
+            mIsUserInitiated = isUserInitiated;
             mBuilder = builder;
             mJobExtras = jobExtras;
         }
@@ -170,7 +176,7 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
                 if (latency < 0) {
                     latency = 0;
                 }
-                mBuilder.setMinimumLatency(latency);
+                if (!mIsUserInitiated) mBuilder.setMinimumLatency(latency);
             }
             if (oneOffInfo.hasWindowEndTimeConstraint()) {
                 long windowEndTimeMs = oneOffInfo.getWindowEndTimeMs();
@@ -178,7 +184,7 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
                     windowEndTimeMs += DEADLINE_DELTA_MS;
                 }
 
-                mBuilder.setOverrideDeadline(windowEndTimeMs);
+                if (!mIsUserInitiated) mBuilder.setOverrideDeadline(windowEndTimeMs);
             }
         }
 
