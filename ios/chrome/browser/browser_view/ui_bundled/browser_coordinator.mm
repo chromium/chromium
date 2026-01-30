@@ -4200,6 +4200,11 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - SyncPresenterCommands
 
 - (void)showPrimaryAccountReauth {
+  [self showPrimaryAccountReauthWithDismissalCompletion:nil];
+}
+
+- (void)showPrimaryAccountReauthWithDismissalCompletion:
+    (SyncPresenterCompletionCallback)completion {
   if (_signinCoordinator.viewWillPersist) {
     return;
   }
@@ -4224,15 +4229,12 @@ const char kChromeAppStoreUrl[] =
       ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
         id<SystemIdentity> identity) {
         [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
+
+        if (completion) {
+          completion();
+        }
       };
   [_signinCoordinator start];
-}
-
-- (void)showPrimaryAccountReauthWithDismissalCompletion:
-    (SyncPresenterCompletionCallback)completion {
-  // TODO(crbug.com/464228247): Implement calling `completion` once the UI is
-  // dismissed.
-  [self showPrimaryAccountReauth];
 }
 
 - (void)showSyncPassphraseSettings {

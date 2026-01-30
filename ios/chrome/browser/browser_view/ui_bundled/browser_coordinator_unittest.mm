@@ -10,8 +10,11 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/test/ios/test_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
@@ -494,6 +497,61 @@ TEST_F(BrowserCoordinatorTest,
   [browser_coordinator overscrollActionRefresh:overscroll_actions_controller];
 
   [browser_coordinator stop];
+}
+
+// Tests that the completion callback for
+// showPrimaryAccountReauthWithDismissalCompletion is called correctly.
+TEST_F(BrowserCoordinatorTest, TestPrimaryAccountReauthCompletion) {
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+  id<SyncPresenterCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), SyncPresenterCommands);
+  SigninCoordinator* signin_mock =
+      OCMStrictClassMock([SigninCoordinator class]);
+  OCMExpect(
+      [((id)signin_mock)
+          primaryAccountReauthCoordinatorWithBaseViewController:[OCMArg any]
+                                                        browser:
+                                                            ios::OCM::
+                                                                AnyPointer<
+                                                                    Browser>()
+                                                   contextStyle:
+                                                       SigninContextStyle::
+                                                           kDefault
+                                                    accessPoint:
+                                                        signin_metrics::
+                                                            AccessPoint::
+                                                                kStartPage
+                                                    promoAction:
+                                                        signin_metrics::
+                                                            PromoAction::
+                                                                PROMO_ACTION_NO_SIGNIN_PROMO
+                                           continuationProvider:
+                                               DoNothingContinuationProvider()])
+      .ignoringNonObjectArgs()
+      .andReturn(signin_mock);
+
+  __block SigninCoordinatorCompletionCallback signin_coordinator_callback = nil;
+  OCMExpect([signin_mock
+      setSigninCompletion:AssignValueToVariable(signin_coordinator_callback)]);
+  OCMExpect([signin_mock start]);
+
+  __block bool completion_was_called = false;
+  [handler showPrimaryAccountReauthWithDismissalCompletion:^() {
+    completion_was_called = true;
+  }];
+
+  EXPECT_OCMOCK_VERIFY((id)signin_mock);
+
+  OCMExpect([signin_mock stop]);
+  signin_coordinator_callback(
+      signin_mock, SigninCoordinatorResult::SigninCoordinatorResultSuccess,
+      nil);
+  EXPECT_TRUE(completion_was_called);
+
+  [browser_coordinator stop];
+
+  EXPECT_OCMOCK_VERIFY((id)signin_mock);
 }
 
 // Tests that a double tap on the trusted vault reauth errors button don’t
