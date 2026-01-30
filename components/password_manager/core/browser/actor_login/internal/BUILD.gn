@@ -11,6 +11,7 @@ source_set("delegate") {
   sources = [
     "actor_login_credential_filler.cc",
     "actor_login_credential_filler.h",
+    "actor_login_credentials_fetcher.h",
     "actor_login_delegate.h",
     "actor_login_form_finder.cc",
     "actor_login_form_finder.h",
@@ -18,6 +19,8 @@ source_set("delegate") {
     "actor_login_get_credentials_helper.h",
     "actor_login_metrics.cc",
     "actor_login_metrics.h",
+    "actor_login_password_credentials_fetcher.cc",
+    "actor_login_password_credentials_fetcher.h",
   ]
 
   visibility = [
@@ -48,13 +51,14 @@ source_set("unit_tests") {
   sources = [
     "actor_login_credential_filler_unittest.cc",
     "actor_login_get_credentials_helper_unittest.cc",
+    "actor_login_password_credentials_fetcher_unittest.cc",
   ]
 
   deps = [
     ":delegate",
     "//components/affiliations/core/browser:test_support",
     "//components/device_reauth",
-    "//components/optimization_guide/proto:optimization_guide_proto_gen",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/test:test_support",

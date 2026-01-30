@@ -9,6 +9,8 @@ source_set("delegate") {
   sources = [
     "actor_login_delegate_impl.cc",
     "actor_login_delegate_impl.h",
+    "actor_login_federated_credentials_fetcher.cc",
+    "actor_login_federated_credentials_fetcher.h",
     "actor_login_siwg_controller.cc",
     "actor_login_siwg_controller.h",
     "siwg_button_finder.cc",
@@ -32,7 +34,9 @@ source_set("delegate") {
     "//components/password_manager/core/browser/actor_login/internal:delegate",
     "//components/password_manager/core/browser/features:password_features",
     "//components/tabs:public",
+    "//components/url_formatter",
     "//content/public/browser",
+    "//content/public/common",
     "//third_party/re2",
   ]
 
@@ -45,6 +49,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_login_delegate_impl_unittest.cc",
+    "actor_login_federated_credentials_fetcher_unittest.cc",
     "actor_login_siwg_controller_unittest.cc",
     "siwg_button_finder_unittest.cc",
   ]
@@ -63,8 +68,10 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/tabs:test_support",
     "//content/public/browser",
+    "//content/public/common",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
   ]
 }

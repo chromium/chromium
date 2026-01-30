@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_TYPES_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,20 @@ namespace actor_login {
 
 enum CredentialType {
   kPassword,
+  kFederated,
+};
+
+struct FederationDetail {
+  // The `Origin` of the identity provider.
+  url::Origin idp_origin;
+
+  // The account ID provided by the identity provider.
+  std::string account_id;
+
+#if defined(UNIT_TEST)
+  friend bool operator==(const FederationDetail&,
+                         const FederationDetail&) = default;
+#endif
 };
 
 struct Credential {
@@ -72,6 +87,9 @@ struct Credential {
   // Whether the user has granted persistent permission for this credential to
   // be used on `request_origin`.
   bool has_persistent_permission = false;
+
+  // Only set if `type` is `kFederated`.
+  std::optional<FederationDetail> federation_detail;
 
 #if defined(UNIT_TEST)
   // An exact equality comparison of all the fields is only useful for tests.
