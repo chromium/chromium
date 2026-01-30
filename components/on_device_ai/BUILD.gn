@@ -27,3 +27,16 @@ source_set("ai_model_download_progress_manager") {
     "//services/on_device_model/public/mojom",
   ]
 }
+
+source_set("ai_crx_component") {
+  sources = [
+    "ai_crx_component.cc",
+    "ai_crx_component.h",
+  ]
+  deps = [
+    ":ai_model_download_progress_manager",
+    "//base",
+    "//components/component_updater",
+    "//components/update_client",
+  ]
+}

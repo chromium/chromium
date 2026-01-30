@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/feature_list.h"
-#include "chrome/browser/ai/ai_crx_component.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/service_controller_manager.h"
@@ -16,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/crx_file/id_util.h"
+#include "components/on_device_ai/ai_crx_component.h"
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/metrics.h"

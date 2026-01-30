@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AI_AI_CRX_COMPONENT_H_
-#define CHROME_BROWSER_AI_AI_CRX_COMPONENT_H_
+#ifndef COMPONENTS_ON_DEVICE_AI_AI_CRX_COMPONENT_H_
+#define COMPONENTS_ON_DEVICE_AI_AI_CRX_COMPONENT_H_
 
 #include "components/component_updater/component_updater_service.h"
 #include "components/on_device_ai/ai_model_download_progress_manager.h"
@@ -38,4 +38,4 @@ class AICrxComponent : public AIModelDownloadProgressManager::Component,
 };
 }  // namespace on_device_ai
 
-#endif  // CHROME_BROWSER_AI_AI_CRX_COMPONENT_H_
+#endif  // COMPONENTS_ON_DEVICE_AI_AI_CRX_COMPONENT_H_

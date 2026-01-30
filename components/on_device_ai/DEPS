@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 include_rules = [
+  "+components/component_updater",
   "+components/optimization_guide/core",
+  "+components/update_client",
   "+mojo/public/cpp/bindings",
-  "+third_party/blink/public/mojom/ai",
   "+services/on_device_model",
+  "+third_party/blink/public/mojom/ai",
 ]

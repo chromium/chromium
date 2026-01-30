@@ -39,6 +39,7 @@ source_set("on_device_translation") {
     "//components/content_settings/core/browser",
     "//components/crx_file",
     "//components/keyed_service/content",
+    "//components/on_device_ai:ai_crx_component",
     "//components/on_device_translation",
     "//components/on_device_translation/public/mojom",
     "//components/on_device_translation/service:on_device_translation_service",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ai/ai_crx_component.h"
+#include "components/on_device_ai/ai_crx_component.h"
 
 #include <memory>
 

@@ -37,6 +37,7 @@ source_set("ai") {
     "//chrome/browser/profiles:profile",
     "//components/component_updater",
     "//components/on_device_ai",
+    "//components/on_device_ai:ai_crx_component",
     "//components/optimization_guide/core",
     "//content/public/browser",
   ]
@@ -100,8 +101,6 @@ source_set("impl") {
 
 source_set("ai_model_download_progress_manager_components") {
   sources = [
-    "ai_crx_component.cc",
-    "ai_crx_component.h",
     "ai_never_load_component.cc",
     "ai_never_load_component.h",
   ]
@@ -152,6 +151,7 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//components/on_device_ai",
+    "//components/on_device_ai:ai_crx_component",
     "//components/optimization_guide/core:test_support",
   ]
 }
