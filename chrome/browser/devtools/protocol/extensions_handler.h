@@ -28,6 +28,7 @@ class ExtensionsHandler : public protocol::Extensions::Backend {
       const protocol::String& extendsion_id,
       const protocol::String& target_id) override;
   void LoadUnpacked(const protocol::String& path,
+                    std::optional<bool> enable_in_incognito,
                     std::unique_ptr<LoadUnpackedCallback> callback) override;
   void OnLoaded(std::unique_ptr<LoadUnpackedCallback> callback,
                 const extensions::Extension* extension,

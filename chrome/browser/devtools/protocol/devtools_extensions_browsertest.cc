@@ -29,6 +29,8 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -52,7 +54,9 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
     command_line->RemoveSwitch(::switches::kEnableUnsafeExtensionDebugging);
   }
 
-  const base::DictValue* SendLoadUnpackedCommand(const std::string& path) {
+  const base::DictValue* SendLoadUnpackedCommand(
+      const std::string& path,
+      bool enable_in_incognito = false) {
     base::FilePath extension_path =
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
             .AppendASCII("devtools")
@@ -61,6 +65,7 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
 
     base::DictValue params;
     params.Set("path", extension_path.AsUTF8Unsafe());
+    params.Set("enableInIncognito", enable_in_incognito);
 
     return SendCommandSync("Extensions.loadUnpacked", std::move(params));
   }
@@ -160,12 +165,54 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   ASSERT_EQ(extension->id(), *result->FindString("id"));
   ASSERT_EQ(extension->location(),
             extensions::mojom::ManifestLocation::kUnpacked);
+  ASSERT_FALSE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
+                                                    browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CanInstallExtensionAndEnableItForIncognito) {
+  const base::DictValue* result =
+      SendLoadUnpackedCommand("simple_background_page", true);
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->FindString("id"));
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  const extensions::Extension* extension =
+      registry->enabled_extensions().GetByID(*result->FindString("id"));
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension->location(),
+            extensions::mojom::ManifestLocation::kUnpacked);
+
+  ASSERT_TRUE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
+                                                   browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        ThrowsOnWrongPath) {
   const base::DictValue* result = SendLoadUnpackedCommand("non-existent");
   ASSERT_FALSE(result);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       InstalledExtensionIsNotEnabledInIncognito) {
+  const base::DictValue* result = SendLoadUnpackedCommand(
+      "simple_background_page", /*enable_in_incognito=*/false);
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->FindString("id"));
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  const extensions::Extension* extension = registry->GetExtensionById(
+      *result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension->id(), *result->FindString("id"));
+  ASSERT_EQ(extension->location(),
+            extensions::mojom::ManifestLocation::kUnpacked);
+  // Verify that the extension is not enabled in incognito, as `false` was
+  // passed for `enable_in_incognito`.
+  ASSERT_FALSE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
+                                                    browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,

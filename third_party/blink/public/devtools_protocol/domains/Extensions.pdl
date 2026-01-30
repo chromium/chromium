@@ -33,6 +33,8 @@ experimental domain Extensions
     parameters
       # Absolute file path.
       string path
+      # Enable the extension in incognito
+      optional boolean enableInIncognito
     returns
       # Extension id.
       string id

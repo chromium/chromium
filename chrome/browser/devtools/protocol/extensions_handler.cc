@@ -14,6 +14,7 @@
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/extensions/browser_window_util.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -210,6 +211,7 @@ ExtensionsHandler::~ExtensionsHandler() = default;
 
 void ExtensionsHandler::LoadUnpacked(
     const protocol::String& path,
+    const std::optional<bool> enable_in_incognito,
     std::unique_ptr<ExtensionsHandler::LoadUnpackedCallback> callback) {
   if (!allow_loading_extensions_) {
     std::move(callback)->sendFailure(
@@ -222,6 +224,9 @@ void ExtensionsHandler::LoadUnpacked(
   scoped_refptr<extensions::UnpackedInstaller> installer(
       extensions::UnpackedInstaller::Create(context));
   installer->set_be_noisy_on_failure(false);
+  if (enable_in_incognito.has_value()) {
+    installer->set_allow_incognito_access(enable_in_incognito.value());
+  }
   installer->set_completion_callback(
       base::BindOnce(&ExtensionsHandler::OnLoaded, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
