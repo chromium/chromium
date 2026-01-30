@@ -817,11 +817,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </variants>
 
 <variants name="CreditCardDataAvailability">
-  <variant name=".WithBothServerAndLocalData"
+  <variant name="WithBothServerAndLocalData"
       summary="both server and local autofill data"/>
-  <variant name=".WithNoData" summary="no autofill data"/>
-  <variant name=".WithOnlyLocalData" summary="only local autofill data"/>
-  <variant name=".WithOnlyServerData" summary="only server autofill data"/>
+  <variant name="WithNoData" summary="no autofill data"/>
+  <variant name="WithOnlyLocalData" summary="only local autofill data"/>
+  <variant name="WithOnlyServerData" summary="only server autofill data"/>
 </variants>
 
 <variants name="FirstShowOrReshow">
@@ -3933,8 +3933,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="AddressFormType" variants="AutofillFormType.Address"/>
 </histogram>
 
-<histogram
-    name="Autofill.FormEvents.{CreditCardFormType}{CreditCardDataAvailability}"
+<histogram name="Autofill.FormEvents.{CreditCardFormType}"
     enum="AutofillFormEvent" expires_after="2026-12-12">
   <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
@@ -3942,7 +3941,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>
     Autofill form events for {CreditCardFormType} forms. These are recorded when
     the user interacts with a form requesting a credit card.
-    {CreditCardDataAvailability}
 
     Important caveat about submission metrics: - Submission using autofill data
     is determined by simply evaluating if there was a fill operation in this
@@ -3955,9 +3953,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     with server suggestion filled (once)&quot;.
   </summary>
   <token key="CreditCardFormType" variants="AutofillFormType.CreditCard"/>
-  <token key="CreditCardDataAvailability" variants="CreditCardDataAvailability">
-    <variant name=""/>
-  </token>
+</histogram>
+
+<histogram
+    name="Autofill.FormEvents.{CreditCardFormType}.{CreditCardDataAvailability}"
+    enum="AutofillFormEvent" expires_after="2026-12-12">
+  <owner>osaul@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Autofill form events for {CreditCardFormType} forms. These are recorded when
+    the user interacts with a form requesting a credit card and has
+    {CreditCardDataAvailability}.
+
+    Important caveat about submission metrics: - Submission using autofill data
+    is determined by simply evaluating if there was a fill operation in this
+    page. So, if the user filled with local data, then completed, erased, or
+    modified the data after and then submitted, we would only emit one
+    &quot;Submitted with server suggestion filled (once)&quot;; - The submission
+    segmentation works by checking what kind of data was last filled for this
+    type of form in the page load. So, if a user initially filled with local
+    data and after that filled with server, we will only emit &quot;Submitted
+    with server suggestion filled (once)&quot;.
+  </summary>
+  <token key="CreditCardFormType" variants="AutofillFormType.CreditCard"/>
+  <token key="CreditCardDataAvailability"
+      variants="CreditCardDataAvailability"/>
 </histogram>
 
 <histogram name="Autofill.FormFillingComplexScore{AutofillFormType}"
