@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] XRPlane.lastChangedTime does not update if plane does not change - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRPlane.lastChangedTime does not update if plane does not change - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+
