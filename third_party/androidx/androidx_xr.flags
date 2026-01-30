@@ -3,4 +3,4 @@
 # found in the LICENSE file.
 
 -dontwarn com.google.ar.imp.core.web.FragmentHost
-
+-dontwarn androidx.xr.arcore.internal.PerceptionRuntimeFactory

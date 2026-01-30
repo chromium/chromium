@@ -4544,12 +4544,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mGroupSuggestionsPromotionCoordinator = null;
         }
 
-        var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
-        if (xrSceneCoreSessionManager != null) {
-            xrSceneCoreSessionManager
-                    .getXrSpaceModeObservableSupplier()
-                    .removeObserver(mOnXrSpaceModeChanged);
-            xrSceneCoreSessionManager.destroy();
+        if (mXrSceneCoreSessionManagerSupplier.hasValue()) {
+            var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
+            if (xrSceneCoreSessionManager != null) {
+                xrSceneCoreSessionManager
+                        .getXrSpaceModeObservableSupplier()
+                        .removeObserver(mOnXrSpaceModeChanged);
+                xrSceneCoreSessionManager.destroy();
+            }
         }
 
         if (mXrSceneCoreSessionInitializer != null) {

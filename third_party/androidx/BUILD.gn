@@ -1705,6 +1705,36 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_java") {
+    aar_path = "cipd/libs/androidx_xr_arcore_arcore/arcore.aar"
+    info_path = "committed/libs/androidx_xr_arcore_arcore/androidx_xr_arcore_arcore.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_xr_arcore_arcore_openxr_java",
+      ":androidx_xr_arcore_arcore_projected_java",
+      ":androidx_xr_arcore_arcore_runtime_java",
+      ":androidx_xr_runtime_runtime_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_openxr_java") {
+    aar_path = "cipd/libs/androidx_xr_arcore_arcore_openxr/arcore-openxr.aar"
+    info_path = "committed/libs/androidx_xr_arcore_arcore_openxr/androidx_xr_arcore_arcore_openxr.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_core_core_ktx_java",
+      ":androidx_xr_arcore_arcore_runtime_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_java") {
     aar_path = "cipd/libs/androidx_xr_runtime_runtime/runtime.aar"
     info_path = "committed/libs/androidx_xr_runtime_runtime/androidx_xr_runtime_runtime.info"
@@ -1715,7 +1745,6 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_xr_runtime_runtime_manifest_java",
-      "//third_party/android_deps:com_google_ar_impress_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
@@ -1732,8 +1761,9 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_xr_arcore_arcore_java",
       ":androidx_xr_runtime_runtime_java",
-      ":androidx_xr_runtime_runtime_openxr_java",
-      "//third_party/android_deps:com_google_ar_impress_java",
+      ":androidx_xr_scenecore_scenecore_runtime_java",
+      ":androidx_xr_scenecore_scenecore_spatial_core_java",
+      ":androidx_xr_scenecore_scenecore_spatial_rendering_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -3324,6 +3354,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":androidx_annotation_annotation_java",
+      ":androidx_collection_collection_java",
       ":androidx_compose_runtime_runtime_annotation_java",
       ":androidx_core_core_viewtree_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
@@ -3857,9 +3888,10 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_java") {
-    aar_path = "cipd/libs/androidx_xr_arcore_arcore/arcore.aar"
-    info_path = "committed/libs/androidx_xr_arcore_arcore/androidx_xr_arcore_arcore.info"
+  androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_projected_java") {
+    aar_path =
+        "cipd/libs/androidx_xr_arcore_arcore_projected/arcore-projected.aar"
+    info_path = "committed/libs/androidx_xr_arcore_arcore_projected/androidx_xr_arcore_arcore_projected.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -3869,6 +3901,27 @@ if (!limit_android_deps) {
       "//third_party/android_deps:*",
     ]
     deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_xr_arcore_arcore_runtime_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_runtime_java") {
+    aar_path = "cipd/libs/androidx_xr_arcore_arcore_runtime/arcore-runtime.aar"
+    info_path = "committed/libs/androidx_xr_arcore_arcore_runtime/androidx_xr_arcore_arcore_runtime.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_activity_activity_ktx_java",
       ":androidx_annotation_annotation_java",
       ":androidx_xr_runtime_runtime_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
@@ -3889,13 +3942,17 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/android_deps:*",
     ]
-    deps = [ ":androidx_annotation_annotation_java" ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_openxr_java") {
-    aar_path = "cipd/libs/androidx_xr_runtime_runtime_openxr/runtime-openxr.aar"
-    info_path = "committed/libs/androidx_xr_runtime_runtime_openxr/androidx_xr_runtime_runtime_openxr.info"
+  androidx_android_aar_prebuilt(
+      "androidx_xr_scenecore_scenecore_runtime_java") {
+    aar_path = "cipd/libs/androidx_xr_scenecore_scenecore_runtime/scenecore-runtime.aar"
+    info_path = "committed/libs/androidx_xr_scenecore_scenecore_runtime/androidx_xr_scenecore_scenecore_runtime.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -3906,9 +3963,60 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":androidx_annotation_annotation_java",
-      ":androidx_core_core_ktx_java",
+      ":androidx_concurrent_concurrent_futures_java",
+      ":androidx_core_core_java",
+      ":androidx_xr_arcore_arcore_java",
       ":androidx_xr_runtime_runtime_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_xr_scenecore_scenecore_spatial_core_java") {
+    aar_path = "cipd/libs/androidx_xr_scenecore_scenecore_spatial_core/scenecore-spatial-core.aar"
+    info_path = "committed/libs/androidx_xr_scenecore_scenecore_spatial_core/androidx_xr_scenecore_scenecore_spatial_core.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_concurrent_concurrent_futures_java",
+      ":androidx_core_core_java",
+      ":androidx_xr_arcore_arcore_openxr_java",
+      ":androidx_xr_runtime_runtime_java",
+      ":androidx_xr_scenecore_scenecore_runtime_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_xr_scenecore_scenecore_spatial_rendering_java") {
+    aar_path = "cipd/libs/androidx_xr_scenecore_scenecore_spatial_rendering/scenecore-spatial-rendering.aar"
+    info_path = "committed/libs/androidx_xr_scenecore_scenecore_spatial_rendering/androidx_xr_scenecore_scenecore_spatial_rendering.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_xr_runtime_runtime_java",
+      ":androidx_xr_scenecore_scenecore_runtime_java",
+      "//third_party/android_deps:com_google_ar_impress_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }

@@ -14,6 +14,10 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionInitializerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImpl.java",
   ]
+  additional_jar_files = [ [
+        "service.txt",
+        "META-INF/services/androidx.xr.runtime.internal.PerceptionRuntimeFactory",
+      ] ]
   deps = [
     "//base:build_info_java",
     "//base:bundle_utils_java",
@@ -26,6 +30,8 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//third_party/android_deps:guava_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_xr_arcore_arcore_java",
+    "//third_party/androidx:androidx_xr_arcore_arcore_openxr_java",
     "//third_party/androidx:androidx_xr_runtime_runtime_java",
     "//third_party/androidx:androidx_xr_scenecore_scenecore_java",
     "//ui/android:ui_java",

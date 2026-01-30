@@ -1177,27 +1177,52 @@
     {
         "name": "arcore",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha05"
+        "version": "1.0.0-alpha08"
+    },
+    {
+        "name": "arcore-openxr",
+        "group": "androidx.xr.arcore",
+        "version": "1.0.0-alpha08"
+    },
+    {
+        "name": "arcore-projected",
+        "group": "androidx.xr.arcore",
+        "version": "1.0.0-alpha08"
+    },
+    {
+        "name": "arcore-runtime",
+        "group": "androidx.xr.arcore",
+        "version": "1.0.0-alpha08"
     },
     {
         "name": "runtime",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha05"
+        "version": "1.0.0-alpha08"
     },
     {
         "name": "runtime-manifest",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha05"
-    },
-    {
-        "name": "runtime-openxr",
-        "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha05"
+        "version": "1.0.0-alpha08"
     },
     {
         "name": "scenecore",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha05"
+        "version": "1.0.0-alpha08"
+    },
+    {
+        "name": "scenecore-runtime",
+        "group": "androidx.xr.scenecore",
+        "version": "1.0.0-alpha08"
+    },
+    {
+        "name": "scenecore-spatial-core",
+        "group": "androidx.xr.scenecore",
+        "version": "1.0.0-alpha08"
+    },
+    {
+        "name": "scenecore-spatial-rendering",
+        "group": "androidx.xr.scenecore",
+        "version": "1.0.0-alpha08"
     },
     {
         "name": "accessibility-test-framework",
@@ -1262,7 +1287,7 @@
     {
         "name": "impress",
         "group": "com.google.ar",
-        "version": "0.0.4"
+        "version": "0.0.7"
     },
     {
         "name": "auto-service-annotations",
@@ -1397,7 +1422,7 @@
     {
         "name": "kotlin-stdlib-jdk8",
         "group": "org.jetbrains.kotlin",
-        "version": "1.8.0"
+        "version": "1.8.20"
     },
     {
         "name": "atomicfu",
@@ -1412,7 +1437,7 @@
     {
         "name": "kotlinx-coroutines-android",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.9.0"
+        "version": "1.7.3"
     },
     {
         "name": "kotlinx-coroutines-bom",
@@ -1427,7 +1452,7 @@
     {
         "name": "kotlinx-coroutines-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
+        "version": "1.9.0"
     },
     {
         "name": "kotlinx-coroutines-test",

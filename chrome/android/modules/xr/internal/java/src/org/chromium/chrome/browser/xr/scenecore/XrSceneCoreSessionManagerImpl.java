@@ -10,57 +10,89 @@ import android.os.Build;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.RequiresApi;
-import androidx.xr.runtime.internal.ActivitySpace;
-import androidx.xr.runtime.internal.Dimensions;
-import androidx.xr.scenecore.impl.JxrPlatformAdapterAxr;
+import androidx.xr.runtime.Session;
+import androidx.xr.runtime.SessionCreateResult;
+import androidx.xr.runtime.SessionCreateSuccess;
+import androidx.xr.runtime.math.FloatSize3d;
+import androidx.xr.scenecore.ActivitySpace;
+import androidx.xr.scenecore.Scene;
+import androidx.xr.scenecore.SessionExt;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.task.ChromiumExecutorServiceFactory;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
+import java.util.function.Consumer;
+
 /**
- * The class wraps usage of {@link androidx.xr.scenecore.impl.JxrPlatformAdapterAxr} and implements
- * {@link XrSceneCoreSessionManager}.
+ * The class wraps usage of {@link androidx.xr.runtime.Session} and implements {@link
+ * XrSceneCoreSessionManager}.
  */
 @SuppressLint("RestrictedApi")
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @NullMarked
 public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager {
-    private JxrPlatformAdapterAxr mJxrPlatformAdapter;
+    private static final String TAG = "XrSceneCore";
+    private static final String MODULE_NAME = "xr";
+    private static final Object sLock = new Object();
+    private static boolean sLibrariesLoaded;
+    private Session mXrSession;
     private Activity mActivity;
+    private ActivitySpace mActivitySpace;
 
     // If not null, a request to change XR space mode is in progress.
     private @Nullable Boolean mIsFullSpaceModeRequested;
     private @Nullable Runnable mXrModeSwitchCallback;
     private final SettableNonNullObservableSupplier<Boolean> mIsFullSpaceModeNowSupplier;
-    private final ActivitySpace.OnBoundsChangedListener mBoundsChangedListener =
-            this::boundsChangeCallback;
+    private final Consumer<FloatSize3d> mBoundsChangedListener = this::boundsChangeCallback;
 
     public XrSceneCoreSessionManagerImpl(Activity activity) {
         assert DeviceInfo.isXr();
+        ensureNativeLibrariesLoaded();
         mActivity = activity;
-        mJxrPlatformAdapter = createJxrPlatformAdapter(mActivity);
-        assert mJxrPlatformAdapter != null : "JxrPlatformAdapterAxr creation failed.";
-        mJxrPlatformAdapter.getActivitySpace().addOnBoundsChangedListener(mBoundsChangedListener);
 
-        // Initialize the supplier with the current mode.
+        SessionCreateResult result = Session.create(mActivity);
+        assert result instanceof SessionCreateSuccess : "Session creation failed.";
+        mXrSession = ((SessionCreateSuccess) result).getSession();
+
+        Scene scene = SessionExt.getScene(mXrSession);
+        mActivitySpace = scene.getActivitySpace();
+        mActivitySpace.addOnBoundsChangedListener(mBoundsChangedListener);
+
         boolean isXrFullSpaceMode =
-                mJxrPlatformAdapter.getActivitySpace().getBounds().width == Float.POSITIVE_INFINITY;
+                mActivitySpace.getBounds().getWidth() == Float.POSITIVE_INFINITY;
         mIsFullSpaceModeNowSupplier = ObservableSuppliers.createNonNull(isXrFullSpaceMode);
     }
 
-    private JxrPlatformAdapterAxr createJxrPlatformAdapter(Activity activity) {
-        return JxrPlatformAdapterAxr.create(
-                activity,
-                ChromiumExecutorServiceFactory.create(TaskTraits.BEST_EFFORT_MAY_BLOCK),
-                false);
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
+    public static void ensureNativeLibrariesLoaded() {
+        synchronized (sLock) {
+            if (sLibrariesLoaded) {
+                return;
+            }
+            try {
+                System.load(BundleUtils.getNativeLibraryPath("impress_api_jni", MODULE_NAME));
+                System.load(BundleUtils.getNativeLibraryPath("arcore_sdk_c", MODULE_NAME));
+                System.load(BundleUtils.getNativeLibraryPath("arcore_sdk_jni", MODULE_NAME));
+                System.load(
+                        BundleUtils.getNativeLibraryPath(
+                                "androidx.xr.runtime.openxr", MODULE_NAME));
+                sLibrariesLoaded = true;
+            } catch (UnsatisfiedLinkError e) {
+                Log.e(TAG, "Error loading native libraries", e);
+                throw e;
+            } catch (Exception e) {
+                Log.e(TAG, "Error obtaining native library path", e);
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @MainThread
@@ -96,10 +128,11 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         mIsFullSpaceModeRequested = requestFullSpaceMode;
         mXrModeSwitchCallback = completedCallback;
 
+        Scene scene = SessionExt.getScene(mXrSession);
         if (requestFullSpaceMode) {
-            mJxrPlatformAdapter.requestFullSpaceMode();
+            scene.requestFullSpaceMode();
         } else {
-            mJxrPlatformAdapter.requestHomeSpaceMode();
+            scene.requestHomeSpaceMode();
         }
 
         return true;
@@ -118,24 +151,22 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     @MainThread
     @Override
     public void setMainPanelVisibility(boolean visible) {
-        mJxrPlatformAdapter.getMainPanelEntity().setHidden(!visible);
+        SessionExt.getScene(mXrSession).getMainPanelEntity().setEnabled(visible);
     }
 
     @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
-        if (mJxrPlatformAdapter != null) {
-            mJxrPlatformAdapter
-                    .getActivitySpace()
-                    .removeOnBoundsChangedListener(mBoundsChangedListener);
-            mJxrPlatformAdapter.dispose();
-            mJxrPlatformAdapter = null;
+        if (mActivitySpace != null) {
+            mActivitySpace.removeOnBoundsChangedListener(mBoundsChangedListener);
+            mActivitySpace = null;
         }
+        mXrSession = null;
         mActivity = null;
     }
 
-    private void boundsChangeCallback(Dimensions dimensions) {
-        mIsFullSpaceModeNowSupplier.set(dimensions.width == Float.POSITIVE_INFINITY);
+    private void boundsChangeCallback(FloatSize3d dimensions) {
+        mIsFullSpaceModeNowSupplier.set(dimensions.getWidth() == Float.POSITIVE_INFINITY);
 
         if (mIsFullSpaceModeRequested != null && mIsFullSpaceModeRequested == isXrFullSpaceMode()) {
             // Mark the current request as completed.
