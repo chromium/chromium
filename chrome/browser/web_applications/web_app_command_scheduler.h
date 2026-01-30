@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_installability_for_chrome_management_result.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
+#include "chrome/browser/web_applications/scheduler/web_app_install_from_migrate_from_field_result.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -718,6 +719,14 @@ class WebAppCommandScheduler {
   // migration info for all apps.
   virtual void ScheduleResolveWebAppPendingMigrationInfo(
       base::OnceClosure callback,
+      const base::Location& location = FROM_HERE);
+
+  // Schedules a command to install a web app from a "migrate_from" field in
+  // a manifest.
+  void ScheduleWebAppInstallFromMigrateFromField(
+      base::WeakPtr<content::WebContents> web_contents,
+      blink::mojom::ManifestPtr manifest,
+      WebAppInstallFromMigrateFromFieldCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules the command to finish an app migration by removing the source app
