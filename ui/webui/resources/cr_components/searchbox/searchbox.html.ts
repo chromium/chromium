@@ -136,7 +136,9 @@ export function getHtml(this: SearchboxElement) {
   ${this.ntpRealboxNextEnabled ?
     html`
       <ntp-error-scrim id="errorScrim"
-          ?compact-mode="${this.searchboxLayoutMode === 'Compact'}">
+          ?compact-mode="${this.searchboxLayoutMode === 'Compact'}"
+          .errorMessage="${this.errorMessage_}"
+          @dismiss-error-scrim="${this.onErrorScrimDismissed_}">
       </ntp-error-scrim>
       <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
       </search-animated-glow>
