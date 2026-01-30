@@ -1223,11 +1223,13 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 - (void)handleMoveNode:(const BookmarkNode*)node toPosition:(size_t)position {
-  [self.snackbarCommandsHandler
-      showSnackbarMessage:
-          bookmark_utils_ios::UpdateBookmarkPositionWithUndoSnackbar(
-              node, self.displayedFolderNode, position, _bookmarkModel.get(),
-              self.profile)];
+  SnackbarMessage* snackbarMessage =
+      bookmark_utils_ios::UpdateBookmarkPositionWithUndoSnackbar(
+          node, self.displayedFolderNode, position, _bookmarkModel.get(),
+          self.profile);
+  if (snackbarMessage) {
+    [self.snackbarCommandsHandler showSnackbarMessage:snackbarMessage];
+  }
 }
 
 - (void)handleRefreshContextBar {
@@ -1287,14 +1289,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   ProfileIOS* profile = self.profile;
   std::vector<const BookmarkNode*> editedNodesVector(editedNodesSet.begin(),
                                                      editedNodesSet.end());
-  [self.snackbarCommandsHandler
-      showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoSnackbar(
-                              editedNodesVector, _bookmarkModel.get(), folder,
-                              profile,
-                              AuthenticationServiceFactory::GetForProfile(
-                                  profile)
-                                  ->GetWeakPtr(),
-                              SyncServiceFactory::GetForProfile(profile))];
+  SnackbarMessage* snackbarMessage =
+      bookmark_utils_ios::MoveBookmarksWithUndoSnackbar(
+          editedNodesVector, _bookmarkModel.get(), folder, profile,
+          AuthenticationServiceFactory::GetForProfile(profile)->GetWeakPtr(),
+          SyncServiceFactory::GetForProfile(profile));
+  if (snackbarMessage) {
+    [self.snackbarCommandsHandler showSnackbarMessage:snackbarMessage];
+  }
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
