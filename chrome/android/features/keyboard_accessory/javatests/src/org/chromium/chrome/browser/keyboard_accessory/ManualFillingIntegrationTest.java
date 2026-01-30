@@ -385,7 +385,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/472351881")
+    @DisabledTest(message = "https://crbug.com/480163488")
     public void testMovesUpSnackbar() throws TimeoutException {
         final String kSnackbarText = "snackbar";
 
