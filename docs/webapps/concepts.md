@@ -180,7 +180,7 @@ See [this document][21] for more information.
 [13]: https://www.w3.org/TR/appmanifest/#display-modes
 [14]: #display-mode
 [15]: https://source.chromium.org/search?q=ExternalInstallOptions::install_placeholder
-[17]: https://source.chromium.org/search?q=f:web_app_management.h%20"enum class Type"
+[17]: https://source.chromium.org/search?q=f:web_app_management_type.h%20WebAppManagement::Type
 [18]: https://source.chromium.org/search?q=f:web_app.h%20CanUserUninstallWebApp
 [19]: https://source.chromium.org/search?q=ExternalAppResolutionCommand
 [20]: manifest_update_process.md
