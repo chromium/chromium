@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/json/json_reader.h"
+#include "components/enterprise/connectors/core/common.h"
 
 namespace enterprise_connectors {
 
@@ -16,12 +17,12 @@ namespace {
 
 constexpr std::array<SupportedTag, 2> kGoogleDlpSupportedTags = {{
     {
-        .name = "malware",
+        .name = kMalwareTag,
         .display_name = "Threat protection",
         .max_file_size = 52428800,
     },
     {
-        .name = "dlp",
+        .name = kDlpTag,
         .display_name = "Sensitive data protection",
         .max_file_size = 52428800,
     },
@@ -43,7 +44,7 @@ constexpr AnalysisConfig kGoogleAnalysisConfig = {
 
 constexpr std::array<SupportedTag, 1> kLocalTestSupportedTags = {{
     {
-        .name = "dlp",
+        .name = kDlpTag,
         .display_name = "Sensitive data protection",
         .max_file_size = 52428800,
     },
@@ -51,7 +52,7 @@ constexpr std::array<SupportedTag, 1> kLocalTestSupportedTags = {{
 
 constexpr std::array<SupportedTag, 1> kBrcmChrmCasSupportedTags = {{
     {
-        .name = "dlp",
+        .name = kDlpTag,
         .display_name = "Sensitive data protection",
         .max_file_size = 52428800,
     },
@@ -59,7 +60,7 @@ constexpr std::array<SupportedTag, 1> kBrcmChrmCasSupportedTags = {{
 
 constexpr std::array<SupportedTag, 1> kTrellixSupportedTags = {{
     {
-        .name = "dlp",
+        .name = kDlpTag,
         .display_name = "Sensitive data protection",
         .max_file_size = 52428800,
     },

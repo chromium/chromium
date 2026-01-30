@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -15,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
@@ -36,16 +38,21 @@ namespace enterprise_data_protection {
 
 namespace {
 
-constexpr char kAnalysisPolicy[] = R"({
-  "service_provider": "google",
-  "enable": [
-    {
-      "url_list": ["*"],
-      "tags": ["dlp", "malware"]
-    }
-  ],
-  "block_until_verdict": 1
-})";
+const char* GetAnalysisPolicy() {
+  static std::string policy = base::StringPrintf(
+      R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["%s", "%s"]
+          }
+        ],
+        "block_until_verdict": 1
+      })",
+      enterprise_connectors::kDlpTag, enterprise_connectors::kMalwareTag);
+  return policy.c_str();
+}
 
 }  // namespace
 
@@ -136,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest, DownloadItem) {
   enterprise_connectors::test::SetAnalysisConnector(
       browser()->profile()->GetPrefs(),
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-      kAnalysisPolicy);
+      GetAnalysisPolicy());
   AddFakeNavigationsToChain();
   ASSERT_FALSE(enterprise_connectors::HasCachedChainForTesting(*contents()));
 
@@ -245,29 +252,29 @@ INSTANTIATE_TEST_SUITE_P(
         base::BindRepeating([](PrefService* prefs) {
           enterprise_connectors::test::SetAnalysisConnector(
               prefs, enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
-              kAnalysisPolicy);
+              GetAnalysisPolicy());
         }),
         base::BindRepeating([](PrefService* prefs) {
           enterprise_connectors::test::SetAnalysisConnector(
               prefs, enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-              kAnalysisPolicy);
+              GetAnalysisPolicy());
         }),
         base::BindRepeating([](PrefService* prefs) {
           enterprise_connectors::test::SetAnalysisConnector(
               prefs, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-              kAnalysisPolicy);
+              GetAnalysisPolicy());
         }),
 #if BUILDFLAG(IS_CHROMEOS)
         base::BindRepeating([](PrefService* prefs) {
           enterprise_connectors::test::SetAnalysisConnector(
               prefs, enterprise_connectors::AnalysisConnector::FILE_TRANSFER,
-              kAnalysisPolicy);
+              GetAnalysisPolicy());
         }),
 #endif
         base::BindRepeating([](PrefService* prefs) {
           enterprise_connectors::test::SetAnalysisConnector(
               prefs, enterprise_connectors::AnalysisConnector::PRINT,
-              kAnalysisPolicy);
+              GetAnalysisPolicy());
         }),
         base::BindRepeating([](PrefService* prefs) {
           enterprise_connectors::test::SetOnSecurityEventReporting(prefs, true);

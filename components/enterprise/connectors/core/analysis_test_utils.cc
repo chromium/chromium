@@ -5,6 +5,7 @@
 #include "components/enterprise/connectors/core/analysis_test_utils.h"
 
 #include "base/no_destructor.h"
+#include "components/enterprise/connectors/core/common.h"
 
 namespace enterprise_connectors::test {
 
@@ -191,8 +192,8 @@ const char kNoDlpOrMalwareDotCa[] = "https://no.dlp.or.malware.ca";
 const std::map<std::string, std::string>& GetExpectedLearnMoreUrlSpecs() {
   static const base::NoDestructor<std::map<std::string, std::string>>
       kExpectedLearnMoreUrlSpecs{
-          {{"dlp", "http://www.example.com/dlp"},
-           {"malware", "http://www.example.com/malware"}},
+          {{kDlpTag, "http://www.example.com/dlp"},
+           {kMalwareTag, "http://www.example.com/malware"}},
       };
   return *kExpectedLearnMoreUrlSpecs;
 }
@@ -203,7 +204,7 @@ const std::map<std::string, std::string>& GetExpectedLearnMoreUrlSpecs() {
 AnalysisSettings* OnlyDlpEnabledSettings() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
     AnalysisSettings settings;
-    settings.tags = {{"dlp", TagSettings()}};
+    settings.tags = {{kDlpTag, TagSettings()}};
     return settings;
   }());
   return settings.get();
@@ -211,19 +212,19 @@ AnalysisSettings* OnlyDlpEnabledSettings() {
 
 AnalysisSettings* NormalDlpSettings() {
   static base::NoDestructor<AnalysisSettings> settings(
-      NormalSettingsWithTags({{"dlp", TagSettings()}}));
+      NormalSettingsWithTags({{kDlpTag, TagSettings()}}));
   return settings.get();
 }
 
 AnalysisSettings* NormalMalwareSettings() {
   static base::NoDestructor<AnalysisSettings> settings(
-      NormalSettingsWithTags({{"malware", TagSettings()}}));
+      NormalSettingsWithTags({{kMalwareTag, TagSettings()}}));
   return settings.get();
 }
 
 AnalysisSettings* NormalDlpAndMalwareSettings() {
   static base::NoDestructor<AnalysisSettings> settings(NormalSettingsWithTags(
-      {{"dlp", TagSettings()}, {"malware", TagSettings()}}));
+      {{kDlpTag, TagSettings()}, {kMalwareTag, TagSettings()}}));
   return settings.get();
 }
 
@@ -231,7 +232,7 @@ AnalysisSettings* NormalSettingsWithCustomMessage() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
     AnalysisSettings settings = NormalSettingsWithTags({
         {
-            "dlp",
+            kDlpTag,
             {
                 .custom_message =
                     {
@@ -240,7 +241,7 @@ AnalysisSettings* NormalSettingsWithCustomMessage() {
             },
         },
         {
-            "malware",
+            kMalwareTag,
             {
                 .custom_message =
                     {
@@ -258,12 +259,12 @@ AnalysisSettings* NormalSettingsDlpRequiresBypassJustification() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
     AnalysisSettings settings = NormalSettingsWithTags({
         {
-            "dlp",
+            kDlpTag,
             {
                 .requires_justification = true,
             },
         },
-        {"malware", TagSettings()},
+        {kMalwareTag, TagSettings()},
     });
     return settings;
   }());

@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -35,11 +36,11 @@ TEST(ServiceProviderConfigTest, Google) {
   // The Google service provider has 2 tags: malware and dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 2u);
   ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
-            "malware");
+            kMalwareTag);
   ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
             kMaxFileSize);
   ASSERT_EQ(std::string(service_provider.analysis->supported_tags[1].name),
-            "dlp");
+            kDlpTag);
   ASSERT_EQ(service_provider.analysis->supported_tags[1].max_file_size,
             kMaxFileSize);
 
@@ -72,7 +73,7 @@ TEST(ServiceProviderConfigTest, LocalTest1) {
   // The test local service provider has 1 tag: dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);
   ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
-            "dlp");
+            kDlpTag);
   ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
             kMaxFileSize);
 }
@@ -97,7 +98,7 @@ TEST(ServiceProviderConfigTest, LocalTest2) {
   // The test local service provider has 1 tag: dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);
   ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
-            "dlp");
+            kDlpTag);
   ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
             kMaxFileSize);
 }
@@ -120,7 +121,7 @@ TEST(ServiceProviderConfigTest, BrcmChrmCas) {
   // The BrcmChrmCas local service provider has 1 tag: dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);
   ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
-            "dlp");
+            kDlpTag);
   ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
             kMaxFileSize);
 }
@@ -146,7 +147,7 @@ TEST(ServiceProviderConfigTest, Trellix) {
   // The trellix local service provider has 1 tag: dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);
   ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
-            "dlp");
+            kDlpTag);
   ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
             kMaxFileSize);
 }

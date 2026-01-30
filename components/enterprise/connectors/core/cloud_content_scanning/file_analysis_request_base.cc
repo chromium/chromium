@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/enterprise/obfuscation/core/utils.h"
@@ -348,7 +349,7 @@ void FileAnalysisRequestBase::OnGotHash(std::string hash) {
 
 bool FileAnalysisRequestBase::HasMalwareRequest() const {
   for (const std::string& tag : content_analysis_request().tags()) {
-    if (tag == "malware") {
+    if (tag == kMalwareTag) {
       return true;
     }
   }

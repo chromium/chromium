@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/analysis_test_utils.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -437,7 +438,7 @@ constexpr std::pair<VolumeInfo, VolumeInfo> kDlpNoMalwareVolumePair2 = {
 AnalysisSettings* OnlyMalwareEnabledSettings() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
     AnalysisSettings settings;
-    settings.tags = {{"malware", TagSettings()}};
+    settings.tags = {{kMalwareTag, TagSettings()}};
     return settings;
   }());
   return settings.get();
@@ -446,7 +447,7 @@ AnalysisSettings* OnlyMalwareEnabledSettings() {
 AnalysisSettings* OnlyDlpAndMalwareEnabledSettings() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
     AnalysisSettings settings;
-    settings.tags = {{"dlp", TagSettings()}, {"malware", TagSettings()}};
+    settings.tags = {{kDlpTag, TagSettings()}, {kMalwareTag, TagSettings()}};
     return settings;
   }());
   return settings.get();
@@ -488,7 +489,7 @@ class AnalysisServiceSettingsLocalTest
       // The "local_user_agent" analysis provider only supports the "dlp" tag,
       // so it is expected that the malware tag is absent from final settings
       // even when it is included in the policy.
-      GetParam().expected_settings->tags.erase("malware");
+      GetParam().expected_settings->tags.erase(kMalwareTag);
       if (GetParam().expected_settings->tags.empty()) {
         return NoSettings();
       }
