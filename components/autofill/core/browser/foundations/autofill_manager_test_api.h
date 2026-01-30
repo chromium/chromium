@@ -49,15 +49,16 @@ class AutofillManagerTestApi {
       const std::vector<FormData>& forms) {
     manager_->NotifyObservers(
         &AutofillManager::Observer::OnBeforeLoadedServerPredictions);
-    manager_->OnLoadedServerPredictions(forms, std::move(response));
+    manager_->OnLoadedServerPredictions(forms, base::TimeTicks(),
+                                        std::move(response));
   }
 
   void OnFormsParsed(const std::vector<FormData>& forms) {
-    manager_->OnFormsParsed(forms);
+    manager_->OnFormsParsed(forms, base::TimeTicks());
   }
 
   void QueryServerPredictions(const std::vector<FormData>& forms) {
-    manager_->QueryServerPredictions(forms);
+    manager_->QueryServerPredictions(forms, base::TimeTicks());
   }
 
   FormStructure* AddSeenFormStructure(

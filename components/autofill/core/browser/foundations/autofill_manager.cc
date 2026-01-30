@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/types/zip.h"
@@ -265,10 +266,11 @@ void AutofillManager::OnFormsSeen(
   erase_removed_forms();
 
   auto ProcessParsedForms = [](std::vector<FormGlobalId> removed_forms,
+                               base::TimeTicks forms_seen_timestamp,
                                AutofillManager& self,
                                const std::vector<FormData>& parsed_forms) {
     if (!parsed_forms.empty()) {
-      self.OnFormsParsed(parsed_forms);
+      self.OnFormsParsed(parsed_forms, forms_seen_timestamp);
     }
     // TODO(crbug.com/470949499): Since `OnFieldTypesDetermined()` is called
     // once after parsing and again after the server response arrives, there is
@@ -281,16 +283,24 @@ void AutofillManager::OnFormsSeen(
                          removed_forms);
   };
 
+  // TODO(crbug.com/470949499): Remove this timestamp once
+  // features::kAutofillServerQueryPredictionsEarly is launched.
+  // The timestamp is used to measure the time elapsed between OnFormsSeen() and
+  // the server predictions response.
+  const base::TimeTicks forms_seen_timestamp = base::TimeTicks::Now();
   if (base::FeatureList::IsEnabled(
           features::kAutofillServerQueryPredictionsEarly)) {
-    QueryServerPredictions(updated_forms);
+    QueryServerPredictions(updated_forms, forms_seen_timestamp);
   }
 
   ParseFormsAsync(updated_forms,
-                  base::BindOnce(ProcessParsedForms, std::move(removed_forms)));
+                  base::BindOnce(ProcessParsedForms, std::move(removed_forms),
+                                 forms_seen_timestamp));
 }
 
-void AutofillManager::QueryServerPredictions(base::span<const FormData> forms) {
+void AutofillManager::QueryServerPredictions(
+    base::span<const FormData> forms,
+    base::TimeTicks form_seen_timestamp) {
   std::vector<FormData> queryable_forms;
   for (const FormData& form : forms) {
     if (ShouldBeQueried(form)) {
@@ -307,14 +317,16 @@ void AutofillManager::QueryServerPredictions(base::span<const FormData> forms) {
   // StartQueryRequest() expects to include the queried forms. This would allow
   // StartQueryRequest() to provide the queried forms to the callback
   // automatically, instead of passing them in separately here.
-  auto on_loaded = base::BindOnce(&AutofillManager::OnLoadedServerPredictions,
-                                  GetWeakPtr(), queryable_forms);
+  auto on_loaded =
+      base::BindOnce(&AutofillManager::OnLoadedServerPredictions, GetWeakPtr(),
+                     queryable_forms, form_seen_timestamp);
   client().GetCrowdsourcingManager().StartQueryRequest(
       std::move(queryable_forms), driver().GetIsolationInfo(),
       std::move(on_loaded));
 }
 
-void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
+void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms,
+                                    base::TimeTicks form_seen_timestamp) {
   DCHECK(!forms.empty());
   OnBeforeProcessParsedForms();
 
@@ -353,8 +365,9 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
     // If language detection is currently reparsing the form, wait until the
     // server response is processed, to ensure server predictions are not lost.
-    auto on_loaded = base::BindOnce(&AutofillManager::OnLoadedServerPredictions,
-                                    GetWeakPtr(), queryable_forms);
+    auto on_loaded =
+        base::BindOnce(&AutofillManager::OnLoadedServerPredictions,
+                       GetWeakPtr(), queryable_forms, form_seen_timestamp);
     client().GetCrowdsourcingManager().StartQueryRequest(
         std::move(queryable_forms), driver().GetIsolationInfo(),
         std::move(on_loaded));
@@ -561,7 +574,7 @@ void AutofillManager::ReparseKnownForms() {
   auto ProcessParsedForms = [](AutofillManager& self,
                                const std::vector<FormData>& parsed_forms) {
     if (!parsed_forms.empty()) {
-      self.OnFormsParsed(parsed_forms);
+      self.OnFormsParsed(parsed_forms, base::TimeTicks());
     }
   };
   ParseFormsAsync(
@@ -895,7 +908,13 @@ void AutofillManager::PopulateCacheForQueryResponse(
 
 void AutofillManager::OnLoadedServerPredictions(
     base::span<const FormData> forms,
+    base::TimeTicks form_seen_timestamp,
     std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
+  if (!form_seen_timestamp.is_null()) {
+    base::UmaHistogramTimes(
+        "Autofill.TimingInterval.FormsSeen.LoadedServerPredictions",
+        base::TimeTicks::Now() - form_seen_timestamp);
+  }
   absl::Cleanup on_after_loaded_server_predictions = [this] {
     NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
   };
@@ -978,16 +997,23 @@ void AutofillManager::LogServerQueryResponseMetrics(
         driver().GetPageUkmSourceId());
   }
 
-  AutofillMetrics::ServerQueryMetric metric;
-  if (query_response_overrode_heuristics &&
-      heuristics_detected_fillable_field) {
-    metric = AutofillMetrics::QUERY_RESPONSE_OVERRODE_LOCAL_HEURISTICS;
-  } else if (query_response_overrode_heuristics) {
-    metric = AutofillMetrics::QUERY_RESPONSE_WITH_NO_LOCAL_HEURISTICS;
-  } else {
-    metric = AutofillMetrics::QUERY_RESPONSE_MATCHED_LOCAL_HEURISTICS;
+  // TODO(crbug.com/470949499): Clean up these metrics once the
+  // `kAutofillServerQueryPredictionsEarly` flag is launched. The metric
+  // `QUERY_RESPONSE_WITH_NO_LOCAL_HEURISTICS` will always be logged if the
+  // server finishes first, which is non-deterministic.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillServerQueryPredictionsEarly)) {
+    AutofillMetrics::ServerQueryMetric metric;
+    if (query_response_overrode_heuristics &&
+        heuristics_detected_fillable_field) {
+      metric = AutofillMetrics::QUERY_RESPONSE_OVERRODE_LOCAL_HEURISTICS;
+    } else if (query_response_overrode_heuristics) {
+      metric = AutofillMetrics::QUERY_RESPONSE_WITH_NO_LOCAL_HEURISTICS;
+    } else {
+      metric = AutofillMetrics::QUERY_RESPONSE_MATCHED_LOCAL_HEURISTICS;
+    }
+    AutofillMetrics::LogServerQueryMetric(metric);
   }
-  AutofillMetrics::LogServerQueryMetric(metric);
 }
 
 void AutofillManager::UpdateFormCache(

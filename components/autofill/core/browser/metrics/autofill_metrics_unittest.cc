@@ -243,6 +243,11 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
   EXPECT_FALSE(histogram_tester
                    .GetAllSamples("Autofill.Timing.ParseFormsAsync.UpdateCache")
                    .empty());
+  EXPECT_FALSE(
+      histogram_tester
+          .GetAllSamples(
+              "Autofill.TimingInterval.FormsSeen.LoadedServerPredictions")
+          .empty());
 }
 
 // Verify that when submitting an autofillable form, the stored profile metric

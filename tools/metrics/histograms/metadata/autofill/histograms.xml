@@ -7937,6 +7937,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.TimingInterval.FormsSeen.LoadedServerPredictions"
+    units="ms" expires_after="2026-06-21">
+  <owner>akvuong@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The time in milliseconds, elapsed between the time a form is seen
+    (OnFormsSeen) and the point where server predictions are available
+    (OnLoadedServerPredictions).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TimingInterval.{Callee}.{Caller}.{Event}"
     units="microseconds" expires_after="2027-02-22">
   <owner>schwering@google.com</owner>
