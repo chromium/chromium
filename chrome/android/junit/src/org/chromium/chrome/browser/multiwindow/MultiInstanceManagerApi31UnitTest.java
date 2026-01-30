@@ -772,7 +772,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
     public void testGetInstanceInfo_size_hardClosure() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
@@ -793,6 +792,44 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.closeWindows(
                 Collections.singletonList(1), CloseWindowAppSource.OTHER);
         assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+    }
+
+    @Test
+    public void testGetInstanceInfo_size_incognitoWindow_hardClosure() {
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+        MultiInstancePersistentStore.writeTabCount(
+                0, /* normalTabCount= */ 0, /* incognitoTabCount= */ 1);
+        MultiInstancePersistentStore.writeTabCount(
+                1, /* normalTabCount= */ 0, /* incognitoTabCount= */ 1);
+        MultiInstancePersistentStore.writeTabCount(
+                2, /* normalTabCount= */ 0, /* incognitoTabCount= */ 1);
+        mMultiInstanceManager.setAdjacentInstance(mActivityTask57);
+
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+
+        // Activity destroyed in the background due to memory constraint has no impact.
+        softCloseInstance(mActivityTask57, TASK_ID_57);
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+
+        // Removing a task from recent screen cleans up the incognito window.
+        removeTaskOnRecentsScreen(mActivityTask58);
+        assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+
+        // Closing an instance from CloseWindowAppSource.OTHER cleans up the incognito window.
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(1), CloseWindowAppSource.OTHER);
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+
+        // Closing an instance from CloseWindowAppSource.WINDOW_MANAGER cleans up the incognito
+        // window.
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(0), CloseWindowAppSource.WINDOW_MANAGER);
+        assertEquals(0, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
     }
 
     @Test
@@ -976,6 +1013,14 @@ public class MultiInstanceManagerApi31UnitTest {
                         PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
         assertEquals("ACTIVE | REGULAR should return 1 instance", 1, activeRegularInstances.size());
         assertEquals(0, activeRegularInstances.get(0).instanceId);
+
+        // Test combined filter: INACTIVE and REGULAR
+        List<InstanceInfo> inactiveRegularInstances =
+                mMultiInstanceManager.getInstanceInfo(
+                        PersistedInstanceType.INACTIVE | PersistedInstanceType.REGULAR);
+        assertEquals(
+                "INACTIVE | REGULAR should return 1 instance", 1, inactiveRegularInstances.size());
+        assertEquals(2, inactiveRegularInstances.get(0).instanceId);
     }
 
     @Test
@@ -2931,7 +2976,7 @@ public class MultiInstanceManagerApi31UnitTest {
         manager1.initialize(
                 /* instanceId= */ 0, /* taskId= */ TASK_ID_62, SupportedProfileType.MIXED);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
-        manager1.initialize(
+        manager2.initialize(
                 /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
 
         // Destroy an instance with non-zero tab count.
@@ -2952,14 +2997,14 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testOnDestroy_notifiesInstanceClosedNotInvoked() {
+    public void testOnDestroy_notifyInstanceClosedNotInvoked() {
         var manager1 = createMultiInstanceManager(mTabbedActivityTask62);
         var manager2 = createMultiInstanceManager(mTabbedActivityTask63);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
         manager1.initialize(
                 /* instanceId= */ 0, /* taskId= */ TASK_ID_62, SupportedProfileType.MIXED);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
-        manager1.initialize(
+        manager2.initialize(
                 /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
 
         // Simulate that the activity is being destroyed but task is still alive.
@@ -2978,9 +3023,37 @@ public class MultiInstanceManagerApi31UnitTest {
                 /* instanceId= */ 1, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
         manager2.onDestroy();
 
+        verify(mRecentlyClosedTracker, never()).onInstanceClosed(any(), anyBoolean());
+    }
+
+    @Test
+    public void testOnDestroy_notifyInstanceClosedNotInvoked_incognitoWindow() {
+        var manager1 = createMultiInstanceManager(mTabbedActivityTask62);
+        var manager2 = createMultiInstanceManager(mTabbedActivityTask63);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        manager1.initialize(
+                /* instanceId= */ 0, /* taskId= */ TASK_ID_62, SupportedProfileType.MIXED);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
+        manager2.initialize(
+                /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
+
+        // Destroy an instance with non-zero normal tab count.
+        when(mTabbedActivityTask62.isFinishing()).thenReturn(true);
+        MultiInstancePersistentStore.writeTabCount(
+                /* instanceId= */ 0, /* normalTabCount= */ 3, /* incognitoTabCount= */ 3);
+        manager1.onDestroy();
+
+        when(mTabbedActivityTask63.isFinishing()).thenReturn(true);
+
+        // Destroy an instance with zero normal tabs.
+        when(mTabbedActivityTask62.isFinishing()).thenReturn(true);
+        MultiInstancePersistentStore.writeTabCount(
+                /* instanceId= */ 1, /* normalTabCount= */ 0, /* incognitoTabCount= */ 3);
+        manager2.onDestroy();
+
         InOrder inOrderVerifier = inOrder(mRecentlyClosedTracker);
-        inOrderVerifier.verify(mRecentlyClosedTracker, never()).onInstanceClosed(any(), eq(false));
-        inOrderVerifier.verify(mRecentlyClosedTracker, never()).onInstanceClosed(any(), eq(true));
+        inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(false));
+        inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(true));
     }
 
     private TabGroupMetadata getTabGroupMetadata(boolean isIncognito) {

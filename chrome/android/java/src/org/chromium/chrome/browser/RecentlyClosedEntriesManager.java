@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
@@ -300,7 +301,11 @@ public class RecentlyClosedEntriesManager {
     }
 
     private List<InstanceInfo> getAllInactiveInstances() {
-        return mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE);
+        var instanceType = PersistedInstanceType.INACTIVE;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            instanceType |= PersistedInstanceType.REGULAR;
+        }
+        return mMultiInstanceManager.getInstanceInfo(instanceType);
     }
 
     private void getRecentlyClosedTabsAndWindows(

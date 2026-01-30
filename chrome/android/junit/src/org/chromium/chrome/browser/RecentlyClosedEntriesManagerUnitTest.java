@@ -95,8 +95,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
         int numSessionEntries = 5;
         int numWindowEntries = 5;
         int totalEntries = numSessionEntries + numWindowEntries;
-        createRecentlyClosedWindows(numSessionEntries);
-        createSessionRecentlyClosedEntries(numWindowEntries);
+        createRecentlyClosedWindows(numWindowEntries);
+        createSessionRecentlyClosedEntries(numSessionEntries);
 
         // This method should merge both lists into a single, timestamp-sorted list.
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
@@ -914,7 +914,6 @@ public class RecentlyClosedEntriesManagerUnitTest {
             instanceId += 2;
             lastAccessedTime += 2;
         }
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
+        when(mMultiInstanceManager.getInstanceInfo(anyInt())).thenReturn(instanceInfoList);
     }
 }

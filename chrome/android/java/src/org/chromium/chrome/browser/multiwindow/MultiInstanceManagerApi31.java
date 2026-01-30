@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -1390,7 +1391,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     @Override
     public void closeWindows(List<Integer> instanceIds, @CloseWindowAppSource int source) {
         for (int instanceId : instanceIds) {
-            boolean shouldPermanentlyDelete = !isUserInitiatedClosure(source);
+            boolean shouldPermanentlyDelete = shouldPermanentlyDeleteWindow(source, instanceId);
             if (shouldPermanentlyDelete) {
                 removeInstanceInfo(instanceId, source);
                 TabModelSelector selector =
@@ -1473,19 +1474,24 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     /**
-     * Returns whether a window closure is initiated by the user, it usually means that the instance
-     * closure is a "soft closure" and should be preserved for later restoration via surfaces (like
-     * Recent Tabs) or keyboard shortcuts.
+     * Returns whether a window should be permanently deleted. If the closure is initiated by the
+     * user, it usually means that the instance closure is a "soft closure" and should be preserved
+     * for later restoration via surfaces (like Recent Tabs) or keyboard shortcuts. Instances with
+     * zero normal tab counts(e.g. incognito windows) should never be preserved for restoration.
      *
      * <p>A soft closure means the window's {@link InstanceInfo} and {@link TabModel} data are
      * persisted, even though the {@link Activity} and Android task will be removed via {@link
      * Activity#finishAndRemoveTask()}.
      *
      * @param source The window closure source, from {@link CloseWindowAppSource}.
+     * @param instanceId The ID of the instance being acted on.
      */
-    private boolean isUserInitiatedClosure(@CloseWindowAppSource int source) {
-        return source == CloseWindowAppSource.WINDOW_MANAGER
-                && UiUtils.isRecentlyClosedTabsAndWindowsEnabled();
+    private boolean shouldPermanentlyDeleteWindow(
+            @CloseWindowAppSource int source, int instanceId) {
+        if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) return true;
+
+        return MultiInstancePersistentStore.readNormalTabCount(instanceId) == 0
+                || source != CloseWindowAppSource.WINDOW_MANAGER;
     }
 
     @VisibleForTesting
