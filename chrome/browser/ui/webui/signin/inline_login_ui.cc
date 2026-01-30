@@ -239,8 +239,12 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-// Returns whether |url| can be displayed in a chrome://chrome-signin web
+// Returns whether `url` can be displayed in a chrome://chrome-signin web
 // contents, depending on the signin reason that is encoded in the url.
+// For testing purposes on Windows, loading `chrome://chrome-signin/?reason=6`
+// (mapping `signin_metrics::Reason::kFetchLstOnly`) would allow to load the
+// page in a tab. On ChromeOS, any reason (or no reason) would work.
+// If the reason is not valid, the page should not be loaded.
 bool IsValidChromeSigninReason(const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS)
   return true;
@@ -256,22 +260,26 @@ bool IsValidChromeSigninReason(const GURL& url) {
     case signin_metrics::Reason::kSigninPrimaryAccount:
     case signin_metrics::Reason::kAddSecondaryAccount:
     case signin_metrics::Reason::kUnknownReason:
-      NOTREACHED();
+      // This can happen if the page is loaded directly into a tab, which may
+      // not contain the right reason parameter. In this case, do not load the
+      // page instead of crashing. Check crbug.com/479741617.
+      return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace
 
 InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
+  if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL())) {
+    // Do not load the page is the reason is not valid.
+    return;
+  }
+
   // Always instantiate the WebUIDataSource so that tests pulling deps from
   // from chrome://chrome-signin/gaia_auth_host/ can work.
   Profile* profile = Profile::FromWebUI(web_ui);
   CreateAndAddWebUIDataSource(profile);
-
-  if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL())) {
-    return;
-  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   web_ui->AddMessageHandler(

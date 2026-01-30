@@ -13,7 +13,10 @@
 
 class InlineLoginUI;
 
-// Inline login UI is available on all platforms except Android
+// Inline login UI is available on ChromeOS and Windows.
+// For testing purposes on Windows, loading `chrome://chrome-signin/?reason=6`
+// (mapping `signin_metrics::Reason::kFetchLstOnly`) would allow to load the
+// page in a tab. On ChromeOS, any reason (or no reason) would work.
 class InlineLoginUIConfig : public content::DefaultWebUIConfig<InlineLoginUI> {
  public:
   InlineLoginUIConfig()
@@ -21,7 +24,7 @@ class InlineLoginUIConfig : public content::DefaultWebUIConfig<InlineLoginUI> {
                            chrome::kChromeUIChromeSigninHost) {}
 };
 
-// Inline login WebUI in various signin flows for ChromeOS and Chrome desktop.
+// Inline login WebUI in various signin flows for ChromeOS and GCPW for Windows.
 // Upon success, the profile of the webui should be populated with proper
 // cookies. Then this UI would fetch the oauth2 tokens using the cookies.
 class InlineLoginUI : public ui::WebDialogUI {
