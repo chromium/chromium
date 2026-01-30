@@ -157,6 +157,11 @@ void VerticalDraggedTabsContainer::InitializeDragState(
     TabDragTarget::DragController& controller) {
   CHECK(dragging_views_.empty());
 
+  tab_strip_padding_ = GetLayoutConstant(
+      IsTabStripCollapsed()
+          ? LayoutConstant::kVerticalTabStripCollapsedPadding
+          : LayoutConstant::kVerticalTabStripUncollapsedPadding);
+
   const auto& session_data = controller.GetSessionData();
   BuildDragLayout(session_data);
 }
