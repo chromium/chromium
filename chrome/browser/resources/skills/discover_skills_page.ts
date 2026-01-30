@@ -44,6 +44,9 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         icon: '',
         prompt: '',
         source: SkillSource.kFirstParty,
+        // 0n refers to a BigInt value.
+        creationTime: {internalValue: 0n},
+        lastUpdateTime: {internalValue: 0n},
       }],
     ],
     [
@@ -54,6 +57,8 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         icon: '',
         prompt: '',
         source: SkillSource.kFirstParty,
+        creationTime: {internalValue: 0n},
+        lastUpdateTime: {internalValue: 0n},
       }],
     ],
     [
@@ -64,6 +69,8 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         icon: '',
         prompt: '',
         source: SkillSource.kFirstParty,
+        creationTime: {internalValue: 0n},
+        lastUpdateTime: {internalValue: 0n},
       }],
     ],
     [
@@ -74,6 +81,8 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         icon: '',
         prompt: '',
         source: SkillSource.kFirstParty,
+        creationTime: {internalValue: 0n},
+        lastUpdateTime: {internalValue: 0n},
       }],
     ],
   ]);

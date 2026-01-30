@@ -25,13 +25,13 @@ SkillsDialogHandler::SkillsDialogHandler(
 
 SkillsDialogHandler::~SkillsDialogHandler() = default;
 
-void SkillsDialogHandler::SubmitSkill(skills::mojom::SkillPtr skill) {
+void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
   if (auto* skills_service = SkillsServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
-    skills_service->AddSkill(skill->name, skill->icon, skill->prompt);
+    skills_service->AddSkill(skill.name, skill.icon, skill.prompt);
     // TODO(marissashen): Add support for UpdateSkill
     if (delegate_) {
-      delegate_->OnSkillSaved(skill->id);
+      delegate_->OnSkillSaved(skill.id);
       delegate_->CloseDialog();
     }
   } else {

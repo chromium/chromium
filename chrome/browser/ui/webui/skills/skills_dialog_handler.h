@@ -32,7 +32,7 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   ~SkillsDialogHandler() override;
 
   // skills::mojom::DialogHandler:
-  void SubmitSkill(skills::mojom::SkillPtr skill) override;
+  void SubmitSkill(const skills::Skill& skill) override;
   void CloseDialog() override;
 
  private:

@@ -6,6 +6,20 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "skill.mojom" ]
   webui_module_path = "/"
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "skills.mojom.Skill"
+          cpp = "::skills::Skill"
+        },
+      ]
+      traits_headers = [ "skills_mojom_traits.h" ]
+      traits_sources = [ "skills_mojom_traits.cc" ]
+      traits_public_deps = [ ":public" ]
+    },
+  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 }
 
 source_set("public") {

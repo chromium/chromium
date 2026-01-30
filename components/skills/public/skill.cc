@@ -6,6 +6,8 @@
 
 namespace skills {
 
+Skill::Skill() = default;
+
 Skill::Skill(const std::string& id,
              const std::string& name,
              const std::string& icon,
@@ -14,6 +16,11 @@ Skill::Skill(const std::string& id,
       name(name),
       icon(icon),
       prompt(prompt) {}
+
+Skill::Skill(const Skill&) = default;
+Skill& Skill::operator=(const Skill&) = default;
+Skill::Skill(Skill&&) = default;
+Skill& Skill::operator=(Skill&&) = default;
 
 Skill::~Skill() = default;
 

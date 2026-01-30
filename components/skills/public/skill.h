@@ -27,7 +27,7 @@ enum class SkillSource {
 struct Skill {
   // A unique identifier for the skill. It's GUID now but can be other IDs in
   // the future.
-  const std::string id;
+  std::string id;
 
   // The user-facing name of the skill.
   std::string name;
@@ -47,12 +47,15 @@ struct Skill {
   // The time when the skill was last updated.
   base::Time last_update_time = creation_time;
 
+  Skill();
   Skill(const std::string& id,
         const std::string& name,
         const std::string& icon,
         const std::string& prompt);
-  Skill(const Skill& other) = delete;
-  Skill& operator=(const Skill& other) = delete;
+  Skill(const Skill&);
+  Skill& operator=(const Skill&);
+  Skill(Skill&&);
+  Skill& operator=(Skill&&);
   ~Skill();
 };
 // LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:Skill,
