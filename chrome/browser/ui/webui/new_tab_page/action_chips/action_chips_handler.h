@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
@@ -27,15 +26,6 @@
 
 namespace base {
 class TimeTicks;
-}
-
-namespace history {
-class HistoryService;
-class QueryResults;
-}  // namespace history
-
-namespace tabs {
-class TabInterface;
 }
 
 class Profile;
@@ -64,9 +54,6 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
   void SendActionChipsToUi(
       base::TimeTicks start_time,
       std::vector<action_chips::mojom::ActionChipPtr> chips);
-  void OnGetHistoryData(const tabs::TabInterface* tab,
-                        base::TimeTicks start_time,
-                        history::QueryResults results);
 
   // Returns true if chips retrieval should not occur in the current call.
   // This method was introduced to address the issue of jittering experience
@@ -79,10 +66,6 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUI> web_ui_;
   std::unique_ptr<ActionChipsGenerator> action_chips_generator_;
-  raw_ptr<history::HistoryService> history_service_;
-
-  // Task tracker for history requests.
-  base::CancelableTaskTracker cancelable_task_tracker_;
 
   std::optional<GURL> last_processed_url_;
 
