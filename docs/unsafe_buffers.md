@@ -150,8 +150,7 @@ Code introducing `UNSAFE_BUFFERS()` macro invocations without corresponding
 To allow for incremental conversion, code can be temporarily opted out by
 using the `UNSAFE_TODO()` macro. This provides the same functionality as
 the `UNSAFE_BUFFERS()` macro, but allows easier searching for code in need
-of revision. Add TODO() comment, along the lines of
-`// TODO(crbug.com/xxxxxx): resolve safety issues`.
+of revision.
 
 This mechanism opts expressions out of all warning categories (unsafe
 buffers and unsafe libc calls).
