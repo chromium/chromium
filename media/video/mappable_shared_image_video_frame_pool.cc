@@ -264,9 +264,10 @@ class MappableSharedImageVideoFramePool::PoolImpl
   void SharedImageReleased(FrameResource* frame_resource,
                            const gpu::SyncToken& sync_token);
 
-  // Delete resource. This has to be called on the thread where |task_runner|
-  // is current.
-  static void DeleteFrameResource(
+  // Sets the destruction token of `frame_resource`'s ClientSharedImage to be
+  // the resource's sync token. This has to be called on the thread where
+  // |task_runner| is current.
+  static void UpdateSharedImageDestructionTokenForResource(
       GpuVideoAcceleratorFactories* const gpu_factories,
       FrameResource* frame_resource);
 
@@ -1026,7 +1027,8 @@ void MappableSharedImageVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
       resources_pool_.erase(it);
     }
 
-    DeleteFrameResource(gpu_factories_, frame_resource);
+    UpdateSharedImageDestructionTokenForResource(gpu_factories_,
+                                                 frame_resource);
     delete frame_resource;
 
     CompleteCopyRequestAndMaybeStartNextCopy(std::move(video_frame));
@@ -1185,8 +1187,9 @@ void MappableSharedImageVideoFramePool::PoolImpl::Shutdown() {
     }
 
     media_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PoolImpl::DeleteFrameResource,
-                                  gpu_factories_, base::Owned(frame_resource)));
+        FROM_HERE,
+        base::BindOnce(&PoolImpl::UpdateSharedImageDestructionTokenForResource,
+                       gpu_factories_, base::Owned(frame_resource)));
   }
   resources_pool_.clear();
 }
@@ -1214,7 +1217,8 @@ MappableSharedImageVideoFramePool::PoolImpl::GetOrCreateFrameResource(
         return frame_resource;
       } else {
         resources_pool_.erase(it++);
-        DeleteFrameResource(gpu_factories_, frame_resource);
+        UpdateSharedImageDestructionTokenForResource(gpu_factories_,
+                                                     frame_resource);
         delete frame_resource;
       }
     } else {
@@ -1297,9 +1301,10 @@ void MappableSharedImageVideoFramePool::PoolImpl::
 }
 
 // static
-void MappableSharedImageVideoFramePool::PoolImpl::DeleteFrameResource(
-    GpuVideoAcceleratorFactories* const gpu_factories,
-    FrameResource* frame_resource) {
+void MappableSharedImageVideoFramePool::PoolImpl::
+    UpdateSharedImageDestructionTokenForResource(
+        GpuVideoAcceleratorFactories* const gpu_factories,
+        FrameResource* frame_resource) {
   // TODO(dcastagna): As soon as the context lost is dealt with in media,
   // make sure that we won't execute this callback (use a weak pointer to
   // the old context).
@@ -1336,7 +1341,8 @@ void MappableSharedImageVideoFramePool::PoolImpl::SharedImageReleased(
   frame_resource->sync_token = release_sync_token;
 
   if (in_shutdown_) {
-    DeleteFrameResource(gpu_factories_, frame_resource);
+    UpdateSharedImageDestructionTokenForResource(gpu_factories_,
+                                                 frame_resource);
     delete frame_resource;
     return;
   }
@@ -1351,7 +1357,7 @@ void MappableSharedImageVideoFramePool::PoolImpl::SharedImageReleased(
     if (!resource->is_used() &&
         now - resource->last_use_time() > kStaleFrameLimit) {
       resources_pool_.erase(it++);
-      DeleteFrameResource(gpu_factories_, resource);
+      UpdateSharedImageDestructionTokenForResource(gpu_factories_, resource);
       delete resource;
     } else {
       it++;
