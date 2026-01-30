@@ -63,7 +63,7 @@ class BLINK_COMMON_EXPORT WebMouseWheelEvent : public WebMouseEvent {
   Phase phase = kPhaseNone;
   Phase momentum_phase = kPhaseNone;
 
-  RailsMode rails_mode = kRailsModeFree;
+  RailsMode rails_mode = WebInputEvent::RailsMode::kRailsModeFree;
 
   // Whether the event is blocking, non-blocking, all event
   // listeners were passive or was forced to be non-blocking.

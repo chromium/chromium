@@ -29,35 +29,35 @@ TEST(MouseWheelRailsFilterMacTest, Functionality) {
   // horizontally and continues to be locked.
   mode =
       filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 2, 1));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeHorizontal);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
   mode = filter.UpdateRailsMode(
       MakeEvent(WebMouseWheelEvent::kPhaseChanged, 2, 2));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeHorizontal);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
   mode = filter.UpdateRailsMode(
       MakeEvent(WebMouseWheelEvent::kPhaseChanged, 10, -4));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeHorizontal);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
 
   // Change from horizontal to vertical and back.
   mode =
       filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 4, 1));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeHorizontal);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
   mode = filter.UpdateRailsMode(
       MakeEvent(WebMouseWheelEvent::kPhaseChanged, 3, 4));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeHorizontal);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
   mode = filter.UpdateRailsMode(
       MakeEvent(WebMouseWheelEvent::kPhaseChanged, 1, 4));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeVertical);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeVertical);
   mode = filter.UpdateRailsMode(
       MakeEvent(WebMouseWheelEvent::kPhaseChanged, 10, 0));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeHorizontal);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
 
   // Make sure zeroes don't break things.
   mode = filter.UpdateRailsMode(
       MakeEvent(WebMouseWheelEvent::kPhaseChanged, 0, 0));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeFree);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeFree);
   mode =
       filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 0, 0));
-  EXPECT_EQ(mode, WebInputEvent::kRailsModeFree);
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeFree);
 }
 
 }  // namespace

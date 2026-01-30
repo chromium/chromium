@@ -82,6 +82,7 @@ struct WheelData {
   blink.mojom.DispatchType cancelable;
   uint8 event_action;
   uint8 delta_units;
+  blink.mojom.RailsMode rails_mode;
 };
 
 struct MouseData {

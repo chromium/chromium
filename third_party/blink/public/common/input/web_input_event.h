@@ -169,14 +169,7 @@ class BLINK_COMMON_EXPORT WebInputEvent {
 
   using DispatchType = mojom::DispatchType;
 
-  // The rail mode for a wheel event specifies the axis on which scrolling is
-  // expected to stick. If this axis is set to Free, then scrolling is not
-  // stuck to any axis.
-  enum RailsMode {
-    kRailsModeFree = 0,
-    kRailsModeHorizontal = 1,
-    kRailsModeVertical = 2,
-  };
+  using RailsMode = mojom::RailsMode;
 
   static const int kInputModifiers =
       kShiftKey | kControlKey | kAltKey | kMetaKey;

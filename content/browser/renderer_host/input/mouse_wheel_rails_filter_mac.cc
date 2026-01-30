@@ -23,7 +23,7 @@ WebInputEvent::RailsMode MouseWheelRailsFilterMac::UpdateRailsMode(
     // documentation state that legacy mouse events (legacy mouse) do not have
     // |phase| and |momentum_phase|.
     // https://developer.apple.com/documentation/appkit/nsevent/1533550-phase.
-    return WebInputEvent::kRailsModeFree;
+    return WebInputEvent::RailsMode::kRailsModeFree;
   }
 
   // A somewhat-arbitrary decay constant for hysteresis.
@@ -33,15 +33,15 @@ WebInputEvent::RailsMode MouseWheelRailsFilterMac::UpdateRailsMode(
     decayed_delta_ = gfx::Vector2dF();
   }
   if (event.delta_x == 0 && event.delta_y == 0)
-    return WebInputEvent::kRailsModeFree;
+    return WebInputEvent::RailsMode::kRailsModeFree;
 
   decayed_delta_.Scale(kDecayConstant);
   decayed_delta_ +=
       gfx::Vector2dF(std::abs(event.delta_x), std::abs(event.delta_y));
 
   if (decayed_delta_.y() >= decayed_delta_.x())
-    return WebInputEvent::kRailsModeVertical;
-  return WebInputEvent::kRailsModeHorizontal;
+    return WebInputEvent::RailsMode::kRailsModeVertical;
+  return WebInputEvent::RailsMode::kRailsModeHorizontal;
 }
 
 }  // namespace content

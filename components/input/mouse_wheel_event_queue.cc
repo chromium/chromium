@@ -202,10 +202,10 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
             scroll_update.data.scroll_update.delta_y > 0 ? 1 : -1;
     } else {
       if (event_sent_for_gesture_ack_->event.rails_mode ==
-          WebInputEvent::kRailsModeVertical)
+          WebInputEvent::RailsMode::kRailsModeVertical)
         scroll_update.data.scroll_update.delta_x = 0;
       if (event_sent_for_gesture_ack_->event.rails_mode ==
-          WebInputEvent::kRailsModeHorizontal)
+          WebInputEvent::RailsMode::kRailsModeHorizontal)
         scroll_update.data.scroll_update.delta_y = 0;
     }
 

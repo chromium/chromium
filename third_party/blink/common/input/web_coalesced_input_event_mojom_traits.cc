@@ -352,6 +352,7 @@ bool StructTraits<blink::mojom::EventDataView,
                 wheel_data->event_action);
         wheel_event->delta_units =
             static_cast<ui::ScrollGranularity>(wheel_data->delta_units);
+        wheel_event->rails_mode = wheel_data->rails_mode;
       }
     }
 
@@ -420,7 +421,8 @@ StructTraits<blink::mojom::EventDataView,
         wheel_event->acceleration_ratio_y, wheel_event->phase,
         wheel_event->momentum_phase, wheel_event->dispatch_type,
         static_cast<uint8_t>(wheel_event->event_action),
-        static_cast<uint8_t>(wheel_event->delta_units));
+        static_cast<uint8_t>(wheel_event->delta_units),
+        wheel_event->rails_mode);
   }
 
   return PointerDataFromPointerProperties(

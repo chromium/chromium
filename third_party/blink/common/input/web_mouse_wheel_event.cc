@@ -127,12 +127,12 @@ WebMouseWheelEvent::GetPlatformSpecificDefaultEventAction(
   if (event.delta_x == 0 && (event.GetModifiers() & WebInputEvent::kShiftKey))
     return blink::WebMouseWheelEvent::EventAction::kScrollHorizontal;
 #endif
-  if (event.rails_mode == WebInputEvent::kRailsModeHorizontal ||
+  if (event.rails_mode == WebInputEvent::RailsMode::kRailsModeHorizontal ||
       (event.delta_x != 0 && event.delta_y == 0)) {
     return blink::WebMouseWheelEvent::EventAction::kScrollHorizontal;
   }
 
-  if (event.rails_mode == WebInputEvent::kRailsModeVertical ||
+  if (event.rails_mode == WebInputEvent::RailsMode::kRailsModeVertical ||
       (event.delta_x == 0 && event.delta_y != 0)) {
     return blink::WebMouseWheelEvent::EventAction::kScrollVertical;
   }
