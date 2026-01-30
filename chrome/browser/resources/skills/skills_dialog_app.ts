@@ -15,6 +15,8 @@ import {getCss} from './skills_dialog.css.js';
 import {getHtml} from './skills_dialog_app.html.js';
 import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
 
+const DEFAULT_EMOJI: string = '⚡';
+
 export class SkillsDialogAppElement extends CrLitElement {
   static get is() {
     return 'skills-dialog-app';
@@ -48,6 +50,47 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   protected get isSaveButtonDisabled() {
     return this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
+  }
+
+  protected getEmojiDisplay_(): string {
+    return this.skill_.icon || DEFAULT_EMOJI;
+  }
+
+  protected onEmojiBtnClick_(e: Event) {
+    const input = e.target as HTMLInputElement;
+
+    input.focus();
+    input.select();
+
+    SkillsDialogBrowserProxy.getInstance().handler.showEmojiPicker();
+  }
+
+  protected onEmojiKeyDown_(e: KeyboardEvent) {
+    // Block everything else (a-z, 1-9, symbols).
+    // This stops the user from manually typing, making it feel "read-only".
+    // NOTE: The OS Emoji Picker bypasses this check, so emojis still get
+    // through.
+    e.preventDefault();
+  }
+
+  protected onEmojiChanged_(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const rawValue = input.value;
+
+    if (!rawValue) {
+      this.skill_ = {...this.skill_, icon: DEFAULT_EMOJI};
+      input.value = DEFAULT_EMOJI;
+      return;
+    }
+
+    // Sanitize input: Take ONLY the last grapheme cluster
+    const segmenter = new Intl.Segmenter('en', {granularity: 'grapheme'});
+    const segments = [...segmenter.segment(rawValue)];
+    const lastEmoji = segments[segments.length - 1]?.segment || DEFAULT_EMOJI;
+
+    this.skill_ = {...this.skill_, icon: lastEmoji};
+    input.value = lastEmoji;
+    input.blur();
   }
 
   protected onNameChanged_(e: CustomEvent<{value: string}>) {

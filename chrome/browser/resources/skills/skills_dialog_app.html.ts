@@ -14,9 +14,18 @@ export function getHtml(this: SkillsDialogAppElement) {
 <p id="description" class="description">Skills help simplify and automate repetitive tasks</p>
 <div class="form-group">
   <cr-input class="no-error stroked" id="name-text" type="text" label="Name"
-      placeholder="Simplify For A Kid" .value="${this.skill_.name}"
-      @value-changed="${this.onNameChanged_}">
-  </cr-input>
+        placeholder="Simplify For A Kid" .value="${this.skill_.name}"
+        @value-changed="${this.onNameChanged_}">
+      <input class="emoji-trigger"
+          type="text"
+          .value="${this.getEmojiDisplay_()}"
+          @click="${this.onEmojiBtnClick_}"
+          @input="${this.onEmojiChanged_}"
+          @keydown="${this.onEmojiKeyDown_}"
+          title="Choose Icon"
+          aria-label="Choose Icon"
+          slot="inline-prefix">
+    </cr-input>
   <cr-textarea id="instructions-text" type="text" label="Instructions"
       placeholder="Example: Simplify this concept for a child who is 8 years old. Use simple language and an analogy they would understand. Keep the total explanation concise, under 150 words."
       .value="${this.skill_.prompt}"

@@ -38,3 +38,34 @@ cr-textarea {
   justify-content: flex-end;
   gap: 12px;
 }
+
+.emoji-trigger {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  box-shadow: none;
+  width: 24px;
+  height: 24px;
+  align-self: center;
+  margin-inline-end: 8px;
+  font-family: 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  line-height: 24px;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  caret-color: transparent;
+}
+
+/* Hides the blue selection background if text gets selected */
+.emoji-trigger::selection {
+  background: transparent;
+  color: var(--cr-primary-text-color);
+}
+
+#name-text {
+  flex: 1;
+}

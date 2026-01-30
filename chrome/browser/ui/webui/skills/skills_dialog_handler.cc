@@ -12,6 +12,7 @@
 #include "components/skills/public/skills_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 
 namespace skills {
 
@@ -44,6 +45,10 @@ void SkillsDialogHandler::CloseDialog() {
   if (delegate_) {
     delegate_->CloseDialog();
   }
+}
+
+void SkillsDialogHandler::ShowEmojiPicker() {
+  ui::ShowEmojiPanel();
 }
 
 }  // namespace skills

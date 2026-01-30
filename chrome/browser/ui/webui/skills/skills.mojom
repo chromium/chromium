@@ -28,6 +28,9 @@ interface DialogHandler {
 
   // TODO(marissashen): Add `GetInitialSkill` to pass in initial skill and
   // dialog state (add/edit).
+
+  // Trigger the OS picker
+  ShowEmojiPicker();
 };
 
 // Called from TS side of chrome://skills (Renderer -> Browser)

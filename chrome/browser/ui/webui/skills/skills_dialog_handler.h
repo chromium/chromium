@@ -34,6 +34,7 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   // skills::mojom::DialogHandler:
   void SubmitSkill(const skills::Skill& skill) override;
   void CloseDialog() override;
+  void ShowEmojiPicker() override;
 
  private:
   mojo::Receiver<skills::mojom::DialogHandler> receiver_;

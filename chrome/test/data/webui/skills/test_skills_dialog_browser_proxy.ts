@@ -12,6 +12,7 @@ export class TestDialogHandler extends TestBrowserProxy implements
     super([
       'submitSkill',
       'closeDialog',
+      'showEmojiPicker',
     ]);
   }
 
@@ -21,6 +22,10 @@ export class TestDialogHandler extends TestBrowserProxy implements
 
   closeDialog() {
     this.methodCalled('closeDialog');
+  }
+
+  showEmojiPicker() {
+    this.methodCalled('showEmojiPicker');
   }
 }
 
