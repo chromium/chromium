@@ -665,7 +665,7 @@ class MessagingSerializationApiTest : public base::test::WithFeatureOverride,
     // This feature treats some messaging response failures differently so let's
     // force it on to have consistent response behavior.
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+        extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
   }
 
  private:
@@ -772,7 +772,7 @@ class OnMessagePromiseReturnMessagingApiTest
  public:
   OnMessagePromiseReturnMessagingApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+        extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
   }
 
  private:
@@ -922,7 +922,7 @@ class OnMessageExternalAsyncMessagingApiTest
  public:
   OnMessageExternalAsyncMessagingApiTest()
       : base::test::WithFeatureOverride(
-            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+            extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport) {
   }
 };
 
@@ -964,22 +964,21 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(OnMessageExternalAsyncMessagingApiTest);
 // becomes unnecessary when the feature becomes the default (there are plenty of
 // other tests that test synchronous responses).
 // Helps test messaging behavior when
-// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
+// `extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport` is
 // enabled or disabled.
 class PolyfillSupportMessagingApiTest : public base::test::WithFeatureOverride,
                                         public MessagingApiTestWithPageUrlLoad {
  public:
- public:
   PolyfillSupportMessagingApiTest()
       : base::test::WithFeatureOverride(
-            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+            extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport) {
   }
 };
 
 // The PolyfillSupport* tests are testing various runtime.sendMessage()
 // behaviors compared to mozilla/webextension-polyfill
 // (https://github.com/mozilla/webextension-polyfill) when
-// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
+// `extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport` is
 // enabled or disabled. The polyfill doesn't support callbacks so we do not test
 // the sendMessage() callback version
 // (https://github.com/mozilla/webextension-polyfill/issues/102).
@@ -1026,7 +1025,7 @@ class PolyfillSupportWithWorkerShutdownMessagingApiTest
  protected:
   PolyfillSupportWithWorkerShutdownMessagingApiTest() {
     scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+        extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
   }
 
   void SetUpOnMainThread() override {
@@ -1060,12 +1059,11 @@ IN_PROC_BROWSER_TEST_F(PolyfillSupportWithWorkerShutdownMessagingApiTest,
 }
 
 // Test class that sets `chrome.test.getConfig()`'s 'customArg' key to the
-// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` state so
+// `extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport` state so
 // the extension test can adjust its expectations at test runtime.
 class PolyfillSupportMessagingErrorsApiTest
     : public PolyfillSupportMessagingApiTest {
  public:
-
   void SetUpOnMainThread() override {
     PolyfillSupportMessagingApiTest::SetUpOnMainThread();
     // Set "customArg" to be whether the feature is enabled in
@@ -1161,7 +1159,7 @@ class PolyfillFeatureEnabledMessagingApiTest
  public:
   PolyfillFeatureEnabledMessagingApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+        extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
   }
 
  private:
@@ -1220,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(PolyfillUnserializableMessageResponseTest,
 }
 
 // Helps in testing that
-// extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport doesn't
+// extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport doesn't
 // regress asynchronous listener behavior when multiple listeners can return for
 // a single message.
 class OnMessageMultiListenerMessagingApiTest
@@ -1229,7 +1227,7 @@ class OnMessageMultiListenerMessagingApiTest
  public:
   OnMessageMultiListenerMessagingApiTest()
       : base::test::WithFeatureOverride(
-            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+            extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport) {
   }
 
  private:

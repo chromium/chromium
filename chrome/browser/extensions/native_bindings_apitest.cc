@@ -558,7 +558,7 @@ class NativeBindingsBrowserNamespaceTest : public NativeBindingsApiTest {
  public:
   NativeBindingsBrowserNamespaceTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionBrowserNamespaceAlternative);
+        extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
   }
 
   NativeBindingsBrowserNamespaceTest(

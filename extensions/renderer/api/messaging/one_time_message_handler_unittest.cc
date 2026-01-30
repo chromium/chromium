@@ -757,14 +757,14 @@ class PolyfillSupportOneTimeMessageHandlerTest
  public:
   PolyfillSupportOneTimeMessageHandlerTest()
       : base::test::WithFeatureOverride(
-            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+            extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport) {
   }
 };
 
 // runtime.onMessage requires that a listener indicate it will send an
 // asynchronous response to a message. It can do this by either by returning
 // `true` or returning a promise if
-// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
+// `extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport` is
 // enabled. Verify that we close the port if the listeners don't indicate an
 // async response.
 TEST_P(PolyfillSupportOneTimeMessageHandlerTest,
@@ -855,7 +855,7 @@ class OneTimeMessageHandlerGarbageCollectionTest
  public:
   OneTimeMessageHandlerGarbageCollectionTest()
       : WithFeatureOverride(
-            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+            extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport) {
   }
 
   OneTimeMessageHandlerGarbageCollectionTest(

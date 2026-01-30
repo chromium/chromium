@@ -164,7 +164,7 @@ class OneTimeMessageHandler {
 
   // Creates a callback to be called after an event is dispatched.
   // `listener_error_callback_id` is provided if
-  // extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport is
+  // extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport is
   // enabled to help cleanup the listener error callback.
   std::unique_ptr<OneTimeMessageCallback> CreateEventDispatchCallback(
       const PortId& port_id,
@@ -231,7 +231,7 @@ class OneTimeMessageHandler {
   // Called when the messaging event has been dispatched with the result of the
   // listeners.
   // `listener_error_callback_id` is provided if
-  // extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport is
+  // extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport is
   // enabled to help cleanup the listener error callback.
   void OnEventFired(const PortId& port_id,
                     std::optional<CallbackID> listener_error_callback_id,

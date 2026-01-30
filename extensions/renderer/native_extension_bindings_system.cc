@@ -612,7 +612,7 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
   // TODO(crbug.com/401226626): Determine if `browser` should be created in
   // WebUI script contexts, currently it is not.
   bool browser_namespace_enabled = base::FeatureList::IsEnabled(
-      extensions_features::kExtensionBrowserNamespaceAlternative);
+      extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
   bool set_accessor_on_browser = false;
   if (browser_namespace_enabled) {
     //  Create if this is an extension script context MV3+.

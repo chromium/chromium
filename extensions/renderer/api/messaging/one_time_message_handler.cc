@@ -97,7 +97,7 @@ constexpr char OneTimeMessageContextData::kPerContextDataKey[];
 
 bool IsMessagePolyfillSupportEnabled() {
   return base::FeatureList::IsEnabled(
-      extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+      extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
 }
 
 // Returns an array from the `result` object's `property_name` if it exists,

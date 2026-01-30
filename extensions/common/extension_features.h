@@ -262,8 +262,13 @@ BASE_DECLARE_FEATURE(kDebuggerAPIRestrictedToDevMode);
 
 // Creates a `browser` object that can be used in place of `chrome` where
 // extension APIs are available. It does not include non-extension APIs like
-// `loadTimes` , `csi`, etc. or deprecated APIs (e.g. `app`).
-BASE_DECLARE_FEATURE(kExtensionBrowserNamespaceAlternative);
+// `loadTimes`, `csi`, etc. or deprecated APIs (e.g. `app`).
+// Also aligns one-time message (e.g. runtime.sendMessage) behavior more closely
+// with the mozilla/webextension-polyfill. This includes supporting
+// chrome.runtime.onMessage() listeners returning a Promise. Also in more error
+// cases (like listeners sending unserializable responses or throwing errors
+// during execution) the error is passed back to the sender.
+BASE_DECLARE_FEATURE(kExtensionBrowserNamespaceAndPolyfillSupport);
 
 // Optimizes service worker start requests by checking readiness before
 // initiating a start.
@@ -295,13 +300,6 @@ BASE_DECLARE_FEATURE(kExtensionContentVerificationUsesExtensionRoot);
 // original extension version for all hash lookups and creations, preventing
 // these inconsistencies.
 BASE_DECLARE_FEATURE(kContentVerifyJobUseJobVersionForHashing);
-
-// Aligns one-time message (e.g. runtime.sendMessage) behavior more closely with
-// the mozilla/webextension-polyfill. This includes supporting
-// chrome.runtime.onMessage() listeners returning a Promise. Also in more error
-// cases (like listeners sending unserializable responses or throwing errors
-// during execution) the error is passed back to the sender.
-BASE_DECLARE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport);
 
 // Enables the shouldShowPromotion API to determine which promotion to show for
 // Chrome Enterprise on CWS.
