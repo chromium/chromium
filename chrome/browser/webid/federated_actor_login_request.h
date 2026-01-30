@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "content/public/browser/page_user_data.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
 
 namespace content {
-class Page;
+class WebContents;
 }
 
 using OnFederatedTokenReceivedCallback = base::OnceCallback<void(bool)>;
@@ -21,9 +21,9 @@ using OnFederatedTokenReceivedCallback = base::OnceCallback<void(bool)>;
 // a federated token from a specific account, and request to be notified when
 // the request is completed.
 class FederatedActorLoginRequest
-    : public content::PageUserData<FederatedActorLoginRequest> {
+    : public content::WebContentsUserData<FederatedActorLoginRequest> {
  public:
-  FederatedActorLoginRequest(content::Page& page,
+  FederatedActorLoginRequest(content::WebContents* web_contents,
                              const url::Origin& idp_origin,
                              const std::string& account_id,
                              OnFederatedTokenReceivedCallback callback);
@@ -41,14 +41,14 @@ class FederatedActorLoginRequest
   // Sets the actor login request information. This is used to know whether a
   // current pending web identity request is an actor login request, which
   // account to automatically select, and how to notify the actor.
-  static void Set(content::Page& page,
+  static void Set(content::WebContents* web_contents,
                   const url::Origin& idp_origin,
                   const std::string& account_id,
                   OnFederatedTokenReceivedCallback callback);
-  static void Unset(content::Page& page);
-  static FederatedActorLoginRequest* Get(content::Page& page);
+  static void Unset(content::WebContents* web_contents);
+  static FederatedActorLoginRequest* Get(content::WebContents* web_contents);
 
-  PAGE_USER_DATA_KEY_DECL();
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
  private:
   url::Origin idp_origin_;

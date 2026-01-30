@@ -138,6 +138,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "federated_actor_login_request_unittest.cc",
     "federated_identity_account_keyed_permission_context_unittest.cc",
     "federated_identity_api_permission_context_unittest.cc",
     "federated_identity_auto_reauthn_permission_context_unittest.cc",

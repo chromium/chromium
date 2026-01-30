@@ -160,7 +160,7 @@ bool IdentityDialogController::ShowAccountsDialog(
   // dialog. Pretend that we did for the caller and automatically select the
   // account.
   FederatedActorLoginRequest* actor_login_request =
-      FederatedActorLoginRequest::Get(rp_web_contents_->GetPrimaryPage());
+      FederatedActorLoginRequest::Get(rp_web_contents_);
   if (actor_login_request) {
     url::Origin idp_origin = actor_login_request->idp_origin();
     std::string account_id = actor_login_request->account_id();
@@ -341,7 +341,7 @@ void IdentityDialogController::OnFlowCompleted(bool success) {
     return;
   }
   FederatedActorLoginRequest* actor_login_request =
-      FederatedActorLoginRequest::Get(rp_web_contents_->GetPrimaryPage());
+      FederatedActorLoginRequest::Get(rp_web_contents_);
   if (actor_login_request) {
     std::move(actor_login_request->on_federated_token_received_callback())
         .Run(success);
