@@ -9781,3 +9781,6 @@ crbug.com/478201211 external/wpt/webxr/layers/idlharness.https.window.html [ Fai
 crbug.com/479025607 [ Linux ] external/wpt/webrtc-stats/outbound-rtp.https.html [ Crash Failure Pass Timeout ]
 crbug.com/479025607 [ Mac ] external/wpt/webrtc-stats/outbound-rtp.https.html [ Crash Failure Pass Timeout ]
 crbug.com/40281140 [ Win11-arm64 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Crash Failure Pass Timeout ]
+
+# Gardener 2026-01-30
+crbug.com/479025607 [ Linux ] external/wpt/ai/translator/translator-locale.https.window.html [ Failure Pass Timeout ]
