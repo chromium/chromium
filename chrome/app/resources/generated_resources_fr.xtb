@@ -6992,7 +6992,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5765425701854290211">Désolé, certains fichiers ont été endommagés et la mise à jour n'a pas abouti. Vos fichiers synchronisés sont en sécurité.</translation>
 <translation id="5765491088802881382">Aucun réseau disponible</translation>
 <translation id="5767099457279594162">Mot de passe non partagé</translation>
-<translation id="5767588700813586698">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne grâce à la protection renforcée</translation>
+<translation id="5767588700813586698">Un niveau de sécurité accru contre les menaces en ligne avec la protection renforcée</translation>
 <translation id="5770125698810550803">Afficher les boutons de navigation</translation>
 <translation id="5771816112378578655">Configuration en cours...</translation>
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> vous permet d'exécuter les applications Windows® sur votre Chromebook. Espace libre recommandé pour cette installation : <ph name="MINIMUM_SPACE" />.</translation>
@@ -7075,6 +7075,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5817963443108180228">Bon retour parmi nous, <ph name="PROFILE_NAME" /> !</translation>
 <translation id="5818161931099046557">Modifier dans le compte Google</translation>
 <translation id="581911254119283028">toutes les applis</translation>
+<translation id="5820751560028604030">Téléchargement local bloqué</translation>
 <translation id="5821565227679781414">Créer un raccourci</translation>
 <translation id="5824976764713185207">Lire la page automatiquement après son chargement</translation>
 <translation id="5825412242012995131">Activé (recommandé)</translation>
@@ -7788,7 +7789,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6302661287897119265">Filtre</translation>
 <translation id="630292539633944562">Suggestions d'informations personnelles</translation>
 <translation id="6303023592034094909">Une nouvelle version de cette appli est disponible</translation>
-<translation id="630308129961693966">Choisissez position barre d'adresse</translation>
+<translation id="630308129961693966">Positionnez la barre d'adresse</translation>
 <translation id="6304017513498618504">Vous pouvez aussi demander des choses comme "fais un résumé"</translation>
 <translation id="6305607932814307878">Règlement global :</translation>
 <translation id="6305627295927385295">Supprimer les éléments suivants :</translation>
@@ -9053,8 +9054,8 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7194873994243265344">Votre organisation a bloqué ce fichier, car il est chiffré. Demandez à son propriétaire de le déchiffrer.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 téléchargement en cours}one{# téléchargement en cours}other{# téléchargements en cours}}</translation>
 <translation id="7196272782924897510">Utiliser une clé d'accès d'un autre appareil ?</translation>
-<translation id="7196455519852483601">Vous pouvez supprimer tout ou partie de votre historique, vos cookies, les données de sites, etc.</translation>
-<translation id="7197682514647286393">Supprimez vite données navigation</translation>
+<translation id="7196455519852483601">Supprimez tout ou partie de votre historique, des cookies, des données de site, etc.</translation>
+<translation id="7197682514647286393">Effacez rapidement vos données</translation>
 <translation id="719791532916917144">Raccourci clavier</translation>
 <translation id="7198503619164954386">Vous devez utiliser un appareil enregistré par l'entreprise</translation>
 <translation id="7199158086730159431">Obtenir de l'aid&amp;e</translation>
@@ -9477,7 +9478,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7478658909253570368">Ne pas autoriser les sites à se connecter aux ports série</translation>
 <translation id="7479221278376295180">Aperçu de l'espace de stockage utilisé</translation>
 <translation id="747981547666531654">Connecté aux appareils Bluetooth <ph name="FIRST_DEVICE" /> et <ph name="SECOND_DEVICE" /></translation>
-<translation id="7481213027396403996">Renforcer la sécurité de Chrome</translation>
+<translation id="7481213027396403996">Renforcez la sécurité de Chrome</translation>
 <translation id="7481312909269577407">Avancer</translation>
 <translation id="7481358317100446445">Prêt</translation>
 <translation id="748138892655239008">Contraintes de base du certificat</translation>
@@ -9786,6 +9787,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7684212569183643648">Installée par votre administrateur</translation>
 <translation id="7684559058815332124">Accéder à la page de connexion du portail captif</translation>
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez Android Debug Bridge (ADB). Notez que cette action autorise l'installation d'applications Android non vérifiées par Google et ne pourra être désactivée qu'en rétablissant la configuration d'usine.</translation>
+<translation id="7684803937028953000">Votre organisation a bloqué le téléchargement local de ce fichier.</translation>
 <translation id="7684913007876670600">Pour afficher une vue simplifiée de cette page, ouvrez le panneau latéral et sélectionnez le mode Lecture</translation>
 <translation id="7685038817958445325">Impossible de caster</translation>
 <translation id="7685049629764448582">Mémoire JavaScript </translation>

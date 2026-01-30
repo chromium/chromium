@@ -7071,6 +7071,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5817963443108180228">Ongi etorri berriro, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Editatu Google Kontua atalean</translation>
 <translation id="581911254119283028">aplikazio guztiak</translation>
+<translation id="5820751560028604030">Blokeatu egin da gailuko deskarga</translation>
 <translation id="5821565227679781414">Sortu lasterbidea</translation>
 <translation id="5824976764713185207">Irakurri orria automatikoki kargatzen den bezain laster</translation>
 <translation id="5825412242012995131">Aktibatuta (gomendatua)</translation>
@@ -9777,6 +9778,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7684212569183643648">Administratzaileak instalatu du</translation>
 <translation id="7684559058815332124">Joan saioa hasteko atari gatibuaren orrira</translation>
 <translation id="7684718995427157417">Zeure aplikazioak sortu eta probatzeko, gaitu Android Debug Bridge (ADB). Kontuan izan ekintza honekin baimendu egiten dela Google-k egiaztatu ez dituen Android-erako aplikazioak instalatzeko aukera eta, inoiz tresna hori desgaitu nahi izanez gero, jatorrizko datuak berrezarri beharko direla.</translation>
+<translation id="7684803937028953000">Zure erakundeak fitxategiaren deskarga lokala blokeatu du.</translation>
 <translation id="7684913007876670600">Orri honen ikuspegi sinplifikatu bat erakusteko, ireki alboko panela eta hautatu Irakurtzeko modua</translation>
 <translation id="7685038817958445325">Ezin da igorri edukia</translation>
 <translation id="7685049629764448582">JavaScript memoria</translation>

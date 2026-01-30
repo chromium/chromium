@@ -7086,6 +7086,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5817963443108180228">Tervetuloa takaisin, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Muokkaa Google-tilillä</translation>
 <translation id="581911254119283028">kaikki sovellukset</translation>
+<translation id="5820751560028604030">Paikallinen lataus estetty</translation>
 <translation id="5821565227679781414">Luo pikakuvake</translation>
 <translation id="5824976764713185207">Lue sivu automaattisesti, kun se on latautunut</translation>
 <translation id="5825412242012995131">Käytössä (suositus)</translation>
@@ -9795,6 +9796,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="7684212569183643648">Järjestelmänvalvojasi asentama</translation>
 <translation id="7684559058815332124">Siirry captive portal -kirjautumissivulle</translation>
 <translation id="7684718995427157417">Jos haluat luoda ja testata sovelluksia, ota käyttöön Android Debug Bridge (ADB). Huomaa, että tämä sallii sellaisten Android-sovellusten asentamisen, joita Google ei ole vahvistanut. Ominaisuuden käytöstä poistaminen edellyttää tehdasasetusten palautusta.</translation>
+<translation id="7684803937028953000">Organisaatio on estänyt tiedoston paikallisen lataamisen.</translation>
 <translation id="7684913007876670600">Jos haluat nähdä sivusta yksinkertaistetun version, avaa sivupaneeli ja valitse Lukutila</translation>
 <translation id="7685038817958445325">Striimaus ei onnistu</translation>
 <translation id="7685049629764448582">JavaScriptin käyttämä muisti</translation>

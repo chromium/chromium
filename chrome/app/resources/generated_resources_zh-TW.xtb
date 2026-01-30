@@ -7066,6 +7066,7 @@
 <translation id="5817963443108180228">歡迎回來，<ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">前往 Google 帳戶編輯</translation>
 <translation id="581911254119283028">所有應用程式</translation>
+<translation id="5820751560028604030">已封鎖本機下載作業</translation>
 <translation id="5821565227679781414">建立捷徑</translation>
 <translation id="5824976764713185207">網頁載入完成後自動朗讀網頁內容</translation>
 <translation id="5825412242012995131">啟用 (建議設定)</translation>
@@ -9772,6 +9773,7 @@
 <translation id="7684212569183643648">由您的管理員安裝</translation>
 <translation id="7684559058815332124">造訪監控式入口網站登入頁面</translation>
 <translation id="7684718995427157417">如要建立並測試你的應用程式，請啟用 Android Debug Bridge (ADB)。請注意，這項操作會允許你安裝未經 Google 驗證的 Android 應用程式，而且需要將裝置恢復原廠設定才能停用。</translation>
+<translation id="7684803937028953000">貴機構禁止在本機下載這個檔案。</translation>
 <translation id="7684913007876670600">如要顯示這個頁面的簡易檢視畫面，請開啟側邊面板並選取「閱讀模式」</translation>
 <translation id="7685038817958445325">無法投放</translation>
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>

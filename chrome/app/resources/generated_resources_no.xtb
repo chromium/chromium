@@ -7079,6 +7079,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5817963443108180228">Velkommen tilbake, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Endre i Google-kontoen</translation>
 <translation id="581911254119283028">alle programmer</translation>
+<translation id="5820751560028604030">Lokal nedlasting er blokkert</translation>
 <translation id="5821565227679781414">Opprett snarvei</translation>
 <translation id="5824976764713185207">Les siden automatisk når den er ferdig lastet inn</translation>
 <translation id="5825412242012995131">På (anbefales)</translation>
@@ -9788,6 +9789,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7684212569183643648">Installert av administratoren din</translation>
 <translation id="7684559058815332124">Besøk Captive Portal-påloggingssiden</translation>
 <translation id="7684718995427157417">For å lage og teste apper, slå på Android Debug Bridge (ADB). Merk at dette gjør det mulig å installere Android-apper som ikke er verifisert av Google, og enheten må tilbakestilles til fabrikkinnstillingene hvis du vil slå av ADB igjen.</translation>
+<translation id="7684803937028953000">Organisasjonen din har blokkert lokal nedlasting av denne filen.</translation>
 <translation id="7684913007876670600">For å vise en forenklet visning av denne siden, åpne sidepanelet og velg Lesemodus</translation>
 <translation id="7685038817958445325">Kan ikke caste</translation>
 <translation id="7685049629764448582">JavaScript-minne</translation>

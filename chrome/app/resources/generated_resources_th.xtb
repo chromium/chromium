@@ -7071,6 +7071,7 @@
 <translation id="5817963443108180228">ยินดีต้อนรับกลับมา คุณ <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">แก้ไขในบัญชี Google</translation>
 <translation id="581911254119283028">แอปพลิเคชันทั้งหมด</translation>
+<translation id="5820751560028604030">บล็อกการดาวน์โหลดในเครื่องแล้ว</translation>
 <translation id="5821565227679781414">สร้างทางลัด</translation>
 <translation id="5824976764713185207">อ่านหน้าโดยอัตโนมัติหลังจากที่โหลดเสร็จ</translation>
 <translation id="5825412242012995131">เปิด (แนะนำ)</translation>
@@ -9778,6 +9779,7 @@
 <translation id="7684212569183643648">ติดตั้งโดยผู้ดูแลระบบ</translation>
 <translation id="7684559058815332124">ดูหน้าการเข้าสู่ระบบแคปทีฟพอร์ทัล</translation>
 <translation id="7684718995427157417">หากต้องการสร้างและทดสอบแอป ให้เปิดใช้ Android Debug Bridge (ADB) โปรดทราบว่าการดำเนินการนี้จะอนุญาตให้ติดตั้งแอป Android ที่ยังไม่ได้รับการยืนยันจาก Google และต้องรีเซ็ตเป็นค่าเริ่มต้นเพื่อปิดใช้</translation>
+<translation id="7684803937028953000">องค์กรบล็อกการดาวน์โหลดไฟล์นี้ลงในเครื่อง</translation>
 <translation id="7684913007876670600">เปิดแผงด้านข้างแล้วเลือกโหมดการอ่านเพื่อแสดงมุมมองอย่างง่ายของหน้านี้</translation>
 <translation id="7685038817958445325">แคสต์ไม่ได้</translation>
 <translation id="7685049629764448582">หน่วยความจำ JavaScript</translation>

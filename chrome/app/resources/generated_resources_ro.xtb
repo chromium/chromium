@@ -7075,6 +7075,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5817963443108180228">Bine ai revenit, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Editează în Contul Google</translation>
 <translation id="581911254119283028">toate aplicațiile</translation>
+<translation id="5820751560028604030">Descărcarea locală a fost blocată</translation>
 <translation id="5821565227679781414">Creați o comandă rapidă</translation>
 <translation id="5824976764713185207">Citește automat pagina după ce se încarcă</translation>
 <translation id="5825412242012995131">Activat (recomandat)</translation>
@@ -9786,6 +9787,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7684212569183643648">Instalată de administrator</translation>
 <translation id="7684559058815332124">Accesează pagina de conectare a portalului captiv</translation>
 <translation id="7684718995427157417">Pentru a crea și testa aplicații, activează Android Debug Bridge (ADB). Reține că această acțiune permite instalarea aplicațiilor Android care nu au fost verificate de Google și pentru dezactivarea instrumentului este necesară revenirea la setările din fabrică.</translation>
+<translation id="7684803937028953000">Organizația ta a blocat descărcarea locală a acestui fișier.</translation>
 <translation id="7684913007876670600">Pentru a vedea o afișare simplificată a acestei pagini, deschide panoul lateral și selectează modul de lectură</translation>
 <translation id="7685038817958445325">Nu se poate proiecta</translation>
 <translation id="7685049629764448582">Memorie JavaScript</translation>

@@ -7070,6 +7070,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5817963443108180228">Welkom terug, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Bewerken in Google-account</translation>
 <translation id="581911254119283028">alle apps</translation>
+<translation id="5820751560028604030">Lokale download geblokkeerd</translation>
 <translation id="5821565227679781414">Snelle link maken</translation>
 <translation id="5824976764713185207">Pagina automatisch lezen nadat deze is geladen</translation>
 <translation id="5825412242012995131">Aan (aanbevolen)</translation>
@@ -9777,6 +9778,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="7684212569183643648">Geïnstalleerd door je beheerder</translation>
 <translation id="7684559058815332124">Captive portal-loginpagina bezoeken</translation>
 <translation id="7684718995427157417">Zet Android Debug Bridge (ADB) aan om je apps te maken en te testen. Let op: Met deze actie sta je toe dat Android-apps worden geïnstalleerd die niet door Google zijn geverifieerd. Als je deze functie wilt uitzetten, moeten de fabrieksinstellingen van je apparaat worden hersteld.</translation>
+<translation id="7684803937028953000">Je organisatie heeft de lokale download van dit bestand geblokkeerd.</translation>
 <translation id="7684913007876670600">Als je een vereenvoudigde weergave van deze pagina wilt tonen, open je het zijvenster en selecteer je de leesmodus</translation>
 <translation id="7685038817958445325">Kan niet casten</translation>
 <translation id="7685049629764448582">JavaScript-geheugen</translation>

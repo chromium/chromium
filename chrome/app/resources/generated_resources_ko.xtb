@@ -7091,6 +7091,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5817963443108180228"><ph name="PROFILE_NAME" />님, 다시 방문해 주셔서 감사합니다</translation>
 <translation id="5818161931099046557">Google 계정에서 수정</translation>
 <translation id="581911254119283028">모든 애플리케이션</translation>
+<translation id="5820751560028604030">로컬 다운로드 차단됨</translation>
 <translation id="5821565227679781414">바로가기 만들기</translation>
 <translation id="5824976764713185207">로드가 끝나면 자동으로 페이지를 읽습니다.</translation>
 <translation id="5825412242012995131">사용(권장)</translation>
@@ -9799,6 +9800,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7684212569183643648">관리자가 설치함</translation>
 <translation id="7684559058815332124">캡티브 포털 로그인 페이지로 이동</translation>
 <translation id="7684718995427157417">앱을 만들고 테스트하려면 Android 디버그 브리지(ADB)를 사용 설정하세요. 이렇게 하면 Google에서 확인하지 않은 Android 앱을 설치할 수 있게 되며, 사용 중지하려면 초기화가 필요합니다.</translation>
+<translation id="7684803937028953000">조직에서 이 파일의 로컬 다운로드를 차단했습니다.</translation>
 <translation id="7684913007876670600">이 페이지를 간략하게 표시하려면 측면 패널을 열고 읽기 모드를 선택하세요.</translation>
 <translation id="7685038817958445325">전송할 수 없습니다</translation>
 <translation id="7685049629764448582">자바스크립트 메모리</translation>

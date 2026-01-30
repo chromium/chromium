@@ -7062,6 +7062,7 @@
 <translation id="5817963443108180228">欢迎回来，<ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">在 Google 账号中修改</translation>
 <translation id="581911254119283028">所有应用</translation>
+<translation id="5820751560028604030">本地下载已被阻止</translation>
 <translation id="5821565227679781414">创建快捷方式</translation>
 <translation id="5824976764713185207">在网页加载完毕后自动朗读网页内容</translation>
 <translation id="5825412242012995131">开启（推荐）</translation>
@@ -9770,6 +9771,7 @@
 <translation id="7684212569183643648">安装者：您的管理员</translation>
 <translation id="7684559058815332124">访问强制门户登录页面</translation>
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>
+<translation id="7684803937028953000">贵组织已禁止在本地下载此文件。</translation>
 <translation id="7684913007876670600">若要显示此页面的简化视图，请打开侧边栏并从中选择“阅读模式”</translation>
 <translation id="7685038817958445325">无法投放</translation>
 <translation id="7685049629764448582">JavaScript 内存</translation>

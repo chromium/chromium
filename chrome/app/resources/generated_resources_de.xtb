@@ -7068,6 +7068,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5817963443108180228">Willkommen zurück, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Im Google-Konto bearbeiten</translation>
 <translation id="581911254119283028">alle Apps</translation>
+<translation id="5820751560028604030">Lokaler Download blockiert</translation>
 <translation id="5821565227679781414">Verknüpfung erstellen</translation>
 <translation id="5824976764713185207">Seite automatisch lesen, wenn sie vollständig geladen ist</translation>
 <translation id="5825412242012995131">An (empfohlen)</translation>
@@ -9776,6 +9777,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7684212569183643648">Von deinem Administrator installiert</translation>
 <translation id="7684559058815332124">Captive Portal-Anmeldeseite besuchen</translation>
 <translation id="7684718995427157417">Aktiviere zum Erstellen und Testen deiner Apps Android Debug Bridge (ADB). Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
+<translation id="7684803937028953000">Deine Organisation hat den lokalen Download dieser Datei blockiert.</translation>
 <translation id="7684913007876670600">Wenn du diese Seite in einer vereinfachten Ansicht sehen möchtest, öffne die Seitenleiste und wähle den Lesemodus aus</translation>
 <translation id="7685038817958445325">Streamen nicht möglich</translation>
 <translation id="7685049629764448582">JavaScript-Speicher</translation>

@@ -7089,6 +7089,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5817963443108180228">Üdvözöljük ismét, kedves <ph name="PROFILE_NAME" />!</translation>
 <translation id="5818161931099046557">Szerkesztés a Google-fiókban</translation>
 <translation id="581911254119283028">minden alkalmazás</translation>
+<translation id="5820751560028604030">Helyi letöltés letiltva</translation>
 <translation id="5821565227679781414">Parancsikon létrehozása</translation>
 <translation id="5824976764713185207">Oldal automatikus felolvasása a betöltés befejezése után</translation>
 <translation id="5825412242012995131">Be (javasolt)</translation>
@@ -9797,6 +9798,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="7684212569183643648">A rendszergazda telepítette</translation>
 <translation id="7684559058815332124">Hitelesítési portál bejelentkezési oldalának felkeresése</translation>
 <translation id="7684718995427157417">Alkalmazások létrehozásához és teszteléséhez engedélyezze az Android Debug Bridge (ADB) eszközt. Ne feledje, hogy ez a művelet engedélyezi a Google által nem jóváhagyott Android-alkalmazások telepítését, és az eszköz letiltásához szükség van az eszköz gyári beállításainak visszaállítására.</translation>
+<translation id="7684803937028953000">Szervezete letiltotta ennek a fájlnak a helyi letöltését.</translation>
 <translation id="7684913007876670600">Az oldal egyszerűsített nézetének megjelenítéséhez nyissa meg az oldalsó panelt, és válassza az Olvasási módot</translation>
 <translation id="7685038817958445325">Átküldés sikertelen</translation>
 <translation id="7685049629764448582">JavaScript memória</translation>

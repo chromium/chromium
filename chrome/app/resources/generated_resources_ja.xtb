@@ -7062,6 +7062,7 @@
 <translation id="5817963443108180228">おかえりなさい、<ph name="PROFILE_NAME" /> さん</translation>
 <translation id="5818161931099046557">Google アカウントで編集</translation>
 <translation id="581911254119283028">すべてのアプリケーション</translation>
+<translation id="5820751560028604030">ローカルへのダウンロードがブロックされました</translation>
 <translation id="5821565227679781414">ショートカットを作成</translation>
 <translation id="5824976764713185207">ページの読み込み後、自動的に読み上げを開始する</translation>
 <translation id="5825412242012995131">オン（推奨）</translation>
@@ -9769,6 +9770,7 @@
 <translation id="7684212569183643648">管理者によりインストールされています</translation>
 <translation id="7684559058815332124">キャプティブ ポータルのログインページにアクセス</translation>
 <translation id="7684718995427157417">アプリを作成してテストするには、Android Debug Bridge（ADB）を有効にします。この操作を行うと、Google が確認していない Android アプリのインストールが許可されます。無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
+<translation id="7684803937028953000">このファイルのローカル ダウンロードは組織によってブロックされています。</translation>
 <translation id="7684913007876670600">このページの簡易版を表示するには、サイドパネルを開いて [リーディング モード] を選択します</translation>
 <translation id="7685038817958445325">キャストできません</translation>
 <translation id="7685049629764448582">JavaScript メモリ</translation>

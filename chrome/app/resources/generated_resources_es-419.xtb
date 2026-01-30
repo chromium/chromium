@@ -7074,6 +7074,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5817963443108180228">Te damos la bienvenida nuevamente, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Editar en la Cuenta de Google</translation>
 <translation id="581911254119283028">todas las aplicaciones</translation>
+<translation id="5820751560028604030">Se bloqueó la descarga local</translation>
 <translation id="5821565227679781414">Crear acceso directo</translation>
 <translation id="5824976764713185207">Leer la página automáticamente después de que termina de cargarse</translation>
 <translation id="5825412242012995131">Activado (recomendado)</translation>
@@ -9783,6 +9784,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7684212569183643648">Instalado por el administrador</translation>
 <translation id="7684559058815332124">Visitar la página de acceso al portal cautivo</translation>
 <translation id="7684718995427157417">Si quieres crear y probar apps, habilita Android Debug Bridge (ADB). Ten en cuenta que esta acción permite la instalación de apps para Android que Google no verificó. Si quieres inhabilitar ADB, deberás restablecer la configuración de fábrica.</translation>
+<translation id="7684803937028953000">Tu organización bloqueó la descarga local de este archivo.</translation>
 <translation id="7684913007876670600">Para mostrar una vista simplificada de esta página, abre el panel lateral y selecciona Modo de lectura</translation>
 <translation id="7685038817958445325">No es posible transmitir contenido</translation>
 <translation id="7685049629764448582">Memoria usada por JavaScript</translation>

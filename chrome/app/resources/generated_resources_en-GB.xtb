@@ -7090,6 +7090,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5817963443108180228">Welcome back, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Edit in Google Account</translation>
 <translation id="581911254119283028">All applications</translation>
+<translation id="5820751560028604030">Local download blocked</translation>
 <translation id="5821565227679781414">Create Shortcut</translation>
 <translation id="5824976764713185207">Automatically read page after it finishes loading</translation>
 <translation id="5825412242012995131">On (recommended)</translation>
@@ -9799,6 +9800,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="7684212569183643648">Installed by Your Administrator</translation>
 <translation id="7684559058815332124">Visit captive portal login page</translation>
 <translation id="7684718995427157417">To create and test your apps, enable the Android Debug Bridge (ADB). Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.</translation>
+<translation id="7684803937028953000">Your organisation blocked the local download of this file.</translation>
 <translation id="7684913007876670600">To show a simplified view of this page, open the side panel and select Reading mode</translation>
 <translation id="7685038817958445325">Unable to cast</translation>
 <translation id="7685049629764448582">JavaScript memory</translation>

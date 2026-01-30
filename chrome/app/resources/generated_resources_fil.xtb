@@ -7091,6 +7091,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5817963443108180228">Maligayang pagbabalik, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">I-edit sa Google Account</translation>
 <translation id="581911254119283028">lahat ng application</translation>
+<translation id="5820751560028604030">Na-block ang lokal na pag-download</translation>
 <translation id="5821565227679781414">Lumikha ng Shortcut</translation>
 <translation id="5824976764713185207">Awtomatikong basahin ang page pagkatapos nitong mag-load</translation>
 <translation id="5825412242012995131">Naka-on (inirerekomenda)</translation>
@@ -9802,6 +9803,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="7684212569183643648">Na-install ng Iyong Administrator</translation>
 <translation id="7684559058815332124">Bisitahin ang page ng login ng captive portal</translation>
 <translation id="7684718995427157417">Para gumawa at subukan ang iyong mga app, i-enable ang Android Debug Bridge (ADB). Tandaang binibigyang-daan ng pagkilos na ito ang pag-install ng mga Android app na hindi pa na-verify ng Google, at nangangailangan ito ng factory reset para ma-disable.</translation>
+<translation id="7684803937028953000">Na-block ng iyong organisasyon ang lokal na pag-download ng file na ito.</translation>
 <translation id="7684913007876670600">Para magpakita ng pinasimpleng view ng page na ito, buksan ang panel sa gilid at piliin ang Reading mode</translation>
 <translation id="7685038817958445325">Hindi makapag-cast</translation>
 <translation id="7685049629764448582">Memorya sa JavaScript</translation>

@@ -7080,6 +7080,7 @@
 <translation id="5817963443108180228"><ph name="PROFILE_NAME" />，歡迎回來</translation>
 <translation id="5818161931099046557">在 Google 帳戶中編輯</translation>
 <translation id="581911254119283028">所有應用程式</translation>
+<translation id="5820751560028604030">已封鎖本機下載</translation>
 <translation id="5821565227679781414">建立捷徑</translation>
 <translation id="5824976764713185207">網頁載入完成後自動朗讀網頁內容</translation>
 <translation id="5825412242012995131">啟用 (建議設定)</translation>
@@ -9785,6 +9786,7 @@
 <translation id="7684212569183643648">已由管理員安裝</translation>
 <translation id="7684559058815332124">前往網頁驗證入口登入網頁</translation>
 <translation id="7684718995427157417">如要建立並測試您的應用程式，請啟用「Android 偵錯橋接器」(ADB)。請注意，此操作允許安裝未經 Google 驗證的 Android 應用程式，並且需要恢復原廠設定才能停用。</translation>
+<translation id="7684803937028953000">你的機構禁止在本機下載此檔案。</translation>
 <translation id="7684913007876670600">如要簡化此頁面，請開啟側面板並選取 [閱讀模式]</translation>
 <translation id="7685038817958445325">無法投放</translation>
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>

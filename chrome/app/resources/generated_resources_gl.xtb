@@ -7077,6 +7077,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5817963443108180228">Dámosche a benvida de novo, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Editar na Conta de Google</translation>
 <translation id="581911254119283028">todas as aplicacións</translation>
+<translation id="5820751560028604030">Bloqueouse a descarga local</translation>
 <translation id="5821565227679781414">Crear atallo</translation>
 <translation id="5824976764713185207">Ler páxina automaticamente cando remate de cargar</translation>
 <translation id="5825412242012995131">Activado (recomendado)</translation>
@@ -9784,6 +9785,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="7684212569183643648">Extensión instalada polo administrador</translation>
 <translation id="7684559058815332124">Visitar a páxina de inicio de sesión do portal cautivo</translation>
 <translation id="7684718995427157417">Activa Android Debug Bridge (ADB) para poder crear e probar as túas aplicacións. Ten en conta que esta acción permite a instalación de aplicacións para Android non verificadas por Google e que require un restablecemento dos valores de fábrica para desactivarse.</translation>
+<translation id="7684803937028953000">A túa organización bloqueou a descarga local deste ficheiro.</translation>
 <translation id="7684913007876670600">Para mostrar unha vista simplificada desta páxina, abre o panel lateral e selecciona o modo de lectura</translation>
 <translation id="7685038817958445325">Non se puido levar a cabo a emisión</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>

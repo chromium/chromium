@@ -7092,6 +7092,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5817963443108180228">Que bom que você voltou, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Editar na Conta do Google</translation>
 <translation id="581911254119283028">todos os apps</translation>
+<translation id="5820751560028604030">Download local bloqueado</translation>
 <translation id="5821565227679781414">Criar atalho</translation>
 <translation id="5824976764713185207">Ler página automaticamente após o fim do carregamento</translation>
 <translation id="5825412242012995131">Ativado (recomendado)</translation>
@@ -9803,6 +9804,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="7684212569183643648">Instalada pelo administrador</translation>
 <translation id="7684559058815332124">Visitar a página de login do portal cativo</translation>
 <translation id="7684718995427157417">Para criar e testar seus apps, ative o Android Debug Bridge (ADB). Essa ação permite a instalação de apps Android que não foram verificados pelo Google. Para desativá-lo, será necessária uma redefinição para a configuração original.</translation>
+<translation id="7684803937028953000">Sua organização bloqueou o download local deste arquivo.</translation>
 <translation id="7684913007876670600">Para mostrar uma visualização simplificada desta página, abra o painel lateral e selecione o modo de leitura</translation>
 <translation id="7685038817958445325">Não foi possível transmitir</translation>
 <translation id="7685049629764448582">Memória JavaScript</translation>

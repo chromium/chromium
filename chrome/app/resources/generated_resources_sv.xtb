@@ -7090,6 +7090,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5817963443108180228">Välkommen tillbaka, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Redigera i Google-kontot</translation>
 <translation id="581911254119283028">alla appar</translation>
+<translation id="5820751560028604030">Lokal nedladdning har blockerats</translation>
 <translation id="5821565227679781414">Skapa genväg</translation>
 <translation id="5824976764713185207">Läs upp sidan automatiskt när den har lästs in</translation>
 <translation id="5825412242012995131">På (rekommenderas)</translation>
@@ -9799,6 +9800,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="7684212569183643648">Har installerats av administratören</translation>
 <translation id="7684559058815332124">Besök captive-portalens inloggningssida</translation>
 <translation id="7684718995427157417">Aktivera Androids felsökningsbrygga (ADB) om du vill skapa och testa appar. Observera att den här åtgärden tillåter att Android-appar som inte har verifierats av Google installeras. Du måste återställa enheten till standardinställningarna för att inaktivera detta.</translation>
+<translation id="7684803937028953000">Organisationen har blockerat lokal nedladdning av den här filen.</translation>
 <translation id="7684913007876670600">Om du vill visa en förenklad vy av den här sidan öppnar du sidopanelen och väljer Läsläge</translation>
 <translation id="7685038817958445325">Det gick inte att casta</translation>
 <translation id="7685049629764448582">JavaScript-minne</translation>

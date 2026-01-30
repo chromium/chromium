@@ -7092,6 +7092,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5817963443108180228">Velkommen tilbage, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Rediger på Google-kontoen</translation>
 <translation id="581911254119283028">alle apps</translation>
+<translation id="5820751560028604030">Lokal download er blokeret</translation>
 <translation id="5821565227679781414">Opret genvej</translation>
 <translation id="5824976764713185207">Læs automatisk siden, når den er indlæst</translation>
 <translation id="5825412242012995131">Til (anbefales)</translation>
@@ -9803,6 +9804,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="7684212569183643648">Installeret af din administrator</translation>
 <translation id="7684559058815332124">Gå til loginsiden for captive portal</translation>
 <translation id="7684718995427157417">Hvis du vil oprette og teste dine apps, skal du aktivere Android Debug Bridge (ADB). Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet verificeret af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
+<translation id="7684803937028953000">Din organisation har blokeret den lokale download af denne fil.</translation>
 <translation id="7684913007876670600">Du kan se en enkel visning af denne side ved at åbne sidepanelet og vælge Læsetilstand</translation>
 <translation id="7685038817958445325">Det var ikke muligt at caste</translation>
 <translation id="7685049629764448582">JavaScript-hukommelse</translation>

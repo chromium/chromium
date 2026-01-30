@@ -7072,6 +7072,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5817963443108180228">Et donem la benvinguda de nou, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Edita al Compte de Google</translation>
 <translation id="581911254119283028">totes les aplicacions</translation>
+<translation id="5820751560028604030">S'ha bloquejat la baixada local</translation>
 <translation id="5821565227679781414">Crea una drecera</translation>
 <translation id="5824976764713185207">Llegeix la pàgina automàticament quan s'acabi de carregar</translation>
 <translation id="5825412242012995131">Activat (opció recomanada)</translation>
@@ -9780,6 +9781,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7684212569183643648">Extensió instal·lada per l'administrador</translation>
 <translation id="7684559058815332124">Accedeix a la pàgina d'inici de sessió del portal captiu</translation>
 <translation id="7684718995427157417">Per crear aplicacions i provar-les, activa Android Debug Bridge (ADB). Tingues en compte que aquesta acció permet instal·lar aplicacions d'Android que Google no ha verificat. Per desactivar ADB, hauràs de restablir la configuració de fàbrica del dispositiu.</translation>
+<translation id="7684803937028953000">La teva organització ha bloquejat la baixada local d'aquest fitxer.</translation>
 <translation id="7684913007876670600">Per mostrar una visualització simplificada d'aquesta pàgina, obre el tauler lateral i selecciona el mode de lectura</translation>
 <translation id="7685038817958445325">No es pot emetre</translation>
 <translation id="7685049629764448582">Memòria de JavaScript </translation>

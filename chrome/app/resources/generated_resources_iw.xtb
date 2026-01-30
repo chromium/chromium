@@ -7090,6 +7090,7 @@
 <translation id="5817963443108180228">שמחים שחזרת, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">‏עריכה בחשבון Google</translation>
 <translation id="581911254119283028">כל האפליקציות</translation>
+<translation id="5820751560028604030">הורדה מקומית נחסמה</translation>
 <translation id="5821565227679781414">יצירת קיצור דרך</translation>
 <translation id="5824976764713185207">הקראת הדף באופן אוטומטי אחרי שהטעינה שלו מסתיימת</translation>
 <translation id="5825412242012995131">מופעל (מומלץ)</translation>
@@ -9803,6 +9804,7 @@
 <translation id="7684212569183643648">הותקן על ידי מנהל המערכת שלך</translation>
 <translation id="7684559058815332124">מעבר אל דף ההתחברות לפורטל החובה</translation>
 <translation id="7684718995427157417">‏כדי ליצור ולבדוק אפליקציות, יש להפעיל את ממשק הגישור של Android‏ (ADB). הערה: לאחר ביצוע הפעולה הזו יתאפשר להתקין אפליקציות ל-Android שלא אומתו על-ידי Google. כמו כן, כדי להשבית את התכונה, יש לאפס את המכשיר להגדרות היצרן.</translation>
+<translation id="7684803937028953000">הארגון שלך חסם את ההורדה המקומית של הקובץ הזה.</translation>
 <translation id="7684913007876670600">כדי להציג תצוגה פשוטה יותר של הדף הזה, פותחים את החלונית הצדדית ובוחרים באפשרות 'מצב קריאה'</translation>
 <translation id="7685038817958445325">‏לא ניתן להפעיל Cast</translation>
 <translation id="7685049629764448582">‏זיכרון JavaScript</translation>

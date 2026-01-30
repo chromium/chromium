@@ -7079,6 +7079,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5817963443108180228">Damos-lhe as boas-vindas de volta, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Editar na Conta Google</translation>
 <translation id="581911254119283028">todas as aplicações</translation>
+<translation id="5820751560028604030">Transferência local bloqueada</translation>
 <translation id="5821565227679781414">Criar Atalho</translation>
 <translation id="5824976764713185207">Ler automaticamente a página depois de ser carregada</translation>
 <translation id="5825412242012995131">Ativado (recomendado)</translation>
@@ -9788,6 +9789,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="7684212569183643648">Instalada pelo gestor</translation>
 <translation id="7684559058815332124">Aceder à página de início de sessão do portal cativo</translation>
 <translation id="7684718995427157417">Para criar e testar aplicações, ative o Bridge de depuração do Android (adb). Tenha em atenção que esta ação permite a instalação de aplicações para Android que não foram validadas pela Google. Além disso, se pretender desativar o adb, terá de efetuar uma reposição de dados de fábrica.</translation>
+<translation id="7684803937028953000">A sua organização bloqueou a transferência local deste ficheiro.</translation>
 <translation id="7684913007876670600">Para ver uma vista simplificada desta página, abra o painel lateral e selecione Modo de leitura</translation>
 <translation id="7685038817958445325">Não é possível transmitir</translation>
 <translation id="7685049629764448582">Memória JavaScript</translation>

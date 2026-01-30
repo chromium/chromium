@@ -7074,6 +7074,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5817963443108180228">Dobro došli nazad, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Izmeni na Google nalogu</translation>
 <translation id="581911254119283028">sve aplikacije</translation>
+<translation id="5820751560028604030">Lokalno preuzimanje je blokirano</translation>
 <translation id="5821565227679781414">Napravi prečicu</translation>
 <translation id="5824976764713185207">Automatski pročitaj stranicu kada završi sa učitavanjem</translation>
 <translation id="5825412242012995131">Uključeno (preporučeno)</translation>
@@ -9787,6 +9788,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="7684212569183643648">Instalirao je administrator</translation>
 <translation id="7684559058815332124">Poseti stranicu za prijavljivanje ulaznog portala</translation>
 <translation id="7684718995427157417">Da biste pravili i testirali aplikacije, omogućite Android Debug Bridge (ADB). Imajte na umu da ova radnja omogućava instaliranje Android aplikacija koje Google nije verifikovao i zahteva resetovanje na fabrička podešavanja da bi se onemogućila.</translation>
+<translation id="7684803937028953000">Organizacija je blokirala lokalno preuzimanje ovog fajla.</translation>
 <translation id="7684913007876670600">Da biste videli pojednostavljeni prikaz ove stranice, otvorite bočnu tablu i izaberite Režim čitanja</translation>
 <translation id="7685038817958445325">Prebacivanje nije uspelo</translation>
 <translation id="7685049629764448582">JavaScript memorija</translation>

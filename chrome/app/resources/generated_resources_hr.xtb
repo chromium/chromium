@@ -7075,6 +7075,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5817963443108180228">Dobro došli natrag, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Uredite na Google računu</translation>
 <translation id="581911254119283028">sve aplikacije</translation>
+<translation id="5820751560028604030">Lokalno preuzimanje je blokirano</translation>
 <translation id="5821565227679781414">Stvori prečac</translation>
 <translation id="5824976764713185207">Automatski pročitaj stranicu kad se učita</translation>
 <translation id="5825412242012995131">Uključeno (preporučeno)</translation>
@@ -9787,6 +9788,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7684212569183643648">Instalirao vaš administrator</translation>
 <translation id="7684559058815332124">Posjeti stranicu za prijavu na obaveznom portalu za autentifikaciju</translation>
 <translation id="7684718995427157417">Da biste izrađivali i testirali aplikacije, omogućite Android Debug Bridge (ADB). Napominjemo da se time omogućuje instaliranje Android aplikacija koje Google nije potvrdio i da je za onemogućivanje potrebno vraćanje na tvorničke postavke.</translation>
+<translation id="7684803937028953000">Vaša je organizacija blokirala lokalno preuzimanje ove datoteke.</translation>
 <translation id="7684913007876670600">Da biste prikazali pojednostavljeni prikaz stranice, otvorite bočnu ploču i odaberite Čitački način</translation>
 <translation id="7685038817958445325">Emitiranje nije uspjelo</translation>
 <translation id="7685049629764448582">Memorija JavaScripta</translation>

@@ -7077,6 +7077,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5817963443108180228">Vitajte späť, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Upraviť v účte Google</translation>
 <translation id="581911254119283028">všetky aplikácie</translation>
+<translation id="5820751560028604030">Miestne sťahovanie bolo zablokované</translation>
 <translation id="5821565227679781414">Vytvoriť odkaz</translation>
 <translation id="5824976764713185207">Po načítaní stránku automaticky prečítať</translation>
 <translation id="5825412242012995131">Zapnuté (odporúča sa)</translation>
@@ -9789,6 +9790,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="7684212569183643648">Nainštalované vaším správcom</translation>
 <translation id="7684559058815332124">Prejsť na prihlasovaciu stránku portálu na prihlásenie</translation>
 <translation id="7684718995427157417">Ak chcete vytvárať a testovať aplikácie, aktivujte Android Debug Bridge (ADB). Upozorňujeme, že touto akciou umožníte inštalácie aplikácií pre Android, ktoré Google neoveril, a deaktivácia vyžaduje obnovenie výrobných nastavení.</translation>
+<translation id="7684803937028953000">Vaša organizácia zablokovala miestne sťahovanie tohto súboru.</translation>
 <translation id="7684913007876670600">Ak chcete prepnúť na zjednodušené zobrazenie tejto stránky, otvorte bočný panel a vyberte režim čítania</translation>
 <translation id="7685038817958445325">Nedá sa prenášať</translation>
 <translation id="7685049629764448582">Pamäť jazyka JavaScript</translation>

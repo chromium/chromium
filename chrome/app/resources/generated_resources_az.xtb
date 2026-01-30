@@ -7078,6 +7078,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5817963443108180228">Təkrar xoş gəldiniz, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Google Hesabında redaktə edin</translation>
 <translation id="581911254119283028">bütün tətbiqlər</translation>
+<translation id="5820751560028604030">Lokal endirmə bloklandı</translation>
 <translation id="5821565227679781414">Qısayol Yaradın</translation>
 <translation id="5824976764713185207">Yüklənmə başa çatdıqdan sonra səhifəni avtomatik oxuyun</translation>
 <translation id="5825412242012995131">Aktiv (Tövsiyə edilir)</translation>
@@ -9784,6 +9785,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7684212569183643648">Administratorunuz tərəfindən quraşdırılıb</translation>
 <translation id="7684559058815332124">Kaptiv portal login səhifəsinə keçin</translation>
 <translation id="7684718995427157417">Yaratmaq və tətbiqlərinizi sınamaq üçün Android Debug Bridge'i (ADB) aktiv edin. Nəzərə alın ki, bu əməliyyat Google tərəfindən doğrulanmamış Android tətbiqlərinin quraşdırılmasına icazə verir və deaktiv etmək üçün zavod ayarlarının bərpasını tələb edir.</translation>
+<translation id="7684803937028953000">Təşkilat bu faylın lokal olaraq endirilməsini blokladı.</translation>
 <translation id="7684913007876670600">Bu səhifənin sadə görünüşü üçün yan paneli açın və Oxu rejimini seçin</translation>
 <translation id="7685038817958445325">Yayımlamaq olmur</translation>
 <translation id="7685049629764448582">JavaScript yaddaşı</translation>

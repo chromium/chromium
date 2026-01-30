@@ -7054,6 +7054,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5817963443108180228">Witamy z powrotem, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Edytuj na koncie Google</translation>
 <translation id="581911254119283028">wszystkie aplikacje</translation>
+<translation id="5820751560028604030">Pobieranie lokalne zablokowane</translation>
 <translation id="5821565227679781414">Utwórz skrót</translation>
 <translation id="5824976764713185207">Automatycznie zacznij czytać stronę po jej załadowaniu</translation>
 <translation id="5825412242012995131">Włącz (zalecane)</translation>
@@ -9764,6 +9765,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="7684212569183643648">Zainstalowane przez administratora</translation>
 <translation id="7684559058815332124">Wejdź na stronę logowania na portalu przechwytującym</translation>
 <translation id="7684718995427157417">Aby utworzyć i przetestować swoje aplikacje, włącz Android Debug Bridge (ADB). Pamiętaj, że to działanie wiąże się z zezwoleniem na instalowanie aplikacji na Androida, które nie zostały zweryfikowane przez Google, a do wyłączenia tej funkcji konieczne jest przywrócenie ustawień fabrycznych.</translation>
+<translation id="7684803937028953000">Twoja organizacja zablokowała lokalne pobieranie tego pliku.</translation>
 <translation id="7684913007876670600">Aby wyświetlić uproszczony widok tej strony, otwórz panel boczny i wybierz Tryb czytania</translation>
 <translation id="7685038817958445325">Nie można przesyłać treści</translation>
 <translation id="7685049629764448582">Pamięć JavaScript</translation>

@@ -7072,6 +7072,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5817963443108180228">Vítejte zpět, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Upravit v účtu Google</translation>
 <translation id="581911254119283028">všechny aplikace</translation>
+<translation id="5820751560028604030">Místní stahování bylo zablokováno</translation>
 <translation id="5821565227679781414">Vytvořit zástupce</translation>
 <translation id="5824976764713185207">Po načtení stránku automaticky přečíst</translation>
 <translation id="5825412242012995131">Zapnout (doporučeno)</translation>
@@ -9783,6 +9784,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="7684212569183643648">Nainstaloval váš administrátor</translation>
 <translation id="7684559058815332124">Navštívit přihlašovací stránku captive portálu</translation>
 <translation id="7684718995427157417">Chcete-li vytvořit a otestovat aplikace, zapněte Android Debug Bridge (ADB). Upozorňujeme, že tato akce povoluje instalaci aplikací pro Android, které Google neověřil, a že je k její deaktivaci potřeba obnovení továrního nastavení.</translation>
+<translation id="7684803937028953000">Vaše organizace místní stažení tohoto souboru zablokovala.</translation>
 <translation id="7684913007876670600">Pokud chcete zobrazit zjednodušené zobrazení této stránky, otevřete boční panel a vyberte možnost Režim čtení</translation>
 <translation id="7685038817958445325">Nelze odesílat</translation>
 <translation id="7685049629764448582">Paměť JavaScriptu</translation>

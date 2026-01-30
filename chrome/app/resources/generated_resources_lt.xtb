@@ -7094,6 +7094,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5817963443108180228">Sveiki sugrįžę, <ph name="PROFILE_NAME" />!</translation>
 <translation id="5818161931099046557">Redaguoti „Google“ paskyroje</translation>
 <translation id="581911254119283028">visos programos</translation>
+<translation id="5820751560028604030">Vietinis atsisiuntimas užblokuotas</translation>
 <translation id="5821565227679781414">Sukurti šaukinį</translation>
 <translation id="5824976764713185207">Automatiškai nuskaityti puslapį po to, kai baigiamas jo įkėlimas</translation>
 <translation id="5825412242012995131">Įjungta (rekomenduojama)</translation>
@@ -9809,6 +9810,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="7684212569183643648">Įdiegė jūsų administratorius</translation>
 <translation id="7684559058815332124">Apsilankyti fiksuotojo portalo prisijungimo puslapyje</translation>
 <translation id="7684718995427157417">Kad galėtumėte kurti ir testuoti programas, įgalinkite „Android“ derinimo tiltą (ADB). Atminkite, kad atlikus šį veiksmą bus leidžiama įdiegti „Android“ programas, kurios nebuvo patvirtintos „Google“, o norint išjungti ADB, reikės atkurti gamyklinius nustatymus.</translation>
+<translation id="7684803937028953000">Jūsų organizacija užblokavo vietinį šio failo atsisiuntimą.</translation>
 <translation id="7684913007876670600">Jei norite, kad būtų rodomas supaprastintas šio puslapio rodinys, atidarykite šoninį skydelį ir pasirinkite skaitymo režimą</translation>
 <translation id="7685038817958445325">Nepavyksta perduoti</translation>
 <translation id="7685049629764448582">„JavaScript“ atmintis</translation>

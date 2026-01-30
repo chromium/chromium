@@ -7078,6 +7078,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5817963443108180228">Bon retour, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Modifier dans le compte Google</translation>
 <translation id="581911254119283028">toutes les applications</translation>
+<translation id="5820751560028604030">Téléchargement local bloqué</translation>
 <translation id="5821565227679781414">Créer un raccourci</translation>
 <translation id="5824976764713185207">Lire automatiquement la page une fois son chargement terminé</translation>
 <translation id="5825412242012995131">Activé (recommandé)</translation>
@@ -9788,6 +9789,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="7684212569183643648">Élément installé par votre administrateur</translation>
 <translation id="7684559058815332124">Consulter la page de connexion au portail captif</translation>
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez le pont de débogage Android (PDA). Prenez note que cette action permet d'installer des applications Android qui n'ont pas été vérifiées par Google. Pour désactiver cette fonctionnalité, vous devrez réinitialiser l'appareil.</translation>
+<translation id="7684803937028953000">Votre organisation a bloqué le téléchargement local de ce fichier.</translation>
 <translation id="7684913007876670600">Pour afficher une vue simplifiée de cette page, ouvrez le panneau latéral et sélectionnez Mode de lecture</translation>
 <translation id="7685038817958445325">Diffusion impossible</translation>
 <translation id="7685049629764448582">Mémoire pour JavaScript</translation>

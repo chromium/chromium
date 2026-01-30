@@ -7095,6 +7095,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5817963443108180228">Dobrodošli nazaj, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Urejanje v računu Google</translation>
 <translation id="581911254119283028">vse aplikacije</translation>
+<translation id="5820751560028604030">Lokalni prenos je blokiran</translation>
 <translation id="5821565227679781414">Ustvari bližnjico</translation>
 <translation id="5824976764713185207">Samodejno branje strani po dokončanju nalaganja</translation>
 <translation id="5825412242012995131">Vklop (priporočeno)</translation>
@@ -9810,6 +9811,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="7684212569183643648">Namestil skrbnik</translation>
 <translation id="7684559058815332124">Odpri prijavno stran prestreznega portala</translation>
 <translation id="7684718995427157417">Če želite ustvarjati in preizkušati aplikacije, omogočite most za odpravljanje težav s sistemom Android (ADB). Upoštevajte, da to dejanje omogoča namestitev aplikacij za Android, ki jih ni preveril Google, če želite orodje onemogočiti, pa je potrebna tovarniško ponastavitev.</translation>
+<translation id="7684803937028953000">Vaša organizacija je blokirala lokalni prenos te datoteke.</translation>
 <translation id="7684913007876670600">Za prikaz poenostavljenega pogleda te strani odprite stransko podokno in izberite način za branje</translation>
 <translation id="7685038817958445325">Ni mogoče predvajati</translation>
 <translation id="7685049629764448582">Pomnilnik za JavaScript</translation>

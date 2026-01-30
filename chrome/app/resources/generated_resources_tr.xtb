@@ -7073,6 +7073,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5817963443108180228">Tekrar hoş geldiniz <ph name="PROFILE_NAME" />,</translation>
 <translation id="5818161931099046557">Google Hesabı'nda düzenle</translation>
 <translation id="581911254119283028">tüm uygulamalar</translation>
+<translation id="5820751560028604030">Yerel indirme engellendi</translation>
 <translation id="5821565227679781414">Kısayol Oluştur</translation>
 <translation id="5824976764713185207">Yüklenmesi bittikten sonra sayfayı otomatik olarak oku</translation>
 <translation id="5825412242012995131">Açık (Önerilen)</translation>
@@ -9781,6 +9782,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="7684212569183643648">Yöneticiniz Tarafından Yüklendi</translation>
 <translation id="7684559058815332124">Giriş portalı giriş sayfasını ziyaret et</translation>
 <translation id="7684718995427157417">Uygulama oluşturup test etmek için Android Debug Bridge'i (ADB) etkinleştirin. Bu işlemin Google tarafından doğrulanmamış Android uygulamasının yüklenmesine izin verdiğini ve devre dışı bırakmak için fabrika ayarlarına sıfırlama işlemi yapılması gerektirdiğini unutmayın.</translation>
+<translation id="7684803937028953000">Kuruluşunuz bu dosyanın yerel olarak indirilmesini engelledi.</translation>
 <translation id="7684913007876670600">Bu sayfanın basitleştirilmiş bir görünümünü göstermek için yan paneli açıp Okuma modu'nu seçin</translation>
 <translation id="7685038817958445325">Yayınlanamıyor</translation>
 <translation id="7685049629764448582">JavaScript belleği</translation>

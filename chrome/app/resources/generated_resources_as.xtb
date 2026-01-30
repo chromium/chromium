@@ -7087,6 +7087,7 @@
 <translation id="5817963443108180228">পুনৰ স্বাগতম, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Google একাউণ্টত সম্পাদনা কৰক</translation>
 <translation id="581911254119283028">আটাইবোৰ এপ্লিকেশ্বন</translation>
+<translation id="5820751560028604030">স্থানীয় ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="5821565227679781414">শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="5824976764713185207">ল’ড কৰা সম্পূৰ্ণ হ’লে পৃষ্ঠাখন স্বয়ংক্ৰিয়ভাৱে পঢ়ক</translation>
 <translation id="5825412242012995131">অন কৰক (আমি চুপাৰিছ কৰোঁ)</translation>
@@ -9797,6 +9798,7 @@
 <translation id="7684212569183643648">আপোনাৰ প্ৰশাসকে ইনষ্টল কৰিছে</translation>
 <translation id="7684559058815332124">কেপটিভ প’ৰ্টেলত লগ ইন কৰা পৃষ্ঠালৈ যাওক</translation>
 <translation id="7684718995427157417">আপোনাৰ এপ্‌সমূহ সৃষ্টি আৰু পৰীক্ষা কৰিবলৈ Android Debug Bridge (ADB) সক্ষম কৰক। মন কৰক যে এই কাৰ্যটোৱে Googleএ সত্যাপন নকৰা Android এপ্‌সমূহ ইনষ্টল কৰিবলৈ অনুমতি দিয়ে আৰু ইয়াক অক্ষম কৰিবলৈ ফেক্টৰী ৰিছেট কৰাৰ আৱশ্যক।</translation>
+<translation id="7684803937028953000">আপোনাৰ প্ৰতিষ্ঠানে এই ফাইলটোৰ স্থানীয় ডাউনল’ড অৱৰোধ কৰিছে।</translation>
 <translation id="7684913007876670600">এই পৃষ্ঠাখনৰ এটা সৰলীকৃত ভিউ দেখুৱাবলৈ, ছাইডৰ পেনেল খোলক আৰু পঢ়াৰ ম’ডটো বাছনি কৰক</translation>
 <translation id="7685038817958445325">কাষ্ট কৰিব পৰা নগ’ল</translation>
 <translation id="7685049629764448582">JavaScript মেম’ৰী</translation>

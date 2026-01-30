@@ -7090,6 +7090,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5817963443108180228">Selamat datang kembali, <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Edit di Akun Google</translation>
 <translation id="581911254119283028">semua aplikasi</translation>
+<translation id="5820751560028604030">Download lokal diblokir</translation>
 <translation id="5821565227679781414">Buat Pintasan</translation>
 <translation id="5824976764713185207">Baca halaman secara otomatis setelah selesai dimuat</translation>
 <translation id="5825412242012995131">Aktif (Direkomendasikan)</translation>
@@ -9798,6 +9799,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="7684212569183643648">Dipasang oleh Administrator Anda</translation>
 <translation id="7684559058815332124">Kunjungi halaman masuk portal tawanan</translation>
 <translation id="7684718995427157417">Untuk membuat dan menguji aplikasi, aktifkan Android Debug Bridge (ADB). Perhatikan bahwa tindakan ini dapat menginstal aplikasi Android yang belum diverifikasi oleh Google, dan perlu peresetan ke setelan pabrik untuk menonaktifkannya.</translation>
+<translation id="7684803937028953000">Organisasi Anda memblokir download lokal file ini.</translation>
 <translation id="7684913007876670600">Untuk melihat tampilan sederhana halaman ini, buka panel samping dan pilih Mode baca</translation>
 <translation id="7685038817958445325">Tidak dapat melakukan transmisi</translation>
 <translation id="7685049629764448582">Memori JavaScript</translation>

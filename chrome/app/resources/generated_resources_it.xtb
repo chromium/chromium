@@ -7074,6 +7074,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5817963443108180228">Ti diamo il bentornato <ph name="PROFILE_NAME" /></translation>
 <translation id="5818161931099046557">Modifica nell'Account Google</translation>
 <translation id="581911254119283028">tutte le applicazioni</translation>
+<translation id="5820751560028604030">Download locale bloccato</translation>
 <translation id="5821565227679781414">Crea scorciatoia</translation>
 <translation id="5824976764713185207">Leggi automaticamente la pagina al termine del caricamento</translation>
 <translation id="5825412242012995131">On (opzione consigliata)</translation>
@@ -9782,6 +9783,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7684212569183643648">Installata dall'amministratore</translation>
 <translation id="7684559058815332124">Visita la pagina di accesso del captive portal</translation>
 <translation id="7684718995427157417">Per creare e testare le tue app, attiva Android Debug Bridge (ADB). Tieni presente che questa azione consente l'installazione di app Android che non sono state verificate da Google. Per disattivare la funzionalità è necessario ripristinare le impostazioni di fabbrica.</translation>
+<translation id="7684803937028953000">La tua organizzazione ha bloccato il download locale di questo file.</translation>
 <translation id="7684913007876670600">Per una visualizzazione semplificata di questa pagina, apri il riquadro laterale e seleziona la modalità Lettura</translation>
 <translation id="7685038817958445325">Impossibile trasmettere</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>

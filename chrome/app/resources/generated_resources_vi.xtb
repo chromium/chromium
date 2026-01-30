@@ -7090,6 +7090,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5817963443108180228"><ph name="PROFILE_NAME" /> thân mến, chào mừng bạn quay lại!</translation>
 <translation id="5818161931099046557">Chỉnh sửa trong Tài khoản Google</translation>
 <translation id="581911254119283028">tất cả ứng dụng</translation>
+<translation id="5820751560028604030">Đã chặn tệp tải xuống thiết bị</translation>
 <translation id="5821565227679781414">Tạo lối tắt</translation>
 <translation id="5824976764713185207">Tự động đọc trang sau khi tải xong</translation>
 <translation id="5825412242012995131">Bật (Đề xuất)</translation>
@@ -9801,6 +9802,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7684212569183643648">Do quản trị viên của bạn cài đặt</translation>
 <translation id="7684559058815332124">Truy cập trang đăng nhập cổng bị khóa</translation>
 <translation id="7684718995427157417">Để tạo và thử nghiệm ứng dụng của bạn, hãy bật Cầu gỡ lỗi Android (Android Debug Bridge – ADB). Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>
+<translation id="7684803937028953000">Tổ chức của bạn đã chặn việc tải tệp này xuống thiết bị.</translation>
 <translation id="7684913007876670600">Để hiển thị chế độ xem đơn giản của trang này, hãy mở bảng điều khiển bên rồi chọn Chế độ đọc</translation>
 <translation id="7685038817958445325">Không truyền được</translation>
 <translation id="7685049629764448582">Bộ nhớ JavaScript</translation>

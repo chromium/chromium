@@ -7081,6 +7081,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5817963443108180228">Tere tulemast tagasi, <ph name="PROFILE_NAME" />!</translation>
 <translation id="5818161931099046557">Google'i kontol muutmine</translation>
 <translation id="581911254119283028">kõik rakendused</translation>
+<translation id="5820751560028604030">Kohalik allalaadimine on blokeeritud.</translation>
 <translation id="5821565227679781414">Loo otsetee</translation>
 <translation id="5824976764713185207">Lehte loetakse pärast laadimise lõpetamist automaatselt</translation>
 <translation id="5825412242012995131">Sees (soovitatav)</translation>
@@ -9790,6 +9791,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="7684212569183643648">Selle installis administraator</translation>
 <translation id="7684559058815332124">Külasta kontrollportaali sisselogimislehte</translation>
 <translation id="7684718995427157417">Rakenduste loomiseks ja testimiseks lubage Android Debug Bridge (ADB). Pange tähele, et see toiming võimaldab selliste Androidi rakenduste installimist, mida Google pole kontrollinud, ja tööriista keelamiseks on nõutav tehaseseadetele lähtestamine.</translation>
+<translation id="7684803937028953000">Teie organisatsioon blokeeris selle faili kohaliku allalaadimise.</translation>
 <translation id="7684913007876670600">Selle lehe lihtsustatud vaate kuvamiseks avage külgpaneel ja valige Lugemisrežiim</translation>
 <translation id="7685038817958445325">Ei saa üle kanda</translation>
 <translation id="7685049629764448582">JavaScripti mälu</translation>
