@@ -12,32 +12,37 @@ namespace {
 
 template <typename AlignmentType>
 void AtomicReadMemcpyImpl(void* to, const void* from, size_t bytes) {
+  constexpr size_t kAlignment = sizeof(AlignmentType);
   // Check alignment of |to| and |from|.
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(to)) &
-                    (sizeof(AlignmentType) - 1));
+                    (kAlignment - 1));
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(from)) &
-                    (sizeof(AlignmentType) - 1));
+                    (kAlignment - 1));
   auto* sizet_to = reinterpret_cast<AlignmentType*>(to);
   const auto* sizet_from = reinterpret_cast<const AlignmentType*>(from);
-  for (; bytes >= sizeof(AlignmentType); bytes -= sizeof(AlignmentType),
-                                         UNSAFE_TODO(++sizet_to),
-                                         UNSAFE_TODO(++sizet_from)) {
+  // SAFETY: This is safe if buffers pointed by `to` and `from` have
+  // `bytes` size.
+  for (; bytes >= kAlignment;
+       bytes -= kAlignment, UNSAFE_BUFFERS(++sizet_to, ++sizet_from)) {
     *sizet_to = AsAtomicPtr(sizet_from)->load(std::memory_order_relaxed);
   }
 
   uint32_t* uint32t_to = reinterpret_cast<uint32_t*>(sizet_to);
   const uint32_t* uint32t_from = reinterpret_cast<const uint32_t*>(sizet_from);
-  if (sizeof(AlignmentType) == 8 && bytes >= 4) {
+  if (kAlignment == 8 && bytes >= 4) {
     *uint32t_to = AsAtomicPtr(uint32t_from)->load(std::memory_order_relaxed);
     bytes -= sizeof(uint32_t);
-    UNSAFE_TODO(++uint32t_to);
-    UNSAFE_TODO(++uint32t_from);
+    // SAFETY: This is safe if buffers pointed by `to` and `from` have
+    // `bytes` size.
+    UNSAFE_BUFFERS(++uint32t_to; ++uint32t_from);
   }
 
   uint8_t* uint8t_to = reinterpret_cast<uint8_t*>(uint32t_to);
   const uint8_t* uint8t_from = reinterpret_cast<const uint8_t*>(uint32t_from);
-  for (; bytes > 0; bytes -= sizeof(uint8_t), UNSAFE_TODO(++uint8t_to),
-                    UNSAFE_TODO(++uint8t_from)) {
+  // SAFETY: This is safe if buffers pointed by `to` and `from` have
+  // `bytes` size.
+  for (; bytes > 0;
+       bytes -= sizeof(uint8_t), UNSAFE_BUFFERS(++uint8t_to, ++uint8t_from)) {
     *uint8t_to = AsAtomicPtr(uint8t_from)->load(std::memory_order_relaxed);
   }
   DCHECK_EQ(0u, bytes);
@@ -45,32 +50,37 @@ void AtomicReadMemcpyImpl(void* to, const void* from, size_t bytes) {
 
 template <typename AlignmentType>
 void AtomicWriteMemcpyImpl(void* to, const void* from, size_t bytes) {
+  constexpr size_t kAlignment = sizeof(AlignmentType);
   // Check alignment of |to| and |from|.
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(to)) &
-                    (sizeof(AlignmentType) - 1));
+                    (kAlignment - 1));
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(from)) &
-                    (sizeof(AlignmentType) - 1));
+                    (kAlignment - 1));
   auto* sizet_to = reinterpret_cast<AlignmentType*>(to);
   const auto* sizet_from = reinterpret_cast<const AlignmentType*>(from);
-  for (; bytes >= sizeof(AlignmentType); bytes -= sizeof(AlignmentType),
-                                         UNSAFE_TODO(++sizet_to),
-                                         UNSAFE_TODO(++sizet_from)) {
+  // SAFETY: This is safe if buffers pointed by `to` and `from` have
+  // `bytes` size.
+  for (; bytes >= kAlignment;
+       bytes -= kAlignment, UNSAFE_BUFFERS(++sizet_to, ++sizet_from)) {
     AsAtomicPtr(sizet_to)->store(*sizet_from, std::memory_order_relaxed);
   }
 
   uint32_t* uint32t_to = reinterpret_cast<uint32_t*>(sizet_to);
   const uint32_t* uint32t_from = reinterpret_cast<const uint32_t*>(sizet_from);
-  if (sizeof(AlignmentType) == 8 && bytes >= 4) {
+  if (kAlignment == 8 && bytes >= 4) {
     AsAtomicPtr(uint32t_to)->store(*uint32t_from, std::memory_order_relaxed);
     bytes -= sizeof(uint32_t);
-    UNSAFE_TODO(++uint32t_to);
-    UNSAFE_TODO(++uint32t_from);
+    // SAFETY: This is safe if buffers pointed by `to` and `from` have
+    // `bytes` size.
+    UNSAFE_BUFFERS(++uint32t_to; ++uint32t_from);
   }
 
   uint8_t* uint8t_to = reinterpret_cast<uint8_t*>(uint32t_to);
   const uint8_t* uint8t_from = reinterpret_cast<const uint8_t*>(uint32t_from);
-  for (; bytes > 0; bytes -= sizeof(uint8_t), UNSAFE_TODO(++uint8t_to),
-                    UNSAFE_TODO(++uint8t_from)) {
+  // SAFETY: This is safe if buffers pointed by `to` and `from` have
+  // `bytes` size.
+  for (; bytes > 0;
+       bytes -= sizeof(uint8_t), UNSAFE_BUFFERS(++uint8t_to, ++uint8t_from)) {
     AsAtomicPtr(uint8t_to)->store(*uint8t_from, std::memory_order_relaxed);
   }
   DCHECK_EQ(0u, bytes);
@@ -78,24 +88,28 @@ void AtomicWriteMemcpyImpl(void* to, const void* from, size_t bytes) {
 
 template <typename AlignmentType>
 void AtomicMemzeroImpl(void* buf, size_t bytes) {
+  constexpr size_t kAlignment = sizeof(AlignmentType);
   // Check alignment of |buf|.
   DCHECK_EQ(0u, static_cast<AlignmentType>(reinterpret_cast<size_t>(buf)) &
-                    (sizeof(AlignmentType) - 1));
+                    (kAlignment - 1));
   auto* sizet_buf = reinterpret_cast<AlignmentType*>(buf);
-  for (; bytes >= sizeof(AlignmentType);
-       bytes -= sizeof(AlignmentType), UNSAFE_TODO(++sizet_buf)) {
+  // SAFETY: This is safe if a buffer pointed by `buf` have `bytes` size.
+  for (; bytes >= kAlignment;
+       bytes -= kAlignment, UNSAFE_BUFFERS(++sizet_buf)) {
     AsAtomicPtr(sizet_buf)->store(0, std::memory_order_relaxed);
   }
 
   uint32_t* uint32t_buf = reinterpret_cast<uint32_t*>(sizet_buf);
-  if (sizeof(AlignmentType) == 8 && bytes >= 4) {
+  if (kAlignment == 8 && bytes >= 4) {
     AsAtomicPtr(uint32t_buf)->store(0, std::memory_order_relaxed);
     bytes -= sizeof(uint32_t);
-    UNSAFE_TODO(++uint32t_buf);
+    // SAFETY: This is safe if a buffer pointed by `buf` have `bytes` size.
+    UNSAFE_BUFFERS(++uint32t_buf);
   }
 
   uint8_t* uint8t_buf = reinterpret_cast<uint8_t*>(uint32t_buf);
-  for (; bytes > 0; bytes -= sizeof(uint8_t), UNSAFE_TODO(++uint8t_buf)) {
+  // SAFETY: This is safe if a buffer pointed by `buf` have `bytes` size.
+  for (; bytes > 0; bytes -= sizeof(uint8_t), UNSAFE_BUFFERS(++uint8t_buf)) {
     AsAtomicPtr(uint8t_buf)->store(0, std::memory_order_relaxed);
   }
   DCHECK_EQ(0u, bytes);
