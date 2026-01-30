@@ -663,6 +663,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, UpdateTargetURLWithInvalidURL);
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, TouchDragContextMenu);
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, ContextMenuAndDrag);
+  FRIEND_TEST_ALL_PREFIXES(WebViewTest,
+                           MouseFocusOnTabindexLinkDoesNotShowBubble);
+  FRIEND_TEST_ALL_PREFIXES(WebViewTest, KeyboardFocusOnTabindexLinkShowsBubble);
 
   friend class frame_test_helpers::WebViewHelper;
   friend class SimCompositor;

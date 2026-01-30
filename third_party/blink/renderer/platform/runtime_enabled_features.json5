@@ -1024,6 +1024,13 @@
       status: "stable",
     },
     {
+      // If the link has tabindex, the status bubble should not persist after
+      // mouse out.
+      // This was added in M146 and can be removed after M148.
+      name: "ClickFocusDoesntPersistStatusBubble",
+      status: "stable",
+    },
+    {
       // Allows top-level sites to restrict collection of high-entropy UA client
       // hints (from 3Ps, or itself) via the getHighEntropyValues API.
       // crbug.com/385161047

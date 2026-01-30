@@ -7144,4 +7144,53 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(WebPointerProperties::PointerType::kTouch,
                       WebPointerProperties::PointerType::kPen));
 
+TEST_F(WebViewTest, MouseFocusOnTabindexLinkDoesNotShowBubble) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  frame_test_helpers::LoadHTMLString(frame,
+                                     "<a id='link' href='http://example.com/' "
+                                     "tabindex='0'>link</a>",
+                                     KURL("http://internal.test/"));
+
+  Document* document = frame->GetFrame()->GetDocument();
+  Element* link = document->getElementById(AtomicString("link"));
+
+  // Focus via mouse
+  link->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+                          mojom::blink::FocusType::kMouse, nullptr,
+                          FocusOptions::Create(), FocusTrigger::kUserGesture));
+
+  // Verify focus_url_ is NOT set in WebViewImpl (because it was mouse focus)
+  EXPECT_TRUE(web_view->focus_url_.IsEmpty());
+
+  // Mouse out (clear mouse over URL)
+  web_view->SetMouseOverURL(KURL());
+
+  // Verify target_url_ (Status bubble) is empty
+  EXPECT_TRUE(web_view->target_url_.IsEmpty());
+}
+
+TEST_F(WebViewTest, KeyboardFocusOnTabindexLinkShowsBubble) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  frame_test_helpers::LoadHTMLString(frame,
+                                     "<a id='link' href='http://example.com/' "
+                                     "tabindex='0'>link</a>",
+                                     KURL("http://internal.test/"));
+
+  Document* document = frame->GetFrame()->GetDocument();
+  Element* link = document->getElementById(AtomicString("link"));
+
+  // Focus via keyboard
+  link->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+                          mojom::blink::FocusType::kForward, nullptr,
+                          FocusOptions::Create(), FocusTrigger::kUserGesture));
+
+  // Verify focus_url_ IS set in WebViewImpl
+  EXPECT_EQ(KURL("http://example.com/"), web_view->focus_url_);
+
+  // Verify target_url_ (Status bubble) is showing the link URL
+  EXPECT_EQ(KURL("http://example.com/"), web_view->target_url_);
+}
+
 }  // namespace blink
