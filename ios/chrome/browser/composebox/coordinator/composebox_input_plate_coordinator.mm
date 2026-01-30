@@ -372,6 +372,12 @@ const CGFloat kSnackbarBottomMargin = 10;
   [self showComposeboxTabPicker];
 }
 
+- (void)composeboxViewController:
+            (ComposeboxInputPlateViewController*)viewController
+       didAttemptDragAndDropType:(ComposeboxDragAndDropType)type {
+  [_metricsRecorder recordDragAndDropAttempt:type];
+}
+
 - (void)composeboxViewControllerDidTapAIMButton:
             (ComposeboxInputPlateViewController*)viewController
                                activationSource:

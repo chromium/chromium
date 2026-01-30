@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_VIEW_CONTROLLER_DELEGATE_H_
 
 enum class AiModeActivationSource;
+enum class ComposeboxDragAndDropType;
 @class ComposeboxInputPlateViewController;
 enum class ComposeboxMode;
 
@@ -46,6 +47,11 @@ enum class ComposeboxMode;
 /// Informs the delegate that a user did tap on the attach tabs button.
 - (void)composeboxViewControllerDidTapAttachTabsButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;
+
+/// Informs the delegate that a drag and drop was attempted.
+- (void)composeboxViewController:
+            (ComposeboxInputPlateViewController*)viewController
+       didAttemptDragAndDropType:(ComposeboxDragAndDropType)type;
 
 /// Informs the delegate that a user did tap on the AI button.
 - (void)composeboxViewControllerDidTapAIMButton:
