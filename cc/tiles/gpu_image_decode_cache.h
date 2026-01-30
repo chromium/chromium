@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
@@ -671,6 +672,12 @@ class CC_EXPORT GpuImageDecodeCache
   // The exception are const members like |normal_max_cache_bytes_| that can
   // be accessed without a lock since they are thread safe.
   mutable base::Lock lock_;
+
+  // A map that maps from a ContentId to all of the FrameKeys that have that
+  // ContentId and are stored in `persisent_cache_`. This allows for O(1)
+  // removal of all cache entries that have a given ContentId.
+  base::flat_map<PaintImage::ContentId, base::flat_set<PaintImage::FrameKey>>
+      content_id_to_frame_keys_ GUARDED_BY(lock_);
 
   bool has_pending_purge_task_ GUARDED_BY(lock_) = false;
 
