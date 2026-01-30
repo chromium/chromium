@@ -149,11 +149,12 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   views::ProposedLayout target_layout_;    // Goal state.
   views::ProposedLayout current_layout_;   // Current interpolated state.
 
-  // Precomputed sets and maps for starting and target layouts for fast
-  // lookup. Updated in `SetStartingLayout()` and `SetTargetLayout()`.
-  using StartViewBoundsMap = base::flat_map<raw_ptr<views::View>, gfx::Rect>;
-  StartViewBoundsMap start_view_bounds_map_;
-  base::flat_set<raw_ptr<views::View>> target_view_set_;
+  // Precomputed maps for starting and target layouts for fast lookup. Updated
+  // in `SetStartingLayout()` and `SetTargetLayout()`.
+  using ChildViewLayoutMap =
+      base::flat_map<raw_ptr<const views::View>, views::ChildLayout>;
+  ChildViewLayoutMap start_view_layout_map_;
+  ChildViewLayoutMap target_view_layout_map_;
 
   // Where in the animation the last layout recalculation happened.
   double starting_offset_ = 0.0;
