@@ -78,6 +78,7 @@ suite('AppContent', () => {
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.UNDERLINE}});
+        await microtasksFinished();
         const newPos = 202;
         app.connectedCallback();
         await microtasksFinished();
@@ -121,6 +122,7 @@ suite('AppContent', () => {
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
+    await microtasksFinished();
     assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
 
     app.updateContent();
@@ -139,6 +141,7 @@ suite('AppContent', () => {
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.UNDERLINE}});
+        await microtasksFinished();
         assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
 
         app.updateContent();
@@ -157,6 +160,7 @@ suite('AppContent', () => {
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.OFF}});
+        await microtasksFinished();
         assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
 
         app.updateContent();
