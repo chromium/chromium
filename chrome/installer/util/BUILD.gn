@@ -265,6 +265,16 @@ source_set("constants") {
 }
 
 if (is_win) {
+  source_set("isolation_support") {
+    public = [ "isolation_support.h" ]
+    sources = [ "isolation_support.cc" ]
+
+    deps = [
+      "//base",
+      "//chrome/install_static:install_static_util",
+    ]
+  }
+
   source_set("did_run_support") {
     public = [ "update_did_run_state.h" ]
 
@@ -335,6 +345,7 @@ if (is_win) {
       "initial_preferences_unittest.cc",
       "install_util_unittest.cc",
       "installation_state_unittest.cc",
+      "isolation_support_unittest.cc",
       "l10n_string_util_unittest.cc",
       "logging_installer_unittest.cc",
       "lzma_util_unittest.cc",
@@ -358,6 +369,7 @@ if (is_win) {
     ]
 
     deps = [
+      ":isolation_support",
       ":test_support",
       ":with_rc_strings",
       "//base",
