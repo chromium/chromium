@@ -513,6 +513,14 @@ template("rust_target") {
       if (!_allow_unsafe) {
         configs += [ "//build/rust:forbid_unsafe" ]
       }
+
+      if (_enable_clippy_for_this_target && enable_rust_clippy_eager) {
+        # We want to make `_clippy_target_name` to execute any time
+        # `_main_target_name` is built, but libraries that depend on
+        # `_main_target_name` should not have to wait until Clippy finishes.
+        # GN `validations` are a special dependency kind that helps with this.
+        validations = [ ":${_clippy_target_name}" ]
+      }
     }
 
     if (_cxx_bindings != []) {

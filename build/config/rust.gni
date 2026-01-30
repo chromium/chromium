@@ -103,6 +103,13 @@ declare_args() {
   # * Deciding on a policy (e.g. which trybots can/should cover `clippy`)
   enable_rust_clippy = false
 
+  # If `enable_rust_clippy_eager` is `true`, then building a Rust library
+  # implicitly triggers/requires invoking Clippy against that library.  If
+  # `enable_rust_clippy_eager` is false, then Clippy targets are generated
+  # but nothing depends on tham and therefore Clippy will only be invoked
+  # in a full build (i.e. when building all targets).
+  enable_rust_clippy_eager = true
+
   # Whether expansion of GN templates like `rust_static_library` will expand
   # (if `cpp_api_from_rust` is set as an attribute of `rust_static_library`) to
   # create a target for invoking Crubit tools to generate C++ bindings for the
