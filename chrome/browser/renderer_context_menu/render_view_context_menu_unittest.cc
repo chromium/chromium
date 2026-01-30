@@ -505,6 +505,41 @@ TEST_F(RenderViewContextMenuPrefsTest,
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
 }
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+// Ensure PrintPreviewContextMenuObserver does not intercept "Search the web
+// for…" even when the observer is attached via Init() (i.e., the print preview
+// group is supported). The command should remain unknown to observers and be
+// enabled via the default RenderViewContextMenu path.
+TEST_F(RenderViewContextMenuPrefsTest,
+       SearchWebForNotInterceptedByPrintPreviewObserver) {
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.page_url = GURL("https://example.com/");
+  // Avoid triggering AppendSearchProvider in Init() by simulating a
+  // misspelled word; this skips the search provider menu item construction
+  // while still attaching observers (including
+  // PrintPreviewContextMenuObserver).
+  params.misspelled_word = u"x";
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+
+  // Ensure a default search provider exists to avoid null deref in
+  // AppendSearchProvider during Init().
+  SetUserSelectedDefaultSearchProvider("https://search.example/",
+                                       /*supports_image_search=*/true);
+
+  // Attach all standard observers, including PrintPreviewContextMenuObserver.
+  menu->Init();
+
+  bool enabled_by_observer = true;
+  EXPECT_FALSE(menu->IsCommandIdKnown(IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+                                      &enabled_by_observer));
+
+  // Default path should still enable the command when navigation is allowed.
+  menu->set_selection_navigation_url(GURL("https://search.example/"));
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
 #if BUILDFLAG(IS_CHROMEOS)
 class RenderViewContextMenuDlpPrefsTest
     : public RenderViewContextMenuPrefsTest {

@@ -863,6 +863,15 @@ bool IsGlicWindow(const RenderViewContextMenu* menu,
   return false;
 }
 
+bool IsPrintPreviewContent(const GURL& current_url) {
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  return printing::PrintPreviewDialogController::IsPrintPreviewContentURL(
+      current_url);
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 // static
@@ -2501,10 +2510,10 @@ void RenderViewContextMenu::AppendSearchProvider() {
     // When the Lens text selection entrypoint flag is enabled, checking for the
     // availability of Lens requires the browser, so hide the menu item if the
     // flag is enabled and there is no browser (e.g. when selecting in the side
-    // panel).
+    // panel). However, show the menu item in print preview.
     if (!lens::features::
             IsLensOverlayTextSelectionContextMenuEntrypointEnabled() ||
-        GetBrowser()) {
+        GetBrowser() || IsPrintPreviewContent(current_url_)) {
       menu_model_.AddItem(
           IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
           l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
