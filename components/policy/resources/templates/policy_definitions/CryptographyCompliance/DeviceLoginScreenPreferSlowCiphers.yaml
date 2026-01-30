@@ -33,8 +33,8 @@ items:
 owners:
 - file://crypto/OWNERS
 - trusty-transport@chromium.org
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:146-
 schema:
   enum:
   - cnsa

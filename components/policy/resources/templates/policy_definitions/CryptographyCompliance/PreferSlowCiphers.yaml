@@ -30,10 +30,10 @@ items:
 owners:
 - file://crypto/OWNERS
 - trusty-transport@chromium.org
-future_on:
-- android
-- chrome.*
-- chrome_os
+supported_on:
+- android:146-
+- chrome.*:146-
+- chrome_os:146-
 schema:
   enum:
   - cnsa
