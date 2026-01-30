@@ -5,7 +5,9 @@
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 
 #import "base/base64.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notimplemented.h"
+#import "base/notreached.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
@@ -18,8 +20,9 @@ IOSWebAuthnCredentialsDelegate::IOSWebAuthnCredentialsDelegate(
 IOSWebAuthnCredentialsDelegate::~IOSWebAuthnCredentialsDelegate() = default;
 
 void IOSWebAuthnCredentialsDelegate::LaunchSecurityKeyOrHybridFlow() {
-  // TODO(crbug.com/459451476): Implement.
-  NOTIMPLEMENTED();
+  // IsSecurityKeyOrHybridFlowAvailable() always returns false, so
+  // LaunchSecurityKeyOrHybridFlow() should never be called.
+  NOTREACHED() << "Security key or hybrid flow not supported on iOS";
 }
 
 void IOSWebAuthnCredentialsDelegate::SelectPasskey(
@@ -29,6 +32,10 @@ void IOSWebAuthnCredentialsDelegate::SelectPasskey(
   if (!web_state_) {
     return;
   }
+
+  // Note: HasPendingPasskeySelection() should always return false since this
+  // callback is run unconditionally.
+  std::move(callback).Run();
 
   // `backend_id` is the base64-encoded credential ID.
   std::string selected_credential_id;
@@ -53,26 +60,33 @@ IOSWebAuthnCredentialsDelegate::GetPasskeys() const {
 }
 
 void IOSWebAuthnCredentialsDelegate::NotifyForPasskeysDisplay() {
-  // TODO(crbug.com/459451476): Implement.
-  NOTIMPLEMENTED();
+  passkey_display_has_happened_ = true;
 }
 
 bool IOSWebAuthnCredentialsDelegate::IsSecurityKeyOrHybridFlowAvailable()
     const {
-  // TODO(crbug.com/459451476): Implement.
-  NOTIMPLEMENTED();
+  // Security key or hybrid flow is not available on mobile platforms, so
+  // LaunchSecurityKeyOrHybridFlow() should never be called.
   return false;
 }
 
 void IOSWebAuthnCredentialsDelegate::RequestNotificationWhenPasskeysReady(
     base::OnceCallback<void()> callback) {
-  // TODO(crbug.com/459451476): Implement.
-  NOTIMPLEMENTED();
+  if (passkeys_.has_value()) {
+    // TODO(crbug.com/459451476): Record metrics if necessary. See
+    // RecordPasskeyRetrievalDelay() for an example.
+
+    // Entries were already populated from the WebAuthn request.
+    std::move(callback).Run();
+    return;
+  }
+
+  passkeys_available_callbacks_.push_back(std::move(callback));
 }
 
 bool IOSWebAuthnCredentialsDelegate::HasPendingPasskeySelection() {
-  // TODO(crbug.com/459451476): Implement.
-  NOTIMPLEMENTED();
+  // Always return false since the callback in SelectPasskey is run
+  // unconditionally.
   return false;
 }
 
@@ -84,8 +98,25 @@ IOSWebAuthnCredentialsDelegate::AsWeakPtr() {
 void IOSWebAuthnCredentialsDelegate::OnCredentialsReceived(
     std::vector<password_manager::PasskeyCredential> credentials,
     const std::string& passkey_request_id) {
+  if (!credentials.empty() && !passkeys_after_fill_recorded_) {
+    passkeys_after_fill_recorded_ = true;
+    base::UmaHistogramBoolean(
+        "PasswordManager.PasskeysArrivedAfterAutofillDisplay",
+        passkey_display_has_happened_);
+  }
+
   passkeys_ = std::move(credentials);
   passkey_request_id_ = passkey_request_id;
+  NotifyClientsOfPasskeyAvailability();
+}
+
+void IOSWebAuthnCredentialsDelegate::NotifyClientsOfPasskeyAvailability() {
+  std::vector<base::OnceClosure> callbacks;
+  callbacks.swap(passkeys_available_callbacks_);
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 }  // namespace webauthn
