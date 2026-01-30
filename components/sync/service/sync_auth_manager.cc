@@ -446,16 +446,17 @@ void SyncAuthManager::OnRefreshTokensLoaded() {
   DCHECK(IsActiveAccountInfoFullyLoaded());
 
   if (UpdateSyncAccountIfNecessary()) {
-    // `account_state_changed_callback_` has already been called, no need to
-    // consider calling it again.
+    // `delegate_->SyncAuthAccountStateChanged()` has already been called, no
+    // need to consider calling it again.
     return;
   }
 
   if (sync_account_.Get().account_info.account_id.empty()) {
-    // Nothing actually changed, so `account_state_changed_callback_` hasn't
-    // been called yet. However, this is the first time we can reliably tell the
-    // user is signed out, exposed via IsActiveAccountInfoFullyLoaded(), so
-    // let's treat it as account state change.
+    // Nothing actually changed, so `delegate_->SyncAuthAccountStateChanged()`
+    // hasn't been called yet. However, this is the first time we can reliably
+    // tell the user is signed out, exposed via
+    // IsActiveAccountInfoFullyLoaded(), so let's treat it as account state
+    // change.
     delegate_->SyncAuthAccountStateChanged();
   }
 }
