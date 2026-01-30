@@ -342,6 +342,10 @@ const base::FeatureParam<bool> kShowModelPicker(
     &internal::kWebUIOmniboxAimPopup,
     "ShowModelPicker",
     false);
+const base::FeatureParam<bool> kShowContextMenuHeaders(
+    &internal::kWebUIOmniboxAimPopup,
+    "ShowContextMenuHeaders",
+    true);
 const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
     &internal::kWebUIOmniboxAimPopup,
     "ShowVoiceSearchInSteadyComposebox",

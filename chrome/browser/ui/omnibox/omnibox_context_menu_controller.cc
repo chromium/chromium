@@ -138,7 +138,9 @@ void OmniboxContextMenuController::AddSeparator() {
 }
 
 void OmniboxContextMenuController::AddRecentTabItems() {
-  AddTitleWithStringId(IDS_NTP_COMPOSE_MOST_RECENT_TABS);
+  if (omnibox::kShowContextMenuHeaders.Get()) {
+    AddTitleWithStringId(IDS_NTP_COMPOSE_MOST_RECENT_TABS);
+  }
   std::vector<OmniboxContextMenuController::TabInfo> tabs = GetRecentTabs();
 
   for (const auto& tab : tabs) {
