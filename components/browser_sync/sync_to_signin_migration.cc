@@ -602,6 +602,8 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   if (themes_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
     pref_service->SetBoolean(
         syncer::prefs::internal::kMigrateThemeFromLocalToAccount, true);
+    syncer::RecordSyncToSigninMigrationThemeStep(
+        syncer::SyncToSigninMigrationThemeStep::kMigrationRequested);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

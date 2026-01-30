@@ -2413,6 +2413,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigration.ThemeMigrationStep"
+    enum="SyncToSigninMigrationThemeStep" expires_after="2027-01-28">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Within the wider Sync-to-Signin migration, this records various steps in the
+    Themes-specific migration. The migration is requested by the central
+    Sync-to-Signin migration on profile initialization, and happens at most once
+    per browser session (and typically exactly once per profile). &quot;Total
+    count&quot; and &quot;Bucket proportion&quot; are not really meaningful;
+    instead compare the absolute sizes of the various buckets.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncToSigninMigrationDecision"
     enum="SyncToSigninMigrationDecisionOverall" expires_after="2026-12-05">
   <owner>treib@chromium.org</owner>
@@ -2477,8 +2491,10 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     The number of extensions that were deduplicated during the Sync-to-Signin
-    migration. Recorded only if the overall migration ran and decided to migrate
-    extensions (see Sync.SyncToSigninMigrationDecision.Migration.EXTENSION).
+    migration. An extension is deduplicated iff the extension exists locally and
+    on account. Recorded only if the overall migration ran and decided to
+    migrate extensions (see
+    Sync.SyncToSigninMigrationDecision.Migration.EXTENSION).
   </summary>
 </histogram>
 
@@ -2492,6 +2508,18 @@ chromium-metrics-reviews@google.com.
     location, during the Sync-to-Signin migration. Recorded only if the overall
     migration ran and decided to migrate passwords (see
     Sync.SyncToSigninMigrationDecision.Migration.PASSWORD).
+  </summary>
+</histogram>
+
+<histogram name="Sync.SyncToSigninMigrationOutcome.ThemeDeduplication"
+    enum="Boolean" expires_after="2027-01-28">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the outcome of the theme deduplication during the Sync-to-Signin
+    migration. Theme is deduplicated iff the same theme exists locally and on
+    account. Recorded only if the overall migration ran and decided to migrate
+    themes (see Sync.SyncToSigninMigrationDecision.Migration.THEME).
   </summary>
 </histogram>
 

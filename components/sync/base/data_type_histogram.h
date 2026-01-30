@@ -92,6 +92,32 @@ void RecordSyncToSigninMigrationExtensionsStep(
     SyncToSigninMigrationExtensionsStep step);
 void RecordSyncToSigninMigrationExtensionsDeduplicatedCount(int count);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationThemeStep)
+enum class SyncToSigninMigrationThemeStep {
+  kMigrationRequested = 0,
+  kMigrationStarted = 1,
+  kMigrationFinishedAndPrefCleared = 2,
+  kMaxValue = kMigrationFinishedAndPrefCleared
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationThemeStep)
+void RecordSyncToSigninMigrationThemeStep(SyncToSigninMigrationThemeStep step);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationThemeOutcome)
+enum class SyncToSigninMigrationThemeOutcome {
+  kNoLocalTheme = 0,
+  kNoAccountTheme = 1,
+  kLocalThemeDifferentFromAccountTheme = 2,
+  kRemovedLocalTheme = 3,
+  kMaxValue = kRemovedLocalTheme
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationThemeOutcome)
+void RecordSyncToSigninMigrationThemeOutcome(
+    SyncToSigninMigrationThemeOutcome outcome);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_DATA_TYPE_HISTOGRAM_H_

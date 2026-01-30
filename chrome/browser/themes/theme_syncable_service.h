@@ -15,6 +15,7 @@
 #include "chrome/browser/themes/theme_local_data_batch_uploader.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
@@ -151,7 +152,8 @@ class ThemeSyncableService final : public syncer::SyncableService,
 
   void NotifyOnSyncStarted(ThemeSyncState startup_state);
 
-  void DeduplicateLocalThemeIfSameAsAccountTheme();
+  syncer::SyncToSigninMigrationThemeOutcome
+  DeduplicateLocalThemeIfSameAsAccountTheme();
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<ThemeService> theme_service_;

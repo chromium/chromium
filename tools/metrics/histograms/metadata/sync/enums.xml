@@ -1706,6 +1706,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/base/data_type_histogram.h:ReadingListMigrationStep) -->
 
+<!-- LINT.IfChange(SyncToSigninMigrationThemeOutcome) -->
+
+<enum name="SyncToSigninMigrationThemeOutcome">
+  <summary>
+    The outcome of the Themes deduplication process, within the wider
+    Sync-to-Signin migration.
+  </summary>
+  <int value="0" label="No local theme"/>
+  <int value="1" label="No account theme"/>
+  <int value="2" label="Local theme different from account theme"/>
+  <int value="3" label="Removed local theme"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/base/data_type_histogram.h:SyncToSigninMigrationThemeOutcome) -->
+
+<!-- LINT.IfChange(SyncToSigninMigrationThemeStep) -->
+
+<enum name="SyncToSigninMigrationThemeStep">
+  <summary>
+    A step in the Themes migration process, within the wider Sync-to-Signin
+    migration.
+  </summary>
+  <int value="0" label="Decision to migrate was made"/>
+  <int value="1" label="Migration was started"/>
+  <int value="2" label="Migration finished successfully"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/base/data_type_histogram.h:SyncToSigninMigrationThemeStep) -->
+
 <!-- LINT.IfChange(SyncToSigninMigrationType) -->
 
 <enum name="SyncToSigninMigrationType">

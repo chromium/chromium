@@ -1854,6 +1854,7 @@ TEST_P(SyncToSigninMigrationDataTypesTest, MarkThemeToBeMigrated) {
   ASSERT_FALSE(pref_service_.GetBoolean(
       syncer::prefs::internal::kMigrateThemeFromLocalToAccount));
 
+  base::HistogramTester histograms;
   MaybeMigrateSyncingUserToSignedInWrapper(
       IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
@@ -1861,6 +1862,9 @@ TEST_P(SyncToSigninMigrationDataTypesTest, MarkThemeToBeMigrated) {
   // marked to be migrated.
   EXPECT_TRUE(pref_service_.GetBoolean(
       syncer::prefs::internal::kMigrateThemeFromLocalToAccount));
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.ThemeMigrationStep",
+      syncer::SyncToSigninMigrationThemeStep::kMigrationRequested, 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

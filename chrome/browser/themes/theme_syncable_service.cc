@@ -885,9 +885,16 @@ void ThemeSyncableService::NotifyOnSyncStarted(ThemeSyncState startup_state) {
 
   if (profile_->GetPrefs()->GetBoolean(
           syncer::prefs::internal::kMigrateThemeFromLocalToAccount)) {
-    DeduplicateLocalThemeIfSameAsAccountTheme();
+    syncer::RecordSyncToSigninMigrationThemeStep(
+        syncer::SyncToSigninMigrationThemeStep::kMigrationStarted);
+    syncer::SyncToSigninMigrationThemeOutcome outcome =
+        DeduplicateLocalThemeIfSameAsAccountTheme();
     profile_->GetPrefs()->ClearPref(
         syncer::prefs::internal::kMigrateThemeFromLocalToAccount);
+    syncer::RecordSyncToSigninMigrationThemeStep(
+        syncer::SyncToSigninMigrationThemeStep::
+            kMigrationFinishedAndPrefCleared);
+    syncer::RecordSyncToSigninMigrationThemeOutcome(outcome);
   }
 }
 
@@ -939,27 +946,30 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
   return local_theme_specifics.has_value();
 }
 
-void ThemeSyncableService::DeduplicateLocalThemeIfSameAsAccountTheme() {
+syncer::SyncToSigninMigrationThemeOutcome
+ThemeSyncableService::DeduplicateLocalThemeIfSameAsAccountTheme() {
   std::optional<ThemeSyncState> startup_state = GetThemeSyncStartState();
   CHECK(startup_state.has_value());
   if (*startup_state != ThemeSyncState::kApplied) {
     // The local theme is the one currently applied. Note that `startup_state`
     // here should never in practice be `kWaitingForExtensionInstallation`
     // because the extension should already be installed.
-    return;
+    return syncer::SyncToSigninMigrationThemeOutcome::kNoAccountTheme;
   }
   std::optional<sync_pb::ThemeSpecifics> saved_local_theme_specifics =
       GetSavedLocalTheme();
   if (!saved_local_theme_specifics.has_value()) {
     // No saved local theme, nothing to do.
-    return;
+    return syncer::SyncToSigninMigrationThemeOutcome::kNoLocalTheme;
   }
   if (!AreThemeSpecificsEquivalent(
           GetThemeSpecificsFromCurrentTheme(),
           saved_local_theme_specifics.value(),
           theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
     // Local theme is different from account theme, nothing to do.
-    return;
+    return syncer::SyncToSigninMigrationThemeOutcome::
+        kLocalThemeDifferentFromAccountTheme;
   }
   profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
+  return syncer::SyncToSigninMigrationThemeOutcome::kRemovedLocalTheme;
 }

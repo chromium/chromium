@@ -145,4 +145,15 @@ void RecordSyncToSigninMigrationExtensionsDeduplicatedCount(int count) {
       "Sync.SyncToSigninMigrationOutcome.ExtensionsDeduplicatedCount", count);
 }
 
+void RecordSyncToSigninMigrationThemeStep(SyncToSigninMigrationThemeStep step) {
+  base::UmaHistogramEnumeration("Sync.SyncToSigninMigration.ThemeMigrationStep",
+                                step);
+}
+
+void RecordSyncToSigninMigrationThemeOutcome(
+    SyncToSigninMigrationThemeOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Sync.SyncToSigninMigrationOutcome.ThemeDeduplication", outcome);
+}
+
 }  // namespace syncer
