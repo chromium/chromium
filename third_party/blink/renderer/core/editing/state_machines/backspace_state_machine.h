@@ -49,6 +49,9 @@ class CORE_EXPORT BackspaceStateMachine {
   // InternalState::NeedMoreCodeUnit.
   TextSegmentationMachineState MoveToNextState(BackspaceState new_state);
 
+  // Stay in the same state, returning NeedMoreCodeUnit.
+  TextSegmentationMachineState StayInSameState();
+
   // Update the internal state to BackspaceState::Finished, then return
   // MachineState::Finished.
   TextSegmentationMachineState Finish();
@@ -61,6 +64,11 @@ class CORE_EXPORT BackspaceStateMachine {
 
   // The length of the previously seen variation selector.
   int last_seen_vs_code_units_ = 0;
+
+  // Whether we are processing the base of a tag sequence. When true,
+  // finding the emoji base should finish immediately instead of looking
+  // for ZWJ sequences.
+  bool processing_tag_sequence_base_ = false;
 
   // The internal state.
   BackspaceState state_;

@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "third_party/blink/renderer/core/editing/state_machines/state_machine_util.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -40,6 +41,10 @@ namespace blink {
   V(kOddNumberedRIS)                                                     \
   /* That there are even numbered RIS from the begging. */               \
   V(kEvenNumberedRIS)                                                    \
+  /* The current offset is just before emoji tag sequence cancel tag. */ \
+  V(kBeforeTagTerm)                                                      \
+  /* The current offset is inside an emoji tag sequence. */              \
+  V(kInTagSequence)                                                      \
   /* This state machine has finished. */                                 \
   V(kFinished)
 
@@ -110,6 +115,12 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       if (code_point == uchar::kCombiningEnclosingKeycap) {
         return MoveToNextState(BackspaceState::kBeforeKeycap);
       }
+      // Emoji tag sequences end with CANCEL TAG (U+E007F).
+      // http://www.unicode.org/reports/tr51/#def_emoji_tag_sequence
+      if (RuntimeEnabledFeatures::EditEmojiTagSequenceEnabled() &&
+          code_point == uchar::kCancelTag) {
+        return MoveToNextState(BackspaceState::kBeforeTagTerm);
+      }
       return Finish();
     case BackspaceState::kBeforeLF:
       if (code_point == uchar::kCarriageReturn) {
@@ -141,6 +152,13 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       }
       if (Character::IsEmojiModifierBase(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
+        // If processing tag sequence base, finish here instead of looking
+        // for ZWJ sequences.
+        if (RuntimeEnabledFeatures::EditEmojiTagSequenceEnabled() &&
+            processing_tag_sequence_base_) {
+          processing_tag_sequence_base_ = false;
+          return Finish();
+        }
         return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
       }
       return Finish();
@@ -155,6 +173,13 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
     case BackspaceState::kBeforeVS:
       if (IsExtendedPictographicGb11(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
+        // If processing tag sequence base, finish here instead of looking
+        // for ZWJ sequences.
+        if (RuntimeEnabledFeatures::EditEmojiTagSequenceEnabled() &&
+            processing_tag_sequence_base_) {
+          processing_tag_sequence_base_ = false;
+          return Finish();
+        }
         return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
       }
       if (!u_hasBinaryProperty(code_point, UCHAR_VARIATION_SELECTOR) &&
@@ -200,6 +225,48 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         return Finish();
       code_units_to_be_deleted_ -= 2;  // Code units of RIS
       return MoveToNextState(BackspaceState::kOddNumberedRIS);
+    case BackspaceState::kBeforeTagTerm:
+      // After seeing CANCEL TAG, we expect tag sequence characters.
+      // http://www.unicode.org/reports/tr51/#def_emoji_tag_sequence
+      if (Character::IsEmojiTagSequence(code_point)) {
+        code_units_to_be_deleted_ += U16_LENGTH(code_point);
+        return MoveToNextState(BackspaceState::kInTagSequence);
+      }
+      // Invalid sequence - just delete the CANCEL TAG.
+      return Finish();
+    case BackspaceState::kInTagSequence:
+      // Continue accumulating tag sequence characters.
+      if (Character::IsEmojiTagSequence(code_point)) {
+        code_units_to_be_deleted_ += U16_LENGTH(code_point);
+        return StayInSameState();
+      }
+      // Found the tag_base. Per UTS #51 ED-14a, tag_base can be:
+      // - emoji_character
+      // - emoji_modifier_sequence
+      // - emoji_presentation_sequence
+      // For emoji_character, include it and finish. For modifier/presentation
+      // sequences, we continue to look for the base but should finish
+      // immediately after finding it (not look for ZWJ sequences).
+      // https://unicode.org/reports/tr51/#def_emoji_tag_sequence
+      if (Character::IsModifier(code_point)) {
+        // Part of emoji_modifier_sequence - continue to find the base.
+        code_units_to_be_deleted_ += U16_LENGTH(code_point);
+        processing_tag_sequence_base_ = true;
+        return MoveToNextState(BackspaceState::kBeforeEmojiModifier);
+      }
+      if (u_hasBinaryProperty(code_point, UCHAR_VARIATION_SELECTOR)) {
+        // Part of emoji_presentation_sequence - continue to find the base.
+        code_units_to_be_deleted_ += U16_LENGTH(code_point);
+        processing_tag_sequence_base_ = true;
+        return MoveToNextState(BackspaceState::kBeforeVS);
+      }
+      if (IsExtendedPictographicGb11(code_point)) {
+        // Found an emoji_character as tag_base, include it and finish.
+        code_units_to_be_deleted_ += U16_LENGTH(code_point);
+        return Finish();
+      }
+      // Invalid sequence - stop here.
+      return Finish();
     case BackspaceState::kFinished:
       NOTREACHED() << "Do not call feedPrecedingCodeUnit() once it finishes.";
     default:
@@ -239,6 +306,7 @@ void BackspaceStateMachine::Reset() {
   trail_surrogate_ = 0;
   state_ = BackspaceState::kStart;
   last_seen_vs_code_units_ = 0;
+  processing_tag_sequence_base_ = false;
 }
 
 TextSegmentationMachineState BackspaceStateMachine::MoveToNextState(
@@ -248,6 +316,12 @@ TextSegmentationMachineState BackspaceStateMachine::MoveToNextState(
   // Below |DCHECK_NE()| prevent us to infinite loop in state machine.
   DCHECK_NE(state_, new_state) << "State should be changed.";
   state_ = new_state;
+  return TextSegmentationMachineState::kNeedMoreCodeUnit;
+}
+
+TextSegmentationMachineState BackspaceStateMachine::StayInSameState() {
+  DCHECK_EQ(BackspaceState::kInTagSequence, state_)
+      << "Only kInTagSequence can stay.";
   return TextSegmentationMachineState::kNeedMoreCodeUnit;
 }
 
