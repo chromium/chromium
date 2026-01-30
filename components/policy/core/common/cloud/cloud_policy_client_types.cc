@@ -78,11 +78,6 @@ std::string PolicyTypeToFetch::settings_entity_id() const {
     return std::get<std::string>(extra_param_);
   }
   CHECK(std::holds_alternative<ExtensionsProviderRef>(extra_param_));
-  auto extension_ids_and_version =
-      std::get<ExtensionsProviderRef>(extra_param_)->GetExtensions();
-  if (extension_ids_and_version.size() == 1) {
-    return extension_ids_and_version.begin()->ToString();
-  }
   return std::string();
 }
 

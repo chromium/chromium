@@ -2036,7 +2036,7 @@ TEST_F(CloudPolicyClientTest,
                 kExtension.extension_id);
       EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_version(),
                 kExtension.extension_version);
-      EXPECT_TRUE(fetch_request.has_settings_entity_id());
+      EXPECT_FALSE(fetch_request.has_settings_entity_id());
     } else {
       EXPECT_FALSE(fetch_request.has_settings_entity_id());
     }

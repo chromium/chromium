@@ -111,8 +111,7 @@ void CloudPolicyService::HandleExtensionInstallPolicyFetchResult(
   for (const auto& fetch_response : policy_response.responses()) {
     em::PolicyData policy_data;
     if (!policy_data.ParseFromString(fetch_response.policy_data()) ||
-        !policy_data.IsInitialized() || !policy_data.has_policy_type() ||
-        !policy_data.has_settings_entity_id()) {
+        !policy_data.IsInitialized() || !policy_data.has_policy_type()) {
       LOG_POLICY(WARNING, CBCM_ENROLLMENT)
           << "Invalid PolicyData received, ignoring";
       continue;
