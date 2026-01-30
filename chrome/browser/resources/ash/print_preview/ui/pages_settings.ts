@@ -58,18 +58,78 @@ export const COMMA_REGEX: RegExp =
     /\u002c|\u055d|\u060c|\u0f14|\u104a|\u1363|\u1802|\u1808|\u3001/;
 
 /**
+ * Normalizes non-ASCII digits to ASCII digits. This list is partially derived
+ * from Unicode tables and partially from the translations of
+ * IDS_PRINT_PREVIEW_EXAMPLE_PAGE_RANGE_TEXT: Chromium needs to actually accept
+ * every example that it provides the user.
+ *
+ * Alas, not all localizations can be normalized with this approach (e.g.
+ * Chinese/Japanese 1 = 一; 51 = 五十一; 100 = 百). However, this is better than
+ * nothing, and at least provides coverage for the examples.
+ */
+function normalizeNonAsciiDigits(value: string): string {
+  interface DigitSet {
+    regexRange: RegExp;
+    firstCodePoint: number;
+  }
+
+  const digitSets: DigitSet[] = [
+    // U+0660: ARABIC-INDIC
+    {regexRange: /[\u0660-\u0669]/g, firstCodePoint: 0x0660},
+    // U+06F0: EXTENDED ARABIC-INDIC
+    {regexRange: /[\u06f0-\u06f9]/g, firstCodePoint: 0x06f0},
+    // U+0966: DEVANAGARI
+    {regexRange: /[\u0966-\u096f]/g, firstCodePoint: 0x0966},
+    // U+09E6: BENGALI
+    {regexRange: /[\u09e6-\u09ef]/g, firstCodePoint: 0x09e6},
+    // U+0A66: GURMUKHI
+    {regexRange: /[\u0a66-\u0a6f]/g, firstCodePoint: 0x0a66},
+    // U+0AE6: GUJARATI
+    {regexRange: /[\u0ae6-\u0aef]/g, firstCodePoint: 0x0ae6},
+    // U+0B66: ORIYA
+    {regexRange: /[\u0b66-\u0b6f]/g, firstCodePoint: 0x0b66},
+    // U+0C66: TELUGU
+    {regexRange: /[\u0c66-\u0c6f]/g, firstCodePoint: 0x0c66},
+    // U+0CE6: KANNADA
+    {regexRange: /[\u0ce6-\u0cef]/g, firstCodePoint: 0x0ce6},
+    // U+0E50: THAI
+    {regexRange: /[\u0e50-\u0e59]/g, firstCodePoint: 0x0e50},
+    // U+0ED0: LAO
+    {regexRange: /[\u0ed0-\u0ed9]/g, firstCodePoint: 0x0ed0},
+    // U+1040: MYANMAR
+    {regexRange: /[\u1040-\u1049]/g, firstCodePoint: 0x1040},
+    // U+17E0: KHMER
+    {regexRange: /[\u17e0-\u17e9]/g, firstCodePoint: 0x17e0},
+    // U+1810: MONGOLIAN
+    {regexRange: /[\u1810-\u1819]/g, firstCodePoint: 0x1810},
+    // U+1946: LIMBU
+    {regexRange: /[\u1946-\u194f]/g, firstCodePoint: 0x1946},
+    // U+1B50: BALINESE
+    {regexRange: /[\u1b50-\u1b59]/g, firstCodePoint: 0x1b50},
+  ];
+
+  digitSets.forEach(digitSet => {
+    value = value.replace(
+        digitSet.regexRange,
+        c => (c.charCodeAt(0) - digitSet.firstCodePoint).toString());
+  });
+
+  return value;
+}
+
+/**
  * Used in place of Number.parseInt(), to ensure values like '1  2' or '1a2' are
  * not allowed.
  * @param value The value to convert to a number.
  * @return The value converted to a number, or NaN if it cannot be converted.
  */
 function parseIntStrict(value: string): number {
-  if (/^\d+$/.test(value.trim())) {
-    return Number(value);
+  const normalizedValue = normalizeNonAsciiDigits(value.trim());
+  if (/^\d+$/.test(normalizedValue)) {
+    return Number(normalizedValue);
   }
   return NaN;
 }
-
 
 export interface PrintPreviewPagesSettingsElement {
   $: {
