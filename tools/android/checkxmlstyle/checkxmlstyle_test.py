@@ -751,5 +751,45 @@ class AttrChecksTest(unittest.TestCase):
                   warnings[0].items[0])
 
 
+class SettingsXmlTest(unittest.TestCase):
+  """Tests for _CheckSettingsXml in checkxmlstyle.py"""
+
+  def testXmlChanges(self):
+    preference_content = [
+        '<PreferenceScreen xmlns:android="balabizo">', '</PreferenceScreen>'
+    ]
+    mock_input = MockInputApi()
+    mock_output = MockOutputApi()
+
+    mock_input.files = [
+        MockFile('chrome/android/java/res/xml/pref.xml', preference_content),
+        MockFile('chrome/android/java/res/layout/xyz.xml',
+                 ['<LinearLayout />']),
+    ]
+
+    results = checkxmlstyle._CheckSettingsXml(mock_input, mock_output)
+
+    self.assertEqual(mock_output.more_cc,
+                     ['jinsukkim@chromium.org', 'adelm@google.com'])
+
+    self.assertEqual(len(results), 1)
+    self.assertIn('SearchIndexProviderRegistry.java', results[0].message)
+
+  def testXmlModifiedIgnored(self):
+    preference_content = [
+        '<PreferenceScreen xmlns:android="balabizo">', '</PreferenceScreen>'
+    ]
+    mock_input = MockInputApi()
+    mock_output = MockOutputApi()
+
+    mock_input.files = [
+        MockFile('chrome/android/java/pref.xml', preference_content, action='M')
+    ]
+
+    results = checkxmlstyle._CheckSettingsXml(mock_input, mock_output)
+
+    self.assertEqual(len(results), 0)
+    self.assertEqual(len(mock_output.more_cc), 0)
+
 if __name__ == '__main__':
   unittest.main()

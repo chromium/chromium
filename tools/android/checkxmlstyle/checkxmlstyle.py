@@ -23,6 +23,8 @@ This file checks for the following:
   - Checks whether style attribute reference could work
   - Checks whether direct theme color attributes are used in xml files in
     layout, encouraging the usage of Chrome's semantically named colors
+  - Checks if new preference XML files are added and encourages search indexing
+    and registration.
 """
 
 from collections import defaultdict
@@ -93,6 +95,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckThemeColorAttributes(input_api, output_api))
   result.extend(_CheckAttrFileChanges(input_api, output_api))
   result.extend(_CheckAttrReferenceInUi(input_api, output_api))
+  result.extend(_CheckSettingsXml(input_api, output_api))
   # Add more checks here
   return result
 
@@ -808,3 +811,42 @@ def _CheckAttrReferenceInUi(input_api, output_api):
   ''', warnings)
     ]
   return []
+
+
+def _CheckSettingsXml(input_api, output_api):
+  """Checks if Preference XML files are modified and warns about indexing."""
+  cc_list = ['jinsukkim@chromium.org', 'adelm@google.com']
+  relevant_files = []
+
+  for f in IncludedFiles(input_api):
+    if f.Action() != 'A':
+      continue
+
+    if not f.LocalPath().endswith('.xml') or not '/java/' in f.LocalPath():
+      continue
+
+    content = input_api.ReadFile(f)
+    try:
+      root = ET.fromstring(content)
+      if root.tag == 'PreferenceScreen':
+        relevant_files.append(f'  {f.LocalPath()}')
+    except ET.ParseError:
+      pass
+
+  if not relevant_files:
+    return []
+
+  for cc in cc_list:
+    output_api.AppendCC(cc)
+
+  return [
+      output_api.PresubmitPromptWarning(
+          'New preference XML file(s) added. If this fragment wants to be , '
+          'searchable and appears in Settings, the corresponding Fragment '
+          'should be registered in SearchIndexProviderRegistry.java and '
+          'implemented using BaseSearchIndexProvider. If this preference '
+          'requires any bundle arguments, then they must be set using '
+          '#getExtras. Otherwise, it will crash the browser when launched '
+          'through search.',
+          relevant_files)
+  ]
