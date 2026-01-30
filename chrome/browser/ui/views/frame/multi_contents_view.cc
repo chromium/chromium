@@ -158,6 +158,9 @@ MultiContentsView::MultiContentsView(
 }
 
 MultiContentsView::~MultiContentsView() {
+  // Clear the map before `RemoveAllChildViews()` to avoid having dangling
+  // pointers.
+  container_focusable_map_.clear();
   if (drop_target_controller_) {
     drop_target_controller_.reset();
   }
