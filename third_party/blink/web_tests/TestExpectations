@@ -9680,26 +9680,11 @@ crbug.com/40516274 [ Win11-arm64 ] images/color-profile-reflection.html [ Failur
 # Gardener 2025-11-14
 crbug.com/460545299 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure Pass ]
 
-
-# Temporarily disable RAB/GSAB tests till V8 change to enable the feature and pass tests is landed.
+# Temporarily disable failing Wasm RAB IDL harness tests.
+# Other RAB/GSAB WPTs now pass with the feature enabled; only IDL harness tests remain blocked
+# (see crbug.com/42202693).
 crbug.com/42202693 external/wpt/wasm/jsapi/idlharness.any.html [ Failure Pass ]
 crbug.com/42202693 external/wpt/wasm/jsapi/idlharness.any.worker.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/memory/to-fixed-length-buffer-shared.any.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/memory/to-fixed-length-buffer-shared.any.worker.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/memory/to-fixed-length-buffer.any.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/memory/to-fixed-length-buffer.any.worker.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/memory/to-resizable-buffer-shared.any.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/memory/to-resizable-buffer-shared.any.worker.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.html [ Failure Pass ]
-crbug.com/42202693 external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.worker.html [ Failure Pass ]
-crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-fixed-length-buffer-shared.any.html [ Failure Pass ]
-crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-fixed-length-buffer-shared.any.worker.html [ Failure Pass ]
-crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-fixed-length-buffer.any.html [ Failure Pass ]
-crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-fixed-length-buffer.any.worker.html [ Failure Pass ]
-crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer-shared.any.html [ Failure Pass ]
-crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer-shared.any.worker.html [ Failure Pass ]
-crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.html [ Failure Pass ]
-crbug.com/42202693 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/to-resizable-buffer.any.worker.html [ Failure Pass ]
 
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
