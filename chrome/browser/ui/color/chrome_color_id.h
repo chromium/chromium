@@ -164,6 +164,7 @@
   /* Find bar colors. */ \
   E_CPONLY(kColorFindBarBackground) \
   E_CPONLY(kColorFindBarButtonIcon) \
+  E_CPONLY(kColorFindBarButtonIconHovered) \
   E_CPONLY(kColorFindBarButtonIconDisabled) \
   E_CPONLY(kColorFindBarForeground) \
   E_CPONLY(kColorFindBarMatchCount) \

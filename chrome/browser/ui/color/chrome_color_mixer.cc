@@ -250,6 +250,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFindBarBackground] = {ui::kColorTextfieldBackground};
   mixer[kColorFindBarButtonIcon] =
       ui::DeriveDefaultIconColor(ui::kColorTextfieldForeground);
+  mixer[kColorFindBarButtonIconHovered] = {kColorFindBarButtonIcon};
   mixer[kColorFindBarButtonIconDisabled] =
       ui::DeriveDefaultIconColor(ui::kColorTextfieldForegroundDisabled);
   mixer[kColorFindBarForeground] = {ui::kColorTextfieldForeground};
