@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -148,6 +149,13 @@ bool BaseTextInputType::SupportsSelectionAPI() const {
 
 bool BaseTextInputType::IsAutoDirectionalityFormAssociated() const {
   return true;
+}
+
+std::unique_ptr<JSONObject> BaseTextInputType::GetWebMCPParameterSchema()
+    const {
+  auto schema = std::make_unique<JSONObject>();
+  schema->SetString("type", "string");
+  return schema;
 }
 
 }  // namespace blink

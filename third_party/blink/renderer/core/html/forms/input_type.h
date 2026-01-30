@@ -328,6 +328,12 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
 
   virtual void DispatchSearchEvent();
 
+  virtual bool SupportsWebMCP() const { return false; }
+  // See HTMLInputElement::GetWebMCPParameterSchema().
+  virtual std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const {
+    return nullptr;
+  }
+
   // For test purpose
   virtual ColorChooserClient* GetColorChooserClient();
 
