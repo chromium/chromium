@@ -54,12 +54,10 @@
 namespace {
 const gfx::VectorIcon& GetTaskInProgressIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
-    return glic::GlicVectorIconManager::GetVectorIcon(
-        IDR_ACTOR_AUTO_BROWSE_ICON);
-  }
-#endif
+  return glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
+#else
   return kScreensaverAutoIcon;
+#endif
 }
 }  // namespace
 

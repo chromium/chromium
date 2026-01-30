@@ -27,7 +27,6 @@ const int kRedirectIconSize = 20;
 
 const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
     if (tabs::GlicActorTaskIconManager::RequiresAttention(state)) {
       return kHourglassIcon;
     } else if (state == actor::ActorTask::State::kFinished) {
@@ -35,9 +34,9 @@ const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
     }
     return glic::GlicVectorIconManager::GetVectorIcon(
         IDR_ACTOR_AUTO_BROWSE_ICON);
-  }
-#endif
+#else
   return kScreensaverAutoIcon;
+#endif
 }
 
 bool IsProcessedTabClosedRow(bool has_tab, bool requires_processing) {

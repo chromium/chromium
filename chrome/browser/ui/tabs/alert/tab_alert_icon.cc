@@ -98,12 +98,11 @@ const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
     case TabAlert::kActorWaitingOnUser:
     case TabAlert::kActorAccessing:
 #if BUILDFLAG(ENABLE_GLIC)
-      if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
         return glic::GlicVectorIconManager::GetVectorIcon(
             IDR_ACTOR_AUTO_BROWSE_ICON);
-      }
-#endif
+#else
       return kTvIcon;
+#endif
     case TabAlert::kGlicAccessing:
     case TabAlert::kGlicSharing:
 #if BUILDFLAG(ENABLE_GLIC)

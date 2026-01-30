@@ -347,8 +347,7 @@ void GlicButton::Expand() {
   SetWidthState(WidthState::kNormal);
 
   // If the label should not show, no further animation is needed.
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskNudgeUiFix) &&
-      !ShouldShowLabel()) {
+  if (!ShouldShowLabel()) {
     return;
   }
 
