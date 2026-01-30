@@ -121,6 +121,24 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00A);
   static constexpr HRESULT kErrorInvalidValidationData =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00B);
+  static constexpr HRESULT kErrorCouldNotObtainThreadToken =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00C);
+  static constexpr HRESULT kErrorCouldNotCreatePrimaryToken =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00D);
+  static constexpr HRESULT kErrorCouldNotObtainSidString =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00E);
+  static constexpr HRESULT kErrorCouldCreateSecurityDescriptor =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00F);
+  static constexpr HRESULT kErrorCouldAssignDefaultDacl =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA010);
+  static constexpr HRESULT kErrorCouldNotLaunchBrowser =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA011);
+  static constexpr HRESULT kErrorCouldNotDuplicateHandle =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA012);
+  static constexpr HRESULT kErrorChromePathNotFound =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA013);
+  static constexpr HRESULT kErrorCouldNotObtainUserEnvironment =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA014);
 
   // Success codes.
   static constexpr HRESULT kSuccessShouldReencrypt =

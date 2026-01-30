@@ -5353,6 +5353,24 @@ shown properly on the user-facing crash UI.
       label="elevation_service::Elevator::kErrorUnsupportedProtectionLevel"/>
   <int value="-2147180533"
       label="elevation_service::Elevator::kErrorInvalidValidationData"/>
+  <int value="-2147180532"
+      label="elevation_service::Elevator::kErrorCouldNotObtainThreadToken"/>
+  <int value="-2147180531"
+      label="elevation_service::Elevator::kErrorCouldNotCreatePrimaryToken"/>
+  <int value="-2147180530"
+      label="elevation_service::Elevator::kErrorCouldNotObtainSidString"/>
+  <int value="-2147180529"
+      label="elevation_service::Elevator::kErrorCouldCreateSecurityDescriptor"/>
+  <int value="-2147180528"
+      label="elevation_service::Elevator::kErrorCouldAssignDefaultDacl"/>
+  <int value="-2147180527"
+      label="elevation_service::Elevator::kErrorCouldNotLaunchBrowser"/>
+  <int value="-2147180526"
+      label="elevation_service::Elevator::kErrorCouldNotDuplicateHandle"/>
+  <int value="-2147180525"
+      label="elevation_service::Elevator::kErrorChromePathNotFound"/>
+  <int value="-2147180524"
+      label="elevation_service::Elevator::kErrorCouldNotObtainUserEnvironment"/>
   <int value="-2147180287" label="os_crypt::kErrorWrongData"/>
   <int value="-2147174395"
       label="MSPR_E_PRO_HEADER_BYTES_NOT_SET (0x8004B805)"/>
