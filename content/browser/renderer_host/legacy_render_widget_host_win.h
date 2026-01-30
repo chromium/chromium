@@ -5,12 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_LEGACY_RENDER_WIDGET_HOST_WIN_H_
 #define CONTENT_BROWSER_RENDERER_HOST_LEGACY_RENDER_WIDGET_HOST_WIN_H_
 
-// clang-format off
-// This needs to be included before ATL headers.
-#include "base/win/atl.h"
-// clang-format on
-
-#include <atlapp.h>
 #include <oleacc.h>
 #include <wrl/client.h>
 
@@ -25,6 +19,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/win/msg_util.h"
+#include "ui/gfx/win/window_impl.h"
 
 namespace ui {
 class AXFragmentRootWin;
@@ -60,17 +55,9 @@ FORWARD_DECLARE_TEST(RenderWidgetHostViewAuraTest,
 // HWND instead of the DesktopWindowTreeHostWin. It also maintains a ViewProp to
 // associate the parent's aura::WindowTreeHost with this HWND for lookup.
 class CONTENT_EXPORT LegacyRenderWidgetHostHWND
-    : public ATL::CWindowImpl<LegacyRenderWidgetHostHWND,
-                              ATL::CWindow,
-                              ATL::CWinTraits<WS_CHILD>>,
+    : public gfx::WindowImpl,
       public ui::AXFragmentRootDelegateWin {
  public:
-  DECLARE_WND_CLASS_EX(ui::kLegacyRenderWidgetHostHwnd, CS_DBLCLKS, 0)
-
-  typedef ATL::CWindowImpl<LegacyRenderWidgetHostHWND,
-                           ATL::CWindow,
-                           ATL::CWinTraits<WS_CHILD>>
-      Base;
 
   // Creates and returns an instance of the LegacyRenderWidgetHostHWND class on
   // successful creation of a child window parented to the parent window passed
@@ -88,6 +75,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   void Destroy();
 
   CR_BEGIN_MSG_MAP_EX(LegacyRenderWidgetHostHWND)
+    CR_MESSAGE_HANDLER_EX(WM_CREATE, OnCreate)
     CR_MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
     CR_MESSAGE_RANGE_HANDLER_EX(WM_KEYFIRST, WM_KEYLAST, OnKeyboardRange)
     CR_MESSAGE_HANDLER_EX(WM_PAINT, OnPaint)
@@ -111,12 +99,10 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
                                 OnMouseRange)
     CR_MESSAGE_HANDLER_EX(WM_NCCALCSIZE, OnNCCalcSize)
     CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
-    CR_MESSAGE_HANDLER_EX(WM_CREATE, OnCreate)
     CR_MESSAGE_HANDLER_EX(WM_DESTROY, OnDestroy)
+    CR_MESSAGE_HANDLER_EX(WM_NCDESTROY, OnNCDestroy)
     CR_MESSAGE_HANDLER_EX(DM_POINTERHITTEST, OnPointerHitTest)
   CR_END_MSG_MAP()
-
-  HWND hwnd() { return m_hWnd; }
 
   // Called when the child window is to be reparented to a new window.
   // The |parent| parameter contains the new parent window.
@@ -135,9 +121,6 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Return the root accessible object for either MSAA or UI Automation.
   gfx::NativeViewAccessible GetOrCreateWindowRootAccessible(
       bool is_uia_request);
-
- protected:
-  void OnFinalMessage(HWND hwnd) override;
 
  private:
   friend class AccessibilityObjectLifetimeWinBrowserTest;
@@ -173,6 +156,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   LRESULT OnSize(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnCreate(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnDestroy(UINT message, WPARAM w_param, LPARAM l_param);
+  LRESULT OnNCDestroy(UINT message, WPARAM w_param, LPARAM l_param);
 
   LRESULT OnPointerHitTest(UINT message, WPARAM w_param, LPARAM l_param);
 

@@ -71,6 +71,10 @@ class COMPONENT_EXPORT(GFX) WindowImpl : public MessageMapInterface {
   void set_window_ex_style(DWORD style) { window_ex_style_ = style; }
   DWORD window_ex_style() const { return window_ex_style_; }
 
+  void set_window_name(const wchar_t* name) { window_name_ = name; }
+
+  void set_window_class_name(const wchar_t* name) { class_name_ = name; }
+
   // Sets the class style to use. The default is CS_DBLCLKS.
   void set_initial_class_style(UINT class_style) {
     // We dynamically generate the class name, so don't register it globally!
@@ -117,6 +121,12 @@ class COMPONENT_EXPORT(GFX) WindowImpl : public MessageMapInterface {
 
   // Style of the class to use.
   UINT class_style_;
+
+  // Name of the window class to use. Otherwise one will be generated.
+  const wchar_t* class_name_ = nullptr;
+
+  // Name of the window to use.  Otherwise it will be null.
+  const wchar_t* window_name_ = nullptr;
 
   // Our hwnd.
   HWND hwnd_ = nullptr;
