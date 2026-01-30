@@ -273,7 +273,18 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
                         false),
           /*navigation_handle_callback=*/{});
   if (browser_test_flags & BROWSER_TEST_WAIT_FOR_BROWSER) {
+    // `WaitForBrowserNotInSet()` waits until the new browser is created, and
+    // `WaitForBrowserSetLastActive()` waits until the new browser is active.
+    // The latter is important because tests might rely on methods like
+    // `GetLastActiveBrowserWindowInterfaceWithAnyProfile()` or
+    // `ForEachCurrentBrowserWindowInterfaceOrderedByActivation()` to retrieve
+    // the browser window that is most recently active.
+    // It's possible for a browser to be created but not yet active. For
+    // example, when the `kWebUIReloadButtonDeferBrowserViewShow` feature
+    // parameter is true, the new window defers its initial show (and thus
+    // activation) until some initial WebUI has finished loading.
     browser = WaitForBrowserNotInSet(initial_browsers);
+    WaitForBrowserSetLastActive(browser);
     tab_strip = browser->GetTabStripModel();
   }
   if (browser_test_flags & BROWSER_TEST_WAIT_FOR_TAB) {
