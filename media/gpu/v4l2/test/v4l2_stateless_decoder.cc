@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -225,8 +220,8 @@ int main(int argc, char** argv) {
       continue;
 
     std::vector<uint8_t> yuv_plane(y_plane);
-    yuv_plane.insert(yuv_plane.end(), u_plane.begin(), u_plane.end());
-    yuv_plane.insert(yuv_plane.end(), v_plane.begin(), v_plane.end());
+    yuv_plane.append_range(u_plane);
+    yuv_plane.append_range(v_plane);
 
     if (cmd->HasSwitch("md5"))
       ComputeAndPrintMD5hash(yuv_plane, md5_log_location);
@@ -240,13 +235,11 @@ int main(int argc, char** argv) {
         filename, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
 
     if (output_format == "yuv") {
-      output_file.Write(0, reinterpret_cast<const char*>(yuv_plane.data()),
-                        yuv_plane.size());
+      output_file.Write(0, yuv_plane);
     } else {
       std::vector<uint8_t> image_buffer = dec->ConvertYUVToPNG(
           y_plane.data(), u_plane.data(), v_plane.data(), size, bit_depth);
-      output_file.Write(0, reinterpret_cast<char*>(image_buffer.data()),
-                        image_buffer.size());
+      output_file.Write(0, image_buffer);
     }
   }
 
