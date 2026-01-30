@@ -10,6 +10,8 @@ import android.webkit.JavascriptInterface;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import com.google.common.util.concurrent.SettableFuture;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -20,6 +22,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.JavaScriptExecutionCallback;
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.WebMessageListener;
@@ -32,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
+import org.chromium.js_injection.mojom.JavaScriptExecutionError;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.util.TestWebServer;
@@ -1432,6 +1436,122 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testReplyProxyInjectScript_nullCallback() throws Throwable {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+        loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
+
+        JsReplyProxy proxy = mListener.waitForOnPostMessage().mReplyProxy;
+
+        final String script =
+                "(function () {"
+                        + "  if (window.executeCount) {"
+                        + "    window.executeCount++;"
+                        + "  } else {"
+                        + "    window.executeCount = 1;"
+                        + "  }"
+                        + "  "
+                        + JS_OBJECT_NAME
+                        + ".postMessage('ack1:' + window.executeCount);"
+                        + "}) ()";
+
+        // Should call into postMessage again.
+        proxy.executeJavaScript(script, null);
+
+        TestWebMessageListener.Data replyData1 = mListener.waitForOnPostMessage();
+        Assert.assertEquals("ack1:1", replyData1.getAsString());
+
+        // Should be no more messages.
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testReplyProxyInjectScript_withResult() throws Throwable {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+        loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
+
+        JsReplyProxy proxy = mListener.waitForOnPostMessage().mReplyProxy;
+
+        final String script = "1+2";
+        final SettableFuture<String> jsResult = SettableFuture.create();
+        final SettableFuture<Integer> jsError = SettableFuture.create();
+
+        JavaScriptExecutionCallback receiver =
+                new JavaScriptExecutionCallback() {
+                    @Override
+                    public void onSuccess(String result) {
+                        jsResult.set(result);
+                    }
+
+                    @Override
+                    public void onError(@JavaScriptExecutionError.EnumType int error) {
+                        jsError.set(error);
+                    }
+                };
+
+        // Should call into postMessage again.
+        proxy.executeJavaScript(script, receiver);
+
+        Assert.assertEquals(
+                "JavaScript expression result should be correct",
+                "3",
+                AwActivityTestRule.waitForFuture(jsResult));
+        // Should be no error.
+        Assert.assertFalse(jsError.isDone());
+
+        // Should be no post messages.
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testReplyProxyInjectScript_withError() throws Throwable {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+        loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
+
+        JsReplyProxy proxy = mListener.waitForOnPostMessage().mReplyProxy;
+
+        // Should invalidate the js object immediately.
+        removeWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME);
+
+        final String script = "1+2";
+        final SettableFuture<String> jsResult = SettableFuture.create();
+        final SettableFuture<Integer> jsError = SettableFuture.create();
+
+        JavaScriptExecutionCallback receiver =
+                new JavaScriptExecutionCallback() {
+                    @Override
+                    public void onSuccess(String result) {
+                        jsResult.set(result);
+                    }
+
+                    @Override
+                    public void onError(@JavaScriptExecutionError.EnumType int error) {
+                        jsError.set(error);
+                    }
+                };
+
+        // Should call into postMessage again.
+        proxy.executeJavaScript(script, receiver);
+
+        // Should be no result.
+        Assert.assertFalse(jsResult.isDone());
+
+        // Cast to long to avoid ambiguous reference.
+        Assert.assertEquals(
+                "There should be an error",
+                (long) JavaScriptExecutionError.FRAME_DESTROYED,
+                (long) AwActivityTestRule.waitForFuture(jsError));
+
+        // Should be no post messages.
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 

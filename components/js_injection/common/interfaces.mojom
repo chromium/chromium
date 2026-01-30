@@ -8,6 +8,7 @@ import "components/js_injection/common/enum.mojom";
 import "components/origin_matcher/origin_matcher.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 
 // JsObject struct represents a JavaScript object we will inject in the main
@@ -94,6 +95,13 @@ interface BrowserToJsMessagingFactory {
 interface BrowserToJsMessaging {
   // Called from browser, to send message to page.
   OnPostMessage(JsWebMessage message);
+
+  // Execute JavaScript code in the renderer using the same
+  // BrowserToJsMessaging pipe.
+  OnExecuteJavaScript(
+      mojo_base.mojom.BigString16 javascript,
+      bool wants_result) =>
+          result<mojo_base.mojom.Value, JavaScriptExecutionError>;
 };
 
 // For browser to configure renderer, implemented by renderer.

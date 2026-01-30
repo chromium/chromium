@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
-#include "components/js_injection/common/interfaces.mojom-forward.h"
+#include "components/js_injection/common/interfaces.mojom.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
@@ -24,11 +24,15 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
+#include "third_party/blink/public/mojom/script/script_evaluation_params.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_message_port_converter.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
@@ -203,6 +207,61 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
       web_frame->RequestExecuteV8Function(context, listener, self, 1, argv, {});
     }
   }
+}
+
+void JsBinding::OnExecuteJavaScript(const std::u16string& javascript,
+                                    bool wants_result,
+                                    OnExecuteJavaScriptCallback callback) {
+  // If `js_communication_` is null, this object will soon be destroyed.
+  if (!js_communication_) {
+    if (wants_result) {
+      std::move(callback).Run(
+          base::unexpected(mojom::JavaScriptExecutionError::kFrameDestroyed));
+    }
+    return;
+  }
+
+  blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
+  if (!web_frame) {
+    if (wants_result) {
+      std::move(callback).Run(
+          base::unexpected(mojom::JavaScriptExecutionError::kFrameDestroyed));
+    }
+    return;
+  }
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+
+  v8::Local<v8::Context> context = GetScriptContext(web_frame, world_id_);
+  if (context.IsEmpty()) {
+    if (wants_result) {
+      std::move(callback).Run(
+          base::unexpected(mojom::JavaScriptExecutionError::kFrameDestroyed));
+    }
+    return;
+  }
+
+  blink::WebScriptSource web_script_source(
+      blink::WebString::FromUTF16(javascript));
+  web_frame->RequestExecuteScript(
+      world_id_, base::span_from_ref(web_script_source),
+      blink::mojom::UserActivationOption::kDoNotActivate,
+      blink::mojom::EvaluationTiming::kSynchronous,
+      blink::mojom::LoadEventBlockingOption::kDoNotBlock,
+      base::BindOnce(
+          [](bool wants_result, OnExecuteJavaScriptCallback callback,
+             std::optional<base::Value> value, base::TimeTicks start_time) {
+            if (wants_result) {
+              std::move(callback).Run(value ? std::move(*value)
+                                            : base::Value());
+            }
+          },
+          wants_result, std::move(callback)),
+      blink::BackForwardCacheAware::kAllow,
+      wants_result
+          ? blink::mojom::WantResultOption::kWantResultDateAndRegExpAllowed
+          : blink::mojom::WantResultOption::kNoResult,
+      blink::mojom::PromiseResultOption::kDoNotWait);
 }
 
 void JsBinding::ReleaseV8GlobalObjects() {

@@ -16,6 +16,7 @@
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
+#include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/restore_type.h"
@@ -160,6 +161,14 @@ class EmptyReplyProxy : public WebMessageReplyProxy {
   void PostWebMessage(blink::WebMessagePayload message) override {
     // Do nothing as there is no connection to the renderer.
   }
+
+  void ExecuteJavaScript(const std::u16string& java_script,
+                         bool wants_result,
+                         ExecuteJavaScriptResultCallback callback) override {
+    std::move(callback).Run(
+        base::unexpected(mojom::JavaScriptExecutionError::kNotSupported));
+  }
+
   content::Page& GetPage() override { return *page_; }
 
  private:

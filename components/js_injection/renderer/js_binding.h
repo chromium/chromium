@@ -65,6 +65,9 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
 
   // mojom::BrowserToJsMessaging implementation.
   void OnPostMessage(blink::WebMessagePayload message) override;
+  void OnExecuteJavaScript(const std::u16string& javascript,
+                           bool wants_result,
+                           OnExecuteJavaScriptCallback callback) override;
 
   void ReleaseV8GlobalObjects();
 

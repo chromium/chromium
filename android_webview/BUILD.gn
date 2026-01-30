@@ -546,6 +546,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/FindAddress.java",
       "java/src/org/chromium/android_webview/FullScreenView.java",
       "java/src/org/chromium/android_webview/HttpAuthDatabase.java",
+      "java/src/org/chromium/android_webview/JavaScriptExecutionCallback.java",
       "java/src/org/chromium/android_webview/JsPromptResultReceiver.java",
       "java/src/org/chromium/android_webview/JsReplyProxy.java",
       "java/src/org/chromium/android_webview/JsResultHandler.java",

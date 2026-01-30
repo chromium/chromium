@@ -8,3 +8,11 @@ module js_injection.mojom;
 enum DocumentInjectionTime {
   kDocumentStart,
 };
+
+// Represents possible error codes when JavaScript is executed.
+enum JavaScriptExecutionError {
+  // Used exclusively in the navigation web message listener.
+  kNotSupported,
+  // The frame we are attached to no longer is valid.
+  kFrameDestroyed,
+};
