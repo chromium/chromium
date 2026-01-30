@@ -454,7 +454,6 @@ void CanvasPath::arc(double double_x,
   }
 
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  high_entropy_path_op_types_ |= HighEntropyCanvasOpType::kArc;
 
   if (!radius || start_angle == end_angle) [[unlikely]] {
     // The arc is empty but we still need to draw the connecting line.
@@ -534,7 +533,6 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  high_entropy_path_op_types_ |= HighEntropyCanvasOpType::kEllipse;
   path_builder_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation,
                            start_angle, adjusted_end_angle);
 }

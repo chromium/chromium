@@ -136,14 +136,6 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
     return AffineTransform();
   }
 
-  // Returns the path types that would result in a high entropy canvas operation
-  // when these are drawn on the canvas. Because of the high entropy associated
-  // with the operation, this reveals information about the user's device and
-  // thus could be used for fingerprinting.
-  HighEntropyCanvasOpType HighEntropyPathOpTypes() const {
-    return high_entropy_path_op_types_;
-  }
-
   virtual ExecutionContext* GetTopExecutionContext() const = 0;
 
   const Path& GetPath() const {
@@ -210,11 +202,6 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   // GetTransform() remains virtual, which is okay because it is only called in
   // code paths that handle non-invertible transforms.
   bool is_transform_invertible_ = true;
-
-  // The path types that would result in a high entropy canvas operation when
-  // these are drawn on the canvas. These could be used for fingerprinting.
-  HighEntropyCanvasOpType high_entropy_path_op_types_ =
-      HighEntropyCanvasOpType::kNone;
 
  private:
   // Used to build up a line.
