@@ -431,17 +431,6 @@ void ComposeboxQueryController::CreateSearchUrl(
             search_url_request_info->lens_overlay_selection_type,
             search_url_request_info->additional_params);
 
-        // TODO(crbug.com/479613954): Refactor to decouple interaction request
-        // details from CreateSearchUrl.
-        // When initiated from the contextual tasks composebox, the visual
-        // search interaction data is not used in the search URL as it is not
-        // loaded.
-        if (search_url_request_info->invocation_source ==
-            lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
-          latest_interaction_request_data_->interaction_details_used_in_vsint_ =
-              false;
-        }
-
         // Get the encoded visual search interaction log data.
         bool should_send_lns_surface =
             send_lns_surface_ &&
@@ -491,17 +480,6 @@ void ComposeboxQueryController::CreateSearchUrl(
             last_file, search_url_request_info->query_text,
             search_url_request_info->lens_overlay_selection_type,
             search_url_request_info->additional_params);
-
-        // TODO(crbug.com/479613954): Refactor to decouple interaction request
-        // details from CreateSearchUrl.
-        // When initiated from the contextual tasks composebox, the visual
-        // search interaction data is not used in the search URL as it is not
-        // loaded.
-        if (search_url_request_info->invocation_source ==
-            lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
-          latest_interaction_request_data_->interaction_details_used_in_vsint_ =
-              false;
-        }
 
         bool should_send_lns_surface =
             send_lns_surface_ &&
@@ -599,7 +577,9 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
       std::optional<lens::LensOverlayVisualSearchInteractionData>
           visual_search_interaction_data = ConstructVisualSearchInteractionData(
               static_cast<const FileInfo*>(file_info),
-              create_client_to_aim_request_info->query_text, std::nullopt);
+              create_client_to_aim_request_info->query_text, std::nullopt,
+              create_client_to_aim_request_info
+                  ->force_include_latest_interaction_request_data);
       if (visual_search_interaction_data.has_value()) {
         for (auto& lens_image_query_data :
              *submit_query->mutable_payload()
@@ -1729,8 +1709,9 @@ void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
     std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
     std::map<std::string, std::string>& url_params_map) {
   std::optional<lens::LensOverlayVisualSearchInteractionData> interaction_data =
-      ConstructVisualSearchInteractionData(file_info, query_text,
-                                           lens_overlay_selection_type);
+      ConstructVisualSearchInteractionData(
+          file_info, query_text, lens_overlay_selection_type,
+          /*force_include_latest_interaction_request_data=*/false);
 
   if (!interaction_data.has_value()) {
     return;
@@ -1751,7 +1732,8 @@ std::optional<lens::LensOverlayVisualSearchInteractionData>
 ComposeboxQueryController::ConstructVisualSearchInteractionData(
     const FileInfo* file_info,
     const std::optional<std::string>& query_text,
-    std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type) {
+    std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
+    bool force_include_latest_interaction_request_data) {
   if (!file_info ||
       !IsValidFileUploadStatusForMultimodalRequest(file_info->upload_status)) {
     return std::nullopt;
@@ -1809,10 +1791,15 @@ ComposeboxQueryController::ConstructVisualSearchInteractionData(
 
   // If there was an interaction request which has not been used to create a
   // vsint yet, then set the interaction data from the request.
-  if (latest_interaction_request_data_ &&
-      !latest_interaction_request_data_->interaction_details_used_in_vsint_ &&
+  bool has_interaction_request =
+      latest_interaction_request_data_ &&
       latest_interaction_request_data_->request_ &&
-      latest_interaction_request_data_->request_->has_interaction_request()) {
+      latest_interaction_request_data_->request_->has_interaction_request();
+  bool should_include_interaction_request_data =
+      has_interaction_request &&
+      (!latest_interaction_request_data_->interaction_details_used_in_vsint_ ||
+       force_include_latest_interaction_request_data);
+  if (should_include_interaction_request_data) {
     latest_interaction_request_data_->interaction_details_used_in_vsint_ = true;
     auto sent_interaction_request =
         latest_interaction_request_data_->request_->interaction_request();

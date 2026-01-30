@@ -3748,4 +3748,156 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_ForceIncludeInteractionData_HasInteraction) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Send interaction request via CreateSearchUrl.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->lens_overlay_selection_type =
+      lens::LensOverlaySelectionType::REGION_SEARCH;
+
+  // Set a specific crop to verify.
+  search_url_request_info->image_crop = lens::ImageCrop();
+  auto* zoomed_crop =
+      search_url_request_info->image_crop->mutable_zoomed_crop();
+  zoomed_crop->set_zoom(2.0);
+  auto* crop = zoomed_crop->mutable_crop();
+  crop->set_center_x(0.25);
+  crop->set_center_y(0.25);
+  crop->set_width(0.5);
+  crop->set_height(0.5);
+  crop->set_coordinate_type(lens::CoordinateType::NORMALIZED);
+
+  // We need to wait for interaction request creation.
+  base::RunLoop run_loop;
+  controller().AddEndpointFetcherCreatedCallback(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  // Wait for interaction request to be sent.
+  run_loop.Run();
+  ASSERT_TRUE(url_future.Wait());
+
+  // Now create ClientToAimRequest with force = true.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+  create_client_to_aim_request_info
+      ->force_include_latest_interaction_request_data = true;
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify interaction data matches the one sent.
+  ASSERT_EQ(client_to_aim_message.submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  const auto& interaction_data = client_to_aim_message.submit_query()
+                                     .payload()
+                                     .lens_image_query_data(0)
+                                     .visual_search_interaction_data();
+
+  EXPECT_EQ(interaction_data.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
+  EXPECT_TRUE(interaction_data.has_zoomed_crop());
+  EXPECT_FLOAT_EQ(interaction_data.zoomed_crop().zoom(), 2.0);
+  EXPECT_FLOAT_EQ(interaction_data.zoomed_crop().crop().center_x(), 0.25);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_ForceIncludeInteractionData_NoInteraction) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Create ClientToAimRequest with force = true, but no interaction request
+  // sent.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+  create_client_to_aim_request_info
+      ->force_include_latest_interaction_request_data = true;
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify interaction data is default (PDF_QUERY for PDF, with full region
+  // initialized but potentially overridden or cleared? Default impl sets full
+  // region).
+  ASSERT_EQ(client_to_aim_message.submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  const auto& interaction_data = client_to_aim_message.submit_query()
+                                     .payload()
+                                     .lens_image_query_data(0)
+                                     .visual_search_interaction_data();
+
+  EXPECT_EQ(interaction_data.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
+  // PDFs do not have a zoomed crop by default.
+  EXPECT_FALSE(interaction_data.has_zoomed_crop());
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequest_NoInteraction) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Create ClientToAimRequest with force = false.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+  create_client_to_aim_request_info
+      ->force_include_latest_interaction_request_data = false;
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify interaction data is default.
+  ASSERT_EQ(client_to_aim_message.submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  const auto& interaction_data = client_to_aim_message.submit_query()
+                                     .payload()
+                                     .lens_image_query_data(0)
+                                     .visual_search_interaction_data();
+
+  EXPECT_EQ(interaction_data.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
+  EXPECT_FALSE(interaction_data.has_zoomed_crop());
+}
+
 }  // namespace contextual_search
