@@ -132,8 +132,6 @@ public class IncognitoTabbedSnapshotControllerTest {
         }
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @SmallTest
     @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
@@ -148,12 +146,10 @@ public class IncognitoTabbedSnapshotControllerTest {
 
         verify(mWindowMock, times(1)).addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            verify(mActivityMock, times(1)).setRecentsScreenshotEnabled(false);
+            verify(mActivityMock, never()).setRecentsScreenshotEnabled(anyBoolean());
         }
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
@@ -167,7 +163,7 @@ public class IncognitoTabbedSnapshotControllerTest {
 
         verify(mWindowMock, times(1)).clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            verify(mActivityMock, never()).setRecentsScreenshotEnabled(anyBoolean());
+            verify(mActivityMock, times(1)).setRecentsScreenshotEnabled(false);
         }
     }
 
