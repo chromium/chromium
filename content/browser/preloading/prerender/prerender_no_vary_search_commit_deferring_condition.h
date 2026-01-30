@@ -21,6 +21,38 @@ namespace content {
 
 class NavigationRequest;
 
+// Updates URL of prerendered page if ones of initial and activation are
+// different
+//
+// Background: A prerender can be triggered for a URL (e.g., `/?q=a`) and then
+// activated by a navigation to a different but compatible URL (e.g.,
+// `/?q=a&b=c`) if the server provides the `No-Vary-Search` HTTP header. In this
+// case, the URL displayed to the user should be the latter.
+//
+// More precisely, there are two patterns that need to update the URL:
+//
+// - No-Vary-Search match: Prerender can have No-Vary-Search hint and header to
+//   relax the matching condition.
+//
+//   https://httpwg.org/http-extensions/draft-ietf-httpbis-no-vary-search.html
+//
+//   Used in SpeculationRules, `SearchPreloadService`, etc.
+// - Custom `PrerenderAttribute::url_match_predicate` (and
+//   `PreloadingAttemptImpl::url_match_predicate_`)
+//
+//   See also `PrerenderHost::IsUrlMatch()` and a caller
+//   `PrerenderHostRegistry::FindPotentialHostToActivate()`.
+//
+//   Used in `SearchPrefetchService`. (It uses `IsSearchDestinationMatch()`.)
+//
+// This class ensures the URL consistency. It defers the navigation commit and
+// sends an IPC to the renderer process to update its internal URL. The commit
+// resumes once the renderer process acknowledges the update. This condition is
+// created only for prerender activations. If the prerendered page has already
+// navigated to another URL, this class does nothing to respect the latest
+// navigation.
+//
+// TODO(crbug.com/479980025): Rename it.
 class PrerenderNoVarySearchCommitDeferringCondition
     : public CommitDeferringCondition {
  public:
