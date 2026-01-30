@@ -71,6 +71,8 @@ const CGFloat kTextSpacing = 2.0;
   NSArray<NSLayoutConstraint*>* _compactWidthConstraints;
   // The horizontal constraints for a regular layout.
   NSArray<NSLayoutConstraint*>* _regularWidthConstraints;
+  // Whether the message’s action was tapped.
+  BOOL _actionTapped;
 }
 
 - (instancetype)initWithMessage:(SnackbarMessage*)message {
@@ -502,8 +504,9 @@ const CGFloat kTextSpacing = 2.0;
 
 // Handles the action button tap.
 - (void)handleButtonTap {
-  if (self.message.action.handler) {
+  if (self.message.action.handler && !_actionTapped) {
     self.message.action.handler();
+    _actionTapped = YES;
   }
   [self.delegate snackbarViewDidTapActionButton:self];
 }
