@@ -732,6 +732,63 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationDefaultStateToggleTest,
           "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
 }
 
+class SettingsGlicSubPageWebActuationNoTiersToggleTest
+    : public SettingsGlicSubPageWebActuationToggleTestBase {
+ public:
+  SettingsGlicSubPageWebActuationNoTiersToggleTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicWebActuationSettingsToggle, {}},
+         {features::kGlicActor,
+          {
+              {features::kGlicActorEligibleTiers.name, ""},
+          }}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationNoTiersToggleTest,
+                       ToggleNotVisibleWithNoTiers) {
+  SigninAndEnableAccountCapability();
+  // Set the pref.
+  GetProfile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+  // Ensure that the toggle is still hidden.
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
+}
+
+class SettingsGlicSubPageWebActuationNoToggleFeatureNoTiersToggleTest
+    : public SettingsGlicSubPageWebActuationToggleTestBase {
+ public:
+  SettingsGlicSubPageWebActuationNoToggleFeatureNoTiersToggleTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicActor,
+          {
+              {features::kGlicActorEligibleTiers.name, ""},
+          }}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsGlicSubPageWebActuationNoToggleFeatureNoTiersToggleTest,
+    ToggleNotVisibleWithNoTiers) {
+  SigninAndEnableAccountCapability();
+  // Set the pref.
+  GetProfile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+  // Ensure that the toggle is still hidden.
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
+}
 class SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest
     : public SettingsGlicSubPageWebActuationToggleTestBase {
  public:
