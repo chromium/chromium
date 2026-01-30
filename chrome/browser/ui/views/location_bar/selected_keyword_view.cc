@@ -53,8 +53,9 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
   if (template_url && template_url->is_ask_starter_pack()) {
     names.full_name = l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_SELECTED_KEYWORD_ASK_TEXT, names.short_name);
-  } else if (template_url && template_url->starter_pack_id() ==
-                                 template_url_starter_pack_data::kPage) {
+  } else if (template_url &&
+             template_url->starter_pack_id() ==
+                 template_url_starter_pack_data::StarterPackId::kPage) {
     names.full_name =
         l10n_util::GetStringUTF16(IDS_STARTER_PACK_PAGE_KEYWORD_TEXT);
   } else if (template_url &&
@@ -112,18 +113,20 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
   const TemplateURL* template_url =
       TemplateURLServiceFactory::GetForProfile(profile_)
           ->GetTemplateURLForKeyword(keyword_);
-  if (template_url && template_url->starter_pack_id() ==
-                          template_url_starter_pack_data::kGemini) {
+  if (template_url &&
+      template_url->starter_pack_id() ==
+          template_url_starter_pack_data::StarterPackId::kGemini) {
     vector_icon = &omnibox::kSparkIcon;
-  } else if (template_url && template_url->starter_pack_id() ==
-                                 template_url_starter_pack_data::kAiMode) {
+  } else if (template_url &&
+             template_url->starter_pack_id() ==
+                 template_url_starter_pack_data::StarterPackId::kAiMode) {
     vector_icon = &omnibox::kSearchSparkIcon;
   } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
                  profile_) &&
              history_embeddings::GetFeatureParameters().omnibox_scoped &&
              template_url &&
              template_url->starter_pack_id() ==
-                 template_url_starter_pack_data::kHistory) {
+                 template_url_starter_pack_data::StarterPackId::kHistory) {
     vector_icon = &omnibox::kSearchSparkIcon;
   } else if (template_url &&
              template_url->policy_origin() ==

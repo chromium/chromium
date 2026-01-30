@@ -838,12 +838,17 @@ class TemplateURL {
   TemplateURLData::ActiveStatus is_active() const { return data().is_active; }
   void set_is_active(TemplateURLData::ActiveStatus active_status);
 
-  int starter_pack_id() const { return data().starter_pack_id; }
+  template_url_starter_pack_data::StarterPackId starter_pack_id() const {
+    return static_cast<template_url_starter_pack_data::StarterPackId>(
+        data().starter_pack_id);
+  }
   // Some starter packs are considered 'ask a question' kind of starter packs.
   // This can be used to condition UI text or a11y strings.
   bool is_ask_starter_pack() const {
-    return starter_pack_id() == template_url_starter_pack_data::kGemini ||
-           starter_pack_id() == template_url_starter_pack_data::kAiMode;
+    return starter_pack_id() ==
+               template_url_starter_pack_data::StarterPackId::kGemini ||
+           starter_pack_id() ==
+               template_url_starter_pack_data::StarterPackId::kAiMode;
   }
 
   const std::vector<TemplateURLRef>& url_refs() const { return url_refs_; }

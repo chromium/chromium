@@ -1505,7 +1505,8 @@ TEST_F(TemplateURLServiceTest, RepairStarterPackEngines) {
   history = nullptr;
   for (TemplateURL* turl : model()->GetTemplateURLs()) {
     if (turl->keyword() == u"@history" && turl->type() == TemplateURL::NORMAL &&
-        turl->starter_pack_id() > 0) {
+        turl->starter_pack_id() !=
+            template_url_starter_pack_data::StarterPackId::kNone) {
       history = turl;
       break;
     }
@@ -1806,7 +1807,8 @@ TEST_F(TemplateURLServiceTest,
       first_compatible_version);
 
   TemplateURL* t_url = model()->GetTemplateURLForKeyword(u"@history");
-  EXPECT_GT(t_url->starter_pack_id(), 0);
+  EXPECT_NE(t_url->starter_pack_id(),
+            template_url_starter_pack_data::StarterPackId::kNone);
   const std::u16string original_title = t_url->short_name();
 
   model()->ResetTemplateURL(t_url, u"not history", u"@history", t_url->url());

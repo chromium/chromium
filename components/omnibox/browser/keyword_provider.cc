@@ -131,7 +131,7 @@ const TemplateURL* KeywordProvider::GetTemplateUrlForText(
   // provide the "@history" keyword in that case.
   if (client_->IsOffTheRecord() &&
       template_url->starter_pack_id() ==
-          template_url_starter_pack_data::kHistory) {
+          template_url_starter_pack_data::StarterPackId::kHistory) {
     return nullptr;
   }
 
@@ -418,7 +418,8 @@ void KeywordProvider::FillInUrlAndContents(
   DCHECK(turl_ref.IsValid(GetTemplateURLService()->search_terms_data()));
   if (remaining_input.empty()) {
     // Null match; e.g. "<Type search term>".
-    if (turl->starter_pack_id() == template_url_starter_pack_data::kAiMode) {
+    if (turl->starter_pack_id() ==
+        template_url_starter_pack_data::StarterPackId::kAiMode) {
       match->contents.assign(
           l10n_util::GetStringUTF16(IDS_EMPTY_STARTER_PACK_AI_MODE_VALUE));
       match->contents_class.emplace_back(0, ACMatchClassification::DIM);

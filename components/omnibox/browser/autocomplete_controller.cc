@@ -1036,7 +1036,8 @@ void AutocompleteController::SetMatchDestinationURL(
   // Append an extra header to navigations from the @gemini scope.
   const TemplateURL* turl = match->GetTemplateURL(template_url_service_);
   if (turl &&
-      turl->starter_pack_id() == template_url_starter_pack_data::kGemini &&
+      turl->starter_pack_id() ==
+          template_url_starter_pack_data::StarterPackId::kGemini &&
       !encoded_search_terms.empty() &&
       net::HttpUtil::IsValidHeaderValue(encoded_search_terms)) {
     DCHECK(net::HttpUtil::IsValidHeaderName(kOmniboxGeminiHeader));
@@ -1133,11 +1134,12 @@ bool AutocompleteController::ShouldRunProvider(
             template_url_service_, &keyword_input);
 
     if (keyword_turl &&
-        (keyword_turl->starter_pack_id() > 0 ||
+        (keyword_turl->starter_pack_id() !=
+             template_url_starter_pack_data::StarterPackId::kNone ||
          keyword_turl->policy_origin() ==
              TemplateURLData::PolicyOrigin::kSearchAggregator)) {
       if (keyword_turl->starter_pack_id() ==
-          template_url_starter_pack_data::kPage) {
+          template_url_starter_pack_data::StarterPackId::kPage) {
         return provider->type() == AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH;
       }
       switch (provider->type()) {
@@ -1155,7 +1157,7 @@ bool AutocompleteController::ShouldRunProvider(
         // @Bookmarks starter pack scope - run only the bookmarks provider.
         case AutocompleteProvider::TYPE_BOOKMARK:
           return (keyword_turl->starter_pack_id() ==
-                  template_url_starter_pack_data::kBookmarks);
+                  template_url_starter_pack_data::StarterPackId::kBookmarks);
 
         // @History starter pack scope - run the history providers & featured
         // search for embeddings IPH suggestions.
@@ -1164,12 +1166,12 @@ bool AutocompleteController::ShouldRunProvider(
         case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
         case AutocompleteProvider::TYPE_FEATURED_SEARCH:
           return (keyword_turl->starter_pack_id() ==
-                  template_url_starter_pack_data::kHistory);
+                  template_url_starter_pack_data::StarterPackId::kHistory);
 
         // @Tabs starter pack scope - run the open tab provider.
         case AutocompleteProvider::TYPE_OPEN_TAB:
           return (keyword_turl->starter_pack_id() ==
-                  template_url_starter_pack_data::kTabs);
+                  template_url_starter_pack_data::StarterPackId::kTabs);
 
         case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
           return keyword_turl->policy_origin() ==
@@ -1251,7 +1253,7 @@ GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
   // TODO(crbug.com/41494524): Replace this logic with a proper fix to support
   // keywords that do not do search term replacement in omnibox.
   if (template_url->starter_pack_id() ==
-      template_url_starter_pack_data::kGemini) {
+      template_url_starter_pack_data::StarterPackId::kGemini) {
     return GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get());
   }
 
@@ -1755,8 +1757,9 @@ void AutocompleteController::AttachActions() {
             template_url_service_, &keyword_input);
     // Attach the contextual search fulfillment actions in the @page keyword
     // mode.
-    if (keyword_turl && keyword_turl->starter_pack_id() ==
-                            template_url_starter_pack_data::kPage) {
+    if (keyword_turl &&
+        keyword_turl->starter_pack_id() ==
+            template_url_starter_pack_data::StarterPackId::kPage) {
       internal_result_.AttachContextualSearchFulfillmentActionToMatches();
 
       // This should intentionally override the fulfillment action if present.
@@ -1857,7 +1860,9 @@ void AutocompleteController::UpdateAssociatedKeywords(
     // on the match, except for starter packed keywords or those featured by
     // policy.
     if (input_turl && !added_keywords.count(input_turl->keyword()) &&
-        !input_turl->starter_pack_id() && !input_turl->featured_by_policy()) {
+        input_turl->starter_pack_id() ==
+            template_url_starter_pack_data::StarterPackId::kNone &&
+        !input_turl->featured_by_policy()) {
       add_keyword(match, input_turl->keyword());
       continue;
     }
@@ -1876,7 +1881,9 @@ void AutocompleteController::UpdateAssociatedKeywords(
 
     // Add keyword hints for non-featured keyword matches.
     if (match_turl && !added_keywords.count(match_turl->keyword()) &&
-        !match_turl->starter_pack_id() && !match_turl->featured_by_policy()) {
+        match_turl->starter_pack_id() ==
+            template_url_starter_pack_data::StarterPackId::kNone &&
+        !match_turl->featured_by_policy()) {
       add_keyword(match, match_turl->keyword());
     }
   }

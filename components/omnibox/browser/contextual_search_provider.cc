@@ -226,11 +226,13 @@ struct EligibleMatchesAndActions {
   // - Show on NTP depending on finch param passed in via `enabled_ntp`
   // - Show only if corresponding starter pack is enabled. `starter_pack_id`
   //   is `nullopt` when the action is not associated with a starter pack.
-  static bool ToolbeltActionEligible(const AutocompleteInput& input,
-                                     AutocompleteProviderClient* client,
-                                     bool enabled_non_ntp,
-                                     bool enabled_ntp,
-                                     std::optional<int> starter_pack_id) {
+  static bool ToolbeltActionEligible(
+      const AutocompleteInput& input,
+      AutocompleteProviderClient* client,
+      bool enabled_non_ntp,
+      bool enabled_ntp,
+      std::optional<template_url_starter_pack_data::StarterPackId>
+          starter_pack_id) {
     // Only show on NTP if the NTP param is enabled.
     if (!enabled_ntp && input.current_page_classification() ==
                             metrics::OmniboxEventProto::

@@ -291,8 +291,10 @@ void MergeIntoEngineData(const TemplateURL* original_turl,
                          TemplateURLMergeOption merge_option) {
   DCHECK(original_turl->prepopulate_id() == 0 ||
          original_turl->prepopulate_id() == url_to_update->prepopulate_id);
-  DCHECK(original_turl->starter_pack_id() == 0 ||
-         original_turl->starter_pack_id() == url_to_update->starter_pack_id);
+  DCHECK(original_turl->starter_pack_id() ==
+             template_url_starter_pack_data::StarterPackId::kNone ||
+         static_cast<int>(original_turl->starter_pack_id()) ==
+             url_to_update->starter_pack_id);
   // When the user modified search engine's properties or search engine is
   // imported from regulatory extensions we need to preserve certain search
   // engine properties from overriding with prepopulated data.
@@ -447,9 +449,11 @@ ActionsFromCurrentData CreateActionsFromCurrentStarterPackData(
   // starter_pack data (i.e. have a non-zero starter_pack_id()).
   std::map<int, TemplateURL*> id_to_turl;
   for (auto& turl : existing_urls) {
-    int starter_pack_id = turl->starter_pack_id();
-    if (starter_pack_id > 0) {
-      id_to_turl[starter_pack_id] = turl.get();
+    template_url_starter_pack_data::StarterPackId starter_pack_id =
+        turl->starter_pack_id();
+    if (starter_pack_id !=
+        template_url_starter_pack_data::StarterPackId::kNone) {
+      id_to_turl[static_cast<int>(starter_pack_id)] = turl.get();
     }
   }
 

@@ -1358,7 +1358,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeStarterPackEngine) {
   data.SetShortName(u"Bookmarks");
   data.SetKeyword(u"@bookmarks");
   data.SetURL("chrome://bookmarks/?q={searchTerms}");
-  data.starter_pack_id = template_url_starter_pack_data::kBookmarks;
+  data.starter_pack_id = static_cast<int>(
+      template_url_starter_pack_data::StarterPackId::kBookmarks);
   data.date_created = Time::FromTimeT(100);
   data.last_modified = Time::FromTimeT(100);
   data.sync_guid = "bookmarks_guid";
@@ -1369,8 +1370,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeStarterPackEngine) {
   invalid_data.SetShortName(u"Invalid starter pack");
   invalid_data.SetKeyword(u"@invalid");
   invalid_data.SetURL("chrome://bookmarks/?q={searchTerms}");
-  invalid_data.starter_pack_id =
-      template_url_starter_pack_data::kMaxStarterPackId;
+  invalid_data.starter_pack_id = static_cast<int>(
+      template_url_starter_pack_data::StarterPackId::kMaxStarterPackId);
   invalid_data.date_created = Time::FromTimeT(100);
   invalid_data.last_modified = Time::FromTimeT(100);
   invalid_data.sync_guid = "invalid_guid";
@@ -1388,7 +1389,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeStarterPackEngine) {
   EXPECT_EQ(data.keyword(), result_turl->keyword());
   EXPECT_EQ(data.short_name(), result_turl->short_name());
   EXPECT_EQ(data.url(), result_turl->url());
-  EXPECT_EQ(data.starter_pack_id, result_turl->starter_pack_id());
+  EXPECT_EQ(data.starter_pack_id,
+            static_cast<int>(result_turl->starter_pack_id()));
 
   // The @invalid entry has an invalid starter pack ID, ensure that it gets
   // thrown out when received from sync.
@@ -5994,8 +5996,9 @@ void TemplateURLServiceSyncMergeTest::
       syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
 
   ASSERT_FALSE(model()->GetTemplateURLForGUID("localguid"));
-  const TemplateURL* turl =
-      model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1);
+  const TemplateURL* turl = model()->FindStarterPackTemplateURL(
+      /*starter_pack_id=*/template_url_starter_pack_data::StarterPackId::
+          kBookmarks);
   ASSERT_THAT(turl,
               Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
                             Property(&TemplateURL::sync_guid, "accountguid"))));
@@ -6011,8 +6014,9 @@ TEST_F(
 
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
-  const TemplateURL* turl =
-      model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1);
+  const TemplateURL* turl = model()->FindStarterPackTemplateURL(
+      /*starter_pack_id=*/template_url_starter_pack_data::StarterPackId::
+          kBookmarks);
   EXPECT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
   EXPECT_THAT(turl,
               Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
@@ -6036,7 +6040,9 @@ TEST_F(
                      Field(&TemplateURLData::sync_guid, "accountguid"))));
 
   model()->StopSyncing(syncer::SEARCH_ENGINES);
-  EXPECT_EQ(turl, model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1));
+  EXPECT_EQ(turl, model()->FindStarterPackTemplateURL(
+                      /*starter_pack_id=*/template_url_starter_pack_data::
+                          StarterPackId::kBookmarks));
   EXPECT_FALSE(turl->GetAccountData());
   EXPECT_THAT(turl,
               Pointee(AllOf(Property(&TemplateURL::keyword, u"localkey"),
@@ -6070,7 +6076,9 @@ void TemplateURLServiceSyncMergeTest::
   ASSERT_FALSE(processor()->contains_guid("accountguid"));
   const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
   ASSERT_THAT(local, Pointee(Property(&TemplateURL::keyword, u"localkey")));
-  ASSERT_EQ(local, model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1));
+  ASSERT_EQ(local, model()->FindStarterPackTemplateURL(
+                       /*starter_pack_id=*/template_url_starter_pack_data::
+                           StarterPackId::kBookmarks));
   const TemplateURL* account = model()->GetTemplateURLForGUID("accountguid");
   ASSERT_THAT(account, Pointee(Property(&TemplateURL::keyword, u"accountkey")));
   ASSERT_NE(local, account);
@@ -6096,10 +6104,11 @@ TEST_F(
 
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
-  EXPECT_THAT(
-      local,
-      AllOf(Pointee(Property(&TemplateURL::keyword, u"localkey")),
-            Eq(model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1))));
+  EXPECT_THAT(local,
+              AllOf(Pointee(Property(&TemplateURL::keyword, u"localkey")),
+                    Eq(model()->FindStarterPackTemplateURL(
+                        /*starter_pack_id=*/template_url_starter_pack_data::
+                            StarterPackId::kBookmarks))));
   EXPECT_THAT(model()->GetTemplateURLForGUID("accountguid"),
               Pointee(Property(&TemplateURL::keyword, u"accountkey")));
 }
@@ -6127,10 +6136,11 @@ TEST_F(
 
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   EXPECT_EQ(local, model()->GetTemplateURLForGUID("localguid"));
-  EXPECT_THAT(
-      local,
-      AllOf(Pointee(Property(&TemplateURL::keyword, u"localkey")),
-            Eq(model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1))));
+  EXPECT_THAT(local,
+              AllOf(Pointee(Property(&TemplateURL::keyword, u"localkey")),
+                    Eq(model()->FindStarterPackTemplateURL(
+                        /*starter_pack_id=*/template_url_starter_pack_data::
+                            StarterPackId::kBookmarks))));
   EXPECT_FALSE(model()->GetTemplateURLForGUID("accountguid"));
 }
 

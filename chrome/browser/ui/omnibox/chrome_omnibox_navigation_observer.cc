@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
@@ -321,7 +322,8 @@ void ChromeOmniboxNavigationObserver::On404() {
   // mess with it.
   if (template_url_service->ShowInDefaultList(template_url) ||
       !template_url->safe_for_autoreplace() ||
-      template_url->starter_pack_id() != 0) {
+      template_url->starter_pack_id() !=
+          template_url_starter_pack_data::StarterPackId::kNone) {
     return;
   }
   // This custom search engine is safe to delete.

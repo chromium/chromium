@@ -1286,7 +1286,9 @@ bool AutocompleteMatch::HasInstantKeyword(
   }
   const TemplateURL* turl =
       GetTemplateURLWithKeyword(template_url_service, associated_keyword, "");
-  return turl && (turl->starter_pack_id() != 0 || turl->featured_by_policy());
+  return turl && (turl->starter_pack_id() !=
+                      template_url_starter_pack_data::StarterPackId::kNone ||
+                  turl->featured_by_policy());
 }
 
 bool AutocompleteMatch::ShouldHideBasedOnStarterPack(
@@ -1294,7 +1296,8 @@ bool AutocompleteMatch::ShouldHideBasedOnStarterPack(
   const TemplateURL* turl =
       template_url_service->GetTemplateURLForKeyword(keyword);
   return from_keyword && turl &&
-         turl->starter_pack_id() == template_url_starter_pack_data::kGemini;
+         turl->starter_pack_id() ==
+             template_url_starter_pack_data::StarterPackId::kGemini;
 }
 
 void AutocompleteMatch::GetKeywordUIState(
@@ -1343,24 +1346,24 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
   }
   int message_id;
   switch (template_url->starter_pack_id()) {
-    case template_url_starter_pack_data::kBookmarks:
+    case template_url_starter_pack_data::StarterPackId::kBookmarks:
       message_id = IDS_OMNIBOX_BOOKMARKS_SCOPE_PLACEHOLDER_TEXT;
       break;
-    case template_url_starter_pack_data::kHistory:
+    case template_url_starter_pack_data::StarterPackId::kHistory:
       message_id = is_history_embeddings_enabled
                        ? IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PLACEHOLDER_TEXT
                        : IDS_OMNIBOX_HISTORY_SCOPE_PLACEHOLDER_TEXT;
       break;
-    case template_url_starter_pack_data::kTabs:
+    case template_url_starter_pack_data::StarterPackId::kTabs:
       message_id = IDS_OMNIBOX_TABS_SCOPE_PLACEHOLDER_TEXT;
       break;
-    case template_url_starter_pack_data::kGemini:
+    case template_url_starter_pack_data::StarterPackId::kGemini:
       message_id = IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT;
       break;
-    case template_url_starter_pack_data::kPage:
+    case template_url_starter_pack_data::StarterPackId::kPage:
       message_id = IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT;
       break;
-    case template_url_starter_pack_data::kAiMode:
+    case template_url_starter_pack_data::StarterPackId::kAiMode:
       message_id = IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT;
       break;
     default:

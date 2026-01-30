@@ -118,19 +118,19 @@ void TemplateURLTableModel::Reload() {
   for (TemplateURL* template_url : urls) {
     // Skip @gemini if feature disabled.
     if (template_url->starter_pack_id() ==
-            template_url_starter_pack_data::kGemini &&
+            template_url_starter_pack_data::StarterPackId::kGemini &&
         !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) {
       continue;
     }
     // Skip @page if feature disabled.
     if (template_url->starter_pack_id() ==
-            template_url_starter_pack_data::kPage &&
+            template_url_starter_pack_data::StarterPackId::kPage &&
         !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
       continue;
     }
     // Skip @aimode if feature disabled.
     if (template_url->starter_pack_id() ==
-            template_url_starter_pack_data::kAiMode &&
+            template_url_starter_pack_data::StarterPackId::kAiMode &&
         !ai_mode_enabled_) {
       continue;
     }

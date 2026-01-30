@@ -34,6 +34,7 @@
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
@@ -236,7 +237,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   const TemplateURL* GetTemplateURLForHost(const std::string& host) const;
 
   // Returns the `TemplateURL` corresponding to `starter_pack_id`, if any.
-  TemplateURL* FindStarterPackTemplateURL(int starter_pack_id);
+  TemplateURL* FindStarterPackTemplateURL(
+      template_url_starter_pack_data::StarterPackId starter_pack_id);
 
   // Returns the `TemplateURL` associated with `extension_id`, if any.
   TemplateURL* FindTemplateURLForExtension(const std::string& extension_id,

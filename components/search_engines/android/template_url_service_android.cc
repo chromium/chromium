@@ -481,7 +481,8 @@ TemplateUrlServiceAndroid::FilterUserSelectableTemplateUrls(
 
     // Do not include starter pack engines (@aimode, @tabs, ...) as these are
     // not actual search engines.
-    if (template_url->starter_pack_id() != 0) {
+    if (template_url->starter_pack_id() !=
+        template_url_starter_pack_data::StarterPackId::kNone) {
       continue;
     }
 

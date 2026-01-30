@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/search_engines/template_url_id.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "url/gurl.h"
 

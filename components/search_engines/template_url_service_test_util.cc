@@ -177,7 +177,8 @@ LoadedTemplateURLServiceUnitTestBase::GetKeywordTemplateURLs() {
   TemplateURLService::TemplateURLVector turls =
       template_url_service().GetTemplateURLs();
   auto to_remove = std::ranges::remove_if(turls, [](const TemplateURL* turl) {
-    return turl->starter_pack_id() != 0;
+    return turl->starter_pack_id() !=
+           template_url_starter_pack_data::StarterPackId::kNone;
   });
   turls.erase(to_remove.begin(), to_remove.end());
   return turls;

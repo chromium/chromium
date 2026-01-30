@@ -1037,7 +1037,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
     if (keyword_url &&
         (keyword_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) &&
         (keyword_url->starter_pack_id() !=
-         template_url_starter_pack_data::kTabs)) {
+         template_url_starter_pack_data::StarterPackId::kTabs)) {
       bool keyword_relevance_from_server;
       const int keyword_verbatim_relevance =
           GetKeywordVerbatimRelevance(&keyword_relevance_from_server);

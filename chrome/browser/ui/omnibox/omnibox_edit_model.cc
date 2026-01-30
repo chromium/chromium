@@ -2722,9 +2722,12 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
         base::TimeTicks::Now() - match_selection_timestamp);
     action->Execute(context);
     if (context.enter_starter_pack_id_ != 0 && template_url_service) {
+      template_url_starter_pack_data::StarterPackId starter_pack_id =
+          static_cast<template_url_starter_pack_data::StarterPackId>(
+              context.enter_starter_pack_id_);
       if (const TemplateURL* starter_pack_turl =
               template_url_service->FindStarterPackTemplateURL(
-                  context.enter_starter_pack_id_)) {
+                  starter_pack_id)) {
         EnterKeywordMode(
             OmniboxEventProto::TOOLBELT, starter_pack_turl,
             AutocompleteMatch::GetKeywordPlaceholder(

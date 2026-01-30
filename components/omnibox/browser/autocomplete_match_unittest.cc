@@ -1107,8 +1107,11 @@ TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
 
     if (match.type == AutocompleteMatchType::STARTER_PACK) {
       // All STARTER_PACK suggestions should have non-empty vector icons.
-      for (int starter_pack_id = template_url_starter_pack_data::kBookmarks;
-           starter_pack_id != template_url_starter_pack_data::kMaxStarterPackId;
+      for (int starter_pack_id = static_cast<int>(
+               template_url_starter_pack_data::StarterPackId::kBookmarks);
+           starter_pack_id !=
+           static_cast<int>(template_url_starter_pack_data::StarterPackId::
+                                kMaxStarterPackId);
            starter_pack_id++) {
         TemplateURLData turl_data;
         turl_data.starter_pack_id = starter_pack_id;
@@ -1177,13 +1180,15 @@ TEST_F(AutocompleteMatchTest, ShouldHideBasedOnStarterPack) {
   // Set up `TemplateURL` for Gemini starter pack.
   TemplateURLData gemini_turl_data;
   gemini_turl_data.SetKeyword(u"@gemini");
-  gemini_turl_data.starter_pack_id = template_url_starter_pack_data::kGemini;
+  gemini_turl_data.starter_pack_id =
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kGemini);
   template_url_service->Add(std::make_unique<TemplateURL>(gemini_turl_data));
 
   // Set up `TemplateURL` for a different starter pack.
   TemplateURLData history_turl_data;
   history_turl_data.SetKeyword(u"@history");
-  history_turl_data.starter_pack_id = template_url_starter_pack_data::kHistory;
+  history_turl_data.starter_pack_id =
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kHistory);
   template_url_service->Add(std::make_unique<TemplateURL>(history_turl_data));
 
   // Set up `TemplateURL` with no starter pack ID.

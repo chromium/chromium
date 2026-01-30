@@ -173,16 +173,19 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   }
 
   int64_t date_created = 0;
-  if (base::StringToInt64(date_created_str, &date_created))
+  if (base::StringToInt64(date_created_str, &date_created)) {
     result->date_created = base::Time::FromInternalValue(date_created);
+  }
 
   int64_t last_modified = 0;
-  if (base::StringToInt64(last_modified_str, &last_modified))
+  if (base::StringToInt64(last_modified_str, &last_modified)) {
     result->last_modified = base::Time::FromInternalValue(last_modified);
+  }
 
   int64_t last_visited = 0;
-  if (base::StringToInt64(last_visited_str, &last_visited))
+  if (base::StringToInt64(last_visited_str, &last_visited)) {
     result->last_visited = base::Time::FromInternalValue(last_visited);
+  }
 
   result->usage_count = dict.FindInt(DefaultSearchManager::kUsageCount)
                             .value_or(result->usage_count);
@@ -191,8 +194,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
       dict.FindList(DefaultSearchManager::kAlternateURLs);
   if (alternate_urls) {
     for (const auto& it : *alternate_urls) {
-      if (it.is_string())
+      if (it.is_string()) {
         result->alternate_urls.push_back(it.GetString());
+      }
     }
   }
 
@@ -201,8 +205,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   if (encodings) {
     for (const auto& it : *encodings) {
       std::string encoding;
-      if (it.is_string())
+      if (it.is_string()) {
         result->input_encodings.push_back(it.GetString());
+      }
     }
   }
 
@@ -287,14 +292,16 @@ base::DictValue TemplateURLDataToDictionary(const TemplateURLData& data) {
   url_dict.Set(DefaultSearchManager::kUsageCount, data.usage_count);
 
   base::ListValue alternate_urls;
-  for (const auto& alternate_url : data.alternate_urls)
+  for (const auto& alternate_url : data.alternate_urls) {
     alternate_urls.Append(alternate_url);
+  }
 
   url_dict.Set(DefaultSearchManager::kAlternateURLs, std::move(alternate_urls));
 
   base::ListValue encodings;
-  for (const auto& input_encoding : data.input_encodings)
+  for (const auto& input_encoding : data.input_encodings) {
     encodings.Append(input_encoding);
+  }
   url_dict.Set(DefaultSearchManager::kInputEncodings, std::move(encodings));
 
   url_dict.Set(DefaultSearchManager::kPolicyOrigin,
@@ -390,8 +397,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     base::ListValue empty_list;
     const base::ListValue* alternate_urls =
         engine_dict.FindList("alternate_urls");
-    if (!alternate_urls)
+    if (!alternate_urls) {
       alternate_urls = &empty_list;
+    }
 
     std::string suggest_url;
     std::string image_url;
@@ -505,7 +513,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromStarterPackEngine(
   turl->SetKeyword(u"@" + l10n_util::GetStringUTF16(engine.keyword_message_id));
   turl->SetURL(engine.search_url);
   turl->favicon_url = GURL(ToStringView(engine.favicon_url));
-  turl->starter_pack_id = engine.id;
+  turl->starter_pack_id = static_cast<int>(engine.id);
   turl->GenerateSyncGUID();
   turl->safe_for_autoreplace = true;
   turl->is_active = TemplateURLData::ActiveStatus::kTrue;

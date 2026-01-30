@@ -74,7 +74,7 @@ static int32_t JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env,
 static jint JNI_TemplateUrl_GetStarterPackId(JNIEnv* env,
                                              jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
-  return template_url->starter_pack_id();
+  return static_cast<int>(template_url->starter_pack_id());
 }
 
 ScopedJavaLocalRef<jobject> CreateTemplateUrlAndroid(

@@ -159,8 +159,8 @@ void StarterPackBookmarksAction::RecordActionShown(size_t position,
 }
 
 void StarterPackBookmarksAction::Execute(ExecutionContext& context) const {
-  context.enter_starter_pack_id_ =
-      template_url_starter_pack_data::StarterPackId::kBookmarks;
+  context.enter_starter_pack_id_ = static_cast<int>(
+      template_url_starter_pack_data::StarterPackId::kBookmarks);
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -192,7 +192,7 @@ void StarterPackHistoryAction::RecordActionShown(size_t position,
 
 void StarterPackHistoryAction::Execute(ExecutionContext& context) const {
   context.enter_starter_pack_id_ =
-      template_url_starter_pack_data::StarterPackId::kHistory;
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kHistory);
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -224,7 +224,7 @@ void StarterPackTabsAction::RecordActionShown(size_t position,
 
 void StarterPackTabsAction::Execute(ExecutionContext& context) const {
   context.enter_starter_pack_id_ =
-      template_url_starter_pack_data::StarterPackId::kTabs;
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kTabs);
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -256,7 +256,7 @@ void StarterPackAiModeAction::RecordActionShown(size_t position,
 
 void StarterPackAiModeAction::Execute(ExecutionContext& context) const {
   context.enter_starter_pack_id_ =
-      template_url_starter_pack_data::StarterPackId::kAiMode;
+      static_cast<int>(template_url_starter_pack_data::StarterPackId::kAiMode);
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)

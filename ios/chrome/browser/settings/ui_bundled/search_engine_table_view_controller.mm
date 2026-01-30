@@ -21,6 +21,7 @@
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
+#import "components/search_engines/template_url_starter_pack_data.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -471,7 +472,8 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Classify TemplateURLs.
   for (TemplateURL* url : urls) {
     // Starter pack is not supported on iOS.
-    if (url->starter_pack_id() != 0) {
+    if (url->starter_pack_id() !=
+        template_url_starter_pack_data::StarterPackId::kNone) {
       continue;
     }
 

@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "url/gurl.h"
 
@@ -249,7 +250,9 @@ AutocompleteProvider::AdjustInputForStarterPackKeyword(
     const TemplateURL* template_url =
         AutocompleteInput::GetSubstitutingTemplateURLForInput(turl_service,
                                                               &keyword_input);
-    if (template_url && template_url->starter_pack_id() > 0) {
+    if (template_url &&
+        template_url->starter_pack_id() !=
+            template_url_starter_pack_data::StarterPackId::kNone) {
       return {keyword_input, template_url};
     }
   }

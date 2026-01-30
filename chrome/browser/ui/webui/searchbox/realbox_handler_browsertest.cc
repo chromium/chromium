@@ -376,8 +376,11 @@ IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, MatchVectorIcons) {
     match.type = static_cast<AutocompleteMatchType::Type>(type);
     if (match.type == AutocompleteMatchType::STARTER_PACK) {
       // All STARTER_PACK suggestions should have non-empty vector icons.
-      for (int starter_pack_id = template_url_starter_pack_data::kBookmarks;
-           starter_pack_id != template_url_starter_pack_data::kMaxStarterPackId;
+      for (int starter_pack_id = static_cast<int>(
+               template_url_starter_pack_data::StarterPackId::kBookmarks);
+           starter_pack_id !=
+           static_cast<int>(template_url_starter_pack_data::StarterPackId::
+                                kMaxStarterPackId);
            starter_pack_id++) {
         TemplateURLData turl_data;
         turl_data.starter_pack_id = starter_pack_id;

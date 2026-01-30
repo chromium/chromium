@@ -35,6 +35,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -257,8 +258,10 @@ base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
   Profile* profile = Profile::FromWebUI(web_ui());
   dict.Set("url",
            template_url->url_ref().DisplayURL(UIThreadSearchTermsData()));
-  dict.Set("urlLocked", ((template_url->prepopulate_id() > 0) ||
-                         (template_url->starter_pack_id() > 0)));
+  dict.Set("urlLocked",
+           ((template_url->prepopulate_id() > 0) ||
+            (template_url->starter_pack_id() !=
+             template_url_starter_pack_data::StarterPackId::kNone)));
   GURL icon_url = template_url->favicon_url();
   if (icon_url.is_valid()) {
     dict.Set("iconURL", icon_url.spec());
@@ -304,7 +307,9 @@ base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
   TemplateURL::Type type = template_url->type();
   dict.Set("isOmniboxExtension", type == TemplateURL::OMNIBOX_API_EXTENSION);
   dict.Set("isPrepopulated", template_url->prepopulate_id() > 0);
-  dict.Set("isStarterPack", template_url->starter_pack_id() > 0);
+  dict.Set("isStarterPack",
+           template_url->starter_pack_id() !=
+               template_url_starter_pack_data::StarterPackId::kNone);
   if (type == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
       type == TemplateURL::OMNIBOX_API_EXTENSION) {
     const extensions::Extension* extension =

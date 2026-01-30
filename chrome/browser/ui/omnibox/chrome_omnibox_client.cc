@@ -413,8 +413,9 @@ void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
 
   TemplateURL* template_url =
       GetTemplateURLService()->GetTemplateURLForKeyword(keyword);
-  if (!template_url || template_url->starter_pack_id() !=
-                           template_url_starter_pack_data::kPage) {
+  if (!template_url ||
+      template_url->starter_pack_id() !=
+          template_url_starter_pack_data::StarterPackId::kPage) {
     return;
   }
 }
