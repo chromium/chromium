@@ -33,12 +33,15 @@ class PhoneStatusViewTest : public AshTestBase,
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kPhoneHub);
     AshTestBase::SetUp();
+
+    // `widget_` owns `status_view_`.
     widget_ = CreateFramelessTestWidget();
     status_view_ = widget_->SetContentsView(
         std::make_unique<PhoneStatusView>(&phone_model_, this));
   }
 
   void TearDown() override {
+    status_view_ = nullptr;
     widget_.reset();
     AshTestBase::TearDown();
   }
@@ -54,7 +57,7 @@ class PhoneStatusViewTest : public AshTestBase,
 
  protected:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<PhoneStatusView, DanglingUntriaged> status_view_ = nullptr;
+  raw_ptr<PhoneStatusView> status_view_ = nullptr;
   phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
   bool can_open_connected_device_settings_ = false;
@@ -113,6 +116,8 @@ TEST_F(PhoneStatusViewTest, ClickOnSettings) {
 
   // The settings button is visible if we can open settings.
   can_open_connected_device_settings_ = true;
+  status_view_ = nullptr; // Reset the raw pointer to prevent a dangling pointer
+                          // upon calling `SetContentsView()`.
   status_view_ = widget_->SetContentsView(
       std::make_unique<PhoneStatusView>(&phone_model_, this));
   EXPECT_TRUE(status_view_->settings_button_->GetVisible());
