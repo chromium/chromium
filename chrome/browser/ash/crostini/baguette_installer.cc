@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -45,13 +46,22 @@ base::ScopedFD OpenFdBlocking(base::FilePath image_path) {
 
 }  // namespace
 
-BaguetteInstaller::BaguetteInstaller(Profile* profile, PrefService& local_state)
+BaguetteInstaller::BaguetteInstaller(
+    Profile* profile,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : download_factory_(base::BindRepeating(
-          [](PrefService& local_state) -> std::unique_ptr<BaguetteDownload> {
-            return std::make_unique<SimpleURLLoaderDownload>(local_state);
+          [](scoped_refptr<network::SharedURLLoaderFactory>
+                 shared_url_loader_factory)
+              -> std::unique_ptr<BaguetteDownload> {
+            return std::make_unique<SimpleURLLoaderDownload>(
+                std::move(shared_url_loader_factory));
           },
-          std::ref(local_state))),
-      profile_(profile) {}
+          shared_url_loader_factory)),
+      profile_(profile) {
+  if (!shared_url_loader_factory) {
+    CHECK_IS_TEST();
+  }
+}
 BaguetteInstaller::~BaguetteInstaller() = default;
 
 void BaguetteInstaller::Install(BaguetteInstallerCallback callback) {

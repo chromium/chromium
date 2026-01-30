@@ -42,6 +42,8 @@ CrostiniManagerFactory::BuildServiceInstanceForBrowserContext(
   // Exceptionally allow g_browser_process usage here since this class is in
   // base::NoDestructor.
   const auto* component_update_service = g_browser_process->component_updater();
+  auto shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
   auto component_manager_ash =
       g_browser_process->platform_part()->component_manager_ash();
   auto* scheduler_configuration_manager =
@@ -49,8 +51,8 @@ CrostiniManagerFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<CrostiniManager>(
-      component_update_service, component_manager_ash,
-      scheduler_configuration_manager, profile);
+      component_update_service, std::move(shared_url_loader_factory),
+      component_manager_ash, scheduler_configuration_manager, profile);
 }
 
 }  // namespace crostini

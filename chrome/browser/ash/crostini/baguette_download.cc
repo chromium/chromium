@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crostini/baguette_download.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -13,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/browser_process.h"
 #include "crypto/hash.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -90,8 +90,11 @@ std::string Sha256FileForTesting(const base::FilePath& path) {
   return Sha256File(path);
 }
 
-SimpleURLLoaderDownload::SimpleURLLoaderDownload(PrefService& local_state)
-    : local_state_(local_state) {}
+SimpleURLLoaderDownload::SimpleURLLoaderDownload(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
+  CHECK(shared_url_loader_factory_);
+}
 
 SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
   auto seq = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -127,7 +130,7 @@ void SimpleURLLoaderDownload::Download(
                                              kBaguetteTrafficAnnotation);
   loader_->SetRetryOptions(
       5, network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
-  loader_->DownloadToFile(g_browser_process->shared_url_loader_factory().get(),
+  loader_->DownloadToFile(shared_url_loader_factory_.get(),
                           base::BindOnce(&SimpleURLLoaderDownload::Finished,
                                          weak_ptr_factory_.GetWeakPtr()),
                           std::move(path));

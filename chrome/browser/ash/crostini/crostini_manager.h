@@ -196,9 +196,11 @@ class CrostiniManager : public KeyedService,
 
   // `component_update_service` and `scheduler_configuration_manager` must
   // outlive `this`, but both of them may be null in unit tests.
-  // `component_manager_ash` may be null in unit tests.
+  // `shared_url_loader_factory` and `component_manager_ash` may be null in unit
+  // tests.
   explicit CrostiniManager(
       const component_updater::ComponentUpdateService* component_update_service,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       scoped_refptr<component_updater::ComponentManagerAsh>
           component_manager_ash,
       ash::SchedulerConfigurationManager* scheduler_configuration_manager,

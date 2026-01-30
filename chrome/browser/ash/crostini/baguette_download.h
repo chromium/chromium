@@ -12,10 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-
-class PrefService;
 
 namespace net {
 struct NetworkTrafficAnnotationTag;
@@ -47,7 +46,9 @@ class BaguetteDownload {
 
 class SimpleURLLoaderDownload : public BaguetteDownload {
  public:
-  explicit SimpleURLLoaderDownload(PrefService& local_state);
+  // `shared_url_loader_factory` must be non-null.
+  explicit SimpleURLLoaderDownload(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   void StartDownload(
       GURL url,
@@ -64,7 +65,8 @@ class SimpleURLLoaderDownload : public BaguetteDownload {
   void Download(std::unique_ptr<base::ScopedTempDir> dir);
   void Finished(base::FilePath path);
 
-  const raw_ref<PrefService> local_state_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
   GURL url_;
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
   base::OnceCallback<void(base::FilePath path, std::string sha256)> callback_;

@@ -12,12 +12,13 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/baguette_download.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
-class PrefService;
 class Profile;
 
 // TODO(crbug.com/377377749): add downloader which grabs image file from GS
@@ -31,7 +32,10 @@ namespace crostini {
 // containerless Crostini VM.
 class BaguetteInstaller {
  public:
-  BaguetteInstaller(Profile* profile, PrefService& local_state);
+  // `shared_url_loader_factory` may be null in unit tests.
+  BaguetteInstaller(
+      Profile* profile,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   ~BaguetteInstaller();
 
   BaguetteInstaller(const BaguetteInstaller&) = delete;

@@ -1302,6 +1302,7 @@ CrostiniManager* CrostiniManager::GetForProfile(Profile* profile) {
 
 CrostiniManager::CrostiniManager(
     const component_updater::ComponentUpdateService* component_update_service,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     ash::SchedulerConfigurationManager* scheduler_configuration_manager,
     Profile* profile)
@@ -1310,7 +1311,7 @@ CrostiniManager::CrostiniManager(
       scheduler_configuration_manager_(scheduler_configuration_manager),
       profile_(profile),
       owner_id_(CryptohomeIdForProfile(profile)),
-      baguette_installer_(profile_, *profile_->GetPrefs()) {
+      baguette_installer_(profile_, std::move(shared_url_loader_factory)) {
   if (!component_update_service_) {
     CHECK_IS_TEST();
   }
