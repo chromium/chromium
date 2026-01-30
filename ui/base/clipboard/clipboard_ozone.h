@@ -6,11 +6,15 @@
 #define UI_BASE_CLIPBOARD_CLIPBOARD_OZONE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_metrics.h"
+#include "ui/ozone/public/platform_clipboard.h"
 
 namespace ui {
 
@@ -43,6 +47,40 @@ class ClipboardOzone : public Clipboard {
   void Clear(ClipboardBuffer buffer) override;
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
+                          ReadAvailableTypesCallback callback) const override;
+  void ReadText(ClipboardBuffer buffer,
+                const DataTransferEndpoint* data_dst,
+                ReadTextCallback callback) const override;
+  void ReadAsciiText(ClipboardBuffer buffer,
+                     const DataTransferEndpoint* data_dst,
+                     ReadAsciiTextCallback callback) const override;
+  void ReadHTML(ClipboardBuffer buffer,
+                const DataTransferEndpoint* data_dst,
+                ReadHtmlCallback callback) const override;
+  void ReadSvg(ClipboardBuffer buffer,
+               const DataTransferEndpoint* data_dst,
+               ReadSvgCallback callback) const override;
+  void ReadRTF(ClipboardBuffer buffer,
+               const DataTransferEndpoint* data_dst,
+               ReadRTFCallback callback) const override;
+  void ReadPng(ClipboardBuffer buffer,
+               const DataTransferEndpoint* data_dst,
+               ReadPngCallback callback) const override;
+  void ReadDataTransferCustomData(
+      ClipboardBuffer buffer,
+      const std::u16string& type,
+      const DataTransferEndpoint* data_dst,
+      ReadDataTransferCustomDataCallback callback) const override;
+  void ReadFilenames(ClipboardBuffer buffer,
+                     const DataTransferEndpoint* data_dst,
+                     ReadFilenamesCallback callback) const override;
+  void ReadBookmark(const DataTransferEndpoint* data_dst,
+                    ReadBookmarkCallback callback) const override;
+  void ReadData(const ClipboardFormatType& format,
+                const DataTransferEndpoint* data_dst,
+                ReadDataCallback callback) const override;
+  void ReadAvailableTypes(ClipboardBuffer buffer,
+                          const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
   void ReadText(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
@@ -62,9 +100,6 @@ class ClipboardOzone : public Clipboard {
   void ReadRTF(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
                std::string* result) const override;
-  void ReadPng(ClipboardBuffer buffer,
-               const DataTransferEndpoint* data_dst,
-               ReadPngCallback callback) const override;
   void ReadDataTransferCustomData(ClipboardBuffer buffer,
                                   const std::u16string& type,
                                   const DataTransferEndpoint* data_dst,
@@ -104,9 +139,43 @@ class ClipboardOzone : public Clipboard {
   void AddSourceToClipboard(const ClipboardBuffer buffer,
                             std::unique_ptr<DataTransferEndpoint> data_src);
 
+  void OnReadAvailableTypes(
+      ClipboardBuffer buffer,
+      ReadAvailableTypesCallback callback,
+      const std::vector<std::string>& available_types) const;
+  void OnReadCustomData(std::vector<std::u16string> types,
+                        ReadAvailableTypesCallback callback,
+                        const PlatformClipboard::Data& data) const;
+
+  template <typename Callback, typename ProcessCallback>
+  void ReadAsync(ClipboardBuffer buffer,
+                 const std::string& mime_type,
+                 std::optional<DataTransferEndpoint> data_dst,
+                 ClipboardFormatMetric metric,
+                 Callback callback,
+                 ProcessCallback process_cb) const;
+
+  template <typename Callback, typename ProcessCallback>
+  void OnReadAsync(ClipboardBuffer buffer,
+                   std::optional<DataTransferEndpoint> data_dst,
+                   ClipboardFormatMetric metric,
+                   Callback callback,
+                   ProcessCallback process_cb,
+                   const PlatformClipboard::Data& data) const;
+
+  template <typename Callback, typename ProcessCallback>
+  void OnReadAsyncSource(std::optional<DataTransferEndpoint> data_dst,
+                         ClipboardFormatMetric metric,
+                         Callback callback,
+                         ProcessCallback process_cb,
+                         const PlatformClipboard::Data& data,
+                         std::optional<DataTransferEndpoint> data_src) const;
+
   class AsyncClipboardOzone;
 
   std::unique_ptr<AsyncClipboardOzone> async_clipboard_ozone_;
+
+  mutable base::WeakPtrFactory<ClipboardOzone> weak_factory_{this};
 };
 
 }  // namespace ui
