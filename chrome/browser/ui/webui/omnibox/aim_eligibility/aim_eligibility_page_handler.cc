@@ -66,22 +66,26 @@ AimEligibilityPageHandler::QueryEligibilityState() {
   state->is_eligible_by_dse = aim_eligibility_service_->IsAimAllowedByDse();
   state->is_server_eligibility_enabled =
       aim_eligibility_service_->IsServerEligibilityEnabled();
-  state->is_eligible_by_server = false;
-  state->server_response_base64_encoded = "";
-  state->server_response_base64_url_encoded = "";
-  state->server_response_source = "";
   if (state->is_server_eligibility_enabled) {
     const auto& response = aim_eligibility_service_->GetMostRecentResponse();
     state->is_eligible_by_server = response.is_eligible();
     std::string response_string;
     response.SerializeToString(&response_string);
-    state->server_response_base64_encoded = base::Base64Encode(response_string);
+    state->eligibility_response_base64_encoded =
+        base::Base64Encode(response_string);
     base::Base64UrlEncode(response_string,
                           base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &state->server_response_base64_url_encoded);
-    state->server_response_source =
+                          &state->eligibility_response_base64_url_encoded);
+    state->eligibility_response_source =
         AimEligibilityService::EligibilityResponseSourceToString(
             aim_eligibility_service_->GetMostRecentResponseSource());
+    if (response.has_searchbox_config()) {
+      std::string config_string;
+      response.searchbox_config().SerializeToString(&config_string);
+      base::Base64UrlEncode(config_string,
+                            base::Base64UrlEncodePolicy::OMIT_PADDING,
+                            &state->searchbox_config_base64_url_encoded);
+    }
   }
   state->last_updated = base::Time::Now();
   return state;

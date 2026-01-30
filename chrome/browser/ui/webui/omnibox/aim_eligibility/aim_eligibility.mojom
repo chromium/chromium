@@ -19,14 +19,17 @@ struct EligibilityState {
   bool is_eligible_by_server;
   // Whether server eligibility checking is enabled.
   bool is_server_eligibility_enabled;
-  // Base64 encoded server response proto from prefs. Populated if server
+  // Base64 encoded eligibility response proto. Populated if server eligibility
+  // checking is enabled.
+  string eligibility_response_base64_encoded;
+  // Base64url encoded eligibility response proto. Populated if server
   // eligibility checking is enabled.
-  string server_response_base64_encoded;
-  // Base64url encoded server response proto. Populated if server
+  string eligibility_response_base64_url_encoded;
+  // Source of the eligibility response, e.g., "Server", "Prefs".
+  string eligibility_response_source;
+  // Base64url encoded searchbox config proto. Populated if server
   // eligibility checking is enabled.
-  string server_response_base64_url_encoded;
-  // Source of the server response, e.g., "Server", "Prefs".
-  string server_response_source;
+  string searchbox_config_base64_url_encoded;
   // Last updated time.
   mojo_base.mojom.JSTime last_updated;
 };
