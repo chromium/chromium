@@ -260,6 +260,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   UILabel* label = [[UILabel alloc] init];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.font = [self entrypointLabelFont];
+  label.textColor = [UIColor colorNamed:kTextPrimaryColor];
   label.numberOfLines = 1;
   label.accessibilityIdentifier = kContextualPanelEntrypointLabelIdentifier;
   label.isAccessibilityElement = NO;
