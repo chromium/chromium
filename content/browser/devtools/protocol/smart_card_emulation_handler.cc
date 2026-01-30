@@ -536,6 +536,15 @@ base::expected<void, std::string> SmartCardEmulationHandler::CompleteStatus(
   return base::ok();
 }
 
+base::expected<void, std::string> SmartCardEmulationHandler::CompleteDataResult(
+    const std::string& request_id,
+    std::vector<uint8_t> response) {
+  ASSIGN_OR_RETURN(auto req, TakePendingRequest<PendingDataResult>(request_id));
+  std::move(req.callback())
+      .Run(device::mojom::SmartCardDataResult::NewData(std::move(response)));
+  return base::ok();
+}
+
 base::expected<void, std::string> SmartCardEmulationHandler::FailRequest(
     const std::string& request_id,
     device::mojom::SmartCardError error) {
@@ -595,6 +604,19 @@ DispatchResponse SmartCardEmulationHandler::ReportGetStatusChangeResult(
   RETURN_IF_ERROR(
       CompleteGetStatusChange(in_requestId,
                               ToMojoReaderStates(std::move(in_readerStates))),
+      [](const std::string& error) {
+        return DispatchResponse::ServerError(error);
+      });
+
+  return DispatchResponse::Success();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportDataResult(
+    const String& in_requestId,
+    const Binary& in_data) {
+  RETURN_IF_ERROR(
+      CompleteDataResult(in_requestId,
+                         std::vector<uint8_t>(in_data.begin(), in_data.end())),
       [](const std::string& error) {
         return DispatchResponse::ServerError(error);
       });

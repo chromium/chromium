@@ -247,7 +247,6 @@
                 "exclude": [
                     "reportReleaseContextResult",
                     "reportPlainResult",
-                    "reportDataResult",
                     "reportBeginTransactionResult"
                 ]
             }

@@ -240,6 +240,93 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
                  std::move(response));
   }
 
+  // Helper: Waits for transmitRequested and sends a response.
+  void HandleTransmit(
+      const std::vector<uint8_t>& expected_command,
+      const base::expected<std::vector<uint8_t>, std::string>& result,
+      int handle = 123) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.transmitRequested");
+
+    EXPECT_EQ(params.FindInt("handle"), handle);
+
+    const std::string* command_b64 = params.FindString("data");
+    ASSERT_TRUE(command_b64) << "Transmit event missing 'data' field";
+
+    std::string command_str;
+    base::Base64Decode(*command_b64, &command_str);
+    std::vector<uint8_t> actual_command(command_str.begin(), command_str.end());
+    EXPECT_EQ(actual_command, expected_command)
+        << "JS sent wrong command bytes";
+
+    base::DictValue response;
+
+    if (result.has_value()) {
+      response.Set("data", base::Base64Encode(result.value()));
+      SendResponse("SmartCardEmulation.reportDataResult", params,
+                   std::move(response));
+    } else {
+      response.Set("resultCode", result.error());
+      SendResponse("SmartCardEmulation.reportError", params,
+                   std::move(response));
+    }
+  }
+
+  // Helper: Waits for controlRequested and sends a response.
+  void HandleControl(
+      int expected_control_code,
+      const std::vector<uint8_t>& expected_data,
+      const base::expected<std::vector<uint8_t>, std::string>& result,
+      int handle = 123) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.controlRequested");
+
+    EXPECT_EQ(params.FindInt("handle"), handle);
+    EXPECT_EQ(params.FindInt("controlCode"), expected_control_code);
+
+    const std::string* data_b64 = params.FindString("data");
+    ASSERT_TRUE(data_b64) << "Control event missing 'data' field";
+
+    std::string data_str;
+    base::Base64Decode(*data_b64, &data_str);
+    std::vector<uint8_t> actual_data(data_str.begin(), data_str.end());
+    EXPECT_EQ(actual_data, expected_data) << "JS sent wrong control data bytes";
+
+    base::DictValue response;
+    if (result.has_value()) {
+      response.Set("data", base::Base64Encode(result.value()));
+      SendResponse("SmartCardEmulation.reportDataResult", params,
+                   std::move(response));
+    } else {
+      response.Set("resultCode", result.error());
+      SendResponse("SmartCardEmulation.reportError", params,
+                   std::move(response));
+    }
+  }
+
+  // Helper: Waits for getAttributeRequested and sends a response.
+  void HandleGetAttribute(
+      int attrib_id,
+      const base::expected<std::vector<uint8_t>, std::string>& result,
+      int handle = 123) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.getAttribRequested");
+
+    EXPECT_EQ(params.FindInt("handle"), handle);
+    EXPECT_EQ(params.FindInt("attribId"), attrib_id);
+
+    base::DictValue response;
+    if (result.has_value()) {
+      response.Set("data", base::Base64Encode(result.value()));
+      SendResponse("SmartCardEmulation.reportDataResult", params,
+                   std::move(response));
+    } else {
+      response.Set("resultCode", result.error());
+      SendResponse("SmartCardEmulation.reportError", params,
+                   std::move(response));
+    }
+  }
+
   void ReloadPage() {
     content::TestNavigationObserver observer(web_contents_);
     web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
@@ -760,6 +847,133 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ConnectionStatusError) {
   HandleConnect();
 
   HandleStatus("", "", "", {}, 123, "reader-unavailable");
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, DataOperationsSuccess) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(readers[0],
+          "shared", {preferredProtocols: ["t1"]});
+        const connection = connectResult.connection;
+
+        // --- Transmit ---
+        const txResponse = await connection.transmit(
+          new Uint8Array([0x00, 0xA4, 0x04, 0x00]));
+        const txBytes = new Uint8Array(txResponse);
+        if (txBytes.length !== 2 || txBytes[0] !== 0x90 ||
+          txBytes[1] !== 0x00) {
+            throw new Error("Transmit failed. Got: " + txBytes.join(','));
+        }
+
+        // --- Control ---
+        const ctrlResponse = await connection.control(42,
+          new Uint8Array([1, 2, 3]));
+        const ctrlBytes = new Uint8Array(ctrlResponse);
+        if (ctrlBytes.length !== 2 || ctrlBytes[0] !== 10 ||
+          ctrlBytes[1] !== 20) {
+             throw new Error("Control failed. Got: " + ctrlBytes.join(','));
+        }
+
+        // --- GetAttribute ---
+        // Tag 0x00090101 (SCARD_ATTR_VENDOR_NAME)
+        const attrResponse = await connection.getAttribute(0x00090101);
+        const vendorName = new TextDecoder().decode(attrResponse);
+        if (vendorName !== "Chrome Reader") {
+             throw new Error("GetAttribute failed. Got: " + vendorName);
+        }
+
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect("Reader A", 123, "t1");
+
+  HandleTransmit({0x00, 0xA4, 0x04, 0x00}, std::vector<uint8_t>{0x90, 0x00});
+  HandleControl(42, {1, 2, 3}, std::vector<uint8_t>{10, 20});
+
+  std::string kName = "Chrome Reader";
+  HandleGetAttribute(0x00090101,
+                     std::vector<uint8_t>(kName.begin(), kName.end()));
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, DataOperationsErrors) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(
+          readers[0], "shared", {preferredProtocols: ["t1"]});
+        const connection = connectResult.connection;
+
+        // --- Transmit Error ---
+        try {
+            await connection.transmit(new Uint8Array([0x00, 0x00]));
+            throw new Error("Transmit should have failed but succeeded.");
+        } catch (e) {
+            if (e.name !== "SmartCardError") {
+              throw new Error("Transmit wrong error: " + e.name);
+            }
+        }
+
+        // --- Control Error ---
+        try {
+            await connection.control(42, new Uint8Array([1]));
+            throw new Error("Control should have failed but succeeded.");
+        } catch (e) {
+            if (e.name !== "SmartCardError") {
+              throw new Error("Control wrong error: " + e.name);
+            }
+        }
+
+        // --- GetAttribute Error ---
+        try {
+            await connection.getAttribute(1234);
+            throw new Error("GetAttribute should have failed but succeeded.");
+        } catch (e) {
+            if (e.name !== "SmartCardError") {
+              throw new Error("GetAttrib wrong error: " + e.name);
+            }
+        }
+
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send("Failure: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect("Reader A", 123, "t1");
+
+  HandleTransmit({0x00, 0x00}, base::unexpected("sharing-violation"));
+  HandleControl(42, {1}, base::unexpected("unsupported-feature"));
+  HandleGetAttribute(1234, base::unexpected("reader-unavailable"));
 
   std::string message;
   ASSERT_TRUE(message_queue.WaitForMessage(&message));
