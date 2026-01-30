@@ -87,7 +87,7 @@ class NotificationResourcesLoaderTest : public PageTestBase {
 
   // Registers a mocked url that will fail to be fetched, with a 404 error.
   KURL RegisterMockedErrorURL(const String& file_name) {
-    KURL url(kResourcesLoaderBaseUrl + file_name);
+    KURL url(StrCat({kResourcesLoaderBaseUrl, file_name}));
     url_test_helpers::RegisterMockedErrorURLLoad(url);
     return url;
   }

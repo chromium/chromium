@@ -1205,7 +1205,7 @@ class KURLPortTest : public ::testing::TestWithParam<PortTestCase> {};
 
 TEST_P(KURLPortTest, Construct) {
   const auto& param = GetParam();
-  const KURL url(String("http://a:") + param.input + "/");
+  const KURL url(StrCat({"http://a:", param.input, "/"}));
   EXPECT_EQ(url.Port(), param.constructor_output);
   if (param.is_valid == PortIsValid::kAlways) {
     EXPECT_EQ(url.IsValid(), true);
@@ -1217,7 +1217,7 @@ TEST_P(KURLPortTest, Construct) {
 TEST_P(KURLPortTest, ConstructRelative) {
   const auto& param = GetParam();
   const KURL base("http://a/");
-  const KURL url(base, String("//a:") + param.input + "/");
+  const KURL url(base, StrCat({"//a:", param.input, "/"}));
   EXPECT_EQ(url.Port(), param.constructor_output);
   if (param.is_valid == PortIsValid::kAlways) {
     EXPECT_EQ(url.IsValid(), true);
@@ -1228,7 +1228,7 @@ TEST_P(KURLPortTest, ConstructRelative) {
 
 TEST_P(KURLPortTest, SetPort) {
   const auto& param = GetParam();
-  KURL url("http://a:" + String::Number(kNoopPort) + "/");
+  KURL url(StrCat({"http://a:", String::Number(kNoopPort), "/"}));
   const bool set_port_result_actual = url.SetPort(param.input);
   EXPECT_EQ(set_port_result_actual, param.set_port_success);
   EXPECT_EQ(url.Port(), param.set_port_output);
@@ -1237,7 +1237,7 @@ TEST_P(KURLPortTest, SetPort) {
 
 TEST_P(KURLPortTest, SetHostAndPort) {
   const auto& param = GetParam();
-  KURL url("http://a:" + String::Number(kNoopPort) + "/");
+  KURL url(StrCat({"http://a:", String::Number(kNoopPort), "/"}));
   url.SetHostAndPort(String("a:") + param.input);
   switch (param.is_valid) {
     case PortIsValid::kAlways:

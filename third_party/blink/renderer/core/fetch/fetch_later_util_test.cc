@@ -34,8 +34,8 @@
 namespace blink {
 
 const KURL GetSourcePageURL(const String& relative_url) {
-  static const String kSourcePageURL = "https://example.com";
-  return KURL(kSourcePageURL + relative_url);
+  static const StringView kSourcePageURL = "https://example.com";
+  return KURL(StrCat({kSourcePageURL, relative_url}));
 }
 
 scoped_refptr<const SecurityOrigin> GetOrigin(const String& url) {
@@ -529,7 +529,7 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
 class GetDeferredFetchControlFrameTest : public DeferredFetchPolicyTestBase {};
 
 TEST_F(GetDeferredFetchControlFrameTest, SingleDocument) {
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   NavigateTo(kMainUrl, "");
 
   EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(GetMainFrame()),
@@ -537,7 +537,7 @@ TEST_F(GetDeferredFetchControlFrameTest, SingleDocument) {
 }
 
 TEST_F(GetDeferredFetchControlFrameTest, SingleSameOriginFrame) {
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   // The structure of the document:
   // root -> frame_a (same-origin)
   String root_url = kMainUrl;
@@ -903,7 +903,7 @@ class GetReservedDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {
 // `The default of 640 kibibytes, decremented by quota reserved for
 // deferred-fetch-minimal`.
 TEST_F(GetReservedDeferredFetchQuotaTest, IsTopLevelControlFrame) {
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   NavigateTo(kMainUrl, "");
 
   EXPECT_EQ(FetchLaterUtil::GetReservedDeferredFetchQuota(GetMainFrame()),
@@ -916,7 +916,7 @@ TEST_F(GetReservedDeferredFetchQuotaTest, IsTopLevelControlFrame) {
 // a control frame, i.e. the same-origin ancestor frame of `frame_a`.
 TEST_F(GetReservedDeferredFetchQuotaTest,
        IsNonTopLevelFrameWithOwnerDeferredFetchPolicyDisabled) {
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   // The structure of the document:
   // root -> frame_a (same-origin)
   String root_url = kMainUrl;
@@ -939,7 +939,7 @@ TEST_F(GetReservedDeferredFetchQuotaTest,
 // deferred-fetch policy set to `kDeferredFetchMinimal`.
 TEST_F(GetReservedDeferredFetchQuotaTest,
        IsNonTopLevelCrossOriginFrameWithOwnerDeferredFetchPolicyMinimal) {
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   // The structure of the document:
   // root -> frame_a (cross-origin)
   String root_url = kMainUrl;
@@ -966,7 +966,7 @@ class GetAvailableDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {
 // The main frame origin has a `kMaxPerRequestOriginScheduledDeferredBytes`
 // quota for all fetchLater() requests.
 TEST_F(GetAvailableDeferredFetchQuotaTest, SingleDocument) {
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   NavigateTo(kMainUrl, "");
 
   EXPECT_EQ(GetAvailableQuota(GetMainFrame(), new_request_url),
@@ -976,7 +976,7 @@ TEST_F(GetAvailableDeferredFetchQuotaTest, SingleDocument) {
 // The main frame origin has a `kMaxPerRequestOriginScheduledDeferredBytes`
 // quota for all fetchLater() requests.
 TEST_F(GetAvailableDeferredFetchQuotaTest, SingleDocumentExistingRequest) {
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   NavigateTo(kMainUrl, R"HTML(
     <script>fetchLater("https://example.com");</script>
   )HTML");
@@ -987,7 +987,7 @@ TEST_F(GetAvailableDeferredFetchQuotaTest, SingleDocumentExistingRequest) {
 
 TEST_F(GetAvailableDeferredFetchQuotaTest,
        SingleDocumentSingleSameOriginFrame) {
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   // The structure of the document:
   // root -> frame_a (same-origin)
   String root_url = kMainUrl;
@@ -1018,7 +1018,7 @@ TEST_F(GetAvailableDeferredFetchQuotaTest,
   auto* root = GetMainFrame();
   auto* frame_a = root->Tree().FirstChild();
 
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   // The main frame has its owned kMaxPerRequestOriginScheduledDeferredBytes
   // quota.
   EXPECT_EQ(GetAvailableQuota(root, new_request_url),
@@ -1056,7 +1056,7 @@ TEST_F(GetAvailableDeferredFetchQuotaTest,
   auto* frame_c = frame_b->Tree().NextSibling();
   auto* frame_d = frame_c->Tree().NextSibling();
 
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   // The main frame, Frame A, Frame B have their shared
   // kMaxPerRequestOriginScheduledDeferredBytes quota.
   EXPECT_EQ(GetAvailableQuota(root, new_request_url),
@@ -1095,7 +1095,7 @@ TEST_F(GetAvailableDeferredFetchQuotaTest, MultipleLevelFrames) {
   auto* frame_c = frame_a->Tree().FirstChild();
   auto* frame_b = frame_d->Tree().FirstChild();
 
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
   // The main frame, Frame A, Frame B have their shared
   // kMaxPerRequestOriginScheduledDeferredBytes quota.
   // See https://github.com/whatwg/fetch/pull/1647/files#r1906538637
@@ -1145,7 +1145,7 @@ TEST_F(GetAvailableDeferredFetchQuotaTest, SandboxedIframes) {
   auto* frame5 = frame4->Tree().NextSibling();
   auto* frame6 = frame5->Tree().NextSibling();
   auto* frame7 = frame6->Tree().NextSibling();
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
 
   // The main frame should have the default quota.
   EXPECT_EQ(GetAvailableQuota(root, new_request_url),
@@ -1203,7 +1203,7 @@ TEST_F(GetAvailableDeferredFetchQuotaTest, SandboxedIframeWithAllowSameOrigin) {
   auto* frame5 = frame4->Tree().NextSibling();
   auto* frame6 = frame5->Tree().NextSibling();
   auto* frame7 = frame6->Tree().NextSibling();
-  auto new_request_url = KURL(kMainUrl + "test.html");
+  auto new_request_url = KURL(StrCat({kMainUrl, "test.html"}));
 
   // The main frame and all child sandbox frames have their shared
   // kMaxPerRequestOriginScheduledDeferredBytes quota.

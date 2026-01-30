@@ -56,7 +56,7 @@ class V8ScriptRunnerTest : public testing::Test {
   String DifferentCode() const {
     return String::Format("a = function() { 1 + 12; } // %01000d\n", counter_);
   }
-  KURL Url() const { return KURL(url_ + String::Number(counter_)); }
+  KURL Url() const { return KURL(StrCat({url_, String::Number(counter_)})); }
   unsigned TagForCodeCache(CachedMetadataHandler* cache_handler) const {
     return V8CodeCache::TagForCodeCache(cache_handler);
   }

@@ -83,7 +83,7 @@ class PLATFORM_EXPORT KURL {
   //
   // It is usually best to avoid repeatedly parsing a String, unless memory
   // saving outweigh the possible slow-downs.
-  explicit KURL(const String&);
+  explicit KURL(const StringView&);
 
   // Resolves the relative URL with the given base URL. If provided, the
   // TextEncoding is used to encode non-ASCII characters. The base URL can be
@@ -92,8 +92,8 @@ class PLATFORM_EXPORT KURL {
   // FIXME: If the base URL is invalid, this always creates an invalid
   // URL. Instead I think it would be better to treat all invalid base URLs
   // the same way we treate null and empty base URLs.
-  KURL(const KURL& base, const String& relative);
-  KURL(const KURL& base, const String& relative, const TextEncoding&);
+  KURL(const KURL& base, const StringView& relative);
+  KURL(const KURL& base, const StringView& relative, const TextEncoding&);
 
   // For conversions from other structures that have already parsed and
   // canonicalized the URL. The input must be exactly what KURL would have
@@ -255,7 +255,7 @@ class PLATFORM_EXPORT KURL {
   friend struct HashTraits<KURL>;
 
   void Init(const KURL& base,
-            const String& relative,
+            const StringView& relative,
             const TextEncoding* query_encoding);
 
   bool IsAboutURL(const char* allowed_path) const;
@@ -323,10 +323,10 @@ PLATFORM_EXPORT const KURL& NullURL();
 // the string to be a valid and parsable URL.  This is especially important
 // because valid javascript URLs are not necessarily considered valid by KURL.
 
-PLATFORM_EXPORT bool ProtocolIs(const String& url, const char* protocol);
-PLATFORM_EXPORT bool ProtocolIsJavaScript(const String& url);
+PLATFORM_EXPORT bool ProtocolIs(const StringView& url, const char* protocol);
+PLATFORM_EXPORT bool ProtocolIsJavaScript(const StringView& url);
 
-PLATFORM_EXPORT bool IsValidProtocol(const String&);
+PLATFORM_EXPORT bool IsValidProtocol(const StringView&);
 
 using DecodeURLMode = url::DecodeURLMode;
 // Unescapes the given string using URL escaping rules.

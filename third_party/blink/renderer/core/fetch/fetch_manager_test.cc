@@ -271,9 +271,9 @@ TEST_F(FetchLaterTest, CreateSameOriginFetchLaterRequest) {
   FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
-  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
-                                          test::CoreTestDataPath("foo.html"),
-                                          "text/html");
+  url_test_helpers::RegisterMockedURLLoad(
+      KURL(StrCat({GetSourcePageURL(), target_url})),
+      test::CoreTestDataPath("foo.html"), "text/html");
   auto* fetch_later_manager =
       MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
   auto* controller = AbortController::Create(scope.GetScriptState());
@@ -284,7 +284,7 @@ TEST_F(FetchLaterTest, CreateSameOriginFetchLaterRequest) {
       Factory(),
       CreateLoader(_, _, _,
                    MatchNetworkResourceRequest(*CreateNetworkResourceRequest(
-                       KURL(GetSourcePageURL() + target_url))),
+                       KURL(StrCat({GetSourcePageURL(), target_url})))),
                    _))
       .Times(1)
       .RetiresOnSaturation();
@@ -305,9 +305,9 @@ TEST_F(FetchLaterTest, NegativeActivateAfterThrowRangeError) {
   FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
-  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
-                                          test::CoreTestDataPath("foo.html"),
-                                          "text/html");
+  url_test_helpers::RegisterMockedURLLoad(
+      KURL(StrCat({GetSourcePageURL(), target_url})),
+      test::CoreTestDataPath("foo.html"), "text/html");
   auto* fetch_later_manager =
       MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
   auto* controller = AbortController::Create(scope.GetScriptState());
@@ -334,9 +334,9 @@ TEST_F(FetchLaterTest, AbortBeforeFetchLater) {
   FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
-  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
-                                          test::CoreTestDataPath("foo.html"),
-                                          "text/html");
+  url_test_helpers::RegisterMockedURLLoad(
+      KURL(StrCat({GetSourcePageURL(), target_url})),
+      test::CoreTestDataPath("foo.html"), "text/html");
   auto* fetch_later_manager =
       MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
   auto* controller = AbortController::Create(scope.GetScriptState());
@@ -364,9 +364,9 @@ TEST_F(FetchLaterTest, AbortAfterFetchLater) {
   FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
-  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
-                                          test::CoreTestDataPath("foo.html"),
-                                          "text/html");
+  url_test_helpers::RegisterMockedURLLoad(
+      KURL(StrCat({GetSourcePageURL(), target_url})),
+      test::CoreTestDataPath("foo.html"), "text/html");
   auto* fetch_later_manager =
       MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
   auto* controller = AbortController::Create(scope.GetScriptState());
@@ -399,9 +399,9 @@ TEST_F(FetchLaterTest, ActivateAfter) {
   DOMHighResTimeStamp activate_after_ms = 3000;
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
-  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
-                                          test::CoreTestDataPath("foo.html"),
-                                          "text/html");
+  url_test_helpers::RegisterMockedURLLoad(
+      KURL(StrCat({GetSourcePageURL(), target_url})),
+      test::CoreTestDataPath("foo.html"), "text/html");
   auto* fetch_later_manager =
       MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
   auto* controller = AbortController::Create(scope.GetScriptState());
@@ -437,9 +437,9 @@ TEST_F(FetchLaterTest, ContextDestroyed) {
   FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
-  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
-                                          test::CoreTestDataPath("foo.html"),
-                                          "text/html");
+  url_test_helpers::RegisterMockedURLLoad(
+      KURL(StrCat({GetSourcePageURL(), target_url})),
+      test::CoreTestDataPath("foo.html"), "text/html");
   auto* fetch_later_manager =
       MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
   auto* controller = AbortController::Create(scope.GetScriptState());
@@ -472,9 +472,9 @@ TEST_F(FetchLaterTest, ForcedSendingWithBackgroundSyncOff) {
   FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
-  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
-                                          test::CoreTestDataPath("foo.html"),
-                                          "text/html");
+  url_test_helpers::RegisterMockedURLLoad(
+      KURL(StrCat({GetSourcePageURL(), target_url})),
+      test::CoreTestDataPath("foo.html"), "text/html");
   auto* fetch_later_manager =
       MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
   auto* controller = AbortController::Create(scope.GetScriptState());

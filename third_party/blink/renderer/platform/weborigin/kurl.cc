@@ -68,7 +68,7 @@ void AssertProtocolIsGood(const StringView protocol) {
 
 // Note: You must ensure that |spec| is a valid canonicalized URL before calling
 // this function.
-std::string_view AsURLChar8Subtle(const String& spec) {
+std::string_view AsURLChar8Subtle(const StringView& spec) {
   DCHECK(spec.Is8Bit());
   // Span8() really return characters in Latin-1, but because we
   // canonicalize URL strings, we know that everything before the fragment
@@ -121,7 +121,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
 
 }  // namespace
 
-bool IsValidProtocol(const String& protocol) {
+bool IsValidProtocol(const StringView& protocol) {
   // RFC3986: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
   if (protocol.empty())
     return false;
@@ -170,7 +170,7 @@ bool KURL::IsLocalFile() const {
   return ProtocolIs(url::kFileScheme);
 }
 
-bool ProtocolIsJavaScript(const String& url) {
+bool ProtocolIsJavaScript(const StringView& url) {
   return ProtocolIs(url, url::kJavaScriptScheme);
 }
 
@@ -233,7 +233,7 @@ KURL::KURL() : is_valid_(false), protocol_is_in_http_family_(false) {}
 // to a string and then converted back. In this case, the URL is already
 // canonical and in proper escaped form so needs no encoding. We treat it as
 // UTF-8 just in case.
-KURL::KURL(const String& url) {
+KURL::KURL(const StringView& url) {
   if (!url.IsNull()) {
     Init(NullURL(), url, nullptr);
     AssertStringSpecIsASCII();
@@ -255,7 +255,7 @@ KURL::KURL(const GURL& gurl) {
 
 // Constructs a new URL given a base URL and a possibly relative input URL.
 // This assumes UTF-8 encoding.
-KURL::KURL(const KURL& base, const String& relative) {
+KURL::KURL(const KURL& base, const StringView& relative) {
   Init(base, relative, nullptr);
   AssertStringSpecIsASCII();
 }
@@ -263,7 +263,7 @@ KURL::KURL(const KURL& base, const String& relative) {
 // Constructs a new URL given a base URL and a possibly relative input URL.
 // Any query portion of the relative URL will be encoded in the given encoding.
 KURL::KURL(const KURL& base,
-           const String& relative,
+           const StringView& relative,
            const TextEncoding& encoding) {
   Init(base, relative, &encoding.EncodingForFormSubmission());
   AssertStringSpecIsASCII();
@@ -876,7 +876,7 @@ unsigned KURL::PathAfterLastSlash() const {
   return filename.begin;
 }
 
-bool ProtocolIs(const String& url, const char* protocol) {
+bool ProtocolIs(const StringView& url, const char* protocol) {
 #if DCHECK_IS_ON()
   AssertProtocolIsGood(protocol);
 #endif
@@ -885,11 +885,12 @@ bool ProtocolIs(const String& url, const char* protocol) {
   if (url.Is8Bit()) {
     return url::FindAndCompareScheme(AsURLChar8Subtle(url), protocol, nullptr);
   }
-  return url::FindAndCompareScheme(url.View16(), protocol, nullptr);
+  return url::FindAndCompareScheme(std::u16string_view(url.Span16()), protocol,
+                                   nullptr);
 }
 
 void KURL::Init(const KURL& base,
-                const String& relative,
+                const StringView& relative,
                 const TextEncoding* query_encoding) {
   // As a performance optimization, we do not use the charset converter
   // if encoding is UTF-8 or other Unicode encodings. Note that this is
@@ -915,9 +916,11 @@ void KURL::Init(const KURL& base,
                                      relative_utf8.AsStringView(),
                                      charset_converter, &output, &parsed_);
   } else {
-    is_valid_ = url::ResolveRelative(base_utf8.AsStringView(), base.parsed_,
-                                     relative.View16(), charset_converter,
-                                     &output, &parsed_);
+    is_valid_ = url::ResolveRelative(
+        base_utf8.AsStringView(), base.parsed_,
+        relative.IsNull() ? std::u16string_view()
+                          : std::u16string_view(relative.Span16()),
+        charset_converter, &output, &parsed_);
   }
 
   // Constructing an AtomicString will re-hash the raw output and check the
@@ -926,8 +929,9 @@ void KURL::Init(const KURL& base,
   // existing AtomicStrings (which already have their hashes computed), the fast
   // path can often avoid this work.
   const auto output_url_span = base::as_byte_span(output.view());
-  if (!relative.IsNull() && StringView(output_url_span) == relative) {
-    string_ = AtomicString(relative.Impl());
+  if (!relative.IsNull() && relative.SharedImpl() &&
+      StringView(output_url_span) == relative) {
+    string_ = AtomicString(relative.SharedImpl());
   } else {
     string_ = AtomicString(output_url_span);
   }

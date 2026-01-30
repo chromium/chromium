@@ -916,8 +916,7 @@ TEST_F(LocalFrameViewPresentationTimeTest,
   // 5. Simulate 100 more same-document navigations.
   for (int i = 0; i < 100; ++i) {
     loader->CommitSameDocumentNavigation(
-        KURL(String::FromUTF8("https://example.com/test.html#bar") +
-             String::Number(i)),
+        KURL(StrCat({"https://example.com/test.html#bar", String::Number(i)})),
         WebFrameLoadType::kStandard, nullptr,
         ClientRedirectPolicy::kNotClientRedirect,
         false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
