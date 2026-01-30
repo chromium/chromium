@@ -66,8 +66,9 @@ bool QuicServerInfo::ParseInner(const string& data) {
     return false;
   }
 
-  base::PickleIterator iter =
-      base::PickleIterator::WithData(base::as_byte_span(data));
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(data));
+  base::PickleIterator iter(pickle);
 
   int version = -1;
   if (!iter.ReadInt(&version)) {

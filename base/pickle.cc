@@ -31,29 +31,6 @@ PickleIterator::PickleIterator(const Pickle& pickle)
       read_index_(0),
       end_index_(pickle.payload_size()) {}
 
-PickleIterator PickleIterator::WithData(span<const uint8_t> data) {
-  if (data.size() < sizeof(Pickle::Header)) {
-    return PickleIterator();
-  }
-  const auto* header = reinterpret_cast<const Pickle::Header*>(data.data());
-  if (header->payload_size > data.size() - sizeof(Pickle::Header)) {
-    return PickleIterator();
-  }
-  const size_t header_size = data.size() - header->payload_size;
-  if (header_size != bits::AlignUp(header_size, sizeof(uint32_t))) {
-    return PickleIterator();
-  }
-  DCHECK_GE(header_size, sizeof(Pickle::Header));
-
-  PickleIterator iter;
-  // SAFETY: `data` contains at least `header_size` bytes.
-  iter.payload_ =
-      UNSAFE_BUFFERS(reinterpret_cast<const char*>(data.data()) + header_size);
-  iter.read_index_ = 0;
-  iter.end_index_ = header->payload_size;
-  return iter;
-}
-
 template <typename Type>
 inline bool PickleIterator::ReadBuiltinType(Type* result) {
   static_assert(

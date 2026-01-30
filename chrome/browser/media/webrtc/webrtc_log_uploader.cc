@@ -284,8 +284,9 @@ void WebRtcLogUploader::UploadStoredLog(
             .AddExtension(FILE_PATH_LITERAL(".meta"));
     if (base::ReadFileToString(meta_path, &meta_data_contents) &&
         !meta_data_contents.empty()) {
-      base::PickleIterator it = base::PickleIterator::WithData(
+      base::Pickle pickle = base::Pickle::WithUnownedBuffer(
           base::as_byte_span(meta_data_contents));
+      base::PickleIterator it(pickle);
       std::string key, value;
       while (it.ReadString(&key) && it.ReadString(&value))
         (*meta_data.get())[key] = value;

@@ -29,9 +29,9 @@ using FuzzType = std::set<std::tuple<bool,
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // SAFETY: The fuzzer contract guarantees that `data` points to at least
   // `size` bytes.
-  auto iter =
-      base::PickleIterator::WithData(UNSAFE_BUFFERS(base::span(data, size)));
-  auto result = ReadValueFromPickle<FuzzType>(iter);
+  auto pickle =
+      base::Pickle::WithUnownedBuffer(UNSAFE_BUFFERS(base::span(data, size)));
+  auto result = ReadValueFromPickle<FuzzType>(pickle);
   return 0;
 }
 
