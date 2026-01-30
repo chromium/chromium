@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -606,6 +607,16 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       mailbox, format, size, color_space, surface_origin, alpha_type,
       SharedImageUsageSet(usage), std::move(debug_label),
       IsSharedBetweenThreads(usage), data);
+
+#if BUILDFLAG(IS_ANDROID)
+  LOG_IF(ERROR, !temp_backing)
+      << "Could not CreateSharedImagePixels type="
+      << std::to_underlying(factory->GetBackingType())
+      << " with params: usage: " << CreateLabelForSharedImageUsage(usage)
+      << ", format: " << format.ToString()
+      << ", share_between_threads: " << IsSharedBetweenThreads(usage)
+      << ", size: " << size.ToString() << ", debug_label: " << debug_label;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<SharedImageBacking> backing =
       base::FeatureList::IsEnabled(kUseCompoundImageBackingAsDefault)
