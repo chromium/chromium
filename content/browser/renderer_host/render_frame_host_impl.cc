@@ -3965,7 +3965,10 @@ bool RenderFrameHostImpl::AccessibilityIsRootFrame() const {
   // this RenderFrameHost is embedded. In addition, IsOutermostMainFrame()
   // does not escape guest views. Therefore, we must check for any kind of
   // parent document or embedder.
-  return !GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners();
+  // Finally, we must also check if this is an explicit embedding in which
+  // case we also do not want to treat it as a root frame for accessibility.
+  return embed_parent_ax_tree_id_ == ui::AXTreeIDUnknown() &&
+         !GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners();
 }
 
 WebContentsAccessibility*
@@ -13732,6 +13735,10 @@ RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
 }
 
 ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
+  if (embed_parent_ax_tree_id_ != ui::AXTreeIDUnknown()) {
+    return embed_parent_ax_tree_id_;
+  }
+
   auto* parent = GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners();
   if (!parent) {
     DCHECK(AccessibilityIsRootFrame())
@@ -13751,6 +13758,13 @@ ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
       << "Root frame must not have a parent, root=" << GetLastCommittedURL()
       << "  parent=" << parent->GetLastCommittedURL();
   return parent->GetAXTreeID();
+}
+
+void RenderFrameHostImpl::SetEmbedParentAXTreeID(
+    const ui::AXTreeID& parent_tree_id) {
+  embed_parent_ax_tree_id_ = parent_tree_id;
+  // Notify that tree data has changed so the accessibility tree is updated.
+  UpdateAXTreeData();
 }
 
 ui::AXTreeID RenderFrameHostImpl::GetFocusedAXTreeID() {

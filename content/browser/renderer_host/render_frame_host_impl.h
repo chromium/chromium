@@ -250,8 +250,9 @@ class ResourceRequestBody;
 }  // namespace network
 
 namespace ui {
+class AXTreeID;
 class BrowserAccessibilityManager;
-}
+}  // namespace ui
 
 namespace ukm {
 class UkmRecorder;
@@ -751,6 +752,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool ShouldSuppressAXLoadComplete() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
   bool AccessibilityIsWebContentSource() override;
+
+  // Sets the parent AXTreeID for embed scenarios where the
+  // frame tree parent-child relationship doesn't exist. This allows the
+  // accessibility tree of a surface embed guest to be stitched into the
+  // embedder's accessibility tree.
+  void SetEmbedParentAXTreeID(const ui::AXTreeID& parent_tree_id);
 
   // ui::AXNodeIdDelegate:
   ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(
@@ -4834,6 +4841,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // The last AXTreeData for this frame received from the RenderFrame.
   ui::AXTreeData ax_tree_data_;
+
+  // For explicit embed scenarios such as surface embed, this is the AXTreeID of
+  // the parent embedder frame.
+  // This is used when the normal frame tree parent-child relationship doesn't
+  // exist but we still need to stitch accessibility trees together.
+  ui::AXTreeID embed_parent_ax_tree_id_;
 
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
 #if BUILDFLAG(IS_ANDROID)

@@ -4,6 +4,7 @@
 
 module surface_embed.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
@@ -58,4 +59,11 @@ interface SurfaceEmbedHost {
 
   // Notifies that the plugin either gained or lost focus.
   SetFocus(bool focused, blink.mojom.FocusType focus_type);
+
+  // Send the parent HTML element accessibility node ID and accessibility tree
+  // token from the render process to the browser process to stitch together
+  // accessibility trees in the browser process. This may happen during 
+  // creation or later if accessibility is not yet enabled.
+  SetParentAccessibilityInfo(int32 ax_node_id, 
+                             mojo_base.mojom.UnguessableToken ax_tree_token);
 };

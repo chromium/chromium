@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/surface_embed_connector.h"
@@ -15,6 +16,7 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/viz/public/mojom/compositing/local_surface_id.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 
 namespace content {
 class RenderFrameHost;
@@ -48,6 +50,9 @@ class COMPONENT_EXPORT(SURFACE_EMBED) SurfaceEmbedHost
       const blink::FrameVisualProperties& visual_properties,
       bool is_visible) override;
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override;
+  void SetParentAccessibilityInfo(
+      int ax_node_id,
+      const base::UnguessableToken& ax_tree_token) override;
 
   // content::SurfaceEmbedConnector::Delegate implementation:
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
@@ -72,9 +77,17 @@ class COMPONENT_EXPORT(SURFACE_EMBED) SurfaceEmbedHost
   // Count of all alive and attached instance for testing.
   static size_t attached_instance_count_for_testing_;
 
+  // The RenderFrameHost of the parent frame.
   content::GlobalRenderFrameHostId render_frame_host_id_;
+  // The WebContents of the child document.
   base::WeakPtr<content::WebContents> guest_contents_ = nullptr;
   bool know_have_focus_ = false;
+
+  // Cached accessibility info from the container element. These are stored
+  // here in case SetParentAccessibilityInfo is called before the connector
+  // is attached, so we can pass them to the connector once it's ready.
+  ui::AXNodeID container_accessibility_node_id_ = ui::kInvalidAXNodeID;
+  base::UnguessableToken container_accessibility_tree_token_;
 
   mojo::AssociatedRemote<mojom::SurfaceEmbed> surface_embed_;
 };

@@ -111,6 +111,15 @@ void SurfaceEmbedHost::AttachConnector(int64_t content_id) {
     auto* connector = GetConnector();
     CHECK(connector->GetFrameSinkId().is_valid());
     surface_embed_->SetFrameSinkId(connector->GetFrameSinkId());
+
+    // If accessibility info was received before the connector was attached,
+    // pass it to the connector now.
+    if (container_accessibility_node_id_ != ui::kInvalidAXNodeID &&
+        container_accessibility_tree_token_) {
+      connector->SetParentAccessibilityInfo(
+          container_accessibility_node_id_,
+          container_accessibility_tree_token_);
+    }
   }
 }
 
@@ -144,6 +153,18 @@ void SurfaceEmbedHost::SetFocus(bool focused,
     if (focused) {
       know_have_focus_ = true;
     }
+  }
+}
+
+void SurfaceEmbedHost::SetParentAccessibilityInfo(
+    int ax_node_id,
+    const base::UnguessableToken& ax_tree_token) {
+  // Cache the accessibility info in case the connector is not yet attached.
+  container_accessibility_node_id_ = ax_node_id;
+  container_accessibility_tree_token_ = ax_tree_token;
+
+  if (content::SurfaceEmbedConnector* connector = GetConnector()) {
+    connector->SetParentAccessibilityInfo(ax_node_id, ax_tree_token);
   }
 }
 

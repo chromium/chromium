@@ -78,11 +78,18 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   bool FillsBoundsCompletely() const override;
 
  private:
+  class AccessibilityObserver;
+
   explicit SurfaceEmbedWebPlugin(
       mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host,
-      int contents_id);
+      int contents_id,
+      content::RenderFrame* render_frame);
 
   void OnSurfaceEmbedHostDisconnected();
+
+  void OnAccessibilityModeEnabled();
+
+  void SendAccessibilityInfo();
 
   void SynchronizeVisualProperties();
 
@@ -113,6 +120,9 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   mojo::AssociatedReceiver<mojom::SurfaceEmbed> receiver_{this};
   std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
       parent_local_surface_id_allocator_;
+
+  // Observer for accessibility mode changes.
+  std::unique_ptr<AccessibilityObserver> accessibility_observer_;
 };
 
 }  // namespace surface_embed

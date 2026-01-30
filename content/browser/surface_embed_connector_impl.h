@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/rect.h"
@@ -80,6 +81,9 @@ class SurfaceEmbedConnectorImpl : public SurfaceEmbedConnector,
   void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties) override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
+  void SetParentAccessibilityInfo(
+      ui::AXNodeID ax_node_id,
+      const base::UnguessableToken& ax_tree_token) override;
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override;
 
   void SetView(RenderWidgetHostViewChildFrame* view,
@@ -150,6 +154,10 @@ class SurfaceEmbedConnectorImpl : public SurfaceEmbedConnector,
 
   void OnRenderViewReady();
 
+  // Called when the guest's accessibility tree ID changes. Notifies the
+  // delegate so it can re-stitch the accessibility trees.
+  void UpdateAccessibilityTree();
+
  private:
   void MaybeRefreshSurfaceKeepAlive();
 
@@ -181,6 +189,11 @@ class SurfaceEmbedConnectorImpl : public SurfaceEmbedConnector,
   base::WeakPtr<WebContents> embedder_web_contents_;
   raw_ptr<WebContentsImpl> guest_web_contents_ = nullptr;  // Owns us.
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
+
+  // The accessibility node ID of the embed HTML element in the parent document.
+  ui::AXNodeID container_accessibility_node_id_ = ui::kInvalidAXNodeID;
+  // The accessibility tree token of the parent frame.
+  base::UnguessableToken container_accessibility_tree_token_;
 
   // This is here rather than in the implementation class so that
   // `GetIntersectionState()` can return a reference.

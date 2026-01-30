@@ -6,13 +6,19 @@
 #define CONTENT_PUBLIC_BROWSER_SURFACE_EMBED_CONNECTOR_H_
 
 #include "base/observer_list.h"
+#include "base/unguessable_token.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/geometry/size.h"
+
+namespace base {
+class UnguessableToken;
+}  // namespace base
 
 namespace blink {
 struct FrameVisualProperties;
@@ -84,6 +90,12 @@ class CONTENT_EXPORT SurfaceEmbedConnector {
 
   // Gets the FrameSinkId of the guest's view.
   virtual const viz::FrameSinkId& GetFrameSinkId() const = 0;
+
+  // Sets the accessibility node ID and tree token of the container element
+  // in the parent document. This is used to stitch the accessibility trees.
+  virtual void SetParentAccessibilityInfo(
+      ui::AXNodeID ax_node_id,
+      const base::UnguessableToken& ax_tree_token) = 0;
 };
 
 }  // namespace content
