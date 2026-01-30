@@ -17,6 +17,14 @@ const char kAddSiteUserActionName[] = "Suggestions.Button.AddItem";
 /// User action name for drag-and-drop operations on the pinned sites.
 const char kReorderUserActionName[] = "Suggestions.Drag.ReorderItem";
 
+/// Prefix for user action name for drag-and-drop operations on the pinned
+/// sites.
+const char kSnackbarUndoUserActionName[] = "Suggestions.SnackBar.Undo";
+/// Suffixes for user action name for drag-and-drop operations on the pinned
+/// sites.
+const char kUndoPinSuffix[] = "PinItem";
+const char kUndoUnpinSuffix[] = "UnpinItem";
+
 /// Histogram prefix for actions on the pinned site form.
 const char kPinnedSiteFormHistogramPrefix[] = "IOS.MostVisited.PinnedSiteForm.";
 
@@ -30,6 +38,12 @@ void RecordAddSiteUserAction() {
 
 void RecordReorderUserAction() {
   base::RecordAction(UserMetricsAction(kReorderUserActionName));
+}
+
+void RecordSnackbarUndoUserAction(bool undo_pin) {
+  std::string action_name = std::string(kSnackbarUndoUserActionName) +
+                            (undo_pin ? kUndoPinSuffix : kUndoUnpinSuffix);
+  base::RecordAction(UserMetricsAction(action_name.c_str()));
 }
 
 void RecordPinnedSiteFormUserAction(PinnedSiteAction form,

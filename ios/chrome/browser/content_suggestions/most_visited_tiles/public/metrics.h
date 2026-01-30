@@ -7,9 +7,9 @@
 
 enum class PinnedSiteAction;
 
+// LINT.IfChange(MostVisitedPinSiteFormUserAction)
 /// Enum for the "IOS.MostVisited.PinnedSiteForm.*" histograms; logs user's
 /// action that dismissed the pinned site form.
-/// LINT.IfChange(MostVisitedPinSiteFormUserAction)
 enum class MostVisitedPinSiteFormUserAction {
   /// User dismisses the form without attempting to apply any changes.
   kDismissImmediately = 0,
@@ -21,13 +21,17 @@ enum class MostVisitedPinSiteFormUserAction {
   kApplyAfterFailure = 3,
   kMaxValue = kApplyAfterFailure,
 };
-/// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSMostVisitedPinSiteFormUserAction)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSMostVisitedPinSiteFormUserAction)
 
 /// Records user actions on the "Add Site" button and form.
 void RecordAddSiteUserAction();
 
 /// Records user actions on reordering pinned sites on the most visited tiles.
 void RecordReorderUserAction();
+
+/// Records user reverting pin actions on the snackbar. To undo a pinnin action,
+/// `undo_pin` should be true.
+void RecordSnackbarUndoUserAction(bool undo_pin);
 
 /// Records user actions on the form to pin site.
 void RecordPinnedSiteFormUserAction(PinnedSiteAction form,

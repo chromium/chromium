@@ -414,6 +414,7 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
                 IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_ADDED_AND_PINNED)
                      undoAction:^{
                        [weakSelf undoLastPinAction];
+                       RecordSnackbarUndoUserAction(/*undo_pin=*/YES);
                      }];
   return YES;
 }
@@ -550,9 +551,18 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 // the item is already pinned or not.
 - (void)pinOrUnpinMostVisited:(MostVisitedItem*)item {
   GURL url = item.URL;
+  __weak MostVisitedTilesMediator* weakSelf = self;
   if (_mostVisitedSites->HasCustomLink(url)) {
     // Remove the custom link.
-    _mostVisitedSites->DeleteCustomLink(url);
+    if (_mostVisitedSites->DeleteCustomLink(url)) {
+      [self showSnackbarWithMessage:
+                l10n_util::GetNSString(
+                    IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_UNPINNED)
+                         undoAction:^{
+                           [weakSelf undoLastPinAction];
+                           RecordSnackbarUndoUserAction(/*undo_pin=*/NO);
+                         }];
+    }
     return;
   }
   if (!_mostVisitedSites->AddCustomLink(url,
@@ -562,12 +572,12 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kIOSPinMVTSiteUsed);
   // Show snackbar message.
-  __weak MostVisitedTilesMediator* weakSelf = self;
   [self showSnackbarWithMessage:
             l10n_util::GetNSString(
                 IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_PINNED)
                      undoAction:^{
                        [weakSelf undoLastPinAction];
+                       RecordSnackbarUndoUserAction(/*undo_pin=*/YES);
                      }];
 }
 

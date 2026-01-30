@@ -47719,12 +47719,22 @@ should be able to be added at any place in this file.
   <description>User removed a suggested site.</description>
 </action>
 
+<action name="Suggestions.SnackBar.UndoPinItem">
+  <owner>ginnyhuang@chromium.org</owner>
+  <description>
+    iOS: Recorded when user clicks the &quot;Undo&quot; link in the &quot;Item
+    removed&quot; SnackBar that appears on pinning a Custom Tile.
+  </description>
+</action>
+
 <action name="Suggestions.SnackBar.UndoUnpinItem">
   <owner>ckitagawa@chromium.org</owner>
   <owner>huangs@chromium.org</owner>
+  <owner>ginnyhuang@chromium.org</owner>
   <description>
-    Android: Recorded when user clicks the &quot;Undo&quot; link in the
+    Mobile: Recorded when user clicks the &quot;Undo&quot; link in the
     &quot;Item removed&quot; SnackBar that appears on unpinning a Custom Tile.
+    (iOS support added on M146)
   </description>
 </action>
 
