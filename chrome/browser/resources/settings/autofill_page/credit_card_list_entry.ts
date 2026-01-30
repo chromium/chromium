@@ -50,14 +50,6 @@ export class SettingsCreditCardListEntryElement extends
       /** A saved credit card. */
       creditCard: Object,
 
-      showNewFopDisplayEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableNewFopDisplay');
-        },
-        readOnly: true,
-      },
-
       autofillEnableWalletBrandingEnabled_: {
         type: Boolean,
         value() {
@@ -70,7 +62,6 @@ export class SettingsCreditCardListEntryElement extends
 
   declare creditCard: chrome.autofillPrivate.CreditCardEntry;
 
-  declare private showNewFopDisplayEnabled_: boolean;
   declare private autofillEnableWalletBrandingEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
@@ -252,9 +243,8 @@ export class SettingsCreditCardListEntryElement extends
    */
   private getSummarySublabel_(): string {
     const separator = ' | ';
-    let summarySublabel = this.isVirtualCardEnrolled_() ?
-        this.i18n('virtualCardTurnedOn') :
-        (this.showNewFopDisplayEnabled_ ? '' : this.getCardExpiryDate_());
+    let summarySublabel =
+        this.isVirtualCardEnrolled_() ? this.i18n('virtualCardTurnedOn') : '';
     if (this.isCardCvcAvailable_()) {
       if (summarySublabel.length > 0) {
         summarySublabel += separator;
@@ -275,19 +265,15 @@ export class SettingsCreditCardListEntryElement extends
       case CardSummarySublabelType.VIRTUAL_CARD_WITH_BENEFITS_TAG:
       case CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG:
       case CardSummarySublabelType.VIRTUAL_CARD:
-        return this.showNewFopDisplayEnabled_ ?
-            this.i18n(
-                'creditCardExpDateA11yLabeled', this.getCardExpiryDate_()) +
-                this.getSummarySublabel_() :
+        return this.i18n(
+                   'creditCardExpDateA11yLabeled', this.getCardExpiryDate_()) +
             this.getSummarySublabel_();
       case CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_AND_BENEFITS_TAG:
       case CardSummarySublabelType.EXPIRATION_DATE_WITH_BENEFITS_TAG:
       case CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_TAG:
       case CardSummarySublabelType.EXPIRATION_DATE:
         return this.i18n(
-            'creditCardExpDateA11yLabeled',
-            this.showNewFopDisplayEnabled_ ? this.getCardExpiryDate_() :
-                                             this.getSummarySublabel_());
+            'creditCardExpDateA11yLabeled', this.getCardExpiryDate_());
       default:
         assertNotReached();
     }

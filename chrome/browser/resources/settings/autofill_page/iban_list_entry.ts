@@ -54,14 +54,6 @@ export class SettingsIbanListEntryElement extends
       /** A saved IBAN. */
       iban: Object,
 
-      showNewFopDisplayEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableNewFopDisplay');
-        },
-        readOnly: true,
-      },
-
       autofillEnableWalletBrandingEnabled_: {
         type: Boolean,
         value() {
@@ -74,7 +66,6 @@ export class SettingsIbanListEntryElement extends
 
   declare iban: chrome.autofillPrivate.IbanEntry;
 
-  declare private showNewFopDisplayEnabled_: boolean;
   declare private autofillEnableWalletBrandingEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
@@ -147,21 +138,15 @@ export class SettingsIbanListEntryElement extends
     return this.i18n('a11yIbanDescription', lastFourDigits);
   }
 
-  private getIbanImageSrc_(): string {
-    return this.showNewFopDisplayEnabled_ ?
-        'chrome://settings/images/iban.svg' :
-        'chrome://settings/images/iban_old.svg';
-  }
-
   private getLabel_(iban: chrome.autofillPrivate.IbanEntry): string {
-    if (this.showNewFopDisplayEnabled_ && iban.nickname) {
+    if (iban.nickname) {
       return iban.nickname;
     }
     return iban.metadata!.summaryLabel;
   }
 
   private getSubLabel_(iban: chrome.autofillPrivate.IbanEntry): string {
-    if (this.showNewFopDisplayEnabled_ && iban.nickname) {
+    if (iban.nickname) {
       return iban.metadata!.summaryLabel;
     }
     return iban.nickname || '';

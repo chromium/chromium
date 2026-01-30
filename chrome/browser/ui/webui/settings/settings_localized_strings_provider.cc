@@ -1722,8 +1722,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("cvcStorageAvailable",
                           IsCvcStorageAndFillingEnabled());
 
-  html_source->AddBoolean("enableNewFopDisplay", true);
-
   html_source->AddBoolean("autofillCardBenefitsAvailable",
                           payments_data.IsCardBenefitsFeatureEnabled());
 

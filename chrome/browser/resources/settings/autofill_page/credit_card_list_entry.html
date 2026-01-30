@@ -36,33 +36,26 @@
             [[getSummaryAriaLabel_(creditCard)]],
             [[getSummaryAriaSublabel_(creditCard)]]
           </div>
-          <template is="dom-if" if="[[!showNewFopDisplayEnabled_]]">
-            <div id="summaryLabel" class="ellipses" aria-hidden="true">
+          <div>
+            <span id="label" class="ellipses" aria-hidden="true">
               [[creditCard.metadata.summaryLabel]]
-            </div>
-          </template>
-          <template is="dom-if" if="[[showNewFopDisplayEnabled_]]">
-            <div>
-              <span id="label" class="ellipses" aria-hidden="true">
-                [[creditCard.metadata.summaryLabel]]
-              </span>
-              <template is="dom-if" if="[[hasCardIdentifier_(creditCard)]]">
-                <div class="sub-label" aria-hidden="true">
-                  <span id="summaryLabel_1">
-                    [[creditCard.metadata.summarySublabel]]
-                  </span>
-                  <span id="summaryLabel_2">
-                    [[getExpirationlabel_(creditCard)]]
-                  </span>
-                </div>
-              </template>
-              <template is="dom-if" if="[[!hasCardIdentifier_(creditCard)]]">
-                <span id="expirationLabel" class="sub-label">
+            </span>
+            <template is="dom-if" if="[[hasCardIdentifier_(creditCard)]]">
+              <div class="sub-label" aria-hidden="true">
+                <span id="summaryLabel_1">
+                  [[creditCard.metadata.summarySublabel]]
+                </span>
+                <span id="summaryLabel_2">
                   [[getExpirationlabel_(creditCard)]]
                 </span>
-              </template>
-            </div>
-          </template>
+              </div>
+            </template>
+            <template is="dom-if" if="[[!hasCardIdentifier_(creditCard)]]">
+              <span id="expirationLabel" class="sub-label">
+                [[getExpirationlabel_(creditCard)]]
+              </span>
+            </template>
+          </div>
           <div id="summarySublabel" class="sub-label">
             <span aria-hidden="true">[[getSummarySublabel_(creditCard)]]</span>
             <template is="dom-if"
