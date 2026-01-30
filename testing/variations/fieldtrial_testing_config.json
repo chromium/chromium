@@ -14021,6 +14021,21 @@
             ]
         }
     ],
+    "IOSExpandedSetupList": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSExpandedSetupList"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExpandedTips": [
         {
             "platforms": [

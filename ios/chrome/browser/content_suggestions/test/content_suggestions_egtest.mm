@@ -120,6 +120,7 @@ void TapMagicStackEditButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
+  config.features_disabled.push_back(kIOSExpandedSetupList);
   config.additional_args.push_back("--test-ios-module-ranker=mvt");
   if ([self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
@@ -312,6 +313,8 @@ void TapMagicStackEditButton() {
       base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"SetUpList item Default Browser not completed.");
 
+  // TODO:(crbug.com/480153437): Enable `kIOSExpandedSetupList` and update this
+  // test to work with the new setup list.
   // Tap the autofill item.
   TapView(set_up_list::kAutofillItemID);
   id<GREYMatcher> CPEPromoView =
