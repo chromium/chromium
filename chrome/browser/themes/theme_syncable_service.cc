@@ -391,13 +391,17 @@ ThemeSyncableService::MergeDataAndStartSyncing(
     }
   }
 
-  // No theme specifics found. Commit one according to current theme if
-  // kSeparateLocalAndAccountThemes feature flag is not enabled.
-  std::optional<syncer::ModelError> error =
-      base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)
-          ? std::nullopt
-          : ProcessNewTheme(syncer::SyncChange::ACTION_ADD, current_specifics);
-  NotifyOnSyncStarted(ThemeSyncState::kApplied);
+  // No theme specifics found.
+  std::optional<syncer::ModelError> error;
+  ThemeSyncState startup_state = ThemeSyncState::kFailed;
+  if (!base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+    // Commit the current theme and set the startup state accordingly.
+    error = ProcessNewTheme(syncer::SyncChange::ACTION_ADD, current_specifics);
+    startup_state = error ? ThemeSyncState::kFailed : ThemeSyncState::kApplied;
+  }
+  // Else, the startup state is failed because the account theme (which is none)
+  // is different from the currently applied theme.
+  NotifyOnSyncStarted(startup_state);
   return error;
 }
 
@@ -936,15 +940,25 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
 }
 
 void ThemeSyncableService::DeduplicateLocalThemeIfSameAsAccountTheme() {
+  std::optional<ThemeSyncState> startup_state = GetThemeSyncStartState();
+  CHECK(startup_state.has_value());
+  if (*startup_state != ThemeSyncState::kApplied) {
+    // The local theme is the one currently applied. Note that `startup_state`
+    // here should never in practice be `kWaitingForExtensionInstallation`
+    // because the extension should already be installed.
+    return;
+  }
   std::optional<sync_pb::ThemeSpecifics> saved_local_theme_specifics =
       GetSavedLocalTheme();
   if (!saved_local_theme_specifics.has_value()) {
+    // No saved local theme, nothing to do.
     return;
   }
   if (!AreThemeSpecificsEquivalent(
           GetThemeSpecificsFromCurrentTheme(),
           saved_local_theme_specifics.value(),
           theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
+    // Local theme is different from account theme, nothing to do.
     return;
   }
   profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
