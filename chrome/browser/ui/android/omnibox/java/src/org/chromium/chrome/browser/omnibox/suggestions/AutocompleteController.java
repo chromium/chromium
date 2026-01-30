@@ -123,6 +123,16 @@ public class AutocompleteController {
     }
 
     /**
+     * Kicks off loading a prewarm page.
+     *
+     * @param webContents The {@link WebContents} for the current tab.
+     */
+    public void startPrewarm(@Nullable WebContents webContents) {
+        if (mNativeController == 0) return;
+        AutocompleteControllerJni.get().startPrewarm(mNativeController, webContents);
+    }
+
+    /**
      * Issue a prefetch request for zero prefix suggestions. Prefetch is a fire-and-forget operation
      * that yields no results.
      *
@@ -132,7 +142,7 @@ public class AutocompleteController {
     public void startPrefetch(AutocompleteInput input, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
         if (PreloadingFeatureMap.getInstance().shouldPrewarmOnZeroSuggest()) {
-            AutocompleteControllerJni.get().startPrewarm(mNativeController, webContents);
+            startPrewarm(webContents);
         }
         AutocompleteControllerJni.get()
                 .startPrefetch(
