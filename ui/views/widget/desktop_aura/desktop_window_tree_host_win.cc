@@ -799,11 +799,13 @@ DesktopWindowTreeHostWin::RequestUnadjustedMovement() {
 
 void DesktopWindowTreeHostWin::LockMouse(aura::Window* window) {
   UpdateMouseLockRegion(window, true /*locked*/);
+  message_handler_->set_mouse_locked(true);
   WindowTreeHost::LockMouse(window);
 }
 
 void DesktopWindowTreeHostWin::UnlockMouse(aura::Window* window) {
   UpdateMouseLockRegion(window, false /*locked*/);
+  message_handler_->set_mouse_locked(false);
   WindowTreeHost::UnlockMouse(window);
 }
 

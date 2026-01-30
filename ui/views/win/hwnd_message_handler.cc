@@ -2952,6 +2952,11 @@ void HWNDMessageHandler::OnSysCommand(UINT notification_code,
   // Handle SC_KEYMENU, which means that the user has pressed the ALT
   // key and released it, so we should focus the menu bar.
   if ((notification_code & sc_mask) == SC_KEYMENU && point.x() == 0) {
+    // When pointer lock is active, suppress Alt key menu activation to prevent
+    // the window from losing focus and releasing the pointer lock.
+    if (mouse_locked_) {
+      return;
+    }
     int modifiers = ui::EF_NONE;
     if (ui::win::IsShiftPressed()) {
       modifiers |= ui::EF_SHIFT_DOWN;
