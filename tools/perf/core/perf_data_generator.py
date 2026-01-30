@@ -931,7 +931,7 @@ BUILDERS = {
         ],
         'platform': 'linux',
         'dimension': {
-            'gpu': '10de:2184-580.95.05',
+            'gpu': '10de:2184',
             'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests.perf',
             'synthetic_product_name': 'Precision 3930 Rack (Dell Inc.)'
