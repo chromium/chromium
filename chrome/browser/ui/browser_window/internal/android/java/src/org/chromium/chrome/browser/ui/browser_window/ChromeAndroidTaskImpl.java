@@ -34,6 +34,7 @@ import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -42,13 +43,11 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.chrome.browser.ui.browser_window.WindowStateManager.WindowState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -188,9 +187,18 @@ final class ChromeAndroidTaskImpl
 
     private final @BrowserWindowType int mBrowserWindowType;
 
-    // TODO(crbug.com/475200706): Support regular + OTR for mobile.
+    // TODO(crbug.com/475200706): Consider removing this field and just relying on the
+    // TabModelSelector to determine the profile.
     private final Profile mInitialProfile;
-    private final AndroidBrowserWindow mAndroidBrowserWindow;
+
+    /**
+     * Each {@link AndroidBrowserWindow} is associated with a {@link Profile}. A task tracks the
+     * state of a particular OS level window, which may contain multiple virtual {@link
+     * AndroidBrowserWindow}s if the current activity supports multiple profiles i.e. {@code
+     * mSupportedProfileType} is {@link SupportedProfileType#MIXED}.
+     */
+    private final Map<Profile, AndroidBrowserWindow> mAndroidBrowserWindows = new ArrayMap<>();
+
     private final WindowStateManager mWindowStateManager = new WindowStateManager();
 
     /**
@@ -232,12 +240,43 @@ final class ChromeAndroidTaskImpl
                             iterator.remove();
                         }
                     }
+
+                    // TODO(crbug.com/479566813): Several objects for desktop Android related to
+                    // extensions do not handle the BrowserWindow destruction happening when the
+                    // profile is destroyed. This should be fixed. For now we can just defer the
+                    // destruction until the activity is destroyed since there should never be more
+                    // than one profile/window on desktop Android.
+                    if (!BuildConfig.IS_DESKTOP_ANDROID) {
+                        var browserWindow = mAndroidBrowserWindows.remove(profile);
+                        if (browserWindow != null) {
+                            browserWindow.destroy();
+                        }
+                    }
                 }
             };
 
     private final Callback<TabModel> mOnTabModelSelectedCallback = this::onTabModelSelected;
 
-    private @Nullable TabModelSelectorTabModelObserver mPreventAddTabToOtherModelObserver;
+    private final IncognitoTabModelObserver mIncognitoTabModelObserver =
+            new IncognitoTabModelObserver() {
+                @Override
+                public void onIncognitoModelCreated() {
+                    var activityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
+                    assert activityScopedObjects != null
+                            : "ActivityScopedObjects should not be null if the"
+                                    + " mIncognitoTabModelObserver is registered.";
+                    var tabModelSelector = activityScopedObjects.mTabModelSelector;
+                    var incognitoModel = tabModelSelector.getModel(/* incognito= */ true);
+
+                    var incognitoProfile = incognitoModel.getProfile();
+                    assert incognitoProfile != null : "Incognito profile should not be null.";
+                    assert !mAndroidBrowserWindows.containsKey(incognitoProfile)
+                            : "AndroidBrowserWindow should not be associated with the incognito"
+                                    + " profile yet.";
+
+                    associateTabModelWithBrowserWindow(incognitoModel);
+                }
+            };
 
     private @Nullable Integer mId;
     private @Nullable Long mLastActivatedTimeMillis;
@@ -357,9 +396,9 @@ final class ChromeAndroidTaskImpl
                 : "ChromeAndroidTask must be initialized with a non-null profile";
         mInitialProfile = initialProfile;
 
-        // TODO(crbug.com/475200706): Support regular + OTR for mobile.
-        mAndroidBrowserWindow =
-                new AndroidBrowserWindow(/* chromeAndroidTask= */ this, initialProfile);
+        mAndroidBrowserWindows.put(
+                mInitialProfile,
+                new AndroidBrowserWindow(/* chromeAndroidTask= */ this, mInitialProfile));
         ProfileManager.addObserver(mProfileObserver);
 
         mState = State.IDLE;
@@ -371,8 +410,11 @@ final class ChromeAndroidTaskImpl
 
         mBrowserWindowType = pendingTaskInfo.mCreateParams.getWindowType();
         mInitialProfile = pendingTaskInfo.mCreateParams.getProfile();
-        mAndroidBrowserWindow =
-                new AndroidBrowserWindow(/* chromeAndroidTask= */ this, mInitialProfile);
+        assert mInitialProfile != null
+                : "PendingTaskInfo must be initialized with a non-null profile";
+        mAndroidBrowserWindows.put(
+                mInitialProfile,
+                new AndroidBrowserWindow(/* chromeAndroidTask= */ this, mInitialProfile));
         ProfileManager.addObserver(mProfileObserver);
 
         mState = State.PENDING_CREATE;
@@ -426,7 +468,9 @@ final class ChromeAndroidTaskImpl
         JniOnceCallback<Long> taskCreationCallbackForNative =
                 mPendingTaskInfo.mTaskCreationCallbackForNative;
         if (taskCreationCallbackForNative != null) {
-            taskCreationCallbackForNative.onResult(mAndroidBrowserWindow.getOrCreateNativePtr());
+            var browserWindow = mAndroidBrowserWindows.get(mInitialProfile);
+            assert browserWindow != null;
+            taskCreationCallbackForNative.onResult(browserWindow.getOrCreateNativePtr());
         }
 
         mPendingTaskInfo = null;
@@ -479,12 +523,6 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        // TODO(crbug.com/475200706): Support regular + OTR for mobile.
-        if (featureKey.mProfile != null && !featureKey.mProfile.equals(mInitialProfile)) {
-            throw new IllegalArgumentException(
-                    "Feature is profile-scoped but the profile doesn't match the task's profile.");
-        }
-
         var topActivityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
         var tabModelSelector =
                 topActivityScopedObjects == null
@@ -518,13 +556,20 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public long getOrCreateNativeBrowserWindowPtr() {
+    public long getOrCreateNativeBrowserWindowPtr(Profile profile) {
         ThreadUtils.assertOnUiThread();
         assert mState == State.PENDING_CREATE
                         || mState == State.IDLE
                         || mState == State.PENDING_UPDATE
                 : "This Task is not pending or alive.";
-        return mAndroidBrowserWindow.getOrCreateNativePtr();
+        var browserWindow = mAndroidBrowserWindows.get(profile);
+        assert browserWindow != null : "Profile not found in AndroidBrowserWindows map.";
+        return browserWindow.getOrCreateNativePtr();
+    }
+
+    @Override
+    public long getOrCreateNativeBrowserWindowPtr() {
+        return getOrCreateNativeBrowserWindowPtr(mInitialProfile);
     }
 
     @Override
@@ -555,7 +600,10 @@ final class ChromeAndroidTaskImpl
         destroyFeatures();
         ProfileManager.removeObserver(mProfileObserver);
 
-        mAndroidBrowserWindow.destroy();
+        for (AndroidBrowserWindow browserWindow : mAndroidBrowserWindows.values()) {
+            browserWindow.destroy();
+        }
+        mAndroidBrowserWindows.clear();
         mState = State.DESTROYED;
     }
 
@@ -939,8 +987,14 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public @Nullable Integer getSessionIdForTesting(Profile profile) {
+        var browserWindow = mAndroidBrowserWindows.get(profile);
+        return browserWindow == null ? null : browserWindow.getNativeSessionIdForTesting();
+    }
+
+    @Override
     public @Nullable Integer getSessionIdForTesting() {
-        return mAndroidBrowserWindow.getNativeSessionIdForTesting();
+        return getSessionIdForTesting(mInitialProfile);
     }
 
     @VisibleForTesting
@@ -1005,31 +1059,22 @@ final class ChromeAndroidTaskImpl
         }
 
         TabModelSelector tabModelSelector = topActivityScopedObjects.mTabModelSelector;
-        assert mPreventAddTabToOtherModelObserver == null;
-        if (topActivityScopedObjects.mSupportedProfileType != SupportedProfileType.MIXED) {
-            mPreventAddTabToOtherModelObserver =
-                    new TabModelSelectorTabModelObserver(tabModelSelector) {
-                        @Override
-                        public void didAddTab(
-                                Tab tab,
-                                @TabLaunchType int type,
-                                @TabCreationState int creationState,
-                                boolean markedForSelection) {
-                            if (isDestroyed()) return;
+        if (topActivityScopedObjects.mSupportedProfileType == SupportedProfileType.MIXED) {
+            // Associate regular model.
+            var regularModel = tabModelSelector.getModel(/* incognito= */ false);
+            associateTabModelWithBrowserWindow(regularModel);
 
-                            Profile newTabProfile = tab.getProfile();
-                            assert mInitialProfile.equals(newTabProfile)
-                                    : "A tab with a different profile was added to this task."
-                                            + " Initial: "
-                                            + mInitialProfile
-                                            + ", New: "
-                                            + newTabProfile;
-                        }
-                    };
+            // Associate incognito model if it exists, otherwise observe.
+            var incognitoModel =
+                    (IncognitoTabModel) tabModelSelector.getModel(/* incognito= */ true);
+            var incognitoProfile = incognitoModel.getProfile();
+            if (incognitoProfile != null) {
+                associateTabModelWithBrowserWindow(incognitoModel);
+            }
+            incognitoModel.addIncognitoObserver(mIncognitoTabModelObserver);
+        } else {
+            associateTabModelWithBrowserWindow(tabModelSelector.getCurrentModel());
         }
-        // TODO(crbug.com/475200706): Associate both models in MIXED state.
-        TabModel currentTabModel = tabModelSelector.getCurrentModel();
-        currentTabModel.associateWithBrowserWindow(mAndroidBrowserWindow.getOrCreateNativePtr());
 
         tabModelSelector.getCurrentTabModelSupplier().addObserver(mOnTabModelSelectedCallback);
         onTabModelSelected(tabModelSelector.getCurrentModel());
@@ -1040,6 +1085,23 @@ final class ChromeAndroidTaskImpl
                 .addOnGlobalLayoutListener(this);
 
         mWindowStateManager.update(getActivity(topActivityWindowAndroid));
+    }
+
+    /**
+     * Associates the given {@link TabModel} with the {@link AndroidBrowserWindow} for its {@link
+     * Profile} creating the browser window if it does not exist. *
+     *
+     * @param tabModel The {@link TabModel} to associate.
+     */
+    private void associateTabModelWithBrowserWindow(TabModel tabModel) {
+        var profile = tabModel.getProfile();
+        assert profile != null;
+        var browserWindow = mAndroidBrowserWindows.get(profile);
+        if (browserWindow == null) {
+            browserWindow = new AndroidBrowserWindow(this, profile);
+            mAndroidBrowserWindows.put(profile, browserWindow);
+        }
+        tabModel.associateWithBrowserWindow(browserWindow.getOrCreateNativePtr());
     }
 
     private void unregisterListenersForTopActivity() {
@@ -1064,13 +1126,13 @@ final class ChromeAndroidTaskImpl
                     .removeWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
         }
 
-        if (mPreventAddTabToOtherModelObserver != null) {
-            mPreventAddTabToOtherModelObserver.destroy();
-            mPreventAddTabToOtherModelObserver = null;
-        }
-
         var tabModelSelector = topActivityScopedObjects.mTabModelSelector;
         if (tabModelSelector != null) {
+            if (topActivityScopedObjects.mSupportedProfileType == SupportedProfileType.MIXED) {
+                var incognitoTabModel =
+                        (IncognitoTabModel) tabModelSelector.getModel(/* incognito= */ true);
+                incognitoTabModel.removeIncognitoObserver(mIncognitoTabModelObserver);
+            }
             tabModelSelector
                     .getCurrentTabModelSupplier()
                     .removeObserver(mOnTabModelSelectedCallback);
@@ -1396,9 +1458,5 @@ final class ChromeAndroidTaskImpl
 
     PendingActionManager getPendingActionManagerForTesting() {
         return mPendingActionManager;
-    }
-
-    @Nullable TabModelSelectorTabModelObserver getTabModelObserverForTesting() {
-        return mPreventAddTabToOtherModelObserver;
     }
 }

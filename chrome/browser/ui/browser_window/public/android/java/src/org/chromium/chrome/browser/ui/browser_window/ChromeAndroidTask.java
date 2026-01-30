@@ -11,6 +11,7 @@ import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -107,7 +108,9 @@ public interface ChromeAndroidTask {
          * Callback to notify native callers when a native {@code AndroidBrowserWindow} is created
          * and fully initialized.
          *
-         * <p>The type of the callback is the address of the native {@code AndroidBrowserWindow}.
+         * <p>The type of the callback is the address of the native {@code AndroidBrowserWindow} for
+         * the initial profile. On mobile, there may be multiple {@code AndroidBrowserWindow}s for
+         * different profiles.
          */
         final @Nullable JniOnceCallback<Long> mTaskCreationCallbackForNative;
 
@@ -234,7 +237,14 @@ public interface ChromeAndroidTask {
      *
      * <p>If the native object hasn't been created, this method will create it before returning its
      * address.
+     *
+     * @param profile The profile associated with the browser window.
      */
+    long getOrCreateNativeBrowserWindowPtr(Profile profile);
+
+    // TODO(crbug.com/475200706): Remove once all callers are migrated to the profile-specific
+    // method.
+    @Deprecated
     long getOrCreateNativeBrowserWindowPtr();
 
     /**
@@ -329,5 +339,10 @@ public interface ChromeAndroidTask {
     /**
      * Returns the {@code SessionID} as returned by {@code BrowserWindowInterface::GetSessionID()}.
      */
+    @Nullable Integer getSessionIdForTesting(Profile profile);
+
+    // TODO(crbug.com/475200706): Remove once all callers are migrated to the profile-specific
+    // method.
+    @Deprecated
     @Nullable Integer getSessionIdForTesting();
 }
