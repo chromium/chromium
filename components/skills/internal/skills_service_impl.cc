@@ -191,7 +191,7 @@ const Skill* SkillsServiceImpl::AddSkillImpl(std::unique_ptr<Skill> skill,
   return skill_ptr;
 }
 
-void SkillsServiceImpl::MaybeFetchDiscoverySkills() {
+void SkillsServiceImpl::FetchDiscoverySkills() {
   if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
     return;
   }
@@ -201,7 +201,9 @@ void SkillsServiceImpl::MaybeFetchDiscoverySkills() {
 
 void SkillsServiceImpl::Handle1pSkillsMap(
     std::unique_ptr<SkillsMap> skills_map) {
-  // TODO(crbug.com/478015957): Call observers with the new map.
+  for (Observer& observer : observers_) {
+    observer.OnDiscoverySkillsUpdated(std::move(skills_map));
+  }
 }
 
 Skill* SkillsServiceImpl::GetMutableSkillById(std::string_view skill_id) {

@@ -50,6 +50,11 @@ class SkillsService : public KeyedService {
 
     // Called when the service is ready to use and data is loaded from the disk.
     virtual void OnInitialized() {}
+
+    // Called when the service has completed a download of 1P skills. Receives
+    // new map or nullptr if map has not changed.
+    virtual void OnDiscoverySkillsUpdated(
+        std::unique_ptr<SkillsDownloader::SkillsMap> skills_map) {}
   };
 
   SkillsService();
@@ -112,15 +117,15 @@ class SkillsService : public KeyedService {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Calls downloader to fetch 1p skills which will return updated skills to
-  // Handle1pSkillsMap if they exist. Skills are only returned when the file
-  // denotes there has been a modification since the last fetch.
-  virtual void MaybeFetchDiscoverySkills() = 0;
+  // Handle1pSkillsMap. If there has been no modification since the last fetch
+  // nullptr will be returned.
+  virtual void FetchDiscoverySkills() = 0;
 
   // Map of category to fetched skills within that category.
   using SkillsMap =
       absl::flat_hash_map<std::string, std::vector<skills::proto::Skill>>;
   // Called on download complete of 1p skills. If the download fails or the file
-  // has not been modified skills_map is null.
+  // has not been modified skills_map is null. Notifies observers.
   virtual void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) = 0;
 
   // Returns controller delegate for the sync service.

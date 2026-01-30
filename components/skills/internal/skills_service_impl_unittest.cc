@@ -301,7 +301,7 @@ TEST_F(SkillsServiceImplTest, AddSkillFromSync) {
                                 HasLastUpdateTime(update_time)))));
 }
 
-TEST_F(SkillsServiceImplTest, MaybeFetchDiscoverySkills_Success) {
+TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Success) {
   scoped_feature_list_.InitAndEnableFeature(features::kSkillsEnabled);
   skills::proto::SkillsList skills_list;
   skills_list.add_skills()->set_name("/test-skill-only-name");
@@ -319,19 +319,18 @@ TEST_F(SkillsServiceImplTest, MaybeFetchDiscoverySkills_Success) {
         run_loop.Quit();
       });
 
-  mock_service.MaybeFetchDiscoverySkills();
+  mock_service.FetchDiscoverySkills();
   run_loop.Run();
 }
 
-TEST_F(SkillsServiceImplTest, MaybeFetchDiscoverySkills_Failure) {
+TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Failure) {
   scoped_feature_list_.InitAndEnableFeature(features::kSkillsEnabled);
+  test_url_loader_factory_.AddResponse(kSkillsDownloaderGstaticUrl, "",
+                                       net::HTTP_NOT_FOUND);
   MockSkillsServiceImpl mock_service(
       &mock_optimization_guide_decider_, version_info::Channel::UNKNOWN,
       syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
       test_url_loader_factory_.GetSafeWeakWrapper());
-
-  test_url_loader_factory_.AddResponse(kSkillsDownloaderGstaticUrl, "",
-                                       net::HTTP_NOT_FOUND);
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_service, Handle1pSkillsMap(testing::IsNull()))
@@ -340,7 +339,7 @@ TEST_F(SkillsServiceImplTest, MaybeFetchDiscoverySkills_Failure) {
         run_loop.Quit();
       });
 
-  mock_service.MaybeFetchDiscoverySkills();
+  mock_service.FetchDiscoverySkills();
   run_loop.Run();
 }
 

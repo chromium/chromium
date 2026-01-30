@@ -69,7 +69,7 @@ class SkillsServiceImpl : public SkillsService {
   void DeleteSkill(std::string_view skill_id,
                    UpdateSource update_source) override;
   const Skill* GetSkillById(std::string_view skill_id) const override;
-  void MaybeFetchDiscoverySkills() override;
+  void FetchDiscoverySkills() override;
   void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;

@@ -106,7 +106,7 @@ class MockSkillsService : public SkillsService {
       (std::string_view, std::string_view, std::string_view, std::string_view));
   MOCK_METHOD(bool, IsInitialized, (), (const));
   MOCK_METHOD(void, DeleteSkill, (std::string_view, UpdateSource));
-  MOCK_METHOD(void, MaybeFetchDiscoverySkills, ());
+  MOCK_METHOD(void, FetchDiscoverySkills, ());
   MOCK_METHOD(void, Handle1pSkillsMap, (std::unique_ptr<SkillsMap>));
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));
