@@ -7,8 +7,9 @@ include_rules = [
   "+ios/chrome/browser/context_menu/ui_bundled",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/first_run/public/best_features_item.h",
   "+ios/chrome/browser/https_upgrades/model",
-  "+ios/chrome/browser/intents/model/intents_constants.h",
+  "+ios/chrome/browser/intents/model",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h",
@@ -19,6 +20,8 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
+  "+ios/chrome/browser/tips_manager/model",
   "+ios/chrome/browser/web/model",
+  "+ios/chrome/browser/welcome_back/model/features.h",
   # keep-sorted end
 ]

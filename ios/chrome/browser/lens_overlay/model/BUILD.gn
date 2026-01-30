@@ -161,6 +161,7 @@ source_set("metrics_recorder") {
     ":detent_state_header",
     "//base",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/web/public",
     "//ui/base",

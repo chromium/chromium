@@ -10,6 +10,8 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 
+enum class LensEntrypoint;
+
 // Different types of image selection sources.
 enum class LensViewFinderImageSource {
   kCamera = 0,
@@ -20,7 +22,7 @@ enum class LensViewFinderImageSource {
 @interface LensViewFinderMetricsRecorder : NSObject
 
 // Records LVF opened.
-- (void)recordLensViewFinderOpened;
+- (void)recordLensViewFinderOpenedFromEntrypoint:(LensEntrypoint)entrypoint;
 
 // Records LVF closed.
 - (void)recordLensViewFinderDismissTapped;
