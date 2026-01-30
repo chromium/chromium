@@ -7,7 +7,6 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/record_paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
