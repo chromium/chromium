@@ -31,6 +31,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -40,6 +41,7 @@ import org.chromium.components.permissions.DeviceItemAdapter;
 import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
@@ -600,6 +602,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/480179765
     public void testPairButtonDisabledAfterSelectedItemRemoved() throws Throwable {
         final Dialog dialog =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -627,6 +630,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/480179765
     public void testSelectAnItemAndRemoveAnotherItem() throws Throwable {
         final Dialog dialog =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -661,6 +665,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/480179765
     public void testSelectAnItemAndRemoveTheSelectedItem() throws Throwable {
         final Dialog dialog =
                 ThreadUtils.runOnUiThreadBlocking(
