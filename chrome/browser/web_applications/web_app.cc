@@ -688,6 +688,10 @@ void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
            .has_value()) {
     sync_proto.clear_trusted_icons();
   }
+  if (sync_proto.has_migrated_from_manifest_id() &&
+      !GURL(sync_proto.migrated_from_manifest_id()).is_valid()) {
+    sync_proto.clear_migrated_from_manifest_id();
+  }
 
   sync_proto_ = std::move(sync_proto);
 }

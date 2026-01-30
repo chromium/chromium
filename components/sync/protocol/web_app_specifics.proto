@@ -100,4 +100,9 @@ message WebAppSpecifics {
   // Contains the metadata for the trusted icons to be shown on security
   // sensitive surfaces by the web app.
   repeated WebAppIconInfo trusted_icons = 11;
+
+  // If this app has been migrated from another app, set the source manifest id
+  // to allow handling of the app migration handled on the device this app gets
+  // synced into.
+  optional string migrated_from_manifest_id = 12;
 }

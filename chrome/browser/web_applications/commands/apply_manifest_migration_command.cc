@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "third_party/blink/public/common/features.h"
@@ -139,7 +140,7 @@ void ApplyManifestMigrationCommand::StartWithLock(
   // Uninstall the source app if the destination app is already installed with
   // OS integration.
   if (destination_app_install_state == proto::INSTALLED_WITH_OS_INTEGRATION) {
-    UninstallSourceApp();
+    SetupDestinationAppUninstallSourceApp();
     return;
   }
 
@@ -196,9 +197,6 @@ void ApplyManifestMigrationCommand::MigrateOsIntegrationFromSourceApp(
                                                : RunOnOsLoginMode::kNotRun);
     }
     destination_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
-    if (destination_app->GetSources().Has(WebAppManagement::kUserInstalled)) {
-      destination_app->AddSource(WebAppManagement::kSync);
-    }
   }
 
   SynchronizeOsOptions os_options{
@@ -214,12 +212,30 @@ void ApplyManifestMigrationCommand::SynchronizeOsIntegration(
                              SynchronizeOptionsAsDebugValue(os_options));
   all_apps_lock_->os_integration_manager().Synchronize(
       destination_app_id_,
-      base::BindOnce(&ApplyManifestMigrationCommand::UninstallSourceApp,
-                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &ApplyManifestMigrationCommand::SetupDestinationAppUninstallSourceApp,
+          weak_factory_.GetWeakPtr()),
       os_options);
 }
 
-void ApplyManifestMigrationCommand::UninstallSourceApp() {
+void ApplyManifestMigrationCommand::SetupDestinationAppUninstallSourceApp() {
+  // Set the destination app to be have all information necessary for syncing.
+  const webapps::ManifestId& source_manifest_id =
+      all_apps_lock_->registrar().GetComputedManifestId(source_app_id_);
+  CHECK(source_manifest_id.is_valid());
+  {
+    ScopedRegistryUpdate update = all_apps_lock_->sync_bridge().BeginUpdate();
+    WebApp* destination_app = update->UpdateApp(destination_app_id_);
+    CHECK(destination_app);
+    if (destination_app->GetSources().Has(WebAppManagement::kUserInstalled)) {
+      destination_app->AddSource(WebAppManagement::kSync);
+    }
+
+    // Set the source app's manifest id to be synced.
+    sync_pb::WebAppSpecifics mutable_sync_proto = destination_app->sync_proto();
+    mutable_sync_proto.set_migrated_from_manifest_id(source_manifest_id.spec());
+    destination_app->SetSyncProto(std::move(mutable_sync_proto));
+  }
   GetMutableDebugValue().Set("os_integration_set", true);
   const WebApp* source_app =
       all_apps_lock_->registrar().GetAppById(source_app_id_);
@@ -251,8 +267,6 @@ void ApplyManifestMigrationCommand::AppUninstalledCompleteMigration(
     return;
   }
 
-  // TODO(crbug.com/465762477): Update sync data here for web apps to point to
-  // source app once implemented.
   CompleteCommandAndSelfDestruct(
       ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully);
 }

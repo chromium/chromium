@@ -426,6 +426,17 @@ std::unique_ptr<WebApp> ParseWebAppProto(
     return nullptr;
   }
 
+  if (sync_data.has_migrated_from_manifest_id()) {
+    webapps::ManifestId migrated_from_manifest_id(
+        sync_data.migrated_from_manifest_id());
+    if (!migrated_from_manifest_id.is_valid()) {
+      RecordProtoParseResult(ProtoParseResult::kMigratedFromManifestIdInvalid);
+      DLOG(ERROR) << "WebApp sync proto migrated from manifest id parse error "
+                  << migrated_from_manifest_id.possibly_invalid_spec();
+      return nullptr;
+    }
+  }
+
   // Post-migration check: Scope should not be empty.
   if (!proto.has_scope() || proto.scope().empty()) {
     RecordProtoParseResult(ProtoParseResult::kNoScope);

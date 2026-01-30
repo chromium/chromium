@@ -62,7 +62,9 @@ class ApplyManifestMigrationCommand
   // Synchronizes OS integration for the destination app, and uninstalls the
   // source app consequently.
   void SynchronizeOsIntegration(SynchronizeOsOptions os_options);
-  void UninstallSourceApp();
+  // Set up the destination app so that it appears to be "migrated" as seen from
+  // the sync system, and uninstall the source app.
+  void SetupDestinationAppUninstallSourceApp();
   void AppUninstalledCompleteMigration(webapps::UninstallResultCode code);
   void CompleteCommandAndSelfDestruct(ApplyManifestMigrationResult result);
 

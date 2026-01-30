@@ -192,6 +192,14 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_proto,
     auto udm = ResolvePlatformSpecificUserDisplayMode(modified_sync_proto);
     SetPlatformSpecificUserDisplayMode(udm, &modified_sync_proto);
   }
+
+  // Ensure that incoming sync proto that does not have the manifest id of the
+  // source app set does not clear the existing metadata stored on disk.
+  if (app->sync_proto().has_migrated_from_manifest_id() &&
+      !modified_sync_proto.has_migrated_from_manifest_id()) {
+    modified_sync_proto.set_migrated_from_manifest_id(
+        app->sync_proto().migrated_from_manifest_id());
+  }
   app->SetSyncProto(std::move(modified_sync_proto));
   CHECK(HasCurrentPlatformUserDisplayMode(app->sync_proto()));
 }

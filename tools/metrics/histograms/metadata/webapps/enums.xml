@@ -720,6 +720,7 @@ chromium-metrics-reviews@google.com.
   <int value="68" label="InvalidWebAppValidatedMigrationSource"/>
   <int value="69" label="InvalidDisplayOverrideUrlPatterns"/>
   <int value="70" label="StartUrlNotInScope"/>
+  <int value="71" label="MigratedFromManifestIdInvalid"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/web_app_database_serialization.h:ProtoParseResult) -->

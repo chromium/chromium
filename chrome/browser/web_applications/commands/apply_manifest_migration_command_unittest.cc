@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -134,6 +135,16 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
     return histogram_tester_.GetAllSamples("WebApp.Migration.ApplyResult");
   }
 
+  bool IsMigratedAppSetForSync(const webapps::ManifestId& source_manifest_id,
+                               const webapps::AppId& migrated_app_id) {
+    const WebApp* migrated_app =
+        fake_provider().registrar_unsafe().GetAppById(migrated_app_id);
+    return migrated_app->IsSynced() &&
+           migrated_app->sync_proto().has_migrated_from_manifest_id() &&
+           migrated_app->sync_proto().migrated_from_manifest_id() ==
+               source_manifest_id;
+  }
+
   bool IsOsIntegrationSupported() {
 #if BUILDFLAG(IS_CHROMEOS)
     return false;
@@ -163,6 +174,8 @@ TEST_F(ApplyManifestMigrationCommandTest,
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  const webapps::ManifestId& source_manifest_id =
+      fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -220,6 +233,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   }
 
   // Destination app is in the registrar with no changes.
+  ASSERT_TRUE(IsMigratedAppSetForSync(source_manifest_id, destination_app_id));
   EXPECT_TRUE(fake_provider().registrar_unsafe().AppMatches(
       destination_app_id,
       WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -240,6 +254,8 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  const webapps::ManifestId& source_manifest_id =
+      fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -295,13 +311,10 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   }
 
   // Destination app is in the registrar with full OS integration.
+  ASSERT_TRUE(IsMigratedAppSetForSync(source_manifest_id, destination_app_id));
   EXPECT_TRUE(fake_provider().registrar_unsafe().AppMatches(
       destination_app_id,
       WebAppFilter::InstalledInOperatingSystemForTesting()));
-  EXPECT_TRUE(fake_provider()
-                  .registrar_unsafe()
-                  .GetAppById(destination_app_id)
-                  ->IsSynced());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
         profile(), destination_app_id,
@@ -319,6 +332,8 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  const webapps::ManifestId& source_manifest_id =
+      fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
 
   // Set up Run on OS login for the web app to be opened in a windowed mode.
   base::test::TestFuture<void> future;
@@ -379,6 +394,7 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   }
 
   // Destination app is in the registrar with full OS integration.
+  ASSERT_TRUE(IsMigratedAppSetForSync(source_manifest_id, destination_app_id));
   auto dest_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           destination_app_id);
@@ -386,10 +402,6 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   EXPECT_TRUE(dest_state->has_run_on_os_login());
   EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
             state->run_on_os_login().run_on_os_login_mode());
-  EXPECT_TRUE(fake_provider()
-                  .registrar_unsafe()
-                  .GetAppById(destination_app_id)
-                  ->IsSynced());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsRunOnOsLoginEnabled(
         profile(), destination_app_id,
