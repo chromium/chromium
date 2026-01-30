@@ -45,6 +45,7 @@ NSString* const kMailToInstanceChanged = @"MailToInstanceChanged";
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSettings = kSectionIdentifierEnumZero,
   SectionIdentifierDeveloperTools,
+  SectionIdentifierReaderMode,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -56,6 +57,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSettingsMiniMapShowNative,
   ItemTypeSettingsDetectUnits,
   ItemTypeSettingsShowReadingModeAvailable,
+  ItemTypeSettingsReaderMode,
   ItemTypeSettingsWebInspector,
 };
 
@@ -71,6 +73,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewMultiDetailTextItem* _openedInAnotherWindowItem;
   TableViewDetailIconItem* _defaultSiteMode;
   TableViewDetailIconItem* _webInspectorStateItem;
+  TableViewDetailIconItem* _readerModeSectionItem;
 }
 
 // PrefBackedBoolean for "Show Link Preview" setting state.
@@ -105,6 +108,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // The item related to the switch for the "Web Inspector" setting.
 @property(nonatomic, strong) TableViewDetailIconItem* webInspectorItem;
+
+// The item related to the switch for the "Reading Mode" setting.
+@property(nonatomic, strong) TableViewDetailIconItem* readerModeItem;
 
 // The setting used to store the default mode.
 @property(nonatomic, strong) ContentSettingBackedBoolean* requestDesktopSetting;
@@ -159,7 +165,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                    prefName:prefs::kDetectUnitsEnabled];
     [_detectUnitsEnabled setObserver:self];
 
-    if (IsReaderModeAvailable() && IsReaderModeOmniboxEntryPointEnabled()) {
+    if (IsReaderModeAvailable() && IsReaderModeOmniboxEntryPointEnabled() &&
+        !IsReaderModeContentSettingsForLinkEnabled()) {
       _showReadingModeAvailableEnabled = [[PrefBackedBoolean alloc]
           initWithPrefService:prefService
                      prefName:prefs::kIosReaderModeShowAvailability];
@@ -290,7 +297,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
 
-  if (self.showReadingModeAvailableEnabled) {
+  if (!IsReaderModeContentSettingsForLinkEnabled() &&
+      self.showReadingModeAvailableEnabled) {
     [model addItem:[self showReadingModeAvailableItem]
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
@@ -300,6 +308,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model addSectionWithIdentifier:SectionIdentifierDeveloperTools];
     [model addItem:self.webInspectorItem
         toSectionWithIdentifier:SectionIdentifierDeveloperTools];
+  }
+
+  if (IsReaderModeContentSettingsForLinkEnabled()) {
+    // Add a new content setting section for Reading Mode that holds multiple
+    // feature options.
+    if (IsReaderModeAvailable()) {
+      self.readerModeItem = [self readerModeSectionItem];
+      [model addSectionWithIdentifier:SectionIdentifierReaderMode];
+      [model addItem:self.readerModeItem
+          toSectionWithIdentifier:SectionIdentifierReaderMode];
+    }
   }
 }
 
@@ -465,6 +484,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _webInspectorStateItem;
 }
 
+- (TableViewDetailIconItem*)readerModeSectionItem {
+  _readerModeSectionItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeSettingsReaderMode];
+  _readerModeSectionItem.text =
+      l10n_util::GetNSString(IDS_IOS_READER_MODE_CONTENT_SETTINGS_TITLE);
+  _readerModeSectionItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _readerModeSectionItem.accessibilityIdentifier = kSettingsReaderModeCellId;
+  return _readerModeSectionItem;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -509,6 +539,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeSettingsWebInspector: {
       [self.presentationDelegate
           contentSettingsTableViewControllerSelectedWebInspector:self];
+      break;
+    }
+    case ItemTypeSettingsReaderMode: {
+      [self.presentationDelegate
+          contentSettingsTableViewControllerSelectedReaderMode:self];
       break;
     }
   }

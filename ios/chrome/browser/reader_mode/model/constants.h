@@ -70,7 +70,8 @@ enum class ReaderModeCustomizationType {
   kFontScale = 0,
   kFontFamily = 1,
   kTheme = 2,
-  kMaxValue = kTheme,
+  kLinksEnabled = 3,
+  kMaxValue = kLinksEnabled,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeCustomizationType)
 
@@ -231,6 +232,9 @@ extern const char kReaderModeFontFamilyCustomizationHistogram[];
 
 // Histogram name for Reader Mode font scale customization.
 extern const char kReaderModeFontScaleCustomizationHistogram[];
+
+// Histogram name for Reader Mode enable/disable link customization.
+extern const char kReaderModeLinksEnabledHistogram[];
 
 // Histogram name for Reader Mode customization.
 extern const char kReaderModeCustomizationHistogram[];

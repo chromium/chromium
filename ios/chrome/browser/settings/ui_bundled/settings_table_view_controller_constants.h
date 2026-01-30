@@ -178,6 +178,9 @@ extern NSString* const kSettingsDefaultSiteModeCellId;
 // The accessibility identifier of the Web Inspector cell.
 extern NSString* const kSettingsWebInspectorCellId;
 
+// The accessibility identifier of the Reader Mode cell.
+extern NSString* const kSettingsReaderModeCellId;
+
 // The accessibility identifier of the Safety Check cell.
 extern NSString* const kSettingsSafetyCheckCellId;
 

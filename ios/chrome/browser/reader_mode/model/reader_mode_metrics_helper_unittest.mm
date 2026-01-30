@@ -163,6 +163,28 @@ TEST_F(ReaderModeMetricsHelperTest, OnThemeChanged) {
       BucketsAre(Bucket(ReaderModeTheme::kDark, 1)));
 }
 
+// Tests that metrics are recorded when the user changes the links enabled in
+// Reading Mode customization UI.
+TEST_F(ReaderModeMetricsHelperTest, OnLinksEnabledChanged) {
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
+
+  distilled_page_prefs_->SetLinksEnabled(true);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
+      BucketsAre(Bucket(ReaderModeCustomizationType::kLinksEnabled, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeLinksEnabledHistogram),
+              BucketsAre(Bucket(true, 1)));
+
+  distilled_page_prefs_->SetLinksEnabled(false);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
+      BucketsAre(Bucket(ReaderModeCustomizationType::kLinksEnabled, 2)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeLinksEnabledHistogram),
+              BucketsAre(Bucket(true, 1), Bucket(false, 1)));
+}
+
 // Tests that changing the default theme multiple times does not impact
 // user preference customization metrics.
 TEST_F(ReaderModeMetricsHelperTest, OnDefaultThemeChangedMultipleTimes) {

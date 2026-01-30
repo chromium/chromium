@@ -295,7 +295,11 @@ void ReaderModeMetricsHelper::OnChangeFontScaling(float scaling) {
                            std::floor(scaling * 100));
 }
 
-void ReaderModeMetricsHelper::OnChangeLinksEnabled(bool enabled) {}
+void ReaderModeMetricsHelper::OnChangeLinksEnabled(bool enabled) {
+  base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
+                                ReaderModeCustomizationType::kLinksEnabled);
+  base::UmaHistogramBoolean(kReaderModeLinksEnabledHistogram, enabled);
+}
 
 void ReaderModeMetricsHelper::RecordDistillationTime(
     std::optional<ReaderModeDistillerResult> result) {

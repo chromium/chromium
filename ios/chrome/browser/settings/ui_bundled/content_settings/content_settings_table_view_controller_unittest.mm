@@ -8,6 +8,7 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -58,10 +59,20 @@ TEST_F(ContentSettingsTableViewControllerTest,
   CheckTitleWithId(IDS_IOS_CONTENT_SETTINGS_TITLE);
 
   if (web::features::IsWebInspectorSupportEnabled()) {
-    ASSERT_EQ(2, NumberOfSections());
+    if (IsReaderModeContentSettingsForLinkEnabled() &&
+        IsReaderModeAvailable()) {
+      ASSERT_EQ(3, NumberOfSections());
+    } else {
+      ASSERT_EQ(2, NumberOfSections());
+    }
     ASSERT_EQ(1, NumberOfItemsInSection(1));
   } else {
-    ASSERT_EQ(1, NumberOfSections());
+    if (IsReaderModeContentSettingsForLinkEnabled() &&
+        IsReaderModeAvailable()) {
+      ASSERT_EQ(2, NumberOfSections());
+    } else {
+      ASSERT_EQ(1, NumberOfSections());
+    }
   }
   if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
     ASSERT_EQ(6, NumberOfItemsInSection(0));
