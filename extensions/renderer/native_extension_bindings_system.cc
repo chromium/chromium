@@ -20,6 +20,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
@@ -28,6 +29,7 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
+#include "extensions/common/manifest_handlers/devtools_page_handler.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -61,9 +63,12 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
+#include "url/origin.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-cppgc.h"
@@ -450,6 +455,49 @@ void BrowserDevtoolsAccessor(v8::Local<v8::Name> name,
   }
 }
 
+// Returns true if the context appears to be the extension's devtools page (as
+// declared in the manifest) or a frame nested within it, and it is hosted by
+// the devtools frontend. Note: Checking for `chrome.devtools` being defined
+// would be much easier, but because it is injected by the DevTools frontend
+// after bindings update we can't so we have to infer it this way.
+bool IsDevToolsPageOrFrame(ScriptContext* context) {
+  const Extension* extension = context->extension();
+  if (!extension) {
+    return false;
+  }
+
+  const GURL& devtools_page_url =
+      chrome_manifest_urls::GetDevToolsPage(extension);
+  if (devtools_page_url.is_empty()) {
+    return false;
+  }
+
+  // Devtools page origin and extension origin are guaranteed to be the same.
+  if (url::Origin::Create(context->url()) != extension->origin()) {
+    return false;
+  }
+
+  // The devtools page is hosted in an iframe in the devtools frontend.
+  blink::WebLocalFrame* web_frame = context->web_frame();
+  if (!web_frame) {
+    return false;
+  }
+
+  // To prevent false positives (e.g. manually navigating to the devtools page
+  // in a regular tab), we must verify that the frame hierarchy is actually
+  // rooted in the devtools frontend (which has the `devtools://` scheme).
+  blink::WebFrame* parent = web_frame->Parent();
+  while (parent) {
+    if (parent->GetSecurityOrigin().Protocol().Utf8() ==
+        content::kChromeDevToolsScheme) {
+      return true;
+    }
+    parent = parent->Parent();
+  }
+
+  return false;
+}
+
 }  // namespace
 
 NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
@@ -740,8 +788,8 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
   // `browser.devtools` can be accessed too. The `devtools` API is special
   // because it is not in `feature_cache_`, but is instead injected onto the
   // `chrome` object by the DevTools frontend (see ExtensionAPI.ts in
-  // devtools-frontend).
-  if (set_accessor_on_browser) {
+  // devtools-frontend) so it has it's own bespoke logic for whether it is set.
+  if (set_accessor_on_browser && IsDevToolsPageOrFrame(context)) {
     if (!browser) {
       browser = GetOrCreateGlobalObjectProperty(v8_context, "browser");
     }

@@ -661,47 +661,6 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   EXPECT_FALSE(ObjectIsDefined(web_contents, "browser"));
 }
 
-// Tests that the browser namespace includes the devtools API.
-// Regression test for https://crbug.com/470092691.
-IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
-                       ChromeAndBrowserObjects_DevTools) {
-  // Load an extension that creates a devtools page/panel.
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(
-      R"({
-          "name": "DevTools test extension",
-          "version": "0.1",
-          "manifest_version": 3,
-          "devtools_page": "devtools.html"
-        })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("devtools.html"),
-                     "<script src='devtools.js'></script>");
-  // Tests that the extension devtools page can access the devtools API.
-  test_dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
-                     R"(chrome.test.runTests([
-                        function checkDevTools() {
-                          chrome.test.assertTrue(chrome.devtools !== undefined,
-                                                 'chrome.devtools');
-                          chrome.test.assertTrue(browser.devtools !== undefined,
-                                                 'browser.devtools');
-                          chrome.test.succeed();
-                        }
-                      ]);)");
-
-  ResultCatcher catcher;
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  // Open a devtools window to get the extension devtools page (and tests) to
-  // load.
-  DevToolsWindow::OpenDevToolsWindow(GetActiveWebContents(),
-                                     DevToolsToggleAction::Show(),
-                                     DevToolsOpenedByAction::kUnknown);
-
-  // Wait for the devtools tests to run.
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
 // Tests that standard APIs like `runtime` are distinct objects in the `chrome`
 // and `browser` namespaces, even if they point to the same underlying API.
 IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
@@ -761,9 +720,188 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests that browser.devtools is aliased to chrome.devtools in a devtools
-// context. This is unique because devtools API is injected by the devtools
-// frontend rather than the standard extension bindings system.
+// Tests that the devtools API is not defined in non-devtools contexts
+// (background service worker, extension page, and content script), but is on
+// the devtools page when the extension has a devtools page.
+IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
+                       ChromeAndBrowserObjects_DevToolsVisibility) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+          "name": "DevTools Visibility test",
+          "version": "0.1",
+          "manifest_version": 3,
+          "background": {"service_worker": "background.js"},
+          "devtools_page": "devtools.html",
+          "content_scripts": [{
+            "matches": ["*://example.com/*"],
+            "js": ["content_script.js"]
+          }]
+        })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("devtools.html"),
+                     "<script src='devtools.js'></script>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
+                     R"(chrome.test.runTests([
+                          function checkHasDevTools() {
+                            chrome.test.assertTrue(
+                              chrome.hasOwnProperty('devtools'));
+                            chrome.test.assertNe(undefined, chrome.devtools);
+                            chrome.test.assertTrue(
+                              browser.hasOwnProperty('devtools'));
+                            chrome.test.assertNe(undefined, browser.devtools);
+                            chrome.test.succeed();
+                          }
+                        ]);)");
+  constexpr char kCheckNoDevTools[] =
+      R"(chrome.test.runTests([
+           function checkNoDevTools() {
+             chrome.test.assertFalse(
+               chrome.hasOwnProperty('devtools'));
+             chrome.test.assertEq(undefined, chrome.devtools);
+             chrome.test.assertFalse(
+               browser.hasOwnProperty('devtools'));
+             chrome.test.assertEq(undefined, browser.devtools);
+             chrome.test.succeed();
+           }
+         ]);)";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kCheckNoDevTools);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
+                     "<script src='page.js'></script>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kCheckNoDevTools);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kCheckNoDevTools);
+
+  // Confirm the background page does not have chrome/browser.devtools defined.
+  ResultCatcher background_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(background_catcher.GetNextResult())
+      << background_catcher.message();
+
+  // Confirm that an extension page context does not have
+  // chrome/browser.devtools defined.
+  ResultCatcher extension_page_catcher;
+  // Navigate to the extension page to run devtools tests.
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            extension->GetResourceURL("page.html")));
+  ASSERT_TRUE(extension_page_catcher.GetNextResult())
+      << extension_page_catcher.message();
+
+  // Confirm that a content script context does not have chrome/browser.devtools
+  // defined.
+  ResultCatcher content_script_catcher;
+  ASSERT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("example.com", "/title1.html")));
+  ASSERT_TRUE(content_script_catcher.GetNextResult())
+      << content_script_catcher.message();
+
+  // Confirm that the main world of the web page does not have devtools defined.
+  EXPECT_EQ(false, content::EvalJs(GetActiveWebContents(),
+                                   "chrome.hasOwnProperty('devtools')"));
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(),
+                                  "typeof browser === 'undefined'"));
+
+  // Confirm that the devtools page *does* have chrome/browser.devtools defined.
+  ResultCatcher devtools_page_catcher;
+  DevToolsWindow::OpenDevToolsWindow(GetActiveWebContents(),
+                                     DevToolsToggleAction::Show(),
+                                     DevToolsOpenedByAction::kUnknown);
+
+  ASSERT_TRUE(devtools_page_catcher.GetNextResult())
+      << devtools_page_catcher.message();
+}
+
+// Tests the edge case where the devtools page is loaded outside of the devtools
+// frontend. browser.devtools should not be defined.
+IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
+                       ChromeAndBrowserObjects_DevToolsVisibility_External) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+          "name": "DevTools External Visibility test",
+          "version": "0.1",
+          "manifest_version": 3,
+          "devtools_page": "devtools.html"
+        })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("devtools.html"),
+                     "<script src='devtools.js'></script>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
+                     R"(chrome.test.runTests([
+                          function checkNoDevTools() {
+                            chrome.test.assertFalse(chrome.hasOwnProperty(
+                              'devtools'));
+                            chrome.test.assertFalse(browser.hasOwnProperty(
+                              'devtools'));
+                            chrome.test.succeed();
+                          }
+                        ]);)");
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Manually navigate to the devtools page. In a manual navigation the devtools
+  // frontend isn't available to inject chrome.devtools so we shouldn't alias
+  // browser.devtools either.
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            extension->GetResourceURL("devtools.html")));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// Tests that iframes nested inside a devtools page have access to
+// browser.devtools (matching chrome.devtools behavior), because their top frame
+// is the devtools page (and devtools frontend).
+IN_PROC_BROWSER_TEST_F(
+    NativeBindingsBrowserNamespaceTest,
+    ChromeAndBrowserObjects_DevToolsVisibility_NestedIframe) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+          "name": "DevTools Nested Iframe test",
+          "version": "0.1",
+          "manifest_version": 3,
+          "devtools_page": "devtools.html"
+        })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("devtools.html"),
+                     R"(<iframe src="child.html"></iframe>)");
+  test_dir.WriteFile(FILE_PATH_LITERAL("child.html"),
+                     "<script src='child.js'></script>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("child.js"),
+                     R"(window.onload = function() {
+                          chrome.test.runTests([
+                            function checkNestedFrameHasDevTools() {
+                              chrome.test.assertTrue(
+                                  chrome.hasOwnProperty('devtools'));
+                              chrome.test.assertNe(undefined, chrome.devtools);
+                              chrome.test.assertTrue(browser.hasOwnProperty(
+                                  'devtools'));
+                              chrome.test.assertNe(undefined,
+                                  browser.devtools);
+                              chrome.test.assertEq(chrome.devtools,
+                                  browser.devtools);
+                              chrome.test.succeed();
+                            }
+                          ]);
+                        };)");
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  DevToolsWindow::OpenDevToolsWindow(GetActiveWebContents(),
+                                     DevToolsToggleAction::Show(),
+                                     DevToolsOpenedByAction::kUnknown);
+
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// Tests the `browser.devtools` aliasing behavior to `chrome.devtools` in a
+// devtools page. This is tested explicitly because `devtools` APIs are an
+// exception being injected by the devtools frontend rather than the standard
+// extension bindings system.
 IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
                        ChromeAndBrowserObjects_DevToolsApiAliasing) {
   TestExtensionDir test_dir;
@@ -817,40 +955,6 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
                                      DevToolsToggleAction::Show(),
                                      DevToolsOpenedByAction::kUnknown);
 
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-// Tests that devtools is NOT available if the extension doesn't have a
-// devtools page.
-IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
-                       ChromeAndBrowserObjects_NoDevTools) {
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(
-      R"({
-          "name": "No DevTools test extension",
-          "version": "0.1",
-          "manifest_version": 3
-        })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
-                     "<script src='page.js'></script>");
-  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"),
-                     R"(chrome.test.runTests([
-                        function checkNoDevTools() {
-                          chrome.test.assertEq(undefined, chrome.devtools);
-                          chrome.test.assertEq(undefined, browser.devtools);
-                          chrome.test.succeed();
-                        }
-                      ]);)");
-
-  ResultCatcher catcher;
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  // Navigate to the extension page to run devtools tests.
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
-                            extension->GetResourceURL("page.html")));
-
-  // Wait for the devtools tests to run.
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
