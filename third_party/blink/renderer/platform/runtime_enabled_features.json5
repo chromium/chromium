@@ -3569,6 +3569,11 @@
       name: "ModulePreloadReferrer",
       status: "experimental",
     },
+    // https://crbug.com/466888680
+    {
+      name: "ModulePreloadStyleJson",
+      status: "experimental",
+    },
     {
       name: "MojoJS",
       status: "test",

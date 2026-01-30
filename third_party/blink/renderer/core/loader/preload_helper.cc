@@ -628,11 +628,22 @@ void PreloadHelper::ModulePreloadIfNeeded(
 
   // Step 2. "Let destination be the current state of the as attribute (a
   // destination), or "script" if it is in no state." [spec text]
-  // Step 3. "If destination is not script-like, then queue a task on the
-  // networking task source to fire an event named error at the link element,
-  // and return." [spec text]
-  // Currently we only support as="script".
-  if (!params.as.empty() && params.as != "script") {
+  // Step 3. "If destination is not "style", "json", or script-like, then queue
+  // a task on the networking task source to fire an event named error at the
+  // link element, and return." [spec text] Currently we only support
+  // as="script". The `ModulePreloadStyleJson` feature flag enables as="style"
+  // and as="json". More module types such as "text" and "image" may be
+  // supported in the future.
+  const bool allow_style_and_json =
+      RuntimeEnabledFeatures::ModulePreloadStyleJsonEnabled();
+  ModuleType module_type = ModuleType::kInvalid;
+  if (params.as.empty() || params.as == "script") {
+    module_type = ModuleType::kJavaScriptOrWasm;
+  } else if (allow_style_and_json && params.as == "style") {
+    module_type = ModuleType::kCSS;
+  } else if (allow_style_and_json && params.as == "json") {
+    module_type = ModuleType::kJSON;
+  } else {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -648,10 +659,33 @@ void PreloadHelper::ModulePreloadIfNeeded(
     }
     return;
   }
+  CHECK_NE(module_type, ModuleType::kInvalid);
   mojom::blink::RequestContextType context_type =
-      mojom::blink::RequestContextType::SCRIPT;
+      mojom::blink::RequestContextType::UNSPECIFIED;
   network::mojom::RequestDestination destination =
-      network::mojom::RequestDestination::kScript;
+      network::mojom::RequestDestination::kEmpty;
+
+  switch (module_type) {
+    case ModuleType::kJavaScriptOrWasm:
+      context_type = mojom::blink::RequestContextType::SCRIPT;
+      destination = network::mojom::RequestDestination::kScript;
+      break;
+    case ModuleType::kCSS:
+      CHECK(allow_style_and_json);
+      context_type = mojom::blink::RequestContextType::STYLE;
+      destination = network::mojom::RequestDestination::kStyle;
+      break;
+    case ModuleType::kJSON:
+      CHECK(allow_style_and_json);
+      context_type = mojom::blink::RequestContextType::JSON;
+      destination = network::mojom::RequestDestination::kJson;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  CHECK_NE(context_type, mojom::blink::RequestContextType::UNSPECIFIED);
+  CHECK_NE(destination, network::mojom::RequestDestination::kEmpty);
 
   // Step 4. "Parse the URL given by the href attribute, relative to the
   // element's node document. If that fails, then return. Otherwise, let url be
@@ -712,7 +746,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // metadata is "not-parser-inserted", credentials mode is credentials mode,
   // and referrer policy is referrer policy." [spec text]
   ModuleScriptFetchRequest request(
-      params.href, ModuleType::kJavaScriptOrWasm, context_type, destination,
+      params.href, module_type, context_type, destination,
       ScriptFetchOptions(params.nonce, integrity_metadata, integrity_value,
                          kNotParserInserted, credentials_mode,
                          params.referrer_policy,
