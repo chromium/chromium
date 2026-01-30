@@ -86,7 +86,8 @@ class FakeObserver : public TabListInterfaceObserver {
     events_.emplace_back(Event::Type::ACTIVE_TAB_CHANGED, tab);
   }
 
-  void OnTabRemoved(tabs::TabInterface* tab) override {
+  void OnTabRemoved(tabs::TabInterface* tab,
+                    TabRemovedReason removed_reason) override {
     Event event(Event::Type::TAB_REMOVED, tab);
 
     // The tab may be destroyed after removal, so we avoid accessing it later.

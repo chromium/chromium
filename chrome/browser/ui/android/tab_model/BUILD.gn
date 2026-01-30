@@ -63,6 +63,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/internal",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/content_settings/core/browser",
     "//content/public/browser",
     "//content/public/common",
