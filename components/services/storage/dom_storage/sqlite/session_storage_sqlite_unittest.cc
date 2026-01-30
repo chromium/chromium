@@ -339,4 +339,19 @@ TEST_F(SessionStorageSqliteTest, MetadataPersistence) {
   }
 }
 
+// Verifies that `UpdateMaps()` correctly adds, modifies, and deletes key/value
+// pairs across multiple maps.
+TEST_F(SessionStorageSqliteTest, UpdateMaps) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  DomStorageDatabase::MapLocator map1_locator{kFirstSessionId, kFirstStorageKey,
+                                              kFirstMapId};
+
+  DomStorageDatabase::MapLocator map2_locator{kFirstSessionId,
+                                              kSecondStorageKey, kSecondMapId};
+  ASSERT_NO_FATAL_FAILURE(
+      TestUpdateMaps(*database, map1_locator, map2_locator));
+}
+
 }  // namespace storage

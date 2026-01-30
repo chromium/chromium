@@ -89,16 +89,21 @@ DbStatus SessionStorageSqlite::Open(
 
 StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
 SessionStorageSqlite::ReadMapKeyValues(MapLocator map_locator) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return base::unexpected(DbStatus::NotSupported(""));
+  int64_t map_id = map_locator.map_id().value();
+  return map_entries_table_->GetMapKeyValues(map_id);
 }
 
 DbStatus SessionStorageSqlite::UpdateMaps(
     std::vector<MapBatchUpdate> map_updates) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  sql::Transaction transaction(database_.get());
+  RETURN_STATUS_ON_ERROR(transaction.Begin());
+
+  for (MapBatchUpdate& map_update : map_updates) {
+    DB_RETURN_IF_ERROR(map_entries_table_->UpdateMap(std::move(map_update)));
+  }
+
+  RETURN_STATUS_ON_ERROR(transaction.Commit());
+  return DbStatus::OK();
 }
 
 DbStatus SessionStorageSqlite::CloneMap(MapLocator source_map,
@@ -178,9 +183,9 @@ DbStatus SessionStorageSqlite::DeleteSessions(
 }
 
 DbStatus SessionStorageSqlite::PurgeOrigins(std::set<url::Origin> origins) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  // Origins aren't explicitly purged from session storage on shutdown because
+  // all session storage (generally) is cleared on shutdown already.
+  NOTREACHED();
 }
 
 DbStatus SessionStorageSqlite::RewriteDB() {
