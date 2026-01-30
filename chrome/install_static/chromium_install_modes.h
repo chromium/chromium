@@ -15,6 +15,17 @@
 
 namespace install_static {
 
+// The brand-specific company name to be included as a component of the install
+// and user data directory paths. May be empty if no such dir is to be used.
+inline constexpr wchar_t kCompanyPathName[] = L"";
+
+// The brand-specific product name to be included as a component of the install
+// and user data directory paths.
+inline constexpr wchar_t kProductPathName[] = L"Chromium";
+
+// The brand-specific safe browsing client name.
+inline constexpr char kSafeBrowsingName[] = "chromium";
+
 // Note: This list of indices must be kept in sync with the brand-specific
 // resource strings in chrome/installer/util/prebuild/create_string_rc.
 enum InstallConstantIndex {

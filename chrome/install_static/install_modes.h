@@ -28,11 +28,14 @@
 #ifndef CHROME_INSTALL_STATIC_INSTALL_MODES_H_
 #define CHROME_INSTALL_STATIC_INSTALL_MODES_H_
 
+#include <stdlib.h>
+
 #include <string>
 
 #include "build/branding_buildflags.h"
 
 // Include the brand-specific values. Each of these must define:
+// - kCompanyPathName, kProductPathName and kSafeBrowsingName constants.
 // - enum InstallConstantIndex: named indices of the brand's kInstallModes
 //   array.
 // - NUM_INSTALL_MODES: the total number of modes (i.e., the number of items in
@@ -47,19 +50,8 @@
 
 namespace install_static {
 
-// The brand-specific company name to be included as a component of the install
-// and user data directory paths. May be empty if no such dir is to be used.
-extern const wchar_t kCompanyPathName[];
-
-// The brand-specific product name to be included as a component of the install
-// and user data directory paths.
-extern const wchar_t kProductPathName[];
-
 // The length, in characters, of kProductPathName not including the terminator.
-extern const size_t kProductPathNameLength;
-
-// The brand-specific safe browsing client name.
-extern const char kSafeBrowsingName[];
+inline constexpr size_t kProductPathNameLength = _countof(kProductPathName) - 1;
 
 // The following convenience functions behave conditionally on whether or not
 // the brand uses Chrome's integration with Google Update. For brands that do
