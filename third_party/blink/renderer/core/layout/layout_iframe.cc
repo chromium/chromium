@@ -25,10 +25,31 @@
 
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 
 namespace blink {
+
+namespace {
+
+EFrameSizing PhysicalFrameSizing(const ComputedStyle& style) {
+  const EFrameSizing value = style.FrameSizing();
+  switch (value) {
+    case EFrameSizing::kAuto:
+    case EFrameSizing::kContentWidth:
+    case EFrameSizing::kContentHeight:
+      return value;
+    case EFrameSizing::kContentInlineSize:
+      return style.IsHorizontalWritingMode() ? EFrameSizing::kContentWidth
+                                             : EFrameSizing::kContentHeight;
+    case EFrameSizing::kContentBlockSize:
+      return style.IsHorizontalWritingMode() ? EFrameSizing::kContentHeight
+                                             : EFrameSizing::kContentWidth;
+  }
+}
+
+}  // namespace
 
 LayoutIFrame::LayoutIFrame(HTMLFrameOwnerElement* element)
     : LayoutEmbeddedContent(element) {}
@@ -56,9 +77,18 @@ PhysicalNaturalSizingInfo LayoutIFrame::GetNaturalDimensions() const {
       // Use the natural size received from the child frame if it exists.
       if (std::optional<NaturalSizingInfo> sizing_info =
               frame_view->GetNaturalDimensions()) {
-        // Use the block-size only.
-        // TODO(crbug.com/418397278): `writing-mode` isn't supported yet.
-        sizing_info->has_width = false;
+        switch (PhysicalFrameSizing(style)) {
+          case EFrameSizing::kContentWidth:
+            sizing_info->has_height = false;
+            break;
+          case EFrameSizing::kContentHeight:
+            sizing_info->has_width = false;
+            break;
+          case EFrameSizing::kAuto:
+          case EFrameSizing::kContentInlineSize:
+          case EFrameSizing::kContentBlockSize:
+            NOTREACHED();
+        }
 
         // Scale based on our zoom as the embedded document doesn't have that
         // info.
