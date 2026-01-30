@@ -1349,9 +1349,22 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureParam kGeminiImageRemixToolShowFRERowParam[] = {
     {kGeminiImageRemixToolShowFRERow, "true"}};
+const FeatureEntry::FeatureParam
+    kGeminiImageRemixToolShowAboveSearchImageParam[] = {
+        {kGeminiImageRemixToolShowAboveSearchImage, "true"}};
+const FeatureEntry::FeatureParam
+    kGeminiImageRemixToolShowBelowSearchImageParam[] = {
+        {kGeminiImageRemixToolShowBelowSearchImage, "true"}};
+
 const FeatureEntry::FeatureVariation kGeminiImageRemixToolVariations[] = {
     {"(Show FRE Row)", kGeminiImageRemixToolShowFRERowParam,
-     std::size(kGeminiImageRemixToolShowFRERowParam), nullptr}};
+     std::size(kGeminiImageRemixToolShowFRERowParam), nullptr},
+    {"(Show Above Search Image)",
+     kGeminiImageRemixToolShowAboveSearchImageParam,
+     std::size(kGeminiImageRemixToolShowAboveSearchImageParam), nullptr},
+    {"(Show Below Search Image)",
+     kGeminiImageRemixToolShowBelowSearchImageParam,
+     std::size(kGeminiImageRemixToolShowBelowSearchImageParam), nullptr}};
 
 const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
     {"AI Hub", kZeroStateSuggestionsPlacementAIHubParam,

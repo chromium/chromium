@@ -284,6 +284,16 @@ bool IsGeminiImageRemixToolEnabled();
 bool IsGeminiImageRemixToolShowFRERowEnabled();
 extern const char kGeminiImageRemixToolShowFRERow[];
 
+// Returns true if the image remix tool should appear above
+// search image with Google (entry point will be in that same section).
+bool IsGeminiImageRemixToolShowAboveSearchImageEnabled();
+extern const char kGeminiImageRemixToolShowAboveSearchImage[];
+
+// Returns true if the image remix tool should appear below
+// search image with Google (entry point will be in that same section).
+bool IsGeminiImageRemixToolShowBelowSearchImageEnabled();
+extern const char kGeminiImageRemixToolShowBelowSearchImage[];
+
 // Feature flag for enabling the Gemini eligibility ablation experiment.
 BASE_DECLARE_FEATURE(kGeminiEligibilityAblation);
 bool IsGeminiEligibilityAblationEnabled();

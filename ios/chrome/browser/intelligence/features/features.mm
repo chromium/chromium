@@ -391,6 +391,26 @@ bool IsGeminiImageRemixToolShowFRERowEnabled() {
       kGeminiImageRemixTool, kGeminiImageRemixToolShowFRERow, false);
 }
 
+const char kGeminiImageRemixToolShowAboveSearchImage[] = "ShowAboveSearchImage";
+
+bool IsGeminiImageRemixToolShowAboveSearchImageEnabled() {
+  if (!IsGeminiImageRemixToolEnabled()) {
+    return false;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiImageRemixTool, kGeminiImageRemixToolShowAboveSearchImage, true);
+}
+
+const char kGeminiImageRemixToolShowBelowSearchImage[] = "ShowBelowSearchImage";
+
+bool IsGeminiImageRemixToolShowBelowSearchImageEnabled() {
+  if (!IsGeminiImageRemixToolEnabled()) {
+    return false;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiImageRemixTool, kGeminiImageRemixToolShowBelowSearchImage, false);
+}
+
 BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiEligibilityAblationEnabled() {
