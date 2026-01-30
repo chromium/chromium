@@ -22,4 +22,18 @@ if (toolkit_views) {
       deps += [ "//chrome/browser/signin" ]
     }
   }
+
+  source_set("settings_overridden_dialog_view_utils") {
+    sources = [
+      "rich_radio_button.cc",
+      "rich_radio_button.h",
+      "settings_overridden_dialog_view_utils.cc",
+      "settings_overridden_dialog_view_utils.h",
+    ]
+    deps = [ "//ui/views" ]
+    public_deps = [
+      "//chrome/browser/ui/extensions",
+      "//ui/base",
+    ]
+  }
 }

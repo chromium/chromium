@@ -441,10 +441,7 @@ void GetSearchOverriddenParamsThenRun(
 
   // The parameters fetched will depend on the style of dialog being shown.
   if (base::FeatureList::IsEnabled(
-          extensions_features::kSearchEngineExplicitChoiceDialog) &&
-      (secondary_search.type == SecondarySearchInfo::Type::kGoogle)) {
-    // TODO(http://crbug.com/461806299): Support all types.
-
+          extensions_features::kSearchEngineExplicitChoiceDialog)) {
     // Build an explicit-choice dialog.
     std::u16string dialog_title = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_EXPLICIT_CHOICE);
@@ -481,9 +478,8 @@ void GetSearchOverriddenParamsThenRun(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE,
         extension_name_for_ui);
     icon_lookups.emplace_back(IconFetchParams::IconSourceType::kFaviconUrl,
-                              default_search->favicon_url(),
-
-                              extension, &new_setting.image);
+                              default_search->favicon_url(), extension,
+                              &new_setting.image);
 
     // Asynchronously look up icons (if needed) then continue.
     FetchIconsThenRun(

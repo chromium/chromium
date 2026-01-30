@@ -195,6 +195,9 @@ source_set("impl") {
       sources += [ "extension_dialog_utils_views.cc" ]
       deps += [ "//chrome/browser/ui/views/frame:toolbar_button_provider" ]
     }
+    if (is_win || is_mac) {
+      deps += [ "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils" ]
+    }
   }
 
   if (enable_extensions) {
