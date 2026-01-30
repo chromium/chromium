@@ -162,28 +162,16 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
-    public void createPendingTask_requestsUnsupportedWindowType_returnsNull() {
+    public void createPendingTask_requestsUnsupportedWindowType_throwsException() {
         // Arrange.
         AndroidBrowserWindowCreateParams mockCreateParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.APP, new Rect(), WindowShowState.DEFAULT);
 
         // Act and Assert.
-        ChromeAndroidTask pendingTask = createPendingTaskWithExistingTask(mockCreateParams);
-        assertNull(pendingTask);
-    }
-
-    @Test
-    public void createPendingTask_requestUnsupportedWindowType_invokesCallbackWithNullPtrValue() {
-        // Arrange.
-        AndroidBrowserWindowCreateParams mockCreateParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
-                        BrowserWindowType.APP, new Rect(), WindowShowState.DEFAULT);
-        JniOnceCallback<Long> mockCallback = mock();
-
-        // Act and Assert.
-        createPendingTaskWithExistingTask(mockCreateParams, mockCallback);
-        verify(mockCallback).onResult(0L);
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> createPendingTaskWithExistingTask(mockCreateParams));
     }
 
     @Test

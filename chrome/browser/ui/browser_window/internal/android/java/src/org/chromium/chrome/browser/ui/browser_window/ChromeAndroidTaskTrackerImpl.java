@@ -15,7 +15,6 @@ import android.util.ArrayMap;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
-import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -37,8 +36,6 @@ import java.util.Map;
 /** Implements {@link ChromeAndroidTaskTracker} as a singleton. */
 @NullMarked
 final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
-    private static final String TAG = "CrAndroidTaskTracker";
-
     private static @Nullable ChromeAndroidTaskTrackerImpl sInstance;
 
     private static boolean sPausePendingTaskActivityCreationForTesting;
@@ -334,14 +331,8 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 IntentUtils.addTrustedIntentExtras(intent);
                 return intent;
             default:
-                Log.e(
-                        TAG,
-                        String.format(
-                                Locale.US,
-                                "Unable to create new window Intent due to unsupported window type:"
-                                        + " %d",
-                                browserWindowType));
-                return null;
+                throw new UnsupportedOperationException(
+                        String.format(Locale.US, "Unsupported window type: %d", browserWindowType));
         }
     }
 
