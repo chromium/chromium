@@ -33,7 +33,10 @@
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -73,6 +76,30 @@ SVGPathByteStream ConditionallyAddPathByteStreams(
   return AddPathByteStreams(from_stream, by_stream, repeat_count);
 }
 
+// Entries in this cache are kept with a WeakMember. They'll be removed from
+// the map if nothing is referencing them, as such this doesn't grow unbounded
+// in size.
+struct CSSPathCache final : public GarbageCollected<CSSPathCache> {
+  HeapHashMap<String, WeakMember<const CSSPathValue>> map;
+  void Trace(Visitor* visitor) const { visitor->Trace(map); }
+};
+
+CSSPathCache& GetPathCache() {
+  DEFINE_STATIC_LOCAL(Persistent<CSSPathCache>, cache,
+                      (MakeGarbageCollected<CSSPathCache>()));
+  return *cache;
+}
+
+const CSSPathValue* GetFromCache(const String& string) {
+  CSSPathCache& cache = GetPathCache();
+  auto it = cache.map.find(string);
+  return it != cache.map.end() ? it->value.Get() : nullptr;
+}
+
+void AddToCache(const String& string, const CSSPathValue* value) {
+  GetPathCache().map.insert(string, value);
+}
+
 }  // namespace
 
 SVGPath::SVGPath() : path_value_(CSSPathValue::EmptyPathValue()) {}
@@ -90,9 +117,23 @@ SVGPath* SVGPath::Clone() const {
 }
 
 SVGParsingError SVGPath::SetValueAsString(const String& string) {
+  if (string.empty()) {
+    path_value_ = CSSPathValue::EmptyPathValue();
+    return SVGParseStatus::kNoError;
+  }
+
+  if (const CSSPathValue* cached = GetFromCache(string)) {
+    path_value_ = cached;
+    return SVGParseStatus::kNoError;
+  }
+
   SVGPathByteStreamBuilder builder;
   SVGParsingError parse_status = BuildByteStreamFromString(string, builder);
   path_value_ = MakeGarbageCollected<CSSPathValue>(builder.CopyByteStream());
+
+  if (parse_status == SVGParseStatus::kNoError) {
+    AddToCache(string, path_value_.Get());
+  }
   return parse_status;
 }
 
