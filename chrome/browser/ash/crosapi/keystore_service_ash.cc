@@ -57,16 +57,14 @@ scoped_refptr<net::X509Certificate> ParseCertificate(
   return net::X509Certificate::CreateFromBytesUnsafeOptions(input, options);
 }
 
-std::optional<TokenId> KeystoreToToken(mojom::KeystoreType type) {
-  if (!crosapi::mojom::IsKnownEnumValue(type)) {
-    return std::nullopt;
-  }
+TokenId KeystoreToToken(mojom::KeystoreType type) {
   switch (type) {
     case mojom::KeystoreType::kUser:
       return TokenId::kUser;
     case mojom::KeystoreType::kDevice:
       return TokenId::kSystem;
   }
+  NOTREACHED();
 }
 
 // Returns whether the `algorithm_name` can be used for signing. The unknown
@@ -80,6 +78,7 @@ bool IsSigningAlgorithm(KeystoreAlgorithmName algorithm_name) {
     case KeystoreAlgorithmName::kUnknown:
       return false;
   }
+  NOTREACHED();
 }
 
 // The input should be the name of a signing algorithm, which can be validated
@@ -95,6 +94,7 @@ std::string StringFromKeystoreAlgorithmName(
     case KeystoreAlgorithmName::kUnknown:
       NOTREACHED();
   }
+  NOTREACHED();
 }
 
 bool UnpackSigningScheme(
@@ -156,6 +156,7 @@ UnpackKeystoreKeyAttributeType(KeystoreKeyAttributeType keystore_type) {
     case KeystoreKeyAttributeType::kPlatformKeysTag:
       return KeyAttributeType::kPlatformKeysTag;
   }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -216,12 +217,6 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
     KeystoreAlgorithmName algorithm,
     ChallengeAttestationOnlyKeystoreCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!crosapi::mojom::IsKnownEnumValue(type)) {
-    std::move(callback).Run(
-        base::unexpected(chromeos::platform_keys::KeystoreErrorToString(
-            mojom::KeystoreError::kUnsupportedKeystoreType)));
-    return;
-  }
 
   attestation::KeyType key_crypto_type;
   switch (algorithm) {
@@ -391,16 +386,10 @@ void KeystoreServiceAsh::GetCertificates(mojom::KeystoreType keystore,
                                          GetCertificatesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
-  std::optional<TokenId> token_id = KeystoreToToken(keystore);
-  if (!token_id) {
-    std::move(callback).Run(mojom::GetCertificatesResult::NewError(
-        mojom::KeystoreError::kUnsupportedKeystoreType));
-    return;
-  }
-
   platform_keys_service->GetCertificates(
-      token_id.value(), base::BindOnce(&KeystoreServiceAsh::DidGetCertificates,
-                                       std::move(callback)));
+      KeystoreToToken(keystore),
+      base::BindOnce(&KeystoreServiceAsh::DidGetCertificates,
+                     std::move(callback)));
 }
 
 // static
@@ -443,16 +432,10 @@ void KeystoreServiceAsh::AddCertificate(mojom::KeystoreType keystore,
                             mojom::KeystoreError::kCertificateInvalid);
     return;
   }
-  std::optional<TokenId> token_id = KeystoreToToken(keystore);
-  if (!token_id) {
-    std::move(callback).Run(/*is_error=*/true,
-                            mojom::KeystoreError::kUnsupportedKeystoreType);
-    return;
-  }
 
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   platform_keys_service->ImportCertificate(
-      token_id.value(), cert_x509,
+      KeystoreToToken(keystore), cert_x509,
       base::BindOnce(&KeystoreServiceAsh::DidImportCertificate,
                      std::move(callback)));
 }
@@ -483,16 +466,10 @@ void KeystoreServiceAsh::RemoveCertificate(
                             mojom::KeystoreError::kCertificateInvalid);
     return;
   }
-  std::optional<TokenId> token_id = KeystoreToToken(keystore);
-  if (!token_id) {
-    std::move(callback).Run(/*is_error=*/true,
-                            mojom::KeystoreError::kUnsupportedKeystoreType);
-    return;
-  }
 
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   platform_keys_service->RemoveCertificate(
-      token_id.value(), cert_x509,
+      KeystoreToToken(keystore), cert_x509,
       base::BindOnce(&KeystoreServiceAsh::DidRemoveCertificate,
                      std::move(callback)));
 }
@@ -559,18 +536,13 @@ void KeystoreServiceAsh::GenerateKey(mojom::KeystoreType keystore,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
-  std::optional<TokenId> token_id = KeystoreToToken(keystore);
-  if (!token_id) {
-    std::move(callback).Run(mojom::KeystoreBinaryResult::NewError(
-        mojom::KeystoreError::kUnsupportedKeystoreType));
-    return;
-  }
+  TokenId token_id = KeystoreToToken(keystore);
 
   using Tag = mojom::KeystoreAlgorithm::Tag;
   switch (algorithm->which()) {
     case Tag::kRsassaPkcs115: {
       platform_keys_service->GenerateRSAKey(
-          token_id.value(), algorithm->get_rsassa_pkcs115()->modulus_length,
+          token_id, algorithm->get_rsassa_pkcs115()->modulus_length,
           algorithm->get_rsassa_pkcs115()->sw_backed,
           base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
                          std::move(callback)));
@@ -578,25 +550,21 @@ void KeystoreServiceAsh::GenerateKey(mojom::KeystoreType keystore,
     }
     case Tag::kEcdsa: {
       platform_keys_service->GenerateECKey(
-          token_id.value(), algorithm->get_ecdsa()->named_curve,
+          token_id, algorithm->get_ecdsa()->named_curve,
           base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
                          std::move(callback)));
       return;
     }
     case Tag::kRsaOaep: {
       platform_keys_service->GenerateRSAKey(
-          token_id.value(), algorithm->get_rsa_oaep()->modulus_length,
+          token_id, algorithm->get_rsa_oaep()->modulus_length,
           algorithm->get_rsa_oaep()->sw_backed,
           base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
                          std::move(callback)));
       return;
     }
-    default: {
-      std::move(callback).Run(mojom::KeystoreBinaryResult::NewError(
-          mojom::KeystoreError::kAlgorithmNotSupported));
-      return;
-    }
   }
+  NOTREACHED();
 }
 
 // static
@@ -622,15 +590,8 @@ void KeystoreServiceAsh::RemoveKey(KeystoreType keystore,
                                    RemoveKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::optional<TokenId> token_id = KeystoreToToken(keystore);
-  if (!token_id) {
-    std::move(callback).Run(/*is_error=*/true,
-                            mojom::KeystoreError::kUnsupportedKeystoreType);
-    return;
-  }
-
   GetPlatformKeys()->RemoveKey(
-      token_id.value(), public_key,
+      KeystoreToToken(keystore), public_key,
       base::BindOnce(&KeystoreServiceAsh::DidRemoveKey, std::move(callback)));
 }
 
@@ -658,12 +619,7 @@ void KeystoreServiceAsh::Sign(std::optional<KeystoreType> keystore,
 
   std::optional<TokenId> token_id;
   if (keystore.has_value()) {
-    token_id = KeystoreToToken(keystore.value());
-    if (!token_id) {
-      std::move(callback).Run(mojom::KeystoreBinaryResult::NewError(
-          mojom::KeystoreError::kUnsupportedKeystoreType));
-      return;
-    }
+    token_id = KeystoreToToken(*keystore);
   }
 
   chromeos::platform_keys::KeyType key_type;
@@ -693,6 +649,7 @@ void KeystoreServiceAsh::Sign(std::optional<KeystoreType> keystore,
     case chromeos::platform_keys::KeyType::kRsaOaep:
       NOTREACHED();
   }
+  NOTREACHED();
 }
 
 // static
@@ -809,13 +766,6 @@ void KeystoreServiceAsh::SetAttributeForKey(
     SetAttributeForKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::optional<TokenId> token_id = KeystoreToToken(keystore);
-  if (!token_id) {
-    std::move(callback).Run(/*is_error=*/true,
-                            mojom::KeystoreError::kUnsupportedKeystoreType);
-    return;
-  }
-
   auto attribute_type = UnpackKeystoreKeyAttributeType(keystore_attribute_type);
   if (!attribute_type.has_value()) {
     std::move(callback).Run(/*is_error=*/true,
@@ -827,7 +777,7 @@ void KeystoreServiceAsh::SetAttributeForKey(
   auto cb = base::BindOnce(&KeystoreServiceAsh::DidSetAttributeForKey,
                            std::move(callback));
 
-  service->SetAttributeForKey(token_id.value(), public_key,
+  service->SetAttributeForKey(KeystoreToToken(keystore), public_key,
                               attribute_type.value(), attribute_value,
                               std::move(cb));
 }

@@ -152,7 +152,6 @@ Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
 
   switch (error) {
     case KeystoreError::kUnknown:
-    case KeystoreError::kUnsupportedKeystoreType:
     case KeystoreError::kUnsupportedAlgorithmType:
     case KeystoreError::kUnsupportedKeyTag:
     case KeystoreError::kMojoUnavailable:
@@ -202,8 +201,6 @@ std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error) {
   switch (error) {
     case KeystoreError::kUnknown:
       return "Unknown keystore error.";
-    case KeystoreError::kUnsupportedKeystoreType:
-      return "The token is not valid.";
     case KeystoreError::kUnsupportedAlgorithmType:
       return "Algorithm type is not supported.";
     case KeystoreError::kMojoUnavailable:

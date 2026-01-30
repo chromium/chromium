@@ -757,18 +757,6 @@ TEST_F(KeystoreServiceAshTest, InternalErrorThenGetCertificatesFail) {
   AssertErrorEq(observer.result.value(), mojom::KeystoreError::kInternal);
 }
 
-TEST_F(KeystoreServiceAshTest, UnsupportedKeystoreTypeThenGetCertificatesFail) {
-  CallbackObserver<mojom::GetCertificatesResultPtr> observer;
-  mojom::KeystoreType wrong_keystore_type = static_cast<mojom::KeystoreType>(2);
-
-  keystore_service_.GetCertificates(wrong_keystore_type,
-                                    observer.GetCallback());
-
-  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
-  AssertErrorEq(observer.result.value(),
-                mojom::KeystoreError::kUnsupportedKeystoreType);
-}
-
 //------------------------------------------------------------------------------
 
 TEST_F(KeystoreServiceAshTest, AddCertificateSuccess) {
@@ -786,20 +774,6 @@ TEST_F(KeystoreServiceAshTest, AddCertificateSuccess) {
 
   ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, false);
-}
-
-TEST_F(KeystoreServiceAshTest, WrongKeystoreTypeThenAddCertificateFail) {
-  auto valid_cert_blob = CertToBlob(GetCertificateList()->front());
-  StatusCallbackObserver observer;
-  mojom::KeystoreType wrong_keystore_type = static_cast<mojom::KeystoreType>(2);
-
-  keystore_service_.AddCertificate(wrong_keystore_type, valid_cert_blob,
-                                   observer.GetCallback());
-
-  ASSERT_TRUE(observer.has_value());
-  EXPECT_EQ(observer.result_is_error, true);
-  EXPECT_EQ(observer.result_error,
-            mojom::KeystoreError::kUnsupportedKeystoreType);
 }
 
 TEST_F(KeystoreServiceAshTest, InvalidCertificateThenAddCertificateFail) {
@@ -1069,22 +1043,6 @@ TEST_F(KeystoreServiceAshTest, ChallengeRsaOaepKeyFails) {
   EXPECT_EQ(observer.result.value().error(),
             chromeos::platform_keys::KeystoreErrorToString(
                 mojom::KeystoreError::kUnsupportedKeyType));
-}
-
-TEST_F(KeystoreServiceAshTest, WrongKeystoreTypeChallengeFail) {
-  CallbackObserver<chromeos::ChallengeAttestationOnlyKeystoreResult> observer;
-
-  auto wrong_keystore_type = static_cast<mojom::KeystoreType>(3);
-  keystore_service_.ChallengeAttestationOnlyKeystore(
-      wrong_keystore_type, /*challenge=*/GetDataBin(),
-      /*migrate=*/false, KeystoreAlgorithmName::kRsassaPkcs115,
-      observer.GetCallback());
-
-  ASSERT_TRUE(observer.result.has_value());
-  ASSERT_FALSE(observer.result.value().has_value());
-  EXPECT_EQ(observer.result.value().error(),
-            chromeos::platform_keys::KeystoreErrorToString(
-                mojom::KeystoreError::kUnsupportedKeystoreType));
 }
 
 }  // namespace
