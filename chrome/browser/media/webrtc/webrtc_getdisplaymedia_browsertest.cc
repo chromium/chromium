@@ -560,8 +560,14 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
             "true");
 }
 
+// TODO(crbug.com/461258716): enable this flaky test.
+#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
+#define MAYBE_ScreenCaptureWithConstraints DISABLED_ScreenCaptureWithConstraints
+#else
+#define MAYBE_ScreenCaptureWithConstraints ScreenCaptureWithConstraints
+#endif  // (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
-                       ScreenCaptureWithConstraints) {
+                       MAYBE_ScreenCaptureWithConstraints) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
