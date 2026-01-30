@@ -148,10 +148,21 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedFeatures() const {
 
 void FakePageTimingSender::PageTimingValidator::VerifyExpectedRenderData()
     const {
-  EXPECT_FLOAT_EQ(expected_render_data_.is_null()
-                      ? 0.0
-                      : expected_render_data_->layout_shift_delta,
-                  actual_render_data_.layout_shift_delta);
+  if (expected_render_data_.is_null()) {
+    EXPECT_TRUE(actual_render_data_.new_layout_shifts.empty());
+  } else {
+    EXPECT_EQ(expected_render_data_->new_layout_shifts.size(),
+              actual_render_data_.new_layout_shifts.size());
+    for (size_t ii = 0; ii < expected_render_data_->new_layout_shifts.size();
+         ++ii) {
+      EXPECT_FLOAT_EQ(
+          expected_render_data_->new_layout_shifts[ii]->layout_shift_score,
+          actual_render_data_.new_layout_shifts[ii]->layout_shift_score);
+      EXPECT_EQ(
+          expected_render_data_->new_layout_shifts[ii]->after_input_or_scroll,
+          actual_render_data_.new_layout_shifts[ii]->after_input_or_scroll);
+    }
+  }
 }
 
 void FakePageTimingSender::PageTimingValidator::
@@ -191,7 +202,9 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     actual_features_.insert(feature);
   }
 
-  actual_render_data_.layout_shift_delta = render_data.layout_shift_delta;
+  for (const auto& entry : render_data.new_layout_shifts) {
+    actual_render_data_.new_layout_shifts.emplace_back(entry.Clone());
+  }
 
   actual_main_frame_intersection_rect_ = metadata->main_frame_intersection_rect;
   actual_main_frame_viewport_rect_ = metadata->main_frame_viewport_rect;

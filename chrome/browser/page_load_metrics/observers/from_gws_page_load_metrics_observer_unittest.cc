@@ -195,14 +195,27 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl1) {
   NavigateAndCommit(GURL(kExampleUrl));
 
   tester()->SimulateTimingUpdate(timing);
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
-  tester()->SimulateRenderDataUpdate(render_data);
-  render_data.layout_shift_delta = 1.5;
-  render_data.layout_shift_delta_before_input_or_scroll = 0.0;
-  render_data.new_layout_shifts.emplace_back(
-      page_load_metrics::mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5));
-  tester()->SimulateRenderDataUpdate(render_data);
 
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(4040), 0.5, false));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(3030), 0.5, false));
+  tester()->SimulateRenderDataUpdate(render_data);
+  render_data.new_layout_shifts.clear();
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(2020), 0.5, false));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(1010), 0.5, false));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(0), 0.5, true));
+  tester()->SimulateRenderDataUpdate(render_data);
   // Navigate again to force logging.
   tester()->NavigateToUntrackedUrl();
 
@@ -738,13 +751,21 @@ TEST_F(FromGWSPageLoadMetricsObserverTest,
 
   NavigateAndCommit(GURL("https://www.google.com/search#q=test"));
   NavigateAndCommit(GURL(kExampleUrl));
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   tester()->SimulateRenderDataUpdate(render_data);
 
   web_contents()->WasHidden();
   tester()->SimulateTimingUpdate(timing);
-  render_data.layout_shift_delta = 1.5;
-  render_data.layout_shift_delta_before_input_or_scroll = 0.0;
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(1500), 0.5, false));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(1200), 1.0, false));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(1000), 1.0, false));
   tester()->SimulateRenderDataUpdate(render_data);
 
   // If the system clock is low resolution PageLoadTracker's background_time_

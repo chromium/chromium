@@ -31,7 +31,7 @@ class LayoutShiftNormalizationTest : public testing::Test {
     for (auto shift : shifts_data) {
       new_shifts.emplace_back(page_load_metrics::mojom::LayoutShift::New(
           current_time - base::Milliseconds(std::get<0>(shift)),
-          std::get<1>(shift)));
+          std::get<1>(shift), /*after_input_or_scroll*/ false));
       // Update CLS.
       cumulative_layoutshift_score_ += std::get<1>(shift);
     }

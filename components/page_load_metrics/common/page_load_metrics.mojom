@@ -538,21 +538,17 @@ struct ResourceDataUpdate {
 };
 
 // Timestamp and layout shift score of a layout shift.
+// See https://github.com/WICG/layout-instability/blob/main/README.md
+// and https://web.dev/articles/cls.
 struct LayoutShift {
   mojo_base.mojom.TimeTicks layout_shift_time;
   double layout_shift_score;
+  // Whether this layout shift occurred after a user input or document scroll.
+  bool after_input_or_scroll;
 };
 
 // Metrics about how a RenderFrame rendered since the last UpdateTiming call.
 struct FrameRenderDataUpdate {
-  // How much visible elements in the frame shifted (https://bit.ly/3fQz29y) since
-  // the last timing update.
-  float layout_shift_delta;
-
-  // How much visible elements in the frame shifted (https://bit.ly/3fQz29y),
-  // before a user input or document scroll, since the last timing update.
-  float layout_shift_delta_before_input_or_scroll;
-
   // New layout shifts with timestamps.
   array<LayoutShift> new_layout_shifts;
 };

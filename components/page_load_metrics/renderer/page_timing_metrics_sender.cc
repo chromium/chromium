@@ -157,11 +157,8 @@ void PageTimingMetricsSender::DidObserveLayoutShift(
     double score,
     bool after_input_or_scroll) {
   DCHECK(score > 0);
-  render_data_.layout_shift_delta += score;
-  render_data_.new_layout_shifts.push_back(
-      mojom::LayoutShift::New(base::TimeTicks::Now(), score));
-  if (!after_input_or_scroll)
-    render_data_.layout_shift_delta_before_input_or_scroll += score;
+  render_data_.new_layout_shifts.push_back(mojom::LayoutShift::New(
+      base::TimeTicks::Now(), score, after_input_or_scroll));
   EnsureSendTimer();
 }
 
@@ -371,8 +368,6 @@ void PageTimingMetricsSender::SendNow() {
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();
   render_data_.new_layout_shifts.clear();
-  render_data_.layout_shift_delta = 0;
-  render_data_.layout_shift_delta_before_input_or_scroll = 0;
   // As PageTimingMetricsSender is owned by MetricsRenderFrameObserver, which is
   // instantiated for each frame, there's no need to make soft_navigation_count_
   // zero here, as its value only increments through the lifetime of the frame.

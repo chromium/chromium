@@ -322,7 +322,13 @@ TEST_F(PageTimingMetricsSenderTest, SendPageRenderData) {
   metrics_sender_->DidObserveLayoutShift(0.5, false);
   metrics_sender_->DidObserveLayoutShift(0.5, true);
 
-  mojom::FrameRenderDataUpdate render_data(1.5, 1.0, {});
+  mojom::FrameRenderDataUpdate render_data;
+  render_data.new_layout_shifts.emplace_back(
+      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, false));
+  render_data.new_layout_shifts.emplace_back(
+      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, false));
+  render_data.new_layout_shifts.emplace_back(
+      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, true));
   validator_.UpdateExpectFrameRenderDataUpdate(render_data);
 
   metrics_sender_->mock_timer()->Fire();

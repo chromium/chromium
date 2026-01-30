@@ -615,8 +615,10 @@ void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigation(
 
 void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationIntervalLayoutShift(
     const mojom::FrameRenderDataUpdate& render_data) {
-  soft_nav_interval_render_data_.layout_shift_score +=
-      render_data.layout_shift_delta;
+  for (const auto& entry : render_data.new_layout_shifts) {
+    soft_nav_interval_render_data_.layout_shift_score +=
+        entry->layout_shift_score;
+  }
   soft_nav_interval_layout_shift_normalization_.AddNewLayoutShifts(
       render_data.new_layout_shifts, base::TimeTicks::Now(),
       soft_nav_interval_render_data_.layout_shift_score);
@@ -775,7 +777,9 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
     const mojom::FrameRenderDataUpdate& render_data,
     bool is_main_frame) {
-  page_render_data_.layout_shift_score += render_data.layout_shift_delta;
+  for (const auto& entry : render_data.new_layout_shifts) {
+    page_render_data_.layout_shift_score += entry->layout_shift_score;
+  }
   layout_shift_normalization_.AddNewLayoutShifts(
       render_data.new_layout_shifts, base::TimeTicks::Now(),
       page_render_data_.layout_shift_score);
@@ -788,9 +792,18 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
   // input or scroll in any frame. Note that we can't unconditionally accumulate
   // layout_shift_delta_before_input_or_scroll, because that field only reflects
   // input/scroll in the same frame as the shift.
+  // TODO: The moment at which the boolean has_seen_input_or_scroll_ is set
+  // potentially depends on timing behavior between the frames; therefore this
+  // filtering can be inaccurate. It would be better to compare each candidate
+  // layout shift timestamp with the earliest timestamp from any inputs or
+  // scrolls in any frame.
   if (!has_seen_input_or_scroll_) {
-    page_render_data_.layout_shift_score_before_input_or_scroll +=
-        render_data.layout_shift_delta_before_input_or_scroll;
+    for (const auto& entry : render_data.new_layout_shifts) {
+      if (!entry->after_input_or_scroll) {
+        page_render_data_.layout_shift_score_before_input_or_scroll +=
+            entry->layout_shift_score;
+      }
+    }
   }
 
   client_->OnPageRenderDataChanged(render_data, is_main_frame);
@@ -798,13 +811,16 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
 
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameRenderData(
     const mojom::FrameRenderDataUpdate& render_data) {
-  main_frame_render_data_.layout_shift_score += render_data.layout_shift_delta;
-
-  // Track main frame cumulative score up to the first input or scroll in the
-  // main frame. For this we do not care about inputs sent to subframes, so we
-  // should not check has_seen_input_or_scroll_ (but see crbug.com/1136207).
-  main_frame_render_data_.layout_shift_score_before_input_or_scroll +=
-      render_data.layout_shift_delta_before_input_or_scroll;
+  for (const auto& entry : render_data.new_layout_shifts) {
+    main_frame_render_data_.layout_shift_score += entry->layout_shift_score;
+    // Track main frame cumulative score up to the first input or scroll in the
+    // main frame. For this we do not care about inputs sent to subframes, so we
+    // should not check has_seen_input_or_scroll_ (but see crbug.com/1136207).
+    if (!entry->after_input_or_scroll) {
+      main_frame_render_data_.layout_shift_score_before_input_or_scroll +=
+          entry->layout_shift_score;
+    }
+  }
 }
 
 void PageLoadMetricsUpdateDispatcher::OnSubFrameRenderDataChanged(

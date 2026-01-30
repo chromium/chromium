@@ -404,7 +404,20 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
       blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 0.5, {});
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(3030), 0.25, false));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(2020), 0.25, false));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(1010), 0.25, true));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(0), 0.25, true));
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
   // Navigate the main frame to trigger metrics recording.
@@ -412,10 +425,11 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
       GURL("https://ampviewer.com/other"), main_rfh())
       ->CommitSameDocument();
 
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore.Subframe"
-      ".SessionWindow.Gap1000ms.Max5000ms2",
-      0, 1);
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.Clients.AMP.LayoutInstability."
+                  "MaxCumulativeShiftScore.Subframe"
+                  ".SessionWindow.Gap1000ms.Max5000ms2"),
+              testing::ElementsAre(base::Bucket(2359, 1)));
 
   ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
   ASSERT_NE(nullptr, entry.get());
@@ -451,23 +465,23 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
   base::TimeTicks current_time = base::TimeTicks::Now();
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(0.65, 0.65, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
 
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.1));
+          current_time - base::Milliseconds(4000), 0.1, false));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3000), 0.1));
+          current_time - base::Milliseconds(3000), 0.1, false));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(2000), 0.2));
+          current_time - base::Milliseconds(2000), 0.2, false));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(200), 0.1));
+          current_time - base::Milliseconds(200), 0.1, false));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(100), 0.15));
+          current_time - base::Milliseconds(100), 0.15, false));
 
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 

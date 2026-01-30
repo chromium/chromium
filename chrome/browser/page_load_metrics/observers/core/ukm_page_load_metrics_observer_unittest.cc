@@ -1792,23 +1792,23 @@ TEST_F(UkmPageLoadMetricsObserverTest, CpuTimeMetrics) {
 TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   NavigateAndCommit(GURL(kTestUrl1));
   base::TimeTicks current_time = base::TimeTicks::Now();
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.5));
+          current_time - base::Milliseconds(4000), 0.5, false));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3500), 0.5));
+          current_time - base::Milliseconds(3500), 0.5, false));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
   // Simulate hiding the tab (the report should include shifts after hide).
   web_contents()->WasHidden();
 
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data_2(1.5, 0.0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data_2;
   render_data_2.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(2500), 1.5));
+          current_time - base::Milliseconds(2500), 1.5, true));
   tester()->SimulateRenderDataUpdate(render_data_2);
 
   // Simulate closing the tab.
@@ -1892,13 +1892,13 @@ TEST_F(UkmPageLoadMetricsObserverTest,
        ExperimentalLayoutInstabilityRecordOnHidden) {
   NavigateAndCommit(GURL(kTestUrl1));
   base::TimeTicks current_time = base::TimeTicks::Now();
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.5));
+          current_time - base::Milliseconds(4000), 0.5, false));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3500), 0.5));
+          current_time - base::Milliseconds(3500), 0.5, false));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
@@ -1926,10 +1926,10 @@ TEST_F(UkmPageLoadMetricsObserverTest,
         100);
   }
 
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data_2(1.5, 0.0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data_2;
   render_data_2.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(2500), 1.5));
+          current_time - base::Milliseconds(2500), 1.5, true));
   tester()->SimulateRenderDataUpdate(render_data_2);
 
   // Simulate closing the tab (the CLS metrics should include all the shifts
@@ -2000,13 +2000,13 @@ TEST_F(UkmPageLoadMetricsObserverTest,
 
   // Bring the tab to the foreground and simulate a layout shift.
   web_contents()->WasShown();
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.5));
+          current_time - base::Milliseconds(4000), 0.5, false));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3500), 0.5));
+          current_time - base::Milliseconds(3500), 0.5, false));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
@@ -2163,7 +2163,11 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
   NavigateAndCommit(GURL(kTestUrl1));
 
   // Simulate layout instability in the main frame.
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
+  render_data.new_layout_shifts.push_back(
+      page_load_metrics::mojom::LayoutShift::New(base::TimeTicks::Now(), 1.0,
+                                                 false));
+
   tester()->SimulateRenderDataUpdate(render_data);
 
   RenderFrameHost* subframe =
@@ -2173,7 +2177,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
               ->AppendChild("subframe"));
 
   // Simulate layout instability in the subframe.
-  render_data.layout_shift_delta = 1.5;
+  render_data.new_layout_shifts.clear();
+  render_data.new_layout_shifts.push_back(
+      page_load_metrics::mojom::LayoutShift::New(base::TimeTicks::Now(), 1.5,
+                                                 false));
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
   // Simulate closing the tab.
@@ -2754,7 +2761,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, CLSNeverForegroundedNoReport) {
   web_contents()->WasHidden();
   NavigateAndCommit(GURL(kTestUrl1));
 
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   tester()->SimulateRenderDataUpdate(render_data);
 
   // Simulate closing the tab.
@@ -2788,7 +2795,10 @@ class CLSUkmPageLoadMetricsObserverTest
 void CLSUkmPageLoadMetricsObserverTest::SimulateShiftDelta(
     float delta,
     content::RenderFrameHost* frame) {
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(delta, delta, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data;
+  render_data.new_layout_shifts.push_back(
+      page_load_metrics::mojom::LayoutShift::New(base::TimeTicks::Now(), delta,
+                                                 false));
   tester()->SimulateRenderDataUpdate(render_data, frame);
 }
 

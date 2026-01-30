@@ -502,7 +502,7 @@ void PageLoadMetricsTestWaiter::OnPageRenderDataUpdate(
                     : shift_frame_ == ShiftFrame::LayoutShiftOnlyInSubFrame;
   if ((is_relevant_frame ||
        shift_frame_ == ShiftFrame::LayoutShiftOnlyInBothFrames) &&
-      render_data.layout_shift_delta > 0) {
+      !render_data.new_layout_shifts.empty()) {
     observed_.num_layout_shifts_ += render_data.new_layout_shifts.size();
   }
 

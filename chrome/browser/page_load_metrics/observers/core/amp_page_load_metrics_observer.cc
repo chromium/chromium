@@ -275,9 +275,13 @@ void AMPPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(
   if (it == amp_subframe_info_.end())
     return;
 
-  it->second.render_data.layout_shift_score += render_data.layout_shift_delta;
-  it->second.render_data.layout_shift_score_before_input_or_scroll +=
-      render_data.layout_shift_delta_before_input_or_scroll;
+  for (const auto& entry : render_data.new_layout_shifts) {
+    it->second.render_data.layout_shift_score += entry->layout_shift_score;
+    if (!entry->after_input_or_scroll) {
+      it->second.render_data.layout_shift_score_before_input_or_scroll +=
+          entry->layout_shift_score;
+    }
+  }
 
   it->second.layout_shift_normalization.AddNewLayoutShifts(
       render_data.new_layout_shifts, base::TimeTicks::Now(),
