@@ -126,6 +126,7 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
  private:
   explicit BwgBrowserAgent(Browser* browser);
   friend class BrowserUserData<BwgBrowserAgent>;
+  friend class BwgBrowserAgentTest;
 
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,
