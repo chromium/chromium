@@ -6414,6 +6414,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5780" label="AudioContextAsyncTransitionToRunningStateRead"/>
   <int value="5781" label="AudioContextAsyncTransitionToSuspendedStateRead"/>
   <int value="5782" label="GetComputedStylePseudoElementWithoutColon"/>
+  <int value="5783"
+      label="GeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -414,12 +414,19 @@ bool Geolocation::DoesOwnNotifier(GeoNotifier* notifier) const {
 bool Geolocation::HaveSuitableCachedPosition(const PositionOptions* options) {
   if (!last_position_)
     return false;
-  if (!options->maximumAge())
-    return false;
   EpochTimeStamp current_time_millis =
       ConvertTimeToEpochTimeStamp(base::Time::Now());
-  return last_position_->timestamp() >
-         current_time_millis - options->maximumAge();
+  bool is_last_position_suitable =
+      options->maximumAge() &&
+      last_position_->timestamp() > current_time_millis - options->maximumAge();
+  if (!is_last_position_suitable && !watchers_->IsEmpty()) {
+    UseCounter::Count(
+        DomWindow(),
+        WebFeature::
+            kGeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition);
+  }
+
+  return is_last_position_suitable;
 }
 
 void Geolocation::clearWatch(int watch_id) {
