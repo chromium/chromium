@@ -240,6 +240,28 @@ void HttpStreamPool::Job::OnPreconnectComplete(int status) {
   delegate_->OnPreconnectComplete(this, status);
 }
 
+void HttpStreamPool::Job::SetPreconnectTcpAttemptRemaining(size_t remaining) {
+  CHECK(is_preconnect());
+  CHECK(!preconnect_tcp_attempts_remaining_.has_value());
+  preconnect_tcp_attempts_remaining_ = remaining;
+}
+
+void HttpStreamPool::Job::OnPreconnectTcpAttemptComplete() {
+  CHECK(is_preconnect());
+  CHECK(preconnect_tcp_attempts_remaining_.has_value() &&
+        *preconnect_tcp_attempts_remaining_ > 0);
+  --*preconnect_tcp_attempts_remaining_;
+}
+
+bool HttpStreamPool::Job::IsPreconnectTcpAttemptComplete() const {
+  return preconnect_tcp_attempts_remaining_.has_value() &&
+         *preconnect_tcp_attempts_remaining_ == 0;
+}
+
+size_t HttpStreamPool::Job::NumRequiredTcpAttempts() const {
+  return preconnect_tcp_attempts_remaining_.value_or(0);
+}
+
 void HttpStreamPool::Job::OnDone(std::optional<int> result) {
   CHECK(attempt_manager_);
   attempt_manager_ = nullptr;

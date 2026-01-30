@@ -139,6 +139,22 @@ class HttpStreamPool::Job {
   // Called by the associated AttemptManager when the preconnect completed.
   void OnPreconnectComplete(int status);
 
+  // Initializes remaining TCP attempt completions required for preconnect. Only
+  // applicable if this is a preconnect job.
+  void SetPreconnectTcpAttemptRemaining(size_t remaining);
+
+  // Records a single TCP attempt completion for this job. Only applicable if
+  // this is a preconnect job.
+  void OnPreconnectTcpAttemptComplete();
+
+  // Returns true if the preconnect job has reached its TCP attempt target. Only
+  // applicable if this is a preconnect job.
+  bool IsPreconnectTcpAttemptComplete() const;
+
+  // Returns the number of TCP attempts required for this job. Only applicable
+  // if this is a preconnect job.
+  size_t NumRequiredTcpAttempts() const;
+
   RequestPriority priority() const { return delegate_->priority(); }
 
   RespectLimits respect_limits() const { return delegate_->respect_limits(); }
@@ -209,6 +225,10 @@ class HttpStreamPool::Job {
   std::optional<NextProto> negotiated_protocol_;
 
   ConnectionAttempts connection_attempts_;
+
+  // Remaining number of TCP attempt completions required for preconnect. Only
+  // used for preconnect.
+  std::optional<size_t> preconnect_tcp_attempts_remaining_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };

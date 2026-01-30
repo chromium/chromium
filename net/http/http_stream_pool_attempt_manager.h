@@ -411,10 +411,6 @@ class HttpStreamPool::AttemptManager
   // Calculates the maximum streams counts requested by preconnects.
   size_t CalculateMaxPreconnectCount() const;
 
-  // Calculates the number of TCP based attempts required to satisfy
-  // preconnects.
-  size_t CalculateRequiredTcpBasedAttemptForPreconnect() const;
-
   // Returns the number of TCP based attempt slots that are not considered as
   // slow.
   size_t NonSlowTcpBasedAttemptCount() const;
@@ -442,12 +438,10 @@ class HttpStreamPool::AttemptManager
   // Notifies all preconnects of completion.
   void NotifyPreconnectsComplete(int rv);
 
-  // Called after completion of a connection attempt to decrement stream
-  // counts in preconnect entries. Invokes the callback of an entry when the
-  // entry's stream counts is less than or equal to `active_stream_count`
-  // (i.e., `this` has enough streams).
-  void ProcessPreconnectsAfterAttemptComplete(int rv,
-                                              size_t active_stream_count);
+  // Called after completion of a TCP attempt to advance preconnect progress.
+  // Invokes the callback of an entry when its required number of attempt
+  // completions has been reached.
+  void ProcessPreconnectsAfterTcpAttemptComplete(int rv);
 
   // Notifies a job of preconnect completion.
   void NotifyJobOfPreconnectComplete(PreconnectJobs::iterator job_it, int rv);
