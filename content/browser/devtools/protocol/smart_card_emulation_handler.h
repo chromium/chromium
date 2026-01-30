@@ -112,6 +112,22 @@ class CONTENT_EXPORT SmartCardEmulationHandler
   // the given frame.
   void UpdateEmulationOverride(content::RenderFrameHost* rfh);
 
+  DispatchResponse ReportEstablishContextResult(
+      const String& in_requestId,
+      const int in_contextId) override;
+
+  DispatchResponse ReportListReadersResult(
+      const String& in_requestId,
+      std::unique_ptr<protocol::Array<String>> in_readers) override;
+
+  DispatchResponse ReportConnectResult(
+      const String& in_requestId,
+      const int in_handle,
+      std::optional<String> in_activeProtocol) override;
+
+  DispatchResponse ReportError(const String& in_requestId,
+                               const String& in_resultCode) override;
+
   void OnCreateContext(
       device::mojom::SmartCardContextFactory::CreateContextCallback callback)
       override;
@@ -194,11 +210,30 @@ class CONTENT_EXPORT SmartCardEmulationHandler
 
   bool IsEnabled() const { return !!factory_; }
 
+  base::expected<void, std::string> CompleteEstablishContext(
+      const std::string& request_id,
+      const uint32_t context_id);
+
+  base::expected<void, std::string> CompleteListReaders(
+      const std::string& request_id,
+      std::vector<std::string> readers);
+
+  base::expected<void, std::string> CompleteConnect(
+      const std::string& request_id,
+      const uint32_t handle,
+      device::mojom::SmartCardProtocol active_protocol);
+
+  base::expected<void, std::string> FailRequest(
+      const std::string& request_id,
+      device::mojom::SmartCardError error);
+
   // The frontend interface to send events to the DevTools client.
   raw_ptr<SmartCardEmulation::Frontend> frontend_;
 
   // The Factory that handles the actual Mojo emulation logic.
   std::unique_ptr<EmulatedSmartCardContextFactory> factory_;
+
+  base::WeakPtrFactory<SmartCardEmulationHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace protocol

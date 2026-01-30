@@ -245,15 +245,11 @@
             {
                 "domain": "SmartCardEmulation",
                 "exclude": [
-                    "reportEstablishContextResult",
                     "reportReleaseContextResult",
-                    "reportListReadersResult",
                     "reportGetStatusChangeResult",
                     "reportPlainResult",
-                    "reportConnectResult",
                     "reportDataResult",
                     "reportStatusResult",
-                    "reportError",
                     "reportBeginTransactionResult"
                 ]
             }

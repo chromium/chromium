@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/values.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "components/permissions/permission_request_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_devtools_protocol_client.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -38,6 +44,7 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
     InstallAndLaunchIWA();
     AttachDevTools();
+    SetAutoAcceptPermissions();
   }
 
   void TearDownOnMainThread() override {
@@ -45,7 +52,7 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
       devtools_client_->DetachProtocolClient();
       devtools_client_.reset();
     }
-    app_frame_ = nullptr;
+    web_contents_ = nullptr;
     IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
   }
 
@@ -54,35 +61,150 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
     return devtools_client_->SendCommandSync(method, std::move(params));
   }
 
+  base::DictValue WaitForNotificationParams(const std::string& event_name) {
+    return devtools_client_->WaitForNotification(event_name, true);
+  }
+
+  void SendResponse(const std::string& response_method,
+                    const base::DictValue& event_params,
+                    base::DictValue result_fields = {}) {
+    const std::string* req_id = event_params.FindString("requestId");
+    ASSERT_TRUE(req_id) << "Event missing 'requestId'";
+
+    result_fields.Set("requestId", *req_id);
+    ASSERT_THAT(SendCommand(response_method, std::move(result_fields)),
+                IsSuccess());
+  }
+
   content::TestDevToolsProtocolClient* client() {
     return devtools_client_.get();
   }
 
+  content::RenderFrameHost* app_frame() {
+    return web_contents_->GetPrimaryMainFrame();
+  }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+  // Helper: Waits for establishContext and reports success.
+  void HandleEstablishContext(
+      int context_id = 123,
+      std::optional<std::string> error_code = std::nullopt) {
+    auto params = WaitForNotificationParams(
+        "SmartCardEmulation.establishContextRequested");
+    base::DictValue response;
+    if (error_code.has_value()) {
+      response.Set("resultCode", *error_code);
+      SendResponse("SmartCardEmulation.reportError", params,
+                   std::move(response));
+      return;
+    }
+    response.Set("contextId", context_id);
+    SendResponse("SmartCardEmulation.reportEstablishContextResult", params,
+                 std::move(response));
+  }
+
+  // Helper: Waits for listReaders and reports either success or error.
+  void HandleListReaders(const std::vector<std::string>& readers = {"Reader A"},
+                         int context_id = 123,
+                         std::optional<std::string> error_code = std::nullopt) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.listReadersRequested");
+    EXPECT_EQ(params.FindInt("contextId"), context_id);
+
+    base::DictValue response;
+    if (error_code.has_value()) {
+      response.Set("resultCode", *error_code);
+      SendResponse("SmartCardEmulation.reportError", params,
+                   std::move(response));
+      return;
+    }
+    base::ListValue readers_list;
+    for (const auto& reader : readers) {
+      readers_list.Append(reader);
+    }
+    response.Set("readers", std::move(readers_list));
+
+    SendResponse("SmartCardEmulation.reportListReadersResult", params,
+                 std::move(response));
+  }
+
+  // Helper: Waits for connect and reports either success or error.
+  void HandleConnect(const std::string& expected_reader = "Reader A",
+                     const int handle = 123,
+                     std::optional<std::string> active_protocol = std::nullopt,
+                     std::optional<std::string> error_code = std::nullopt) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.connectRequested");
+
+    // Verify the request is for the correct reader.
+    const std::string* reader = params.FindString("reader");
+    ASSERT_THAT(reader, testing::Pointee(testing::StrEq(expected_reader)))
+        << "Connect request was for the wrong reader!";
+
+    base::DictValue response;
+    if (error_code.has_value()) {
+      response.Set("resultCode", *error_code);
+      SendResponse("SmartCardEmulation.reportError", params,
+                   std::move(response));
+      return;
+    }
+    response.Set("handle", handle);
+    if (active_protocol.has_value()) {
+      response.Set("activeProtocol", *active_protocol);
+    }
+    SendResponse("SmartCardEmulation.reportConnectResult", params,
+                 std::move(response));
+  }
+
+  void ReloadPage() {
+    content::TestNavigationObserver observer(web_contents_);
+    web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
+    observer.Wait();
+  }
+
+  void NavigateToSubPage() {
+    GURL current_url = web_contents_->GetLastCommittedURL();
+    GURL new_url = current_url.Resolve("/target.html");
+    ASSERT_TRUE(content::NavigateToURL(web_contents_, new_url));
+  }
+
  private:
   void InstallAndLaunchIWA() {
-    auto app = IsolatedWebAppBuilder(
-                   ManifestBuilder().AddPermissionsPolicyWildcard(
-                       network::mojom::PermissionsPolicyFeature::kSmartCard))
-                   .BuildBundle();
+    auto app =
+        IsolatedWebAppBuilder(
+            ManifestBuilder().AddPermissionsPolicyWildcard(
+                network::mojom::PermissionsPolicyFeature::kSmartCard))
+            // Add a valid destination for navigation.
+            .AddHtml("/target.html", "<html><body>Target Page</body></html>")
+            .BuildBundle();
 
     app->TrustSigningKey();
     auto install_result = app->Install(profile());
     ASSERT_TRUE(install_result.has_value());
 
     auto url_info = install_result.value();
-    app_frame_ = OpenApp(url_info.app_id());
-    ASSERT_TRUE(app_frame_);
+    raw_ptr<content::RenderFrameHost> app_frame = OpenApp(url_info.app_id());
+    ASSERT_TRUE(app_frame);
+    web_contents_ = content::WebContents::FromRenderFrameHost(app_frame);
+    ASSERT_TRUE(web_contents_);
   }
 
   void AttachDevTools() {
     devtools_client_ = std::make_unique<content::TestDevToolsProtocolClient>();
-    devtools_client_->AttachToWebContents(
-        content::WebContents::FromRenderFrameHost(app_frame_));
+    devtools_client_->AttachToWebContents(web_contents_);
+  }
+
+  void SetAutoAcceptPermissions() {
+    permissions::PermissionRequestManager::FromWebContents(
+        content::WebContents::FromRenderFrameHost(app_frame()))
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::ACCEPT_ALL);
   }
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::TestDevToolsProtocolClient> devtools_client_;
-  raw_ptr<content::RenderFrameHost> app_frame_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, EnableDisableEmulation) {
@@ -97,6 +219,229 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, EnableDisableEmulation) {
 
   // Disable (Should clean up).
   EXPECT_THAT(SendCommand("SmartCardEmulation.disable"), IsSuccess());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       ListReadersAndReportSuccess) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+
+        if (readers.length === 2 &&
+            readers.includes("Reader A") &&
+            readers.includes("Reader B")) {
+           window.domAutomationController.send("Success");
+        } else {
+           window.domAutomationController.send(
+               "Failure: Unexpected list: " + JSON.stringify(readers));
+        }
+      } catch (e) {
+        window.domAutomationController.send(
+          "Error: " + e.name + " - " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders({"Reader A", "Reader B"});
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       ListReadersAndReportError) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+
+        // This is expected to fail
+        await context.listReaders();
+
+        window.domAutomationController.send(
+          "Failure: Should have thrown error");
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.name);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders({}, 123, "no-service");
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Error: SmartCardError\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ConnectAndReportSuccess) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const readerName = readers[0];
+        const result = await context.connect(readerName, "shared",
+            {preferredProtocols: ["t1"]});
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send(
+          "Error: " + e.name + " - " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect();
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ConnectAndReportError) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const readerName = readers[0];
+
+        // This connect attempt is expected to fail.
+        await context.connect(readerName, "shared",
+            {preferredProtocols: ["t1"]});
+
+        if (result.activeProtocol === "t1") {
+           window.domAutomationController.send("Success");
+        } else {
+           window.domAutomationController.send("Failure: Wrong protocol");
+        }
+
+        window.domAutomationController.send(
+          "Failure: Should have thrown error");
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.name);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect("Reader A", 123, "t1", "reader-unavailable");
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Error: SmartCardError\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       EmulationPersistsAcrossReload) {
+  EXPECT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(web_contents());
+  ReloadPage();
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send(
+          "Error: " + e.name + " - " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       EmulationPersistsAcrossNavigation) {
+  EXPECT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(web_contents());
+
+  NavigateToSubPage();
+
+  // Execute JS on the new page.
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.name);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       IframeCanAccessEmulatedReaders) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  // Inject Iframe
+  const std::string kCreateIframeScript = R"(
+      const iframe = document.createElement('iframe');
+      iframe.src = 'about:blank';
+      iframe.allow = 'smart-card';
+      document.body.appendChild(iframe);
+  )";
+  EXPECT_TRUE(content::ExecJs(app_frame(), kCreateIframeScript));
+
+  content::RenderFrameHost* iframe_host = content::ChildFrameAt(app_frame(), 0);
+  ASSERT_TRUE(iframe_host);
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.name);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
 }
 
 }  // namespace web_app

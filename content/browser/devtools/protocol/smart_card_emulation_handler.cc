@@ -6,9 +6,12 @@
 
 #include <optional>
 
+#include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "content/browser/devtools/protocol/smart_card_emulation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/smart_card/emulation/emulated_smart_card_connection.h"
+#include "content/browser/smart_card/emulation/emulated_smart_card_context.h"
 #include "content/browser/smart_card/smart_card_service.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/smart_card_delegate.h"
@@ -25,6 +28,84 @@ std::string GenerateRequestId() {
 // Convert binary data (std::vector<uint8_t>) to Protocol Binary.
 protocol::Binary ToProtocolBinary(const std::vector<uint8_t>& data) {
   return protocol::Binary::fromSpan(std::move(data));
+}
+
+// Convert the Protocol error string to the Mojo error enum.
+device::mojom::SmartCardError ToMojoSmartCardError(
+    const std::string& result_code) {
+  namespace ResultCodeEnum = protocol::SmartCardEmulation::ResultCodeEnum;
+
+  static const base::NoDestructor<
+      base::flat_map<std::string, device::mojom::SmartCardError>>
+      kErrorMap({
+          {ResultCodeEnum::RemovedCard,
+           device::mojom::SmartCardError::kRemovedCard},
+          {ResultCodeEnum::ResetCard,
+           device::mojom::SmartCardError::kResetCard},
+          {ResultCodeEnum::UnpoweredCard,
+           device::mojom::SmartCardError::kUnpoweredCard},
+          {ResultCodeEnum::UnresponsiveCard,
+           device::mojom::SmartCardError::kUnresponsiveCard},
+          {ResultCodeEnum::UnsupportedCard,
+           device::mojom::SmartCardError::kUnsupportedCard},
+          {ResultCodeEnum::ReaderUnavailable,
+           device::mojom::SmartCardError::kReaderUnavailable},
+          {ResultCodeEnum::SharingViolation,
+           device::mojom::SmartCardError::kSharingViolation},
+          {ResultCodeEnum::NotTransacted,
+           device::mojom::SmartCardError::kNotTransacted},
+          {ResultCodeEnum::NoSmartcard,
+           device::mojom::SmartCardError::kNoSmartcard},
+          {ResultCodeEnum::ProtoMismatch,
+           device::mojom::SmartCardError::kProtoMismatch},
+          {ResultCodeEnum::SystemCancelled,
+           device::mojom::SmartCardError::kSystemCancelled},
+          {ResultCodeEnum::NotReady, device::mojom::SmartCardError::kNotReady},
+          {ResultCodeEnum::Cancelled,
+           device::mojom::SmartCardError::kCancelled},
+          {ResultCodeEnum::InsufficientBuffer,
+           device::mojom::SmartCardError::kInsufficientBuffer},
+          {ResultCodeEnum::InvalidHandle,
+           device::mojom::SmartCardError::kInvalidHandle},
+          {ResultCodeEnum::InvalidParameter,
+           device::mojom::SmartCardError::kInvalidParameter},
+          {ResultCodeEnum::InvalidValue,
+           device::mojom::SmartCardError::kInvalidValue},
+          {ResultCodeEnum::NoMemory, device::mojom::SmartCardError::kNoMemory},
+          {ResultCodeEnum::Timeout, device::mojom::SmartCardError::kTimeout},
+          {ResultCodeEnum::UnknownReader,
+           device::mojom::SmartCardError::kUnknownReader},
+          {ResultCodeEnum::UnsupportedFeature,
+           device::mojom::SmartCardError::kUnsupportedFeature},
+          {ResultCodeEnum::NoReadersAvailable,
+           device::mojom::SmartCardError::kNoReadersAvailable},
+          {ResultCodeEnum::ServiceStopped,
+           device::mojom::SmartCardError::kServiceStopped},
+          {ResultCodeEnum::NoService,
+           device::mojom::SmartCardError::kNoService},
+          {ResultCodeEnum::CommError,
+           device::mojom::SmartCardError::kCommError},
+          {ResultCodeEnum::InternalError,
+           device::mojom::SmartCardError::kInternalError},
+          {ResultCodeEnum::ServerTooBusy,
+           device::mojom::SmartCardError::kServerTooBusy},
+          {ResultCodeEnum::Unexpected,
+           device::mojom::SmartCardError::kUnexpected},
+          {ResultCodeEnum::Shutdown, device::mojom::SmartCardError::kShutdown},
+          {ResultCodeEnum::UnknownCard,
+           device::mojom::SmartCardError::kUnknownError},
+          {ResultCodeEnum::Unknown, device::mojom::SmartCardError::kUnknown},
+      });
+
+  auto it = kErrorMap->find(result_code);
+  if (it != kErrorMap->end()) {
+    return it->second;
+  }
+
+  // The DevTools dispatcher guarantees that 'result_code' matches one of the
+  // string literals defined in the PDL (ResultCodeEnum), so this branch
+  // is unreachable unless the PDL and this map are out of sync.
+  NOTREACHED();
 }
 
 // Convert Mojo Disposition enum to Protocol String.
@@ -130,6 +211,38 @@ std::optional<std::string> ToProtocolSmartCardProtocol(
   // The 'default' case is intentionally omitted to ensure a compile-time error
   // if a new value is added to the mojo SmartCardProtocol enum.
   NOTREACHED();
+}
+
+device::mojom::SmartCardProtocol ToMojoSmartCardProtocol(
+    const std::optional<std::string>& protocol_str) {
+  if (!protocol_str.has_value() || protocol_str->empty()) {
+    return device::mojom::SmartCardProtocol::kUndefined;
+  }
+
+  namespace Protocol = protocol::SmartCardEmulation::ProtocolEnum;
+  using MojomProtocol = device::mojom::SmartCardProtocol;
+
+  static const base::NoDestructor<base::flat_map<std::string, MojomProtocol>>
+      kProtocolMap({
+          {Protocol::T0, MojomProtocol::kT0},
+          {Protocol::T1, MojomProtocol::kT1},
+          {Protocol::Raw, MojomProtocol::kRaw},
+      });
+
+  auto it = kProtocolMap->find(*protocol_str);
+  if (it != kProtocolMap->end()) {
+    return it->second;
+  }
+  NOTREACHED();
+}
+
+// Convert optional Protocol array to standard vector required by Mojo.
+std::vector<std::string> ToMojoStringVector(
+    std::unique_ptr<protocol::Array<String>> in_readers) {
+  if (!in_readers) {
+    return {};
+  }
+  return std::move(*in_readers);
 }
 
 }  // namespace
@@ -252,6 +365,128 @@ base::expected<T, std::string> SmartCardEmulationHandler::TakePendingRequest(
   T request = std::move(*request_ptr);
   pending_requests_.erase(it);
   return request;
+}
+
+base::expected<void, std::string>
+SmartCardEmulationHandler::CompleteListReaders(
+    const std::string& request_id,
+    std::vector<std::string> readers) {
+  ASSIGN_OR_RETURN(auto req,
+                   TakePendingRequest<PendingListReaders>(request_id));
+  std::move(req.callback())
+      .Run(device::mojom::SmartCardListReadersResult::NewReaders(
+          std::move(readers)));
+  return base::ok();
+}
+
+base::expected<void, std::string>
+SmartCardEmulationHandler::CompleteEstablishContext(
+    const std::string& request_id,
+    const uint32_t context_id) {
+  ASSIGN_OR_RETURN(auto req,
+                   TakePendingRequest<PendingCreateContext>(request_id));
+
+  auto context_impl = std::make_unique<EmulatedSmartCardContext>(
+      weak_ptr_factory_.GetWeakPtr(), context_id);
+
+  mojo::PendingRemote<device::mojom::SmartCardContext> remote;
+
+  mojo::MakeSelfOwnedReceiver(std::move(context_impl),
+                              remote.InitWithNewPipeAndPassReceiver());
+
+  std::move(req.callback())
+      .Run(device::mojom::SmartCardCreateContextResult::NewContext(
+          std::move(remote)));
+  return base::ok();
+}
+
+base::expected<void, std::string> SmartCardEmulationHandler::CompleteConnect(
+    const std::string& request_id,
+    const uint32_t handle,
+    device::mojom::SmartCardProtocol active_protocol) {
+  ASSIGN_OR_RETURN(auto req, TakePendingRequest<PendingConnect>(request_id));
+
+  auto success_data = device::mojom::SmartCardConnectSuccess::New();
+  success_data->active_protocol = active_protocol;
+
+  auto connection_impl = std::make_unique<EmulatedSmartCardConnection>(
+      weak_ptr_factory_.GetWeakPtr(), handle);
+
+  mojo::PendingRemote<device::mojom::SmartCardConnection> connection_remote;
+
+  mojo::MakeSelfOwnedReceiver(
+      std::move(connection_impl),
+      connection_remote.InitWithNewPipeAndPassReceiver());
+
+  success_data->connection = std::move(connection_remote);
+
+  std::move(req.callback())
+      .Run(device::mojom::SmartCardConnectResult::NewSuccess(
+          std::move(success_data)));
+
+  return base::ok();
+}
+
+base::expected<void, std::string> SmartCardEmulationHandler::FailRequest(
+    const std::string& request_id,
+    device::mojom::SmartCardError error) {
+  auto it = pending_requests_.find(request_id);
+  if (it == pending_requests_.end()) {
+    return base::unexpected("Request ID not found");
+  }
+
+  PendingRequest request_variant = std::move(it->second);
+  pending_requests_.erase(it);
+
+  std::visit([error](auto&& request) { request.ReportError(error); },
+             request_variant);
+
+  return base::ok();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportEstablishContextResult(
+    const String& in_requestId,
+    const int in_contextId) {
+  RETURN_IF_ERROR(CompleteEstablishContext(in_requestId, in_contextId),
+                  [](const std::string& error) {
+                    return DispatchResponse::ServerError(error);
+                  });
+  return DispatchResponse::Success();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportListReadersResult(
+    const String& in_requestId,
+    std::unique_ptr<protocol::Array<String>> in_readers) {
+  RETURN_IF_ERROR(CompleteListReaders(
+                      in_requestId, ToMojoStringVector(std::move(in_readers))),
+                  [](const std::string& error) {
+                    return DispatchResponse::ServerError(error);
+                  });
+
+  return DispatchResponse::Success();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportConnectResult(
+    const String& in_requestId,
+    const int in_handle,
+    std::optional<String> in_activeProtocol) {
+  RETURN_IF_ERROR(CompleteConnect(in_requestId, in_handle,
+                                  ToMojoSmartCardProtocol(in_activeProtocol)),
+                  [](const std::string& error) {
+                    return DispatchResponse::ServerError(error);
+                  });
+  return DispatchResponse::Success();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportError(
+    const String& in_requestId,
+    const String& in_resultCode) {
+  RETURN_IF_ERROR(
+      FailRequest(in_requestId, ToMojoSmartCardError(in_resultCode)),
+      [](const std::string& error) {
+        return DispatchResponse::ServerError(error);
+      });
+  return DispatchResponse::Success();
 }
 
 void SmartCardEmulationHandler::OnCreateContext(
