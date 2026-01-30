@@ -355,7 +355,9 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
 
   if (ntp_features::kNtpNextSuggestionsFromNewSearchSuggestionsEndpointParam
           .Get()) {
-    GenerateActionChipsFromNewEndpoint(tab, std::move(callback));
+    GenerateActionChipsFromNewEndpoint(
+        client_->IsPersonalizedUrlDataCollectionActive() ? tab : std::nullopt,
+        std::move(callback));
     return;
   }
 
@@ -366,12 +368,6 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
     base::optional_ref<const TabInterface> tab,
     base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
         callback) {
-  if (!client_->IsPersonalizedUrlDataCollectionActive()) {
-    std::move(callback).Run(CreateChipsForSteadyState(
-        CreateTabInfo(*tab_id_generator_, tab), aim_eligibility_service_));
-    return;
-  }
-
   std::optional<omnibox::PageVertical> page_vertical;
   if (ntp_features::kNtpNextShowDeepDiveSuggestionsParam.Get() &&
       tab.has_value() && IsDeepDiveTab(*tab, optimization_guide_decider_)) {
