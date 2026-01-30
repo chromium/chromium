@@ -224,13 +224,10 @@ PrefetchStatus PrefetchWithForkOrMadvise() {
                               supported);
 
     if (supported) {
-      base::ThreadType old_thread_type =
-          base::PlatformThread::GetCurrentThreadType();
-      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kBackground);
+      // TODO(b/441929362): Revisit running this at ThreadType::kBackground
       PrefetchStatus status =
           PrefetchWithMadvise(sections, madvise_advice,
                               features::kLibraryPrefetcherMadviseLength.Get());
-      base::PlatformThread::SetCurrentThreadType(old_thread_type);
       return status;
     }
 
