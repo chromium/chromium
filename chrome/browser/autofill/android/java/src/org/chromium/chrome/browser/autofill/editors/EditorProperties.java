@@ -17,6 +17,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -35,8 +36,8 @@ public class EditorProperties {
             new ReadableObjectPropertyKey<>("delete_confirmation_title");
     public static final ReadableObjectPropertyKey<CharSequence> DELETE_CONFIRMATION_TEXT =
             new ReadableObjectPropertyKey<>("delete_confirmation_text");
-    public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT =
-            new ReadableObjectPropertyKey<>("delete_confirmation_primary_button_text");
+    public static final ReadableIntPropertyKey DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID =
+            new ReadableIntPropertyKey("delete_confirmation_primary_button_text");
 
     public static final WritableObjectPropertyKey<ListModel<EditorItem>> EDITOR_FIELDS =
             new WritableObjectPropertyKey<>("editor_fields");
@@ -65,7 +66,7 @@ public class EditorProperties {
         CUSTOM_DONE_BUTTON_TEXT,
         DELETE_CONFIRMATION_TITLE,
         DELETE_CONFIRMATION_TEXT,
-        DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT,
+        DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
         EDITOR_FIELDS,
         DONE_RUNNABLE,
         CANCEL_RUNNABLE,

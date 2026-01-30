@@ -37,7 +37,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorComponentsPrope
 import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.setDropdownKey;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
@@ -47,6 +47,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Item
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
 
+import android.annotation.StringRes;
 import android.app.Activity;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -344,13 +345,14 @@ public class AddressEditorTest {
             PropertyModel editorModel,
             String expectedDeleteTitle,
             String expectedDeleteText,
-            String expectedDeleteButtonText) {
+            @StringRes int expectedDeleteButtonTextId) {
         assertNotNull(editorModel);
 
         assertEquals(expectedDeleteTitle, editorModel.get(DELETE_CONFIRMATION_TITLE));
         assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT).toString());
         assertEquals(
-                expectedDeleteButtonText, editorModel.get(DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT));
+                expectedDeleteButtonTextId,
+                editorModel.get(DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID));
     }
 
     private void validateShownFields(
@@ -501,14 +503,13 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -525,14 +526,13 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -547,14 +547,13 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -572,14 +571,13 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_sync_address_record_type_notice);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -601,14 +599,13 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -633,14 +630,13 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_sync_address_record_type_notice);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -657,14 +653,13 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -683,14 +678,13 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -707,14 +701,13 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -731,14 +724,13 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_delete_suggestion_button);
+        final int deleteButtonTextId = R.string.autofill_delete_suggestion_button;
 
         checkModelHasExpectedValues(
                 mAddressEditor.getEditorModelForTesting(),
                 deleteTitle,
                 deleteText,
-                deleteButtonText);
+                deleteButtonTextId);
     }
 
     @Test
@@ -1234,9 +1226,9 @@ public class AddressEditorTest {
         final String deleteTextReplaced =
                 SpanApplier.applySpans(deleteText, new SpanApplier.SpanInfo("<link>", "</link>"))
                         .toString();
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_remove_suggestion_button);
-        checkModelHasExpectedValues(editorModel, deleteTitle, deleteTextReplaced, deleteButtonText);
+        final int deleteButtonTextId = R.string.autofill_remove_suggestion_button;
+        checkModelHasExpectedValues(
+                editorModel, deleteTitle, deleteTextReplaced, deleteButtonTextId);
     }
 
     @Test
@@ -1335,9 +1327,9 @@ public class AddressEditorTest {
         final String deleteTextReplaced =
                 SpanApplier.applySpans(deleteText, new SpanApplier.SpanInfo("<link>", "</link>"))
                         .toString();
-        final String deleteButtonText =
-                mActivity.getString(R.string.autofill_remove_suggestion_button);
-        checkModelHasExpectedValues(editorModel, deleteTitle, deleteTextReplaced, deleteButtonText);
+        final int deleteButtonTextId = R.string.autofill_remove_suggestion_button;
+        checkModelHasExpectedValues(
+                editorModel, deleteTitle, deleteTextReplaced, deleteButtonTextId);
     }
 
     @Test

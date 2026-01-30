@@ -36,6 +36,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MarginLayoutParamsCompat;
@@ -114,7 +115,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
 
     private @Nullable String mDeleteConfirmationTitle;
     private @Nullable CharSequence mDeleteConfirmationText;
-    private @Nullable String mDeleteConfirmationPrimaryButtonText;
+    private @StringRes int mDeleteConfirmationPrimaryButtonText;
 
     private @Nullable Runnable mDeleteRunnable;
     private @Nullable Runnable mDoneRunnable;
@@ -207,7 +208,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
     }
 
     public void setDeleteConfirmationPrimaryButtonText(
-            @Nullable String deleteConfirmationPrimaryButtonText) {
+            @StringRes int deleteConfirmationPrimaryButtonText) {
         mDeleteConfirmationPrimaryButtonText = deleteConfirmationPrimaryButtonText;
     }
 
@@ -297,7 +298,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                     if (item.getItemId() == R.id.delete_menu_id) {
                         if (mDeleteConfirmationTitle != null
                                 && mDeleteConfirmationText != null
-                                && mDeleteConfirmationPrimaryButtonText != null) {
+                                && mDeleteConfirmationPrimaryButtonText != 0) {
                             handleDeleteWithConfirmation(
                                     mDeleteConfirmationTitle,
                                     mDeleteConfirmationText,
@@ -660,7 +661,9 @@ public class EditorDialogView extends AlwaysDismissedDialog
     }
 
     private void handleDeleteWithConfirmation(
-            String confirmationTitle, CharSequence confirmationText, String primaryButtonText) {
+            String confirmationTitle,
+            CharSequence confirmationText,
+            @StringRes int primaryButtonTextId) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View body = inflater.inflate(R.layout.confirmation_dialog_view, null);
         TextView titleView = body.findViewById(R.id.confirmation_dialog_title);
@@ -685,7 +688,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                                     }
                                 })
                         .setPositiveButton(
-                                primaryButtonText,
+                                primaryButtonTextId,
                                 (dialog, which) -> {
                                     recordDeletionHistogram(true);
                                     handleDelete();

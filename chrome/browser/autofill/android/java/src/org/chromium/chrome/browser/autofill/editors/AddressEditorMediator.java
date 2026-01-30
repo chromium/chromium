@@ -27,7 +27,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLO
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_RUNNABLE;
@@ -48,6 +48,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.view.View;
+
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -214,7 +216,7 @@ class AddressEditorMediator {
                         .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                         .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
                         .with(
-                                DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT,
+                                DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
                                 getDeleteConfirmationPrimaryButtonText())
                         .with(EDITOR_FIELDS, setEditorFields())
                         .with(DONE_RUNNABLE, this::onCommitChanges)
@@ -579,11 +581,11 @@ class AddressEditorMediator {
         return mContext.getString(R.string.autofill_delete_local_address_record_type_notice);
     }
 
-    private String getDeleteConfirmationPrimaryButtonText() {
+    private @StringRes int getDeleteConfirmationPrimaryButtonText() {
         if (isNonEditableProfile()) {
-            return mContext.getString(R.string.autofill_remove_suggestion_button);
+            return R.string.autofill_remove_suggestion_button;
         }
-        return mContext.getString(R.string.autofill_delete_suggestion_button);
+        return R.string.autofill_delete_suggestion_button;
     }
 
     private @Nullable String getRecordTypeNoticeText() {
