@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -20,6 +21,13 @@ class TopContainerButtonActionViewInterface
 
   void ActionItemChangedImpl(actions::ActionItem* action_item) override {
     ButtonActionViewInterface::ActionItemChangedImpl(action_item);
+    if (action_item->GetImage().IsVectorIcon()) {
+      action_view_->UpdateIcon(action_item->GetImage());
+    }
+  }
+
+  void OnViewChangedImpl(actions::ActionItem* action_item) override {
+    ButtonActionViewInterface::OnViewChangedImpl(action_item);
     if (action_item->GetImage().IsVectorIcon()) {
       action_view_->UpdateIcon(action_item->GetImage());
     }
@@ -60,8 +68,8 @@ void TopContainerButton::RemovedFromWidget() {
 
 ui::ColorId TopContainerButton::GetForegroundColor() const {
   return GetWidget() && GetWidget()->ShouldPaintAsActive()
-             ? kColorNewTabButtonCRForegroundFrameActive
-             : kColorNewTabButtonCRForegroundFrameInactive;
+             ? kColorToolbarButtonIcon
+             : kColorToolbarButtonIconInactive;
 }
 
 std::unique_ptr<views::ActionViewInterface>

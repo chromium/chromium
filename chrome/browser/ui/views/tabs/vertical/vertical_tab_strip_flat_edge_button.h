@@ -42,6 +42,7 @@ class VerticalTabStripFlatEdgeButton : public views::LabelButton,
   void RemovedFromWidget() override;
 
   ui::ColorId GetForegroundColor() const;
+  ui::ColorId GetBackgroundColor() const;
   SkRRect GetButtonShape() const;
   gfx::RoundedCornersF GetButtonCornerRadii() const;
 

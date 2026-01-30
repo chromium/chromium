@@ -41,6 +41,13 @@ class VerticalTabStripFlatEdgeButtonActionViewInterface
     }
   }
 
+  void OnViewChangedImpl(actions::ActionItem* action_item) override {
+    ButtonActionViewInterface::OnViewChangedImpl(action_item);
+    if (action_item->GetImage().IsVectorIcon()) {
+      action_view_->UpdateIcon(action_item->GetImage());
+    }
+  }
+
  private:
   raw_ptr<VerticalTabStripFlatEdgeButton> action_view_ = nullptr;
 };
@@ -79,8 +86,7 @@ void VerticalTabStripFlatEdgeButton::SetInsets(const gfx::Insets& insets) {
 }
 
 void VerticalTabStripFlatEdgeButton::OnPaintBackground(gfx::Canvas* canvas) {
-  const SkColor color = GetColorProvider()->GetColor(
-      kColorVerticalTabStripBottomButtonBackground);
+  const SkColor color = GetColorProvider()->GetColor(GetBackgroundColor());
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
@@ -120,8 +126,14 @@ void VerticalTabStripFlatEdgeButton::RemovedFromWidget() {
 
 ui::ColorId VerticalTabStripFlatEdgeButton::GetForegroundColor() const {
   return GetWidget() && GetWidget()->ShouldPaintAsActive()
-             ? kColorNewTabButtonCRForegroundFrameActive
-             : kColorNewTabButtonCRForegroundFrameInactive;
+             ? kColorNewTabButtonForegroundFrameActive
+             : kColorNewTabButtonForegroundFrameInactive;
+}
+
+ui::ColorId VerticalTabStripFlatEdgeButton::GetBackgroundColor() const {
+  return GetWidget() && GetWidget()->ShouldPaintAsActive()
+             ? kColorNewTabButtonCRBackgroundFrameActive
+             : kColorNewTabButtonCRBackgroundFrameInactive;
 }
 
 gfx::RoundedCornersF VerticalTabStripFlatEdgeButton::GetButtonCornerRadii()
