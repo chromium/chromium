@@ -116,9 +116,8 @@ std::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
     return std::nullopt;
   }
 
-  base::Pickle pickle =
-      base::Pickle::WithUnownedBuffer(base::as_byte_span(encoded.value()));
-  base::PickleIterator in(pickle);
+  base::PickleIterator in =
+      base::PickleIterator::WithData(base::as_byte_span(encoded.value()));
 
   uint32_t version;
   UserAgentMetadata out;

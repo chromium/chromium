@@ -57,8 +57,8 @@ void HistogramDeltaSerialization::PrepareAndSerializeDeltas(
 void HistogramDeltaSerialization::DeserializeAndAddSamples(
     const std::vector<std::string>& serialized_deltas) {
   for (const std::string& serialized_delta : serialized_deltas) {
-    Pickle pickle = Pickle::WithUnownedBuffer(as_byte_span(serialized_delta));
-    PickleIterator iter(pickle);
+    PickleIterator iter =
+        PickleIterator::WithData(as_byte_span(serialized_delta));
     DeserializeHistogramAndAddSamples(&iter);
   }
 }

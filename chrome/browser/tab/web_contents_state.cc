@@ -369,8 +369,7 @@ bool WebContentsState::ExtractNavigationEntries(
     int* current_entry_index,
     std::vector<sessions::SerializedNavigationEntry>* navigations) {
   int entry_count;
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(buffer);
-  base::PickleIterator iter(pickle);
+  base::PickleIterator iter = base::PickleIterator::WithData(buffer);
   if (!iter.ReadBool(is_off_the_record) || !iter.ReadInt(&entry_count) ||
       !iter.ReadInt(current_entry_index)) {
     LOG(ERROR) << "Failed to restore state from byte array (length="
@@ -395,9 +394,8 @@ bool WebContentsState::ExtractNavigationEntries(
       LOG(ERROR) << "Failed to restore tab entry from byte array.";
       return false;  // It's dangerous to keep deserializing now, give up.
     }
-    base::Pickle tab_navigation_pickle =
-        base::Pickle::WithUnownedBuffer(*tab_entry);
-    base::PickleIterator tab_navigation_pickle_iterator(tab_navigation_pickle);
+    base::PickleIterator tab_navigation_pickle_iterator =
+        base::PickleIterator::WithData(*tab_entry);
     sessions::SerializedNavigationEntry nav;
     if (!nav.ReadFromPickle(&tab_navigation_pickle_iterator)) {
       return false;  // If we failed to read a navigation, give up on others.

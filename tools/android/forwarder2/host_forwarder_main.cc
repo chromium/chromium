@@ -98,10 +98,9 @@ class ServerDelegate : public Daemon::ServerDelegate {
       has_failed_ = true;
       return;
     }
-    const base::Pickle command_pickle =
-        base::Pickle::WithUnownedBuffer(base::as_bytes(
+    base::PickleIterator pickle_it =
+        base::PickleIterator::WithData(base::as_bytes(
             base::span(buf, base::checked_cast<size_t>(bytes_read))));
-    base::PickleIterator pickle_it(command_pickle);
 
     std::string device_serial;
     CHECK(pickle_it.ReadString(&device_serial));

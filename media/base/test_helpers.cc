@@ -764,8 +764,7 @@ scoped_refptr<DecoderBuffer> CreateClearBuffer() {
 bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
                                   const VideoDecoderConfig& config) {
   // Check if the input |buffer| matches the |config|.
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(buffer);
-  base::PickleIterator iterator(pickle);
+  base::PickleIterator iterator = base::PickleIterator::WithData(buffer);
   std::string header;
   int width = 0;
   int height = 0;

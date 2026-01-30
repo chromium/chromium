@@ -1097,8 +1097,7 @@ bool AwContents::RestoreFromOpaqueState(JNIEnv* env,
   std::vector<uint8_t> state_vector;
   base::android::JavaByteArrayToByteVector(env, state, &state_vector);
 
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(state_vector);
-  base::PickleIterator iterator(pickle);
+  base::PickleIterator iterator = base::PickleIterator::WithData(state_vector);
 
   return RestoreFromPickle(&iterator, web_contents_.get());
 }

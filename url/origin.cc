@@ -346,9 +346,8 @@ std::optional<Origin> Origin::Deserialize(std::string_view value) {
   if (!base::Base64Decode(value, &data))
     return std::nullopt;
 
-  base::Pickle pickle =
-      base::Pickle::WithUnownedBuffer(base::as_byte_span(data));
-  base::PickleIterator reader(pickle);
+  base::PickleIterator reader =
+      base::PickleIterator::WithData(base::as_byte_span(data));
 
   std::string pickled_url;
   if (!reader.ReadString(&pickled_url))

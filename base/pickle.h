@@ -33,6 +33,10 @@ class BASE_EXPORT PickleIterator {
   PickleIterator() : payload_(nullptr), read_index_(0), end_index_(0) {}
   explicit PickleIterator(const Pickle& pickle);
 
+  // Equivalent to PickleIterator(Pickle::WithUnownedBuffer(data)) but avoids
+  // instantiating a Pickle instance.
+  static PickleIterator WithData(span<const uint8_t> data);
+
   // Methods for reading the payload of the Pickle. To read from the start of
   // the Pickle, create a PickleIterator from a Pickle. If successful, these
   // methods return true. Otherwise, false is returned to indicate that the
@@ -190,6 +194,8 @@ class BASE_EXPORT Pickle {
   // danger of dangling pointers. If a Pickle is obtained from this call, it is
   // a requirement that only const methods be called. The header padding size is
   // deduced from the data length.
+  // TODO(crbug.com/479750481): Deprecated. Use
+  // PickleIterator::WithData() instead whenever possible.
   static Pickle WithUnownedBuffer(span<const uint8_t> data);
 
   // Initializes a Pickle as a copy of another Pickle. If the original Pickle's

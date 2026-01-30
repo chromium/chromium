@@ -108,9 +108,8 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
   if (fds.empty())
     return;
 
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(
+  base::PickleIterator iter = base::PickleIterator::WithData(
       base::span(buf).first(base::checked_cast<size_t>(len)));
-  base::PickleIterator iter(pickle);
 
   int kind;
   if (!iter.ReadInt(&kind))
