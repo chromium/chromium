@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/json/values_util.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -17,6 +19,8 @@
 namespace {
 constexpr char kNavigationCount[] = "navigation_count";
 constexpr char kEncryptionProtocols[] = "encryption_protocols";
+constexpr char kFirstSeenTime[] = "first_seen_time";
+constexpr char kLastSeenTime[] = "last_seen_time";
 }  // namespace
 
 namespace enterprise_reporting {
@@ -109,5 +113,54 @@ INSTANTIATE_TEST_SUITE_P(
         SaasUsageAggregationUtilsParameterizedTest::ParamType>& info) {
       return info.param.test_name;
     });
+
+class SaasUsageAggregationUtilsTest : public testing::Test {
+ public:
+  SaasUsageAggregationUtilsTest() = default;
+  ~SaasUsageAggregationUtilsTest() override = default;
+
+  void SetUp() override {
+    pref_service_.registry()->RegisterDictionaryPref(kSaasUsageReport);
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple pref_service_;
+};
+
+TEST_F(SaasUsageAggregationUtilsTest, FirstAndLastSeenTime) {
+  const std::string domain = "example.com";
+  const base::Time first_seen_time = base::Time::Now();
+
+  // First navigation, start and end time should be the same.
+  RecordNavigation(pref_service_, domain, "TLS 1.3");
+
+  const base::DictValue& report = pref_service_.GetDict(kSaasUsageReport);
+  const base::DictValue* entry = report.FindDict(domain);
+  ASSERT_TRUE(entry);
+
+  const base::Value* first_seen_time_value = entry->Find(kFirstSeenTime);
+  ASSERT_TRUE(first_seen_time_value);
+  EXPECT_EQ(first_seen_time, base::ValueToTime(first_seen_time_value).value());
+
+  const base::Value* last_seen_time_value = entry->Find(kLastSeenTime);
+  ASSERT_TRUE(last_seen_time_value);
+  EXPECT_EQ(first_seen_time, base::ValueToTime(last_seen_time_value).value());
+
+  // Advance time and record another navigation.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  const base::Time last_seen_time = base::Time::Now();
+  RecordNavigation(pref_service_, domain, "TLS 1.3");
+
+  // Start time should be unchanged, end time should be updated.
+  first_seen_time_value = entry->Find(kFirstSeenTime);
+  ASSERT_TRUE(first_seen_time_value);
+  EXPECT_EQ(first_seen_time, base::ValueToTime(first_seen_time_value).value());
+
+  last_seen_time_value = entry->Find(kLastSeenTime);
+  ASSERT_TRUE(last_seen_time_value);
+  EXPECT_EQ(last_seen_time, base::ValueToTime(last_seen_time_value).value());
+}
 
 }  // namespace enterprise_reporting
