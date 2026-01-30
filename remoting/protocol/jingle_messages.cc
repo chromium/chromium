@@ -434,11 +434,6 @@ IceTransportInfo::NamedCandidate::NamedCandidate(
     const webrtc::Candidate& candidate)
     : name(name), candidate(candidate) {}
 
-IceTransportInfo::IceCredentials::IceCredentials(std::string channel,
-                                                 std::string ufrag,
-                                                 std::string password)
-    : channel(channel), ufrag(ufrag), password(password) {}
-
 IceTransportInfo::IceTransportInfo() = default;
 IceTransportInfo::~IceTransportInfo() = default;
 
@@ -449,5 +444,49 @@ bool IceTransportInfo::ParseXml(const jingle_xmpp::XmlElement* element) {
 std::unique_ptr<jingle_xmpp::XmlElement> IceTransportInfo::ToXml() const {
   return IceTransportInfoToXml(*this);
 }
+
+JabberId::JabberId() = default;
+JabberId::JabberId(const JabberId&) = default;
+JabberId::JabberId(JabberId&&) = default;
+JabberId& JabberId::operator=(const JabberId&) = default;
+JabberId& JabberId::operator=(JabberId&&) = default;
+JabberId::~JabberId() = default;
+
+IceCandidate::IceCandidate() = default;
+IceCandidate::IceCandidate(const IceCandidate&) = default;
+IceCandidate::IceCandidate(IceCandidate&&) = default;
+IceCandidate& IceCandidate::operator=(const IceCandidate&) = default;
+IceCandidate& IceCandidate::operator=(IceCandidate&&) = default;
+IceCandidate::~IceCandidate() = default;
+
+SessionDescription::SessionDescription() = default;
+SessionDescription::SessionDescription(const SessionDescription&) = default;
+SessionDescription::SessionDescription(SessionDescription&&) = default;
+SessionDescription& SessionDescription::operator=(const SessionDescription&) =
+    default;
+SessionDescription& SessionDescription::operator=(SessionDescription&&) =
+    default;
+SessionDescription::~SessionDescription() = default;
+
+JingleAuthentication::JingleAuthentication() = default;
+JingleAuthentication::JingleAuthentication(const JingleAuthentication&) =
+    default;
+JingleAuthentication::JingleAuthentication(JingleAuthentication&&) = default;
+JingleAuthentication& JingleAuthentication::operator=(
+    const JingleAuthentication&) = default;
+JingleAuthentication& JingleAuthentication::operator=(JingleAuthentication&&) =
+    default;
+JingleAuthentication::~JingleAuthentication() = default;
+
+IceTransportInfo::NamedCandidate::NamedCandidate() = default;
+
+IceTransportInfo::IceCredentials::IceCredentials() = default;
+
+IceTransportInfo::IceCredentials::IceCredentials(std::string channel,
+                                                 std::string ufrag,
+                                                 std::string password)
+    : channel(channel), ufrag(ufrag), password(password) {}
+
+IceTransportInfo::IceCredentials::~IceCredentials() = default;
 
 }  // namespace remoting::protocol
