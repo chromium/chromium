@@ -677,10 +677,18 @@ bool ConsumeGridTemplateShorthand(bool important,
                                   const CSSValue*& template_columns,
                                   const CSSValue*& template_areas);
 
+bool ConsumeGridLanesShorthand(bool important,
+                               CSSParserTokenStream&,
+                               const CSSParserContext&,
+                               CSSParserLocalContext&,
+                               const CSSValue*& grid_lanes_direction,
+                               const CSSValue*& template_columns,
+                               const CSSValue*& template_rows,
+                               const CSSValue*& template_areas);
+
 CSSValue* ParseGridLanesTemplateAreasValue(
     const String& grid_lanes_template_areas,
-    bool is_template_columns);
-
+    bool is_for_columns);
 CSSValue* ParseGridLanesDirection(CSSParserTokenStream&);
 
 CSSValue* ConsumeFlowTolerance(CSSParserTokenStream&,

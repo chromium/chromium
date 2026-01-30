@@ -5212,14 +5212,8 @@ CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
       shorthand.properties()[0]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
   DCHECK(template_area_values);
-  // Note: `shorthand.properties()[1]` is intentionally not used here because it
-  // always refers to `grid-template-columns`.
-  // Instead, we use `GetCSSPropertyGridTemplateColumns()` or
-  // `GetCSSPropertyGridTemplateRows()` depending on the `grid-lanes-direction`,
-  // since `grid-template-rows` is not listed in the `grid-lanes` shorthand
-  // property.
   const CSSValue* grid_lanes_direction_values =
-      shorthand.properties()[2]->CSSValueFromComputedStyle(
+      shorthand.properties()[3]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
   DCHECK(grid_lanes_direction_values);
   const CSSValue* grid_lanes_template_tracks_values =
@@ -5227,9 +5221,9 @@ CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
           grid_lanes_direction_values) ||
               CSSOMUtils::IsGridLanesColumnDirectionValue(
                   grid_lanes_direction_values)
-          ? GetCSSPropertyGridTemplateColumns().CSSValueFromComputedStyle(
+          ? shorthand.properties()[1]->CSSValueFromComputedStyle(
                 style, layout_object, allow_visited_style, value_phase)
-          : GetCSSPropertyGridTemplateRows().CSSValueFromComputedStyle(
+          : shorthand.properties()[2]->CSSValueFromComputedStyle(
                 style, layout_object, allow_visited_style, value_phase);
   DCHECK(grid_lanes_template_tracks_values);
 

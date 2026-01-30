@@ -8902,7 +8902,7 @@
     },
     {
       name: "grid-lanes",
-      longhands: [ "grid-template-areas", "grid-template-columns", "grid-lanes-direction"],
+      longhands: [ "grid-template-areas", "grid-template-columns", "grid-template-rows", "grid-lanes-direction"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
       runtime_flag: "CSSGridLanesLayout",

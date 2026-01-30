@@ -2836,24 +2836,25 @@ String StylePropertySerializer::GetShorthandValueForGridLanes(
   const auto* template_area_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
   DCHECK(template_area_values);
-  // Note: `shorthand.properties()[1]` is intentionally not used here because it
-  // always refers to `grid-template-columns`.
-  // Instead, we use `GetCSSPropertyGridTemplateColumns()` or
-  // `GetCSSPropertyGridTemplateRows()` depending on the `grid-lanes` direction,
-  // since `grid-template-rows` is not listed in the `grid-lanes` shorthand
-  // property.
   const auto* grid_lanes_direction_values =
-      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
   DCHECK(grid_lanes_direction_values);
-  const auto* grid_lanes_template_tracks_values =
-      CSSOMUtils::IsGridLanesNormalDirectionValue(
+
+  // Retrieve the appropriate template tracks based on the
+  // `grid-lanes-direction`. For normal or column directions, we use
+  // `grid-template-columns` (at index 1). For row direction, we use
+  // `grid-template-rows` (at index 2).
+  const CSSValue* grid_lanes_template_tracks_values = nullptr;
+  if (CSSOMUtils::IsGridLanesNormalDirectionValue(
           grid_lanes_direction_values) ||
-              CSSOMUtils::IsGridLanesColumnDirectionValue(
-                  grid_lanes_direction_values)
-          ? property_set_.GetPropertyCSSValue(
-                GetCSSPropertyGridTemplateColumns())
-          : property_set_.GetPropertyCSSValue(GetCSSPropertyGridTemplateRows());
-  DCHECK(grid_lanes_template_tracks_values);
+      CSSOMUtils::IsGridLanesColumnDirectionValue(
+          grid_lanes_direction_values)) {
+    grid_lanes_template_tracks_values =
+        property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  } else {
+    grid_lanes_template_tracks_values =
+        property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+  }
 
   const CSSValueList* grid_lanes_list =
       CSSOMUtils::ComputedValueForGridLanesShorthand(

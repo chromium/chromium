@@ -774,6 +774,7 @@ All changes to this list should go through Blink's feature review process: http:
         grid-lanes-direction
         grid-template-areas
         grid-template-columns
+        grid-template-rows
     grid-row
         grid-row-end
         grid-row-start

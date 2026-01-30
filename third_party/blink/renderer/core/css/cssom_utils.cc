@@ -236,17 +236,15 @@ CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
     const CSSValue* template_area_values,
     const CSSValue* grid_lanes_direction_values) {
   const bool has_initial_grid_template_tracks =
-      IsNoneValue(grid_template_tracks_values);
-  const bool has_initial_template_areas = IsNoneValue(template_area_values);
+      !grid_template_tracks_values || IsNoneValue(grid_template_tracks_values);
+  const bool has_initial_template_areas =
+      !template_area_values || IsNoneValue(template_area_values);
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (has_initial_template_areas && has_initial_grid_template_tracks) {
-    list->Append(*template_area_values);
-  }
 
   if (!has_initial_template_areas) {
-    // If we have template columns, we can serialize the template areas as is.
-    // Otherwise, for template rows, we need to serialize multiple string tokens
-    // into a single space-separated string.
+    // If `grid-lanes-direction` is column, serialize the template areas as is.
+    // If `grid-lanes-direction` is row, serialize multiple string tokens into a
+    // single space-separated string to match the `grid-template-areas` syntax.
     if (IsGridLanesColumnDirectionValue(grid_lanes_direction_values) ||
         IsGridLanesNormalDirectionValue(grid_lanes_direction_values)) {
       list->Append(*template_area_values);
