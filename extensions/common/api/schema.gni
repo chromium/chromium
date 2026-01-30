@@ -100,7 +100,7 @@ if (enable_extensions) {
   if (is_chromeos) {
     extensions_api_schema_files_ += [
       "diagnostics.webidl",
-      "media_perception_private.idl",
+      "media_perception_private.webidl",
       "webcam_private.webidl",
     ]
   }

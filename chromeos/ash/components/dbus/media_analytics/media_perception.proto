@@ -6,7 +6,7 @@ package mri;
 
 // The output of the media analytics process. Implicitly tied to the
 // MediaPerception dictionary defined in Chromium source at
-// src/extensions/common/api/media_perception_private.idl for the
+// src/extensions/common/api/media_perception_private.webidl for the
 // Chromium mediaPerceptionPrivate API. This .proto needs to be compatible
 // with the version used in the binary checked into the Chromebox For
 // Meetings private overlay.
