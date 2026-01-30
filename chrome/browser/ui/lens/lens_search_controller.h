@@ -401,11 +401,6 @@ class LensSearchController {
       lens::LensOverlayInvocationSource invocation_source,
       base::RepeatingClosure permission_granted_callback);
 
-  // Returns true if the session should be routed to the contextual tasks side
-  // panel.
-  bool ShouldEnableContextualTasksRouting(
-      lens::LensOverlayInvocationSource invocation_source);
-
   // Callback used by the query controller to notify the search controller of
   // the response to the initial image upload request.
   void HandleStartQueryResponse(

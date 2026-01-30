@@ -833,6 +833,9 @@ void ContextualTasksComposeboxHandler::ClearFiles() {
 }
 
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
+  if (!contextual_tasks::GetEnableLensInContextualTasks()) {
+    return;
+  }
   if (auto* controller = GetLensSearchController()) {
     controller->SetThumbnailCreatedCallback(base::BindRepeating(
         &ContextualTasksComposeboxHandler::OnLensThumbnailCreated,

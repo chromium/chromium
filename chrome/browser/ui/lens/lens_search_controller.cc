@@ -717,32 +717,21 @@ LensSearchController::CreateLensQueryController(
       gen204_controller_.get());
 }
 
-bool LensSearchController::ShouldEnableContextualTasksRouting(
-    lens::LensOverlayInvocationSource invocation_source) {
-  // Check if contextual tasks is currently available. If so, route through
-  // results to the contextual tasks side panel.
-  auto* const entry_point_eligibility_manager =
-      contextual_tasks::EntryPointEligibilityManager::From(
-          tab_->GetBrowserWindowInterface());
-
-  const bool are_entry_points_eligible =
-      entry_point_eligibility_manager &&
-      entry_point_eligibility_manager->AreEntryPointsEligible();
-
-  return are_entry_points_eligible &&
-         (contextual_tasks::GetEnableLensInContextualTasks() ||
-          invocation_source ==
-              lens::LensOverlayInvocationSource::kContextualTasksComposebox);
-}
-
 void LensSearchController::StartLensSession(
     lens::LensOverlayInvocationSource invocation_source,
     bool suppress_contextualization) {
   state_ = State::kInitializing;
   invocation_source_ = invocation_source;
 
+  // Check if contextual tasks is currently available. If so, route through
+  // results to the contextual tasks side panel.
+  auto* const entry_point_eligibility_manager =
+      contextual_tasks::EntryPointEligibilityManager::From(
+          tab_->GetBrowserWindowInterface());
   should_route_to_contextual_tasks_ =
-      ShouldEnableContextualTasksRouting(invocation_source);
+      contextual_tasks::GetEnableLensInContextualTasks() &&
+      entry_point_eligibility_manager &&
+      entry_point_eligibility_manager->AreEntryPointsEligible();
 
   // Create the query controller to be used for the current invocation.
   CHECK(!lens_overlay_query_controller_);
