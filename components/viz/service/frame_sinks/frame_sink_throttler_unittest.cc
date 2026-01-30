@@ -17,13 +17,17 @@ class FrameSinkThrottlerTest : public testing::Test {
   FrameSinkThrottlerTest() = default;
   ~FrameSinkThrottlerTest() override = default;
 
+  bool IsThrottledBySimpleCadence() {
+    return throttler_.IsThrottledBySimpleCadence();
+  }
+
  protected:
   FrameSinkThrottler throttler_;
 };
 
 TEST_F(FrameSinkThrottlerTest, DefaultStateAllowsThrottling) {
   EXPECT_EQ(throttler_.begin_frame_interval(), base::TimeDelta());
-  EXPECT_FALSE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_FALSE(IsThrottledBySimpleCadence());
   EXPECT_TRUE(throttler_.throttling_allowed());
 }
 
@@ -31,7 +35,7 @@ TEST_F(FrameSinkThrottlerTest, BasicThrottleInterval) {
   base::TimeDelta interval = base::Hertz(30);
   throttler_.SetThrottleInterval(interval);
   EXPECT_EQ(throttler_.begin_frame_interval(), interval);
-  EXPECT_FALSE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_FALSE(IsThrottledBySimpleCadence());
 
   throttler_.SetThrottleInterval(base::TimeDelta());
   EXPECT_EQ(throttler_.begin_frame_interval(), base::TimeDelta());
@@ -54,17 +58,17 @@ TEST_F(FrameSinkThrottlerTest, ThrottlingNotAllowed) {
 
   // Cadence throttling with compatible known vsync interval
   throttler_.SetLastKnownVsync(base::Hertz(60), base::Hertz(60));
-  EXPECT_TRUE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_TRUE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), base::TimeDelta());
 
   // Cadence throttling with incompatible known vsync interval
   throttler_.SetLastKnownVsync(base::Hertz(144), base::Hertz(144));
-  EXPECT_FALSE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_FALSE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), base::TimeDelta());
 
   // Interaction throttling
   throttler_.SetThrottledDueToInteraction(true);
-  EXPECT_FALSE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_FALSE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), base::TimeDelta());
 }
 
@@ -75,17 +79,17 @@ TEST_F(FrameSinkThrottlerTest, SetCadenceThrottleInterval) {
   base::TimeDelta cadence_interval = base::Hertz(30);
   throttler_.SetCadenceThrottleInterval(cadence_interval);
   // Cadence throttling should activate without knowing vsync interval
-  EXPECT_TRUE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_TRUE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), cadence_interval);
 
   // Set a compatible vsync interval (60Hz) triggers throttling.
   throttler_.SetLastKnownVsync(base::Hertz(60), base::Hertz(60));
-  EXPECT_TRUE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_TRUE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), cadence_interval);
 
   // Set an incompatible vsync interval (60Hz vs 24Hz) prevents throttling.
   throttler_.SetCadenceThrottleInterval(base::Hertz(24));
-  EXPECT_FALSE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_FALSE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), base::TimeDelta());
 }
 
@@ -100,14 +104,14 @@ TEST_F(FrameSinkThrottlerTest, ThrottleVsCadenceIntervalPriority) {
 
   // Cadence throttle takes priority over explicit throttling
   // because it is an even divisor of the vsync interval.
-  EXPECT_TRUE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_TRUE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), cadence_interval);
 
   // Changing the last known vsync interval to not be a multiple of the
   // cadence interval causes the begin_frame_interval() to fall back
   // on the explicit throttle interval.
   throttler_.SetLastKnownVsync(base::Hertz(144), base::Hertz(144));
-  EXPECT_FALSE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_FALSE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), throttle_interval);
 }
 
@@ -160,7 +164,7 @@ TEST_F(FrameSinkThrottlerTest,
   throttler_.SetCadenceThrottleInterval(cadence_interval);
 
   // Cadence interval takes precedence over interaction throttle behaviour.
-  EXPECT_TRUE(throttler_.IsThrottledBySimpleCadence());
+  EXPECT_TRUE(IsThrottledBySimpleCadence());
   EXPECT_EQ(throttler_.begin_frame_interval(), cadence_interval);
 
   // Setting an explicit smaller throttle interval does not change behaviour.

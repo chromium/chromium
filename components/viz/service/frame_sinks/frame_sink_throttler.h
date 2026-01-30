@@ -54,13 +54,14 @@ class VIZ_SERVICE_EXPORT FrameSinkThrottler {
 
   bool throttling_allowed() const { return throttling_allowed_; }
 
+ private:
+  friend class FrameSinkThrottlerTest;
+  void UpdateBeginFrameInterval();
+
   // Returns true if the current begin frame interval is throttled by a simple
   // cadence. A simple cadence means the throttled interval is an integer
   // multiple of the display refresh rate.
   bool IsThrottledBySimpleCadence() const;
-
- private:
-  void UpdateBeginFrameInterval();
 
   // Explicitly-set throttle_interval, used unless the interaction throttling
   // results in a larger value or cadence throttling is possible.

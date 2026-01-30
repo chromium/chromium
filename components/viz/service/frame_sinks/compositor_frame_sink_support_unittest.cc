@@ -1904,35 +1904,36 @@ TEST_P(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   support->GetThrottlerForTesting().SetLastKnownVsync(
       BeginFrameArgs::DefaultInterval(), BeginFrameArgs::DefaultInterval());
 
-  // Check that non perfect cadence throttle does not apply
+  // Check that non perfect cadence throttle does not apply throttling.
   int non_perfect_cadence_fps = BeginFrameArgs::DefaultInterval().ToHz() / 2.5;
   base::TimeDelta non_perfect_throttled_interval =
       base::Seconds(1) / non_perfect_cadence_fps;
   support->GetThrottlerForTesting().SetCadenceThrottleInterval(
       non_perfect_throttled_interval);
-  bool did_throttle =
-      support->GetThrottlerForTesting().IsThrottledBySimpleCadence();
-  EXPECT_FALSE(did_throttle);
+  EXPECT_EQ(support->GetThrottlerForTesting().begin_frame_interval(),
+            base::TimeDelta());
 
   // We only throttle multiples of the refresh rate.
   constexpr int fps = BeginFrameArgs::DefaultInterval().ToHz() / 2;
   constexpr base::TimeDelta throttled_interval = base::Seconds(1) / fps;
 
-  // When no last known vsync exists, perfect cadence cannot be computed, just
-  // apply the throttle.
+  // When vsync cadence is not known perfect cadence cannot be computed so we
+  // always apply the throttle interval.
   support->GetThrottlerForTesting().SetLastKnownVsync(base::TimeDelta(),
                                                       base::TimeDelta());
   support->GetThrottlerForTesting().SetCadenceThrottleInterval(
       throttled_interval);
-  did_throttle = support->GetThrottlerForTesting().IsThrottledBySimpleCadence();
-  EXPECT_TRUE(did_throttle);
+  EXPECT_EQ(support->GetThrottlerForTesting().begin_frame_interval(),
+            throttled_interval);
 
+  // When the last known vsync is known the same throttling signal
+  // applies.
   support->GetThrottlerForTesting().SetLastKnownVsync(
       BeginFrameArgs::DefaultInterval(), BeginFrameArgs::DefaultInterval());
   support->GetThrottlerForTesting().SetCadenceThrottleInterval(
       throttled_interval);
-  did_throttle = support->GetThrottlerForTesting().IsThrottledBySimpleCadence();
-  EXPECT_TRUE(did_throttle);
+  EXPECT_EQ(support->GetThrottlerForTesting().begin_frame_interval(),
+            throttled_interval);
 
   constexpr base::TimeDelta interval = BeginFrameArgs::DefaultInterval();
   const int num_expected_skipped_frames =
