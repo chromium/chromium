@@ -38,6 +38,26 @@ export enum PagesValue {
 }
 
 /**
+ * A regular expression indicating every character that is accepted as a comma.
+ * This list is partially derived from Unicode tables and partially from the
+ * translations of IDS_PRINT_PREVIEW_EXAMPLE_PAGE_RANGE_TEXT: Chromium needs to
+ * actually accept every example that it provides the user.
+ *
+ * , U+002C COMMA
+ * · U+00B7 MIDDLE DOT aka GEORGIAN COMMA
+ * ՝ U+055D ARMENIAN COMMA
+ * ، U+060C ARABIC COMMA
+ * ༔ U+0F14 TIBETAN MARK GTER TSHEG aka TIBETAN COMMA
+ * ၊ U+104A MYANMAR SIGN LITTLE SECTION
+ * ፣ U+1363 ETHIOPIC COMMA
+ * ᠂ U+1802 MONGOLIAN COMMA
+ * ᠈ U+1808 MONGOLIAN MANCHU COMMA
+ * 、 U+3001 IDEOGRAPHIC COMMA
+ */
+export const COMMA_REGEX: RegExp =
+    /\u002c|\u055d|\u060c|\u0f14|\u104a|\u1363|\u1802|\u1808|\u3001/;
+
+/**
  * Used in place of Number.parseInt(), to ensure values like '1  2' or '1a2' are
  * not allowed.
  * @param value The value to convert to a number.
@@ -238,7 +258,7 @@ export class PrintPreviewPagesSettingsElement extends
 
     const pages = [];
     const added: {[page: number]: boolean} = {};
-    const ranges = this.inputString_.split(/,|\u3001/);
+    const ranges = this.inputString_.split(COMMA_REGEX);
     const maxPage = this.pageCount;
     for (const range of ranges) {
       if (range === '') {
