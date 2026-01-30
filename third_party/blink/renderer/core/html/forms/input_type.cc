@@ -1283,26 +1283,29 @@ StepRange InputType::CreateStepRange(
     const Decimal& maximum_default,
     const StepRange::StepDescription& step_description,
     bool supports_reversed_range) const {
-  bool has_range_limitations = false;
+  bool has_min = false;
+  bool has_max = false;
   const Decimal step_base = FindStepBase(step_base_default);
   Decimal minimum =
       ParseToNumberOrNaN(GetElement().FastGetAttribute(html_names::kMinAttr));
-  if (minimum.IsFinite())
-    has_range_limitations = true;
-  else
+  if (minimum.IsFinite()) {
+    has_min = true;
+  } else {
     minimum = minimum_default;
+  }
   Decimal maximum =
       ParseToNumberOrNaN(GetElement().FastGetAttribute(html_names::kMaxAttr));
-  if (maximum.IsFinite())
-    has_range_limitations = true;
-  else
+  if (maximum.IsFinite()) {
+    has_max = true;
+  } else {
     maximum = maximum_default;
+  }
   const Decimal step = StepRange::ParseStep(
       any_step_handling, step_description,
       GetElement().FastGetAttribute(html_names::kStepAttr));
   bool has_reversed_range =
-      has_range_limitations && supports_reversed_range && maximum < minimum;
-  return StepRange(step_base, minimum, maximum, has_range_limitations,
+      (has_min || has_max) && supports_reversed_range && maximum < minimum;
+  return StepRange(step_base, minimum, maximum, has_min, has_max,
                    has_reversed_range, step, step_description);
 }
 

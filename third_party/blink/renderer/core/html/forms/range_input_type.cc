@@ -165,8 +165,9 @@ StepRange RangeInputType::CreateStepRange(
   // Range type always has range limitations because it has default
   // minimum/maximum.
   // https://html.spec.whatwg.org/C/#range-state-(type=range):concept-input-min-default
-  const bool kHasRangeLimitations = true;
-  return StepRange(step_base, minimum, maximum, kHasRangeLimitations,
+  const bool has_min = true;
+  const bool has_max = true;
+  return StepRange(step_base, minimum, maximum, has_min, has_max,
                    /*has_reversed_range=*/false, step, step_description);
 }
 
