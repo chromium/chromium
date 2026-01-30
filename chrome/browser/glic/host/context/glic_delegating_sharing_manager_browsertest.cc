@@ -6,13 +6,17 @@
 
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,7 +28,12 @@ namespace {
 
 class GlicDelegatingSharingManagerBrowserTest : public NonInteractiveGlicTest {
  public:
-  GlicDelegatingSharingManagerBrowserTest() = default;
+  GlicDelegatingSharingManagerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kGlicMultiInstance,
+         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
+        {});
+  }
   ~GlicDelegatingSharingManagerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -32,8 +41,16 @@ class GlicDelegatingSharingManagerBrowserTest : public NonInteractiveGlicTest {
     // No delegate initially.
   }
 
+  void TearDownOnMainThread() override {
+    manager_.SetDelegate(nullptr);
+    NonInteractiveGlicTest::TearDownOnMainThread();
+  }
+
  protected:
   GlicDelegatingSharingManager manager_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
@@ -224,9 +241,120 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   // Verify Pinned Tabs List Changed (empty)
   auto pinned_tabs_empty = pinned_tabs_future.Take();
   EXPECT_TRUE(pinned_tabs_empty.empty());
+}
 
-  // Prepare for shutdown.
-  manager_.SetDelegate(nullptr);
+IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
+                       FocusedTabSubscriptionForwarding) {
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Open a tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab1);
+  tabs::TabHandle handle1 = tab1->GetHandle();
+
+  service->ToggleUI(browser(), false,
+                    mojom::InvocationSource::kTopChromeButton);
+
+  GlicInstance* instance = service->GetInstanceForActiveTab(browser());
+  ASSERT_TRUE(instance);
+  auto& real_manager = instance->host().sharing_manager();
+
+  // Ensure clean state.
+  real_manager.UnpinAllTabs(GlicUnpinTrigger::kUnknown);
+  manager_.SetDelegate(&real_manager);
+
+  // Subscribe to focused selection changes.
+  base::test::TestFuture<bool, tabs::TabInterface*> focus_future;
+  auto focus_sub = manager_.AddFocusedTabChangedCallback(
+      base::BindLambdaForTesting([&](const FocusedTabData& data) {
+        if (!focus_future.IsReady()) {
+          focus_future.SetValue(data.is_focus(), data.focus());
+        }
+      }));
+
+  base::test::TestFuture<std::string> filtered_tab_data_future;
+  auto tab_data_sub = manager_.AddFocusedTabDataChangedCallback(
+      base::BindLambdaForTesting([&](const mojom::TabData* data) {
+        if (data && data->title.value_or("") == "Focused Title" &&
+            !filtered_tab_data_future.IsReady()) {
+          filtered_tab_data_future.SetValue(data->title.value_or(""));
+        }
+      }));
+
+  base::test::TestFuture<tabs::TabInterface*, GlicPinningStatusEvent>
+      pin_event_future;
+  auto pin_event_sub =
+      manager_.AddTabPinningStatusEventCallback(base::BindLambdaForTesting(
+          [&](tabs::TabInterface* tab, GlicPinningStatusEvent event) {
+            if (!pin_event_future.IsReady()) {
+              pin_event_future.SetValue(tab, std::move(event));
+            }
+          }));
+
+  // 1. Initial State: Tab 1 active but NOT pinned. Focus should be empty/error.
+  EXPECT_FALSE(manager_.GetFocusedTabData().is_focus());
+
+  // 2. Pin Tab 1. Should become focused (Active + Pinned).
+  manager_.PinTabs({handle1}, GlicPinTrigger::kUnknown);
+
+  ASSERT_TRUE(pin_event_future.Wait());
+  pin_event_future.Clear();
+
+  // Check if focus updated successfully.
+  auto [is_focus1, focus_tab1] = focus_future.Take();
+  EXPECT_TRUE(is_focus1);
+  EXPECT_EQ(focus_tab1, tab1);
+
+  // 3. Unpin Tab 1. Should lose focus.
+  manager_.UnpinTabs({handle1}, GlicUnpinTrigger::kUnknown);
+
+  ASSERT_TRUE(pin_event_future.Wait());
+  pin_event_future.Clear();
+
+  auto [is_focus2, focus_tab2] = focus_future.Take();
+  EXPECT_FALSE(is_focus2);
+
+  // 4. Repin Tab 1. Regain focus.
+  manager_.PinTabs({handle1}, GlicPinTrigger::kUnknown);
+  auto [is_focus3, focus_tab3] = focus_future.Take();
+  EXPECT_TRUE(is_focus3);
+  EXPECT_EQ(focus_tab3, tab1);
+
+  // 5. Open new Tab 2 (Active). Not pinned. Should lose focus.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_NE(tab1, tab2);
+  tabs::TabHandle handle2 = tab2->GetHandle();
+
+  auto [is_focus4, focus_tab4] = focus_future.Take();
+  EXPECT_FALSE(is_focus4);
+
+  // 6. Pin Tab 2. Should gain focus.
+  manager_.PinTabs({handle2}, GlicPinTrigger::kUnknown);
+  auto [is_focus5, focus_tab5] = focus_future.Take();
+  EXPECT_TRUE(is_focus5);
+  EXPECT_EQ(focus_tab5, tab2);
+
+  // 7. Verify Data Change (Title) on focused tab and confirm the JS operation
+  // worked.
+  std::u16string new_title = u"Focused Title";
+  content::TitleWatcher title_watcher(tab2->GetContents(), new_title);
+  ASSERT_TRUE(content::ExecJs(tab2->GetContents(),
+                              "document.title = 'Focused Title';"));
+  std::u16string actual_title = title_watcher.WaitAndGetTitle();
+  EXPECT_EQ(actual_title, new_title);
+
+  // Verify FocusedTabDataChanged callback.
+  // Note: We might get multiple updates, we care that we eventually get the
+  // title.
+  ASSERT_TRUE(filtered_tab_data_future.Wait());
+  auto title = filtered_tab_data_future.Take();
+  EXPECT_EQ(title, "Focused Title");
 }
 
 }  // namespace
