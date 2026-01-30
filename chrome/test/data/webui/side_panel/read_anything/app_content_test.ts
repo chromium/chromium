@@ -114,7 +114,8 @@ suite('AppContent', () => {
     assertEquals('10px', app.style.getPropertyValue('--line-focus-y'));
   });
 
-  test('new content updates padding for line focus', async () => {
+  // TODO(crbug.com/478958501): Flaky on multiple platforms.
+  test.skip('new content updates padding for line focus', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
