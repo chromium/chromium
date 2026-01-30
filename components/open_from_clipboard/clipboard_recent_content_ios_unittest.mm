@@ -10,11 +10,13 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/run_until.h"
 #import "base/test/task_environment.h"
+#import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 #import "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -40,13 +42,35 @@ UIImage* TestUIImage(UIColor* color = [UIColor redColor]) {
 }
 
 void SetPasteboardImage(UIImage* image) {
-  [[UIPasteboard generalPasteboard] setImage:image];
+  base::RunLoop save_run_loop;
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+                         [pasteboard setImage:image];
+                       }).Then(save_run_loop.QuitClosure()));
+  save_run_loop.Run();
+
+  // Try to verify that image was added to the pasteboard.
+  base::RunLoop read_run_loop;
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+                         EXPECT_TRUE(pasteboard.hasImages);
+                       }).Then(read_run_loop.QuitClosure()));
+  read_run_loop.Run();
 }
 
 void SetPasteboardContent(const char* data) {
-  [[UIPasteboard generalPasteboard]
-               setValue:[NSString stringWithUTF8String:data]
-      forPasteboardType:@"public.plain-text"];
+  NSString* content = [NSString stringWithUTF8String:data];
+  base::RunLoop save_run_loop;
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+                         pasteboard.string = content;
+                       }).Then(save_run_loop.QuitClosure()));
+  save_run_loop.Run();
+
+  // Try to verify that content was added to the pasteboard.
+  base::RunLoop read_run_loop;
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+                         EXPECT_TRUE(
+                             [content isEqualToString:pasteboard.string]);
+                       }).Then(read_run_loop.QuitClosure()));
+  read_run_loop.Run();
 }
 const char kUnrecognizedURL[] = "bad://foo/";
 const char kRecognizedURL[] = "good://bar/";
@@ -147,37 +171,30 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   void VerifyClipboardTypeExists(ClipboardContentType type, bool exists) {
-    __block BOOL callback_called = NO;
+    base::RunLoop run_loop;
     __block BOOL type_exists = NO;
     std::set<ClipboardContentType> types;
     types.insert(type);
     clipboard_content_->HasRecentContentFromClipboard(
         types, base::BindOnce(^(std::set<ClipboardContentType> found_types) {
-          callback_called = YES;
-          type_exists = found_types.find(type) != found_types.end();
-        }));
+                 type_exists = found_types.find(type) != found_types.end();
+               }).Then(run_loop.QuitClosure()));
 
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-      base::RunLoop().RunUntilIdle();
-      return callback_called;
-    }));
+    run_loop.Run();
     EXPECT_EQ(exists, type_exists);
   }
 
   void VerifyClipboardURLExists(const char* expected_url) {
     VerifyClipboardTypeExists(ClipboardContentType::URL, true);
 
-    __block BOOL callback_called = NO;
+    base::RunLoop run_loop;
     __block std::optional<GURL> optional_gurl;
     clipboard_content_->GetRecentURLFromClipboard(
         base::BindOnce(^(std::optional<GURL> copied_url) {
           optional_gurl = copied_url;
-          callback_called = YES;
-        }));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-      base::RunLoop().RunUntilIdle();
-      return callback_called;
-    }));
+        }).Then(run_loop.QuitClosure()));
+
+    run_loop.Run();
     ASSERT_TRUE(optional_gurl.has_value());
     EXPECT_STREQ(expected_url, optional_gurl.value().spec().c_str());
   }
@@ -196,17 +213,13 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
   void VerifiyClipboardURLIsInvalid() {
     VerifyClipboardTypeExists(ClipboardContentType::URL, true);
 
-    __block BOOL callback_called = NO;
+    base::RunLoop run_loop;
     __block std::optional<GURL> optional_gurl;
     clipboard_content_->GetRecentURLFromClipboard(
         base::BindOnce(^(std::optional<GURL> copied_url) {
           optional_gurl = copied_url;
-          callback_called = YES;
-        }));
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-      base::RunLoop().RunUntilIdle();
-      return callback_called;
-    }));
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
     EXPECT_FALSE(optional_gurl.has_value());
   }
 
@@ -306,12 +319,16 @@ TEST_F(ClipboardRecentContentIOSTest,
 // Checks that if the pasteboard is marked as having confidential data, it is
 // not returned.
 TEST_F(ClipboardRecentContentIOSTest, ConfidentialPasteboardText) {
-  [[UIPasteboard generalPasteboard]
-      setItems:@[ @{
-        @"public.plain-text" : @"hunter2",
-        @"org.nspasteboard.ConcealedType" : @"hunter2"
-      } ]
-       options:@{}];
+  base::RunLoop run_loop;
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
+                         [pasteboard
+                             setItems:@[ @{
+                               @"public.plain-text" : @"hunter2",
+                               @"org.nspasteboard.ConcealedType" : @"hunter2"
+                             } ]
+                              options:@{}];
+                       }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
 
   VerifyClipboardTypeExists(ClipboardContentType::Text, false);
 }
