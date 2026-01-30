@@ -198,6 +198,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/GlobalBrowserCollectionPlatformDelegate.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/IdSequencer.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/PendingActionManager.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/WindowStateManager.java",
     ]
     deps = [
       "//base:base_java",
