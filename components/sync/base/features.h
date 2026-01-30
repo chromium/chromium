@@ -208,6 +208,14 @@ BASE_DECLARE_FEATURE(kSyncEnableNewSyncDashboardUrl);
 // If enabled, Sync will fetch device statistics for all accounts on the device,
 // and record summary metrics about them.
 BASE_DECLARE_FEATURE(kSyncRecordDeviceStatisticsMetrics);
+// Delay before downloading device statistics and recording related metrics. The
+// exact number is somewhat arbitrary, chosen to ensure that refresh tokens are
+// loaded, the local cache GUID is up to date, and to avoid interfering with
+// general (sync or browser) startup.
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kSyncRecordDeviceStatisticsMetricsDelay{
+        &kSyncRecordDeviceStatisticsMetrics,
+        "SyncRecordDeviceStatisticsMetricsDelay", base::Seconds(30)};
 
 // If enabled, DeviceInfoSyncBridge uses WallClockTimer for pulse updates,
 // which is more resilient to device suspension.

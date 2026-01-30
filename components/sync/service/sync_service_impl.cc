@@ -90,12 +90,6 @@ namespace {
 BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Delay before downloading device statistics and recording related metrics. The
-// exact number is somewhat arbitrary, chosen to ensure that refresh tokens are
-// loaded, the local cache GUID is up to date, and to avoid interfering with
-// general (sync or browser) startup.
-constexpr base::TimeDelta kDeviceStatisticsTrackerDelay = base::Seconds(30);
-
 #if BUILDFLAG(IS_ANDROID)
 constexpr int kMinGmsVersionCodeWithCustomPassphraseApi = 235204000;
 
@@ -441,7 +435,7 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
         FROM_HERE,
         base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsTracker,
                        weak_factory_.GetWeakPtr()),
-        kDeviceStatisticsTrackerDelay);
+        kSyncRecordDeviceStatisticsMetricsDelay.Get());
   }
 }
 
