@@ -75,6 +75,8 @@ class RangeInputType final : public InputType, public InputTypeView {
   String RangeUnderflowText(const Decimal& minimum) const override;
   String RangeInvalidText(const Decimal& minimum,
                           const Decimal& maximum) const override;
+  bool SupportsWebMCP() const override { return true; }
+  std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const override;
   void DidSetValue(const String&, bool value_changed) override;
   String SanitizeValue(const String& proposed_value) const override;
   bool ShouldRespectListAttribute() override;
