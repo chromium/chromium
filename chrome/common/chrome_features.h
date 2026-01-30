@@ -58,6 +58,9 @@ enum class DisableBoostPriorityExemption {
   // that are currently loading, and Network while there is at least one
   // renderer loading.
   kLoadingBrowserNetwork,
+  // Priority boosting is disabled for all processes except Browser, Network,
+  // and Foreground renderers.
+  kForegroundBrowserNetwork,
 };
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(DisableBoostPriorityExemption,

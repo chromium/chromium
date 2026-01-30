@@ -41,11 +41,13 @@ static constexpr base::FeatureParam<DisableBoostPriorityExemption>::Option
         {DisableBoostPriorityExemption::kGpuBrowserNetwork,
          "GpuBrowserNetwork"},
         {DisableBoostPriorityExemption::kLoadingBrowserNetwork,
-         "LoadingBrowserNetwork"}};
+         "LoadingBrowserNetwork"},
+        {DisableBoostPriorityExemption::kForegroundBrowserNetwork,
+         "ForegroundBrowserNetwork"}};
 constinit const base::FeatureParam<DisableBoostPriorityExemption>
     kDisableBoostPriorityExemption{
         &kDisableBoostPriority, "exempt_processes",
-        DisableBoostPriorityExemption::kLoadingBrowserNetwork,
+        DisableBoostPriorityExemption::kForegroundBrowserNetwork,
         &kDisableBoostPriorityOptions};
 #endif  // BUILDFLAG(IS_WIN)
 
