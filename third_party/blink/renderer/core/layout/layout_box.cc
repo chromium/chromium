@@ -3174,19 +3174,8 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,
       font_data ? LayoutUnit(font_data->GetFontMetrics().Height())
                 : LayoutUnit();
 
-  // If height of box is smaller than font height, use the latter one,
-  // otherwise the caret might become invisible.
-  //
-  // Also, if the box is not an atomic inline-level element, always use the font
-  // height. This prevents the "big caret" bug described in:
-  // <rdar://problem/3777804> Deleting all content in a document can result in
-  // giant tall-as-window insertion point
-  //
   // FIXME: ignoring :first-line, missing good reason to take care of
-  const LogicalSize caret_size = {GetFrameView()->BarCaretWidth(),
-                                  (IsAtomicInlineLevel() || IsTable())
-                                      ? std::max(font_height, LogicalHeight())
-                                      : font_height};
+  const LogicalSize caret_size = {GetFrameView()->BarCaretWidth(), font_height};
 
   // FIXME: Border/padding should be added for all elements but this workaround
   // is needed because we use offsets inside an "atomic" element to represent
