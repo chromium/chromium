@@ -80,17 +80,23 @@ uint32_t TextInputClientMac::GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
   rfhi->GetAssociatedLocalFrame()->GetCharacterIndexAtPoint(point);
 
   base::TimeTicks start = base::TimeTicks::Now();
+  base::TimeDelta remaining_timeout = wait_timeout_;
 
   BeforeRequest();
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  condition_.TimedWait(wait_timeout_);
+  while (!character_index_ && remaining_timeout.is_positive()) {
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    condition_.TimedWait(remaining_timeout);
+    remaining_timeout = start + wait_timeout_ - base::TimeTicks::Now();
+  }
+  // Return a sentinel if no response was received.
+  uint32_t index = character_index_.value_or(UINT32_MAX);
   AfterRequest();
 
   base::TimeDelta delta(base::TimeTicks::Now() - start);
   UMA_HISTOGRAM_LONG_TIMES("TextInputClient.CharacterIndex",
                            delta * base::Time::kMicrosecondsPerMillisecond);
 
-  return character_index_;
+  return index;
 }
 
 gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
@@ -103,21 +109,28 @@ gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
   rfhi->GetAssociatedLocalFrame()->GetFirstRectForRange(range);
 
   base::TimeTicks start = base::TimeTicks::Now();
+  base::TimeDelta remaining_timeout = wait_timeout_;
 
   BeforeRequest();
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  condition_.TimedWait(wait_timeout_);
+  while (!first_rect_ && remaining_timeout.is_positive()) {
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    condition_.TimedWait(remaining_timeout);
+    remaining_timeout = start + wait_timeout_ - base::TimeTicks::Now();
+  }
+  // `first_rect_` is in (child) frame coordinate and needs to be transformed to
+  // the root frame coordinate.
+  gfx::Rect rect =
+      first_rect_ ? gfx::Rect(rwh->GetView()->TransformPointToRootCoordSpace(
+                                  first_rect_->origin()),
+                              first_rect_->size())
+                  : gfx::Rect();
   AfterRequest();
 
   base::TimeDelta delta(base::TimeTicks::Now() - start);
   UMA_HISTOGRAM_LONG_TIMES("TextInputClient.FirstRect",
                            delta * base::Time::kMicrosecondsPerMillisecond);
 
-  // `first_rect_` is in (child) frame coordinate and needs to be transformed to
-  // the root frame coordinate.
-  return gfx::Rect(
-      rwh->GetView()->TransformPointToRootCoordSpace(first_rect_.origin()),
-      first_rect_.size());
+  return rect;
 }
 
 void TextInputClientMac::SetCharacterIndexAndSignal(uint32_t index) {
@@ -143,8 +156,8 @@ void TextInputClientMac::BeforeRequest() {
   UMA_HISTOGRAM_LONG_TIMES("TextInputClient.LockWait",
                            delta * base::Time::kMicrosecondsPerMillisecond);
 
-  character_index_ = UINT32_MAX;
-  first_rect_ = gfx::Rect();
+  character_index_.reset();
+  first_rect_.reset();
 }
 
 void TextInputClientMac::AfterRequest() {

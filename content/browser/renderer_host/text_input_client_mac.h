@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_CLIENT_MAC_H_
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_CLIENT_MAC_H_
 
-#include <limits>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -121,8 +121,8 @@ class CONTENT_EXPORT TextInputClientMac {
   // condition.
   void AfterRequest() UNLOCK_FUNCTION(lock_);
 
-  uint32_t character_index_ = std::numeric_limits<uint32_t>::max();
-  gfx::Rect first_rect_;
+  std::optional<uint32_t> character_index_ GUARDED_BY(lock_);
+  std::optional<gfx::Rect> first_rect_ GUARDED_BY(lock_);
 
   base::Lock lock_;
   base::ConditionVariable condition_;
