@@ -6,7 +6,23 @@ import("//components/surface_embed/buildflags/buildflags.gni")
 
 assert(enable_surface_embed)
 
-source_set("renderer") {
-  sources = []
-  deps = [ "//components/surface_embed/common" ]
+component("renderer") {
+  defines = [ "IS_SURFACE_EMBED_RENDERER_IMPL" ]
+
+  sources = [
+    "create_plugin.cc",
+    "create_plugin.h",
+    "surface_embed_web_plugin.cc",
+    "surface_embed_web_plugin.h",
+  ]
+
+  deps = [
+    "//base",
+    "//cc",
+    "//components/surface_embed/common",
+    "//content/public/renderer",
+    "//skia",
+    "//third_party/blink/public:blink",
+    "//ui/gfx/geometry",
+  ]
 }

@@ -1,0 +1,9 @@
+include_rules = [
+  # The browser and renderer code may not depend on each other, and can only
+  # depend on shared "buildflags" and "common" code. Consumers that have a
+  # dependency on renderer or browser code must explicitly add that to their
+  # DEPS.
+  "-components/surface_embed",
+  "+components/surface_embed/buildflags",
+  "+components/surface_embed/common",
+]

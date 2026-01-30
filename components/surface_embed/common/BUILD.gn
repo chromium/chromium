@@ -6,6 +6,14 @@ import("//components/surface_embed/buildflags/buildflags.gni")
 
 assert(enable_surface_embed)
 
-source_set("common") {
-  sources = []
+component("common") {
+  defines = [ "IS_SURFACE_EMBED_COMMON_IMPL" ]
+
+  sources = [
+    "constants.h",
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [ "//base" ]
 }
