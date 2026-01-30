@@ -20,6 +20,7 @@ import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.SpannableString;
@@ -225,8 +226,12 @@ public class ClipboardTest {
         assertNull(ShadowToast.getLatestToast());
 
         Clipboard.getInstance().setText("label", "text", true);
-        assertNotNull(ShadowToast.getLatestToast());
-        assertTextFromLatestToast(R.string.copied);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+            assertNotNull(ShadowToast.getLatestToast());
+            assertTextFromLatestToast(R.string.copied);
+        } else {
+            assertNull(ShadowToast.getLatestToast());
+        }
     }
 
     // TODO(crbug.com/450954710): This test fails on SDK 36.
@@ -239,8 +244,12 @@ public class ClipboardTest {
 
         Clipboard.getInstance().setImageUri(mTempImageUri, true);
         ShadowLooper.idleMainLooper();
-        assertNotNull(ShadowToast.getLatestToast());
-        assertTextFromLatestToast(R.string.image_copied);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+            assertNotNull(ShadowToast.getLatestToast());
+            assertTextFromLatestToast(R.string.image_copied);
+        } else {
+            assertNull(ShadowToast.getLatestToast());
+        }
     }
 
     @Test
