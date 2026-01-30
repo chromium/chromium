@@ -254,7 +254,15 @@ class CORE_EXPORT StyleResolverState {
   // reflect applied font properties.
   void UpdateFont();
 
-  // Update computed line-height and font used for 'lh' unit resolution.
+  // Update computed line-height and font used for 'lh' unit resolution
+  // from the current element. At construction time, lh (and related
+  // units) refers to the parent's line height (if there is a parent),
+  // so that StyleCascade can compute the viewport unit size and font
+  // properties based on that. Once those are computed, it computes
+  // the line-height property itself and then calls UpdateLineHeight()
+  // to switch to the element's own line-height. It is thus important
+  // not to call UpdateLineHeight() too early, and it is why it is not
+  // automatically called on construction.
   void UpdateLineHeight();
 
   void InvalidateLengthConversionData() {
