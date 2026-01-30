@@ -14,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/on_device_translation/features.h"
@@ -33,13 +32,6 @@ namespace on_device_translation {
 namespace {
 
 const char kTranslateKitPackagePaths[] = "translate-kit-packages";
-
-base::FilePath GetFilePathFromGlobalPrefs(std::string_view pref_name) {
-  PrefService* global_prefs = g_browser_process->local_state();
-  CHECK(global_prefs);
-  base::FilePath path_in_pref = global_prefs->GetFilePath(pref_name);
-  return path_in_pref;
-}
 
 // The implementation of ComponentManager.
 class ComponentManagerImpl : public ComponentManager {
@@ -135,15 +127,6 @@ std::set<LanguagePackKey> ComponentManager::GetInstalledLanguagePacks() {
 }
 
 // static
-base::FilePath ComponentManager::GetTranslateKitLibraryPath() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kTranslateKitBinaryPath)) {
-    return command_line->GetSwitchValuePath(kTranslateKitBinaryPath);
-  }
-  return GetFilePathFromGlobalPrefs(prefs::kTranslateKitBinaryPath);
-}
-
-// static
 bool ComponentManager::HasTranslateKitLibraryPathFromCommandLine() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kTranslateKitBinaryPath);
@@ -174,7 +157,8 @@ void ComponentManager::GetLanguagePackInfo(
 
   for (const auto& it : kLanguagePackComponentConfigMap) {
     auto file_path =
-        GetFilePathFromGlobalPrefs(GetComponentPathPrefName(*it.second));
+        OnDeviceTranslationInstaller::GetInstance()->GetLanguagePackPath(
+            it.first);
     if (!file_path.empty()) {
       packages.push_back(mojom::OnDeviceTranslationLanguagePackage::New(
           std::string(ToLanguageCode(it.second->language1)),

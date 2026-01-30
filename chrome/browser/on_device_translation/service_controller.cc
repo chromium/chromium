@@ -21,8 +21,6 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/translate_kit_component_installer.h"
-#include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/service_controller_manager.h"
@@ -30,6 +28,7 @@
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/file_operation_proxy_impl.h"
+#include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -200,7 +199,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   // If there is no TranslateKit or there are required language packs that are
   // not installed, we will wait until they are installed to create the
   // translator.
-  if (ComponentManager::GetTranslateKitLibraryPath().empty() ||
+  if (!OnDeviceTranslationInstaller::GetInstance()->IsInit() ||
       !language_pack_requirements.required_not_installed_packs.empty()) {
     // When the size of pending tasks is too large, we will not queue the new
     // task and handle the request as failure to avoid OOM of the browser
@@ -273,7 +272,7 @@ void OnDeviceTranslationServiceController::CanTranslate(
   }
   // Otherwise, checks the availability of the library and ask the on device
   // translation service.
-  if (ComponentManager::GetTranslateKitLibraryPath().empty()) {
+  if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
     // Note: Strictly saying, returning AfterDownloadLibraryNotReady is not
     // correct. It might happen that the language packs are missing. But it is
     // OK because this only impacts people loading packs from the commandline.
@@ -331,7 +330,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
 
   if (language_pack_requirements.required_not_installed_packs.empty()) {
     // All required language packages are installed.
-    if (ComponentManager::GetTranslateKitLibraryPath().empty()) {
+    if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
       // The TranslateKit library is not ready.
       return CanCreateTranslatorResult::kAfterDownloadLibraryNotReady;
     }
@@ -339,7 +338,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
     return CanCreateTranslatorResult::kReadily;
   }
 
-  if (ComponentManager::GetTranslateKitLibraryPath().empty()) {
+  if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
     // Both the TranslateKit library and the language packs are not ready.
     return CanCreateTranslatorResult::
         kAfterDownloadLibraryAndLanguagePackNotReady;
@@ -366,7 +365,7 @@ void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
   if (pending_tasks_.empty()) {
     return;
   }
-  if (ComponentManager::GetTranslateKitLibraryPath().empty()) {
+  if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
     return;
   }
   const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
@@ -401,7 +400,7 @@ bool OnDeviceTranslationServiceController::MaybeStartService() {
                           base::Unretained(this)));
 
   const base::FilePath binary_path =
-      ComponentManager::GetTranslateKitLibraryPath();
+      OnDeviceTranslationInstaller::GetInstance()->GetLibraryPath();
   CHECK(!binary_path.empty())
       << "Got an empty path to TranslateKit binary on the device.";
 

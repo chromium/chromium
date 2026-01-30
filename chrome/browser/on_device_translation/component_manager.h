@@ -28,12 +28,6 @@ class ComponentManager {
   static base::AutoReset<ComponentManager*> SetForTesting(
       ComponentManager* manager);
 
-  // Returns the path of the TranslateKit library. If the path is set by the
-  // command line, returns the path from the command line
-  // `--translate-kit-binary-path`. Otherwise, returns the path from the global
-  // prefs.
-  static base::FilePath GetTranslateKitLibraryPath();
-
   // Returns true if the path of the TranslateKit library is set by the command
   // line `--translate-kit-binary-path`.
   static bool HasTranslateKitLibraryPathFromCommandLine();
