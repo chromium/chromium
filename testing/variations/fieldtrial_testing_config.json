@@ -4382,14 +4382,15 @@
     "BoostThreadsPriority": [
         {
             "platforms": [
-                "windows"
+                "windows",
+                "chromeos",
+                "linux",
+                "mac"
             ],
             "experiments": [
                 {
-                    "name": "CompositorAndInputScenarioBoost",
+                    "name": "IOThreadInteractive",
                     "enable_features": [
-                        "BoostCompositorThreadsPriorityWhenIdle",
-                        "BoostThreadsPriorityDuringInputScenario",
                         "IOThreadInteractiveThreadType"
                     ]
                 }
