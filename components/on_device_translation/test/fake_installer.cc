@@ -4,14 +4,19 @@
 
 #include "components/on_device_translation/test/fake_installer.h"
 
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
 
 namespace on_device_translation {
 
 FakeOnDeviceTranslationInstaller::~FakeOnDeviceTranslationInstaller() = default;
-FakeOnDeviceTranslationInstaller::FakeOnDeviceTranslationInstaller() = default;
+FakeOnDeviceTranslationInstaller::FakeOnDeviceTranslationInstaller(
+    base::FilePath fake_install_dir)
+    : fake_install_dir_(fake_install_dir) {}
 
 bool FakeOnDeviceTranslationInstaller::IsInit() const {
   return is_init_;
@@ -23,6 +28,14 @@ FakeOnDeviceTranslationInstaller::RegisteredLanguagePacks() const {
 std::set<LanguagePackKey>
 FakeOnDeviceTranslationInstaller::InstalledLanguagePacks() const {
   return installed_lang_packs_;
+}
+base::FilePath FakeOnDeviceTranslationInstaller::GetLibraryPath() const {
+  return fake_install_dir_.AppendASCII("fake_installation.so");
+}
+
+base::FilePath FakeOnDeviceTranslationInstaller::GetLanguagePackPath(
+    LanguagePackKey language_pack) const {
+  return fake_install_dir_.AppendASCII(GetPackageInstallDirName(language_pack));
 }
 
 void FakeOnDeviceTranslationInstaller::Init(

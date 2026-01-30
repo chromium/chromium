@@ -51,6 +51,12 @@ class OnDeviceTranslationInstaller {
   // Returns the set of installed language packs.
   virtual std::set<LanguagePackKey> InstalledLanguagePacks() const = 0;
 
+  // Returns the library installation path.
+  virtual base::FilePath GetLibraryPath() const = 0;
+  // Returns the installation directory for language pack.
+  virtual base::FilePath GetLanguagePackPath(
+      LanguagePackKey language_pack) const = 0;
+
   // Start initialization. When initialization is finished, the
   // `on_ready_callback` is called.
   virtual void Init(base::RepeatingClosure on_ready_callback) = 0;

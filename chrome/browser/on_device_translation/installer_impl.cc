@@ -44,6 +44,22 @@ base::FilePath GetTranslateKitLibraryPath(PrefService* prefs) {
 OnDeviceTranslationInstallerImpl::OnDeviceTranslationInstallerImpl() = default;
 OnDeviceTranslationInstallerImpl::~OnDeviceTranslationInstallerImpl() = default;
 
+base::FilePath OnDeviceTranslationInstallerImpl::GetLibraryPath() const {
+  CHECK(IsInit()) << "Trying to use the OnDeviceTranslationInstaller before "
+                     "initializing it.";
+  return GetTranslateKitLibraryPath(g_browser_process->local_state());
+}
+
+base::FilePath OnDeviceTranslationInstallerImpl::GetLanguagePackPath(
+    LanguagePackKey language_pack) const {
+  CHECK(IsInit()) << "Trying to use the OnDeviceTranslationInstaller before "
+                     "initializing it.";
+  const auto* config =
+      on_device_translation::kLanguagePackComponentConfigMap.at(language_pack);
+  return g_browser_process->local_state()->GetFilePath(
+      on_device_translation::GetComponentPathPrefName(*config));
+}
+
 std::set<LanguagePackKey>
 OnDeviceTranslationInstallerImpl::InstalledLanguagePacks() const {
   std::set<LanguagePackKey> installed_pack_keys;

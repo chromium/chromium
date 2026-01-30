@@ -37,16 +37,18 @@ class ComponentManagerUpdateCheckBrowserTest : public InProcessBrowserTest {
       const ComponentManagerUpdateCheckBrowserTest&) = delete;
   ComponentManagerUpdateCheckBrowserTest& operator=(
       const ComponentManagerUpdateCheckBrowserTest&) = delete;
-
-  void InitFakeInstaller() {
-    installer_ = std::make_unique<FakeOnDeviceTranslationInstaller>();
+  void SetUp() override {
+    CHECK(fake_dir_.CreateUniqueTempDir());
+    InProcessBrowserTest::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
+  void InitFakeInstaller() {
+    installer_ =
+        std::make_unique<FakeOnDeviceTranslationInstaller>(fake_dir_.GetPath());
   }
 
  private:
+  base::ScopedTempDir fake_dir_;
   std::unique_ptr<FakeOnDeviceTranslationInstaller> installer_;
 };
 

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
@@ -105,8 +106,13 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
         static_cast<ash::FakeImageLoaderClient*>(ash::ImageLoaderClient::Get());
 #endif
     CHECK(install_dir_.CreateUniqueTempDir());
+    CHECK(component_user_dir_.CreateUniqueTempDir());
     scoped_path_override_ = std::make_unique<base::ScopedPathOverride>(
         component_updater::DIR_COMPONENT_PREINSTALLED, install_dir_.GetPath());
+    component_user_scoped_path_override_ =
+        std::make_unique<base::ScopedPathOverride>(
+            component_updater::DIR_COMPONENT_USER,
+            component_user_dir_.GetPath());
     // Set the component-updater check URL to the fake one.
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         "component-updater",
@@ -188,7 +194,10 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
   base::test::ScopedCommandLine command_line_;
   testing::NiceMock<MockOnDemandUpdater> mock_ondemand_updater_;
   base::ScopedTempDir install_dir_;
+  base::ScopedTempDir component_user_dir_;
   std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
+  std::unique_ptr<base::ScopedPathOverride>
+      component_user_scoped_path_override_;
   // This installer is captured so its lifetime is extended and we do not end up
   // with a dangling pointer to the policy installer.
   scoped_refptr<update_client::CrxInstaller> captured_installer_;
@@ -226,6 +235,10 @@ TEST_F(OnDeviceTranslationInstallerTest, Init) {
   OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()->IsInit());
+  EXPECT_THAT(OnDeviceTranslationInstaller::GetInstance()
+                  ->GetLibraryPath()
+                  .MaybeAsASCII(),
+              testing::StartsWith(install_dir_.GetPath().MaybeAsASCII()));
 }
 
 TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagePack) {
@@ -255,6 +268,13 @@ TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagePack) {
   EXPECT_THAT(
       OnDeviceTranslationInstaller::GetInstance()->InstalledLanguagePacks(),
       testing::ElementsAre(LanguagePackKey::kEn_Ja));
+  EXPECT_THAT(OnDeviceTranslationInstaller::GetInstance()
+                  ->GetLanguagePackPath(LanguagePackKey::kEn_Ja)
+                  .MaybeAsASCII(),
+              testing::StartsWith(install_dir_.GetPath()
+                                      .AppendASCII("TranslateKit/models")
+                                      .AppendASCII("en_ja")
+                                      .MaybeAsASCII()));
 }
 
 TEST_F(OnDeviceTranslationInstallerTest, MultipleInstallations) {

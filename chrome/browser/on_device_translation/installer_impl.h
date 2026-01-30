@@ -14,12 +14,15 @@ namespace on_device_translation {
 // The chrome-browser implementation for the `OnDeviceTranslationInstaller`.
 class OnDeviceTranslationInstallerImpl : public OnDeviceTranslationInstaller {
  public:
-  explicit OnDeviceTranslationInstallerImpl();
+  OnDeviceTranslationInstallerImpl();
   ~OnDeviceTranslationInstallerImpl() override;
 
   bool IsInit() const override;
   std::set<LanguagePackKey> InstalledLanguagePacks() const override;
   std::set<LanguagePackKey> RegisteredLanguagePacks() const override;
+  base::FilePath GetLibraryPath() const override;
+  base::FilePath GetLanguagePackPath(
+      LanguagePackKey language_pack) const override;
 
   void Init(base::RepeatingClosure on_ready_callback) override;
   void InstallLanguagePack(LanguagePackKey language_pack) override;
