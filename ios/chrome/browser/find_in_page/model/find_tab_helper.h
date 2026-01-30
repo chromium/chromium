@@ -54,12 +54,7 @@ class FindTabHelper final : public web::WebStateObserver,
   // Private constructor used by CreateForWebState().
   FindTabHelper(web::WebState* web_state);
 
-  // Create the FindInPageController for `web_state`. Only called if/when
-  // the WebState is realized.
-  void CreateFindInPageController(web::WebState* web_state);
-
   // web::WebStateObserver.
-  void WebStateRealized(web::WebState* web_state) final;
   void WebStateDestroyed(web::WebState* web_state) final;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) final;

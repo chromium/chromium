@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -11,18 +12,13 @@
 
 FindTabHelper::FindTabHelper(web::WebState* web_state) {
   DCHECK(web_state);
+  CHECK(web_state->IsRealized());
   observation_.Observe(web_state);
-
-  if (web_state->IsRealized()) {
-    CreateFindInPageController(web_state);
-  }
+  controller_ = [[FindInPageController alloc] initWithWebState:web_state];
 }
 
 FindTabHelper::~FindTabHelper() {
-  // If there is a controller then it needs to be detached from `web_state`
-  // before the call to `-dealloc`.
-  [controller_ detachFromWebState];
-  controller_ = nil;
+  CHECK(!controller_);
 }
 
 void FindTabHelper::DismissFindNavigator() {
@@ -40,11 +36,6 @@ void FindTabHelper::SetFullscreenController(
   }
   DCHECK(controller_);
   controller_.fullscreenController = fullscreen_controller;
-}
-
-void FindTabHelper::CreateFindInPageController(web::WebState* web_state) {
-  DCHECK(!controller_);
-  controller_ = [[FindInPageController alloc] initWithWebState:web_state];
 }
 
 void FindTabHelper::SetResponseDelegate(
@@ -102,10 +93,6 @@ void FindTabHelper::PersistSearchTerm() {
 
 void FindTabHelper::RestoreSearchTerm() {
   [controller_ restoreSearchTerm];
-}
-
-void FindTabHelper::WebStateRealized(web::WebState* web_state) {
-  CreateFindInPageController(web_state);
 }
 
 void FindTabHelper::WebStateDestroyed(web::WebState* web_state) {
