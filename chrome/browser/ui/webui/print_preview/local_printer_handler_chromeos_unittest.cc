@@ -146,7 +146,7 @@ class LocalPrinterHandlerChromeosNoAshTest : public testing::Test {
 
   void SetUp() override {
     local_printer_handler_ = LocalPrinterHandlerChromeos::CreateForTesting(
-        /*local_printer=*/nullptr);
+        /*cros_local_printer=*/nullptr, /*local_printer=*/nullptr);
   }
 
   LocalPrinterHandlerChromeos* local_printer_handler() {
@@ -171,7 +171,7 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
 
   void SetUp() override {
     local_printer_handler_ =
-        LocalPrinterHandlerChromeos::CreateForTesting(&local_printer_);
+        LocalPrinterHandlerChromeos::CreateForTesting(&local_printer_, nullptr);
   }
 
   LocalPrinterHandlerChromeos* local_printer_handler() {
@@ -581,11 +581,46 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_PrintAsImage) {
 }
 
 TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
-  auto caps = crosapi::mojom::CapabilitiesResponse::New();
-  caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
-      "device_name", "printer_name", "printer_description", false);
+  std::optional<chromeos::Printer> printer(chromeos::Printer("device_name"));
+  printer->set_display_name("printer_name");
+  printer->set_description("printer_description");
+
+  std::optional<::printing::PrinterSemanticCapsAndDefaults> caps(
+      (::printing::PrinterSemanticCapsAndDefaults()));
 
   const base::Value kExpectedValue = base::test::ParseJson(R"({
+   "capabilities": {
+     "printer": {
+        "color": {
+           "option": [ {
+              "is_default": true,
+              "type": "STANDARD_MONOCHROME",
+              "vendor_id": "0"
+           } ]
+        },
+        "copies": {
+           "default": 1,
+           "max": 1
+        },
+        "page_orientation": {
+           "option": [ {
+              "is_default": true,
+              "type": "PORTRAIT"
+           }, {
+              "type": "LANDSCAPE"
+           }, {
+              "type": "AUTO"
+           } ]
+        },
+        "pin": {
+           "supported": false
+        },
+        "supported_content_type": [ {
+           "content_type": "application/pdf"
+        } ]
+     },
+     "version": "1.0"
+   },
    "printer": {
       "cupsEnterprisePrinter": false,
       "deviceName": "device_name",
@@ -596,15 +631,52 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
 })");
   ASSERT_TRUE(kExpectedValue.is_dict());
   EXPECT_EQ(kExpectedValue.GetDict(),
-            LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps)));
+            LocalPrinterHandlerChromeos::CapabilityToValue(std::move(printer),
+                                                           std::move(caps)));
 }
 
 TEST(LocalPrinterHandlerChromeos, CapabilityToValue_ConfiguredViaPolicy) {
-  auto caps = crosapi::mojom::CapabilitiesResponse::New();
-  caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
-      "device_name", "printer_name", "printer_description", true);
+  std::optional<chromeos::Printer> printer(chromeos::Printer("device_name"));
+  printer->set_display_name("printer_name");
+  printer->set_description("printer_description");
+  printer->set_source(chromeos::Printer::SRC_POLICY);
+
+  std::optional<::printing::PrinterSemanticCapsAndDefaults> caps(
+      (::printing::PrinterSemanticCapsAndDefaults()));
 
   const base::Value kExpectedValue = base::test::ParseJson(R"({
+   "capabilities": {
+     "printer": {
+        "color": {
+           "option": [ {
+              "is_default": true,
+              "type": "STANDARD_MONOCHROME",
+              "vendor_id": "0"
+           } ]
+        },
+        "copies": {
+           "default": 1,
+           "max": 1
+        },
+        "page_orientation": {
+           "option": [ {
+              "is_default": true,
+              "type": "PORTRAIT"
+           }, {
+              "type": "LANDSCAPE"
+           }, {
+              "type": "AUTO"
+           } ]
+        },
+        "pin": {
+           "supported": false
+        },
+        "supported_content_type": [ {
+           "content_type": "application/pdf"
+        } ]
+     },
+     "version": "1.0"
+   },
    "printer": {
       "cupsEnterprisePrinter": true,
       "deviceName": "device_name",
@@ -615,11 +687,14 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue_ConfiguredViaPolicy) {
 })");
   ASSERT_TRUE(kExpectedValue.is_dict());
   EXPECT_EQ(kExpectedValue.GetDict(),
-            LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps)));
+            LocalPrinterHandlerChromeos::CapabilityToValue(std::move(printer),
+                                                           std::move(caps)));
 }
 
 TEST(LocalPrinterHandlerChromeos, CapabilityToValue_EmptyInput) {
-  EXPECT_TRUE(LocalPrinterHandlerChromeos::CapabilityToValue(nullptr).empty());
+  EXPECT_TRUE(
+      LocalPrinterHandlerChromeos::CapabilityToValue(std::nullopt, std::nullopt)
+          .empty());
 }
 
 TEST(LocalPrinterHandlerChromeos, StatusToValue) {
@@ -644,17 +719,20 @@ TEST(LocalPrinterHandlerChromeos, RecordDpi) {
   base::HistogramTester histogram_tester;
   printing::PrinterSemanticCapsAndDefaults printer_caps;
 
+  std::optional<chromeos::Printer> printer(chromeos::Printer("device_name"));
+  printer->set_display_name("printer_name");
+  printer->set_description("printer_description");
+
+  std::optional<::printing::PrinterSemanticCapsAndDefaults> caps(
+      (::printing::PrinterSemanticCapsAndDefaults()));
   // Represent DPI values in hex to simplify cross checking the values with the
   // metric output.
-  printer_caps.default_dpi = {0x00C8, 0x0190};
-  printer_caps.dpis = {
+  caps->default_dpi = {0x00C8, 0x0190};
+  caps->dpis = {
       {0x0064, 0x0064}, {0x00C8, 0x0190}, {0x00C8, 0x01F4}, {0x03E8, 0x03E8}};
 
-  auto caps = crosapi::mojom::CapabilitiesResponse::New();
-  caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
-      "device_name", "printer_name", "printer_description", false);
-  caps->capabilities = printer_caps;
-  LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps));
+  LocalPrinterHandlerChromeos::CapabilityToValue(std::move(printer),
+                                                 std::move(caps));
 
   histogram_tester.ExpectUniqueSample("Printing.CUPS.DPI.Count", /*sample=*/4,
                                       /*expected_bucket_count=*/1);

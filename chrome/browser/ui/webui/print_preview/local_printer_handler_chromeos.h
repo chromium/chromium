@@ -13,12 +13,18 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "chromeos/printing/printer_configuration.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace ash {
+class LocalPrinter;
 }
 
 namespace printing {
@@ -57,7 +63,8 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   // methods run input callbacks with reasonable defaults when the mojo
   // connection is unavailable.
   static std::unique_ptr<LocalPrinterHandlerChromeos> CreateForTesting(
-      crosapi::mojom::LocalPrinter* local_printer);
+      crosapi::mojom::LocalPrinter* cros_local_printer,
+      ash::LocalPrinter* local_printer);
 
   // Prefer using Create() above.
   explicit LocalPrinterHandlerChromeos(
@@ -71,21 +78,30 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   // chrome/browser/resources/print_preview/data/local_parsers.js).
   static base::DictValue PrinterToValue(
       const crosapi::mojom::LocalDestinationInfo& printer);
+  static base::DictValue PrinterToValue(const chromeos::Printer& printer);
 
-  // Returns a CapabilitiesResponse object (defined in
-  // chrome/browser/resources/print_preview/native_layer.js).
+  // Converts `caps` to a CapabilitiesResponse object (defined in
+  // chrome/browser/resources/print_preview/native_layer.js).  If `caps` has no
+  // value, the resulting object is empty.  Otherwise, `printer` must have a
+  // value too and is used to fill in some of the information such as printer
+  // name.
   static base::DictValue CapabilityToValue(
-      crosapi::mojom::CapabilitiesResponsePtr caps);
+      base::optional_ref<const chromeos::Printer> printer,
+      const std::optional<::printing::PrinterSemanticCapsAndDefaults>& caps);
 
   // Returns a PrinterStatus object (defined in
   // chrome/browser/resources/print_preview/data/printer_status_cros.ts).
   static base::DictValue StatusToValue(
       const crosapi::mojom::PrinterStatus& status);
+  static base::DictValue StatusToValue(
+      const chromeos::CupsPrinterStatus& status);
 
   // Return a ManagedPrintOptions object (defined in
   // chrome/browser/resources/print_preview/data/managed_print_options_cros.ts).
   static base::DictValue ManagedPrintOptionsToValue(
       const crosapi::mojom::ManagedPrintOptions& managed_print_options);
+  static base::DictValue ManagedPrintOptionsToValue(
+      const chromeos::Printer::ManagedPrintOptions& managed_print_options);
 
   // PrinterHandler implementation.
   void Reset() override;
@@ -135,7 +151,8 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
                            base::DictValue settings);
 
   const raw_ptr<content::WebContents> preview_web_contents_;
-  raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;
+  raw_ptr<crosapi::mojom::LocalPrinter> cros_local_printer_ = nullptr;
+  raw_ptr<ash::LocalPrinter> local_printer_ = nullptr;
   base::WeakPtrFactory<LocalPrinterHandlerChromeos> weak_ptr_factory_{this};
 };
 

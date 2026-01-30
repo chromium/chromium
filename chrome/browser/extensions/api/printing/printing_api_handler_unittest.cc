@@ -387,10 +387,17 @@ class TestLocalPrinter : public ash::LocalPrinter {
                      ash::LocalPrinter::GetCapabilityCallback cb) override {
     auto it = caps_map_.find(id);
     if (it == caps_map_.end()) {
-      std::move(cb).Run(std::nullopt);
+      std::move(cb).Run(std::nullopt, std::nullopt);
       return;
     }
-    std::move(cb).Run(it->second);
+    // Printer value not consumed, pass nullopt for test simplicity.
+    std::move(cb).Run(std::nullopt, it->second);
+  }
+
+  void GetStatus(const AccountId& acccountId,
+                 const std::string& id,
+                 ash::LocalPrinter::GetStatusCallback cb) override {
+    NOTREACHED() << "Should not be called by this unittest.";
   }
 
  private:

@@ -22,14 +22,17 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
+#include "chrome/browser/ash/printing/local_printer_impl.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_restrictions.h"
+#include "printing/buildflags/buildflags.h"  // USE_CUPS
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings_conversion_chromeos.h"
@@ -41,11 +44,11 @@ namespace {
 
 void OnGetPrintersComplete(
     LocalPrinterHandlerChromeos::AddedPrintersCallback callback,
-    std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) {
+    std::vector<chromeos::Printer> printers) {
   if (!printers.empty()) {
     base::ListValue list;
-    for (const crosapi::mojom::LocalDestinationInfoPtr& p : printers) {
-      list.Append(LocalPrinterHandlerChromeos::PrinterToValue(*p));
+    for (const chromeos::Printer& p : printers) {
+      list.Append(LocalPrinterHandlerChromeos::PrinterToValue(p));
     }
     std::move(callback).Run(std::move(list));
   }
@@ -190,6 +193,27 @@ base::DictValue CustomTypePrintOptionMojomToDict(
   return result;
 }
 
+template <typename T,
+          typename Func,
+          typename = std::enable_if_t<std::is_invocable_v<Func, const T&>>>
+base::DictValue PrintOptionToValue(
+    const chromeos::Printer::PrintOption<T>& print_option,
+    Func convert_func) {
+  base::DictValue result;
+
+  if (print_option.default_value.has_value()) {
+    result.Set(kManagedPrintOptions_DefaultValue,
+               convert_func(*print_option.default_value));
+  }
+  base::ListValue allowed_values;
+  for (const auto& allowed_value : print_option.allowed_values) {
+    allowed_values.Append(convert_func(allowed_value));
+  }
+  result.Set(kManagedPrintOptions_AllowedValues, std::move(allowed_values));
+
+  return result;
+}
+
 }  // namespace
 
 // static
@@ -199,15 +223,20 @@ LocalPrinterHandlerChromeos::Create(
   auto handler =
       std::make_unique<LocalPrinterHandlerChromeos>(preview_web_contents);
   DCHECK(crosapi::CrosapiManager::IsInitialized());
-  handler->local_printer_ =
+  handler->cros_local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
+#if BUILDFLAG(USE_CUPS)
+  handler->local_printer_ = ash::LocalPrinterImpl::Get();
+#endif
   return handler;
 }
 
 std::unique_ptr<LocalPrinterHandlerChromeos>
 LocalPrinterHandlerChromeos::CreateForTesting(
-    crosapi::mojom::LocalPrinter* local_printer) {
+    crosapi::mojom::LocalPrinter* cros_local_printer,
+    ash::LocalPrinter* local_printer) {
   auto handler = std::make_unique<LocalPrinterHandlerChromeos>(nullptr);
+  handler->cros_local_printer_ = cros_local_printer;
   handler->local_printer_ = local_printer;
   return handler;
 }
@@ -217,6 +246,21 @@ LocalPrinterHandlerChromeos::LocalPrinterHandlerChromeos(
     : preview_web_contents_(preview_web_contents) {}
 
 LocalPrinterHandlerChromeos::~LocalPrinterHandlerChromeos() = default;
+
+// static
+base::DictValue LocalPrinterHandlerChromeos::PrinterToValue(
+    const chromeos::Printer& printer) {
+  base::DictValue value;
+  value.Set(kSettingDeviceName, printer.id());
+  value.Set(kSettingPrinterName, printer.display_name());
+  value.Set(kSettingPrinterDescription, printer.description());
+  value.Set(kCUPSEnterprisePrinter,
+            printer.source() == chromeos::Printer::SRC_POLICY);
+  value.Set(kPrinterStatus, StatusToValue(printer.printer_status()));
+  value.Set(kManagedPrintOptions,
+            ManagedPrintOptionsToValue(printer.print_job_options()));
+  return value;
+}
 
 // static
 base::DictValue LocalPrinterHandlerChromeos::PrinterToValue(
@@ -238,25 +282,48 @@ base::DictValue LocalPrinterHandlerChromeos::PrinterToValue(
 
 // static
 base::DictValue LocalPrinterHandlerChromeos::CapabilityToValue(
-    crosapi::mojom::CapabilitiesResponsePtr caps) {
-  if (!caps) {
+    base::optional_ref<const chromeos::Printer> printer,
+    const std::optional<::printing::PrinterSemanticCapsAndDefaults>& caps) {
+  if (!caps.has_value()) {
     return base::DictValue();
   }
+  CHECK(printer.has_value());
 
-  if (caps->capabilities) {
-    RecordDpi(caps->capabilities.value());
-  }
+  RecordDpi(*caps);
+
+  // Non-const copy so AssemblePrinterSettings can take it.
+  // AssemblePrinterSettings will modify caps_copy value.
+  ::printing::PrinterSemanticCapsAndDefaults caps_copy(*caps);
 
   return AssemblePrinterSettings(
-      caps->basic_info->id,
-      PrinterBasicInfo(
-          caps->basic_info->id, caps->basic_info->name,
-          caps->basic_info->description,
-          PrinterBasicInfoOptions{
-              {kCUPSEnterprisePrinter, caps->basic_info->configured_via_policy
-                                           ? kValueTrue
-                                           : kValueFalse}}),
-      caps->has_secure_protocol, base::OptionalToPtr(caps->capabilities));
+      printer->id(),
+      PrinterBasicInfo(printer->id(), printer->display_name(),
+                       printer->description(),
+                       PrinterBasicInfoOptions{
+                           {kCUPSEnterprisePrinter,
+                            (printer->source() == chromeos::Printer::SRC_POLICY)
+                                ? kValueTrue
+                                : kValueFalse}}),
+      printer->HasSecureProtocol(), &caps_copy);
+}
+
+// static
+base::DictValue LocalPrinterHandlerChromeos::StatusToValue(
+    const chromeos::CupsPrinterStatus& status) {
+  base::DictValue dict;
+  dict.Set("printerId", status.GetPrinterId());
+  dict.Set("timestamp",
+           status.GetTimestamp().InMillisecondsFSinceUnixEpochIgnoringNull());
+  base::ListValue status_reasons;
+  for (const chromeos::CupsPrinterStatus::CupsPrinterStatusReason& reason :
+       status.GetStatusReasons()) {
+    base::DictValue status_reason;
+    status_reason.Set("reason", static_cast<int>(reason.GetReason()));
+    status_reason.Set("severity", static_cast<int>(reason.GetSeverity()));
+    status_reasons.Append(std::move(status_reason));
+  }
+  dict.Set("statusReasons", std::move(status_reasons));
+  return dict;
 }
 
 // static
@@ -276,6 +343,62 @@ base::DictValue LocalPrinterHandlerChromeos::StatusToValue(
   }
   dict.Set("statusReasons", std::move(status_reasons));
   return dict;
+}
+
+// static
+base::DictValue LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
+    const chromeos::Printer::ManagedPrintOptions& managed_print_options) {
+  base::DictValue result;
+
+  result.Set(kManagedPrintOptions_MediaSize,
+             PrintOptionToValue(
+                 managed_print_options.media_size,
+                 [](const chromeos::Printer::Size& value) {
+                   base::DictValue result;
+                   result.Set(kManagedPrintOptions_SizeWidth, value.width);
+                   result.Set(kManagedPrintOptions_SizeHeight, value.height);
+                   return result;
+                 }));
+
+  result.Set(
+      kManagedPrintOptions_MediaType,
+      PrintOptionToValue(managed_print_options.media_type,
+                         [](const std::string& value) { return value; }));
+
+  result.Set(kManagedPrintOptions_Duplex,
+             PrintOptionToValue(managed_print_options.duplex,
+                                [](const chromeos::Printer::DuplexType& value) {
+                                  return static_cast<int>(value);
+                                }));
+
+  result.Set(
+      kManagedPrintOptions_Color,
+      PrintOptionToValue(managed_print_options.color,
+                         [](const bool& value) -> bool { return value; }));
+
+  result.Set(
+      kManagedPrintOptions_Dpi,
+      PrintOptionToValue(
+          managed_print_options.dpi, [](const chromeos::Printer::Dpi& value) {
+            base::DictValue result;
+            result.Set(kManagedPrintOptions_DpiHorizontal, value.horizontal);
+            result.Set(kManagedPrintOptions_DpiVertical, value.vertical);
+            return result;
+          }));
+
+  result.Set(
+      kManagedPrintOptions_Quality,
+      PrintOptionToValue(managed_print_options.quality,
+                         [](const chromeos::Printer::QualityType& value) {
+                           return static_cast<int>(value);
+                         }));
+
+  result.Set(
+      kManagedPrintOptions_PrintAsImage,
+      PrintOptionToValue(managed_print_options.print_as_image,
+                         [](const bool& value) -> bool { return value; }));
+
+  return result;
 }
 
 // static
@@ -375,6 +498,10 @@ void LocalPrinterHandlerChromeos::StartGetPrinters(
     return;
   }
   local_printer_->GetPrinters(
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      // TODO(crbug.com/479647640): Check if we should use current user than
+      // primary user.
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
       base::BindOnce(OnGetPrintersComplete, std::move(callback))
           .Then(std::move(done_callback)));
 }
@@ -389,6 +516,10 @@ void LocalPrinterHandlerChromeos::StartGetCapability(
     return;
   }
   local_printer_->GetCapability(
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      // TODO(crbug.com/479647640): Check if we should use current user than
+      // primary user.
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
       device_name, base::BindOnce(CapabilityToValue).Then(std::move(callback)));
 }
 
@@ -423,7 +554,7 @@ void LocalPrinterHandlerChromeos::GetAshJobSettings(
     std::string printer_id,
     AshJobSettingsCallback callback,
     base::DictValue settings) {
-  if (!local_printer_) {
+  if (!cros_local_printer_) {
     LOG(ERROR) << "Local printer not available";
     std::move(callback).Run(std::move(settings));
     return;
@@ -449,7 +580,7 @@ void LocalPrinterHandlerChromeos::GetUsernamePerPolicy(
       base::BindOnce(AddProfileUsernameToJobSettings, std::move(settings))
           .Then(std::move(callback));
 
-  local_printer_->GetUsernamePerPolicy(
+  cros_local_printer_->GetUsernamePerPolicy(
       std::move(add_profile_username_callback));
 }
 
@@ -461,8 +592,8 @@ void LocalPrinterHandlerChromeos::GetOAuthToken(
       base::BindOnce(AddOAuthTokenToJobSettings, std::move(settings))
           .Then(std::move(callback));
 
-  local_printer_->GetOAuthAccessToken(printer_id,
-                                      std::move(add_oauth_token_callback));
+  cros_local_printer_->GetOAuthAccessToken(printer_id,
+                                           std::move(add_oauth_token_callback));
 }
 
 void LocalPrinterHandlerChromeos::GetIppClientInfo(
@@ -479,8 +610,8 @@ void LocalPrinterHandlerChromeos::GetIppClientInfo(
     return;
   }
 
-  local_printer_->GetIppClientInfo(printer_id,
-                                   std::move(add_ipp_client_info_callback));
+  cros_local_printer_->GetIppClientInfo(
+      printer_id, std::move(add_ipp_client_info_callback));
 }
 
 void LocalPrinterHandlerChromeos::CallStartLocalPrint(
@@ -495,15 +626,15 @@ void LocalPrinterHandlerChromeos::StartGetEulaUrl(
     const std::string& destination_id,
     GetEulaUrlCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!local_printer_) {
+  if (!cros_local_printer_) {
     PRINTER_LOG(ERROR) << "Local printer not available (StartGetEulaUrl)";
     std::move(callback).Run("");
     return;
   }
-  local_printer_->GetEulaUrl(destination_id,
-                             base::BindOnce([](const GURL& url) {
-                               return url.spec();
-                             }).Then(std::move(callback)));
+  cros_local_printer_->GetEulaUrl(destination_id,
+                                  base::BindOnce([](const GURL& url) {
+                                    return url.spec();
+                                  }).Then(std::move(callback)));
 }
 
 void LocalPrinterHandlerChromeos::StartPrinterStatusRequest(
@@ -517,8 +648,12 @@ void LocalPrinterHandlerChromeos::StartPrinterStatusRequest(
     return;
   }
   local_printer_->GetStatus(
-      printer_id, base::BindOnce([](crosapi::mojom::PrinterStatusPtr ptr) {
-                    return StatusToValue(*ptr);
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      // TODO(crbug.com/479647640): Check if we should use current user than
+      // primary user.
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      printer_id, base::BindOnce([](const chromeos::CupsPrinterStatus& status) {
+                    return StatusToValue(status);
                   }).Then(std::move(callback)));
 }
 

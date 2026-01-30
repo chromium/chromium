@@ -76,6 +76,7 @@ class WebPrintingServiceChromeOS
       std::unique_ptr<PrintSettings> pjt_attributes,
       PrintCallback callback,
       const std::string& printer_id,
+      base::optional_ref<const chromeos::Printer> printer,
       const std::optional<PrinterSemanticCapsAndDefaults>& printer_attributes);
 
   void OnPdfReadAndFlattened(

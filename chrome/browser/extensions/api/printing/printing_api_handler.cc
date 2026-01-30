@@ -287,6 +287,7 @@ void PrintingAPIHandler::GetPrinterInfo(const std::string& printer_id,
 void PrintingAPIHandler::OnPrinterCapabilitiesRetrieved(
     const std::string& printer_id,
     GetPrinterInfoCallback callback,
+    base::optional_ref<const chromeos::Printer> /*printer*/,
     const std::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

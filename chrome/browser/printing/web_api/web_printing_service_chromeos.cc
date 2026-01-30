@@ -38,6 +38,7 @@ namespace printing {
 namespace {
 
 blink::mojom::WebPrinterAttributesPtr ConvertCaps(
+    base::optional_ref<const chromeos::Printer> printer,
     const std::optional<PrinterSemanticCapsAndDefaults>& caps) {
   if (!caps.has_value()) {
     return nullptr;
@@ -324,6 +325,7 @@ void WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint(
     std::unique_ptr<PrintSettings> pjt_attributes,
     PrintCallback callback,
     const std::string& printer_id,
+    base::optional_ref<const chromeos::Printer> printer,
     const std::optional<PrinterSemanticCapsAndDefaults>& printer_attributes) {
   if (!printer_attributes) {
     std::move(callback).Run(blink::mojom::WebPrintResult::NewError(
