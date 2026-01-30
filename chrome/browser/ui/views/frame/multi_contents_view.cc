@@ -120,25 +120,29 @@ MultiContentsView::MultiContentsView(
       views::kElementIdentifierKey, kContentsSeparatorTopCornerElementId);
 
   for (auto* contents_container_view : contents_container_views_) {
-    web_contents_focused_subscriptions_.push_back(
-        contents_container_view->contents_view()->AddWebContentsFocusedCallback(
-            base::BindRepeating(&MultiContentsView::OnWebContentsFocused,
-                                base::Unretained(this))));
+    auto& view_map = container_focusable_map_[contents_container_view];
 
-    if (contents_container_view->new_tab_footer_view()) {
+    auto* contents_view = contents_container_view->contents_view();
+    view_map[contents_view->GetClassName()] = contents_view;
+
+    web_contents_focused_subscriptions_.push_back(
+        contents_view->AddWebContentsFocusedCallback(base::BindRepeating(
+            &MultiContentsView::OnWebContentsFocused, base::Unretained(this))));
+
+    if (auto* footer = contents_container_view->new_tab_footer_view()) {
+      view_map[footer->GetClassName()] = footer;
       ntp_footer_focused_subscriptions_.push_back(
-          contents_container_view->new_tab_footer_view()
-              ->AddWebContentsFocusedCallback(
-                  base::BindRepeating(&MultiContentsView::OnNtpFooterFocused,
-                                      base::Unretained(this))));
+          footer->AddWebContentsFocusedCallback(base::BindRepeating(
+              &MultiContentsView::OnNtpFooterFocused, base::Unretained(this))));
     }
 
-    if (contents_container_view->actor_overlay_web_view()) {
+    if (auto* actor_overlay =
+            contents_container_view->actor_overlay_web_view()) {
+      view_map[actor_overlay->GetClassName()] = actor_overlay;
       actor_overlay_focused_subscriptions_.push_back(
-          contents_container_view->actor_overlay_web_view()
-              ->AddWebContentsFocusedCallback(
-                  base::BindRepeating(&MultiContentsView::OnActorOverlayFocused,
-                                      base::Unretained(this))));
+          actor_overlay->AddWebContentsFocusedCallback(
+              base::BindRepeating(&MultiContentsView::OnActorOverlayFocused,
+                                  base::Unretained(this))));
     }
   }
 
@@ -197,6 +201,17 @@ ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
       return container_view;
     }
   }
+  return nullptr;
+}
+
+const MultiContentsView::FocusableViewMap*
+MultiContentsView::GetFocusableViewsMapFor(
+    const ContentsContainerView* container) const {
+  auto it = container_focusable_map_.find(container);
+  if (it != container_focusable_map_.end()) {
+    return &it->second;
+  }
+
   return nullptr;
 }
 
