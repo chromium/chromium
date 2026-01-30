@@ -254,6 +254,11 @@ class MappableSharedImageVideoFramePool::PoolImpl
   void CompleteCopyRequestAndMaybeStartNextCopy(
       scoped_refptr<VideoFrame> video_frame);
 
+  // Called when `frame_resource` has become permanently unusable. This has to
+  // be called on the thread where |media_task_runner_| is current. Removes the
+  // resource from the pool and deletes it.
+  void DestroyFailedResource(FrameResource* frame_resource);
+
   // Callback called when a VideoFrame generated with GetOrCreateFrameResource
   // is no longer referenced.
   void SharedImageReleased(FrameResource* frame_resource,
@@ -858,7 +863,11 @@ void MappableSharedImageVideoFramePool::PoolImpl::StartCopy() {
         !(frame_resource->scoped_mapping =
               frame_resource->shared_image->Map())) {
       if (frame_resource) {
+        // Note: Failure to create or map the SharedImage means that the frame
+        // resource is a permanent error, so drop the FrameResource rather than
+        // simply marking it unused.
         DLOG(ERROR) << "Could not get or map buffer.";
+        DestroyFailedResource(frame_resource);
       }
       std::move(request.frame_ready_cb).Run(std::move(request.video_frame));
       frame_copy_requests_.pop_front();
@@ -1302,6 +1311,15 @@ void MappableSharedImageVideoFramePool::PoolImpl::DeleteFrameResource(
     frame_resource->shared_image->UpdateDestructionSyncToken(
         frame_resource->sync_token);
   }
+}
+
+void MappableSharedImageVideoFramePool::PoolImpl::DestroyFailedResource(
+    FrameResource* frame_resource) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  frame_resource->MarkUnused(tick_clock_->NowTicks());
+  resources_pool_.erase(std::find(resources_pool_.begin(),
+                                  resources_pool_.end(), frame_resource));
+  delete frame_resource;
 }
 
 // Called when a VideoFrame is no longer referenced. Put back the resource in
