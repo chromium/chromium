@@ -26,6 +26,10 @@
 - (void)accountPickerSelectionScreenCoordinatorOpenAddAccount:
     (AccountPickerSelectionScreenCoordinator*)coordinator;
 
+// The coordinators requests to be stopped without any sign-in.
+- (void)accountPickerSelectionScreenCoordinatorWantsToBeStopped:
+    (AccountPickerSelectionScreenCoordinator*)coordinator;
+
 @end
 
 // This coordinator presents an entry point to the Chrome sign-in flow with the

@@ -373,6 +373,13 @@
   [self openAddAccountCoordinator];
 }
 
+- (void)accountPickerSelectionScreenCoordinatorWantsToBeStopped:
+    (AccountPickerSelectionScreenCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _accountPickerSelectionScreenCoordinator,
+           base::NotFatalUntil::M151);
+  [self.delegate accountPickerCoordinatorCancel:self];
+}
+
 #pragma mark - AccountPickerConfirmationScreenCoordinatorDelegate
 
 - (void)accountPickerConfirmationScreenCoordinatorCancel:

@@ -7,6 +7,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_mediator.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_mediator_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -15,11 +16,13 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @interface AccountPickerSelectionScreenCoordinator () <
+    AccountPickerSelectionScreenMediatorDelegate,
     AccountPickerSelectionScreenTableViewControllerActionDelegate>
 
 @end
@@ -38,12 +41,15 @@
                identityManager:IdentityManagerFactory::GetForProfile(
                                    self.profile)
          accountManagerService:ChromeAccountManagerServiceFactory::
-                                   GetForProfile(self.profile)];
+                                   GetForProfile(self.profile)
+         authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                   self.profile)];
 
   _accountListViewController =
       [[AccountPickerSelectionScreenViewController alloc] init];
   _accountListViewController.modelDelegate = _mediator;
   _mediator.consumer = _accountListViewController.consumer;
+  _mediator.delegate = self;
   _accountListViewController.actionDelegate = self;
   _accountListViewController.layoutDelegate = self.layoutDelegate;
   [_accountListViewController view];
@@ -52,13 +58,13 @@
 - (void)stop {
   [super stop];
   [_mediator disconnect];
+  _mediator.delegate = nil;
   _mediator = nil;
   _accountListViewController = nil;
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/40272467)
-  DUMP_WILL_BE_CHECK(!_mediator);
+  CHECK(!_mediator, base::NotFatalUntil::M151);
 }
 
 #pragma mark - Properties
@@ -97,6 +103,14 @@
   id<SceneCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [handler closePresentedViewsAndOpenURL:command];
+}
+
+#pragma mark - AccountPickerSelectionScreenMediatorDelegate
+
+- (void)accountPickerSelectionScreenMediatorWantsToBeStopped:
+    (AccountPickerSelectionScreenMediator*)mediator {
+  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M151);
+  [self.delegate accountPickerSelectionScreenCoordinatorWantsToBeStopped:self];
 }
 
 @end

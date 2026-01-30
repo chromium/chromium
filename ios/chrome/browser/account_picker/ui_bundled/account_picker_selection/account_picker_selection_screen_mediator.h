@@ -10,7 +10,9 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_model_delegate.h"
 
 @protocol AccountPickerSelectionScreenConsumer;
+@protocol AccountPickerSelectionScreenMediatorDelegate;
 @class AccountPickerSelectionScreenMediator;
+class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol SystemIdentity;
 
@@ -24,6 +26,8 @@ class IdentityManager;
 
 @property(nonatomic, strong) id<AccountPickerSelectionScreenConsumer> consumer;
 @property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
+@property(nonatomic, weak) id<AccountPickerSelectionScreenMediatorDelegate>
+    delegate;
 
 // See -[SigninPromoViewMediator initWithProfile:].
 - (instancetype)init NS_UNAVAILABLE;
@@ -32,6 +36,7 @@ class IdentityManager;
     initWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity
              identityManager:(signin::IdentityManager*)identityManager
        accountManagerService:(ChromeAccountManagerService*)accountManagerService
+       authenticationService:(AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;
 
 // Disconnect the mediator.

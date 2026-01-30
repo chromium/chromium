@@ -9,15 +9,19 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_consumer.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
 @interface AccountPickerSelectionScreenMediator () <
+    AuthenticationServiceObserving,
     IdentityManagerObserverBridgeDelegate>
 
 @end
@@ -29,36 +33,48 @@
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Configurators based on identity list.
   __strong NSArray* _sortedIdentityItemConfigurators;
+  raw_ptr<AuthenticationService> _authenticationService;
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
-- (instancetype)initWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity
-                         identityManager:
-                             (signin::IdentityManager*)identityManager
-                   accountManagerService:
-                       (ChromeAccountManagerService*)accountManagerService {
+- (instancetype)
+    initWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity
+             identityManager:(signin::IdentityManager*)identityManager
+       accountManagerService:(ChromeAccountManagerService*)accountManagerService
+       authenticationService:(AuthenticationService*)authenticationService {
+  CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M152);
   if ((self = [super init])) {
     CHECK(identityManager);
     CHECK(accountManagerService);
+    CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M152);
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
     _accountManagerService = accountManagerService;
     _selectedIdentity = selectedIdentity;
+    _authenticationService = authenticationService;
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
     [self loadIdentityItemConfigurators];
   }
   return self;
 }
 
 - (void)dealloc {
-  DCHECK(!_accountManagerService);
-  DCHECK(!_identityManager);
+  CHECK(!_accountManagerService, base::NotFatalUntil::M152);
+  CHECK(!_identityManager, base::NotFatalUntil::M152);
+  CHECK(!_authenticationService, base::NotFatalUntil::M152);
 }
 
 - (void)disconnect {
   _accountManagerService = nullptr;
   _identityManagerObserver.reset();
   _identityManager = nullptr;
+  _authenticationService = nil;
+  _authServiceObserverBridge.reset();
 }
 
 #pragma mark - Properties
@@ -172,6 +188,16 @@
   }
   DCHECK(_sortedIdentityItemConfigurators);
   return _sortedIdentityItemConfigurators;
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authenticationService->SigninEnabled()) {
+    // Signin is now disabled, so the consistency default account must be
+    // stopped.
+    [self.delegate accountPickerSelectionScreenMediatorWantsToBeStopped:self];
+  }
 }
 
 @end
