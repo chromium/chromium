@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -73,6 +74,9 @@ class CryptohomeKeyDelegateServiceProviderTest
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
+    service_provider_ = std::make_unique<CryptohomeKeyDelegateServiceProvider>(
+        g_browser_process->local_state());
+
     dbus_service_test_helper_ = std::make_unique<ServiceProviderTestHelper>();
     dbus_service_test_helper_->SetUp(
         cryptohome::kCryptohomeKeyDelegateServiceName,
@@ -80,7 +84,7 @@ class CryptohomeKeyDelegateServiceProviderTest
         cryptohome::kCryptohomeKeyDelegateInterface,
         cryptohome::
             kCryptohomeKeyDelegateChallengeKey /* exported_method_name */,
-        &service_provider_);
+        service_provider_.get());
 
     force_install_mixin_.InitWithDeviceStateMixin(GetOriginalSigninProfile(),
                                                   &device_state_mixin_);
@@ -99,6 +103,8 @@ class CryptohomeKeyDelegateServiceProviderTest
   void TearDownOnMainThread() override {
     dbus_service_test_helper_->TearDown();
     dbus_service_test_helper_.reset();
+
+    service_provider_.reset();
 
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
@@ -206,7 +212,7 @@ class CryptohomeKeyDelegateServiceProviderTest
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ExtensionForceInstallMixin force_install_mixin_{&mixin_host_};
 
-  CryptohomeKeyDelegateServiceProvider service_provider_;
+  std::unique_ptr<CryptohomeKeyDelegateServiceProvider> service_provider_;
   std::unique_ptr<ServiceProviderTestHelper> dbus_service_test_helper_;
 
   TestCertificateProviderExtensionMixin

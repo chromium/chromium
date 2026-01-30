@@ -476,7 +476,8 @@ class DBusServices {
         system_bus, cryptohome::kCryptohomeKeyDelegateServiceName,
         dbus::ObjectPath(cryptohome::kCryptohomeKeyDelegateServicePath),
         CrosDBusService::CreateServiceProviderList(
-            std::make_unique<CryptohomeKeyDelegateServiceProvider>()));
+            std::make_unique<CryptohomeKeyDelegateServiceProvider>(
+                g_browser_process->local_state())));
 
     encrypted_reporting_service_ = CrosDBusService::Create(
         system_bus, chromeos::kChromeReportingServiceName,
