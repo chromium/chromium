@@ -227,13 +227,9 @@ def __step_config(ctx, step_config):
             "indirect_inputs": {
                 "includes": ["*.o", "*.a"],
             },
-            # When remote linking without bytes enabled, .o, .a files don't
-            # exist on the local file system.
-            # This step also should run remortely to avoid downloading them.
-            "remote": config.get(ctx, "remote-link"),
-            "platform_ref": "large",
-            "canonicalize_dir": True,
-            "timeout": "2m",
+            # Downloading all .o, .a to remote worker is slower than doing that
+            # on the host machine.
+            "remote": False,
         },
         {
             "name": "android/trace_event_bytecode_rewriter",
