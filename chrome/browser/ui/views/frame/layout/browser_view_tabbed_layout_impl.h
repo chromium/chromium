@@ -45,6 +45,9 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
       const BrowserLayoutParams& params) override;
 
  private:
+  // Gets the amount of padding to place between
+  int GetMinimumGrabHandlePadding() const;
+
   // Returns the minimum size of all toolbar-height content except the toolbar-
   // height side panel.
   gfx::Size GetMinimumMainAreaSize(const BrowserLayoutParams& params) const;

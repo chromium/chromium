@@ -44,7 +44,7 @@ constexpr int kLoadingBarOffset =
     kLoadingBarHeight - views::Separator::kThickness;
 
 // Minimum area next to caption buttons to use as a grab handle.
-constexpr int kVerticalTabsGrabHandleSize = 54;
+constexpr int kVerticalTabsGrabHandleSize = 40;
 
 // Maximum portion of the window a "size-restricted" contents-height side panel
 // can take up. This is not the only limit on side panel size.
@@ -215,7 +215,7 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
     }
 
     // Account for grab handle.
-    IncreasePaddingToMinimum(params, kVerticalTabsGrabHandleSize);
+    IncreasePaddingToMinimum(params, GetMinimumGrabHandlePadding());
   }
 
   // Get information about the toolbar-height side panel, if present.
@@ -342,6 +342,11 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
   return animation;
 }
 
+int BrowserViewTabbedLayoutImpl::GetMinimumGrabHandlePadding() const {
+  return kVerticalTabsGrabHandleSize -
+         GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN).right();
+}
+
 gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumMainAreaSize(
     const BrowserLayoutParams& params) const {
   gfx::Size toolbar_size = views().toolbar->GetMinimumSize();
@@ -443,7 +448,7 @@ gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumSize(
   const auto [vertical_tabstrip_size, horizontal_tabstrip_size] =
       GetMinimumTabStripSize(params);
   if (!vertical_tabstrip_size.IsEmpty()) {
-    IncreasePaddingToMinimum(params, kVerticalTabsGrabHandleSize);
+    IncreasePaddingToMinimum(params, GetMinimumGrabHandlePadding());
   }
   params.InsetHorizontal(vertical_tabstrip_size.width(), /*leading=*/true);
   const gfx::Size toolbar_height_side_panel_size =
@@ -563,7 +568,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       // In vertical tabs mode, extra space is allocated next to the top element
       // to serve as a grab handle, on whatever side the caption buttons are.
       if (delegate().GetBrowserWindowState() != WindowState::kFullscreen) {
-        IncreasePaddingToMinimum(params, kVerticalTabsGrabHandleSize);
+        IncreasePaddingToMinimum(params, GetMinimumGrabHandlePadding());
       }
       params.InsetHorizontal(horizontal_layout.vertical_tab_strip_width,
                              /*leading=*/true);
