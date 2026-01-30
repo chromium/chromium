@@ -165,7 +165,7 @@ class ComposeboxQueryController
 
     // The request ID for the viewport associated with this request, if it is
     // different from the request ID. Set by StartFileUploadFlow() when
-    // use_separate_request_ids_for_multi_context_viewport_images_ is true.
+    // use_separate_request_ids_for_viewport_images_ is true.
     std::unique_ptr<lens::LensOverlayRequestId> viewport_request_id_;
 
     // The headers to attach to the request. Will be set asynchronously after
@@ -497,19 +497,13 @@ class ComposeboxQueryController
   // is false.
   bool suppress_lns_surface_param_if_no_image_;
 
-  // Whether or not to use the multiple-input id request generation flow.
-  bool enable_multi_context_input_flow_;
-
   // Whether or not to include viewport images with page context uploads.
   // TODO(crbug.com/448647393): Remove this once the server supports viewport
   // images for multi-context input.
   bool enable_viewport_images_;
 
-  // Whether or not to send viewport images with separate request ids from
-  // their associated page context, for the multi-context input flow.
-  // Does nothing if `enable_multi_context_input_flow_` is false or if
-  // `enable_viewport_images_` is false.
-  bool use_separate_request_ids_for_multi_context_viewport_images_;
+  // Whether or not to use separate request ids for viewport image uploads.
+  bool use_separate_request_ids_for_viewport_images_;
 
   // Whether to offer ZPS for the first document attachment, when multiple
   // attachments are available (true), or the only attachment if exactly one

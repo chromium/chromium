@@ -101,10 +101,6 @@ extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
 extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
 // Whether to auto submit voice queries in the composebox.
 extern const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery;
-// Whether or not to use separate request ids for viewport images if the
-// multi-context input flow is enabled.
-extern const base::FeatureParam<bool>
-    kUseSeparateRequestIdsForMultiContextViewportImages;
 // Whether to attach the page title and URL to the suggest request.
 extern const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest;
 

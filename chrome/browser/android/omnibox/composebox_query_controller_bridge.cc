@@ -87,11 +87,7 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
   auto query_controller_config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
   query_controller_config_params->send_lns_surface = false;
-  query_controller_config_params->enable_multi_context_input_flow =
-      OmniboxFieldTrial::kOmniboxMultimodalInputMultiContext.Get();
   query_controller_config_params->enable_viewport_images = true;
-  query_controller_config_params
-      ->use_separate_request_ids_for_multi_context_viewport_images = false;
   query_controller_config_params
       ->prioritize_suggestions_for_the_first_attached_document =
       OmniboxFieldTrial::kOmniboxMultimodalPrioritizeSuggestionsForFirstDocument

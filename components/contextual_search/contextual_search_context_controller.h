@@ -49,6 +49,8 @@ class ContextualSearchContextController {
   // Struct containing configuration params for the context controller.
   // Note: When the ContextualTasks feature is enabled, some of these parameters
   // are overridden by the ComposeboxQueryController.
+  // TODO(crbug.com/479289674): Clean up other params from this struct, if
+  // the params should be made constant across all contextual surfaces.
   struct ConfigParams {
    public:
     // Whether to send the `lns_surface` parameter in search URLs.
@@ -57,15 +59,8 @@ class ContextualSearchContextController {
     // parameter if there is no image upload. Does nothing if `send_lns_surface`
     // is false.
     bool suppress_lns_surface_param_if_no_image = true;
-    // Whether to enable the multi-context input flow.
-    bool enable_multi_context_input_flow = false;
     // Whether to enable viewport images.
     bool enable_viewport_images = false;
-    // Whether or not to send viewport images with separate request ids from
-    // their associated page context, for the multi-context input flow.
-    // Does nothing if `enable_multi_context_input_flow` is false or if
-    // `enable_viewport_images` is false.
-    bool use_separate_request_ids_for_multi_context_viewport_images = true;
     // Whether to offer ZPS for the first document attachment, when multiple
     // attachments are available (true), or the only attachment if exactly one
     // attachment is available (false).

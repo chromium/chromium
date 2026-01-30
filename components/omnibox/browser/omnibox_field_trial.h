@@ -709,9 +709,6 @@ inline constexpr base::FeatureParam<bool>
 
 // <-- Omnibox Improvement for Large Form Factors
 // Fusebox -->
-inline constexpr base::FeatureParam<bool> kOmniboxMultimodalInputMultiContext{
-    &omnibox::kOmniboxMultimodalInput, "multi_context", false};
-
 inline constexpr base::FeatureParam<bool> kOmniboxShowModelPicker{
     &omnibox::kOmniboxMultimodalInput, "show_model_picker", false};
 
