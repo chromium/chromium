@@ -163,7 +163,8 @@
           PromosManagerFactory::GetForProfile(browser->GetProfile());
       _mediator = [[PromosManagerMediator alloc]
           initWithPromosManager:promosManager
-                   promoConfigs:[self promoConfigs]];
+                   promoConfigs:[self promoConfigs]
+                   webStateList:browser->GetWebStateList()];
     }
   }
 

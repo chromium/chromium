@@ -10,17 +10,31 @@
 #import <optional>
 
 #import "base/containers/small_map.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/browser/promos_manager/model/promo_display_context.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/web/public/web_state.h"
+#import "url/gurl.h"
+
+@interface PromosManagerMediator () {
+  raw_ptr<WebStateList> _webStateList;
+}
+@end
 
 @implementation PromosManagerMediator
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                         promoConfigs:(PromoConfigsSet)promoConfigs {
+                         promoConfigs:(PromoConfigsSet)promoConfigs
+                         webStateList:(WebStateList*)webStateList {
   if ((self = [super init])) {
     _promosManager = promosManager;
+    _webStateList = webStateList;
     if (promoConfigs.size()) {
       _promosManager->InitializePromoConfigs(std::move(promoConfigs));
     }
@@ -46,8 +60,17 @@
     return PromoDisplayData{.promo = forcedPromo.value(), .was_forced = true};
   }
 
+  PromoDisplayContext displayContext;
+  displayContext.is_on_fresh_ntp = false;
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (activeWebState && IsVisibleURLNewTabPage(activeWebState)) {
+    displayContext.is_on_fresh_ntp =
+        NewTabPageTabHelper::FromWebState(activeWebState)->IsScrolledToTop();
+  }
+
   std::optional<promos_manager::Promo> promo =
-      self.promosManager->NextPromoForDisplay();
+      self.promosManager->NextPromoForDisplay(displayContext);
   if (promo) {
     return PromoDisplayData{.promo = promo.value(), .was_forced = false};
   }

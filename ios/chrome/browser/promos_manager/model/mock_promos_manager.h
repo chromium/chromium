@@ -37,7 +37,7 @@ class MockPromosManager : public PromosManager {
               (override));
   MOCK_METHOD(std::optional<promos_manager::Promo>,
               NextPromoForDisplay,
-              (),
+              (const PromoDisplayContext& display_context),
               (override));
   MOCK_METHOD(void,
               RegisterPromoForContinuousDisplay,

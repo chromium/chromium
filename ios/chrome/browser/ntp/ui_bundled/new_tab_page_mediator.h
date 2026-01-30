@@ -105,6 +105,8 @@ class UserUploadedImageManager;
 @property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;
 // Indicates that the new tab page is visible.
 @property(nonatomic, assign) BOOL NTPVisible;
+// The WebState currently associated with this mediator.
+@property(nonatomic, assign) web::WebState* webState;
 // A pointer to the collection view that currently embeds all the contents on
 // the new tab page.
 @property(nonatomic, weak) UICollectionView* contentCollectionView;

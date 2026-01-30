@@ -66,6 +66,7 @@ source_set("types") {
     "promo.mm",
     "promo_config.h",
     "promo_config.mm",
+    "promo_display_context.h",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [

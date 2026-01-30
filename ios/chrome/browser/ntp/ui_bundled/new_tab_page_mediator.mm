@@ -323,6 +323,14 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   _wasNTPInLandscape = YES;
 }
 
+- (void)setIsScrolledToTop:(BOOL)isScrolledToTop {
+  if (!self.webState) {
+    return;
+  }
+  NewTabPageTabHelper::FromWebState(self.webState)
+      ->SetIsScrolledToTop(isScrolledToTop);
+}
+
 - (void)checkNewBadgeEligibility {
   // Notify the badge holdback period has been satisfied if this is not the
   // First Run, or the First Run happened longer than the holdback period.

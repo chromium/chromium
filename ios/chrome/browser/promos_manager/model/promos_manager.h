@@ -18,6 +18,8 @@
 
 @class ImpressionLimit;
 
+struct PromoDisplayContext;
+
 namespace promos_manager {
 enum class Promo;
 }  // namespace promos_manager
@@ -87,7 +89,8 @@ class PromosManager : public KeyedService {
   virtual void DeregisterAfterDisplay(promos_manager::Promo promo) = 0;
 
   // Returns the next promo for display, if any.
-  virtual std::optional<promos_manager::Promo> NextPromoForDisplay() = 0;
+  virtual std::optional<promos_manager::Promo> NextPromoForDisplay(
+      const PromoDisplayContext& display_context) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_H_

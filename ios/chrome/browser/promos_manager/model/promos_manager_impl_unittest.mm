@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/model/promo.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/browser/promos_manager/model/promo_display_context.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -1164,8 +1165,9 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
 
+  PromoDisplayContext context;
   std::optional<promos_manager::Promo> promo =
-      promos_manager_->NextPromoForDisplay();
+      promos_manager_->NextPromoForDisplay(context);
   ASSERT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::CredentialProviderExtension);
   histogram_tester.ExpectUniqueSample(
@@ -1206,13 +1208,51 @@ TEST_F(PromosManagerImplTest,
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
 
+  PromoDisplayContext context;
   std::optional<promos_manager::Promo> promo =
-      promos_manager_->NextPromoForDisplay();
+      promos_manager_->NextPromoForDisplay(context);
 
   ASSERT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::PostRestoreSignInFullscreen);
   histogram_tester.ExpectUniqueSample(
       "IOS.PromosManager.EligiblePromosInQueueCount", 2, 1);
+}
+
+// Tests `NextPromoForDisplay` correctly filters promos based on their
+// display_time requirement.
+TEST_F(PromosManagerImplTest, NextPromoForDisplayWithFreshNtpRequirement) {
+  base::test::ScopedFeatureList feature_list;
+  CreatePromosManager();
+
+  promos_manager_->active_promos_ = {
+      promos_manager::Promo::Test,
+  };
+
+  PromoConfigsSet promoConfigs;
+  promoConfigs.emplace(promos_manager::Promo::Test, &kTestFeatureOne, nil,
+                       PromoDisplayTime::kFreshNtp);
+  promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
+
+  // Mock the FET tracker to allow the promo.
+  EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_, WouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
+
+  // 1. Test when is_on_fresh_ntp is false: the promo should NOT be displayed.
+  PromoDisplayContext context_not_fresh;
+  context_not_fresh.is_on_fresh_ntp = false;
+  std::optional<promos_manager::Promo> promo_not_fresh =
+      promos_manager_->NextPromoForDisplay(context_not_fresh);
+  EXPECT_FALSE(promo_not_fresh.has_value());
+
+  // 2. Test when is_on_fresh_ntp is true: the promo SHOULD be displayed.
+  PromoDisplayContext context_fresh;
+  context_fresh.is_on_fresh_ntp = true;
+  std::optional<promos_manager::Promo> promo_fresh =
+      promos_manager_->NextPromoForDisplay(context_fresh);
+  ASSERT_TRUE(promo_fresh.has_value());
+  EXPECT_EQ(promo_fresh.value(), promos_manager::Promo::Test);
 }
 
 // Tests `NextPromoForDisplay` returns empty when non of the pending promos can
@@ -1231,8 +1271,9 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsEmpty) {
   // Advance to so that the none of the pending promo can become active.
   test_clock_.Advance(kTimeDelta1Hour);
 
+  PromoDisplayContext context;
   std::optional<promos_manager::Promo> promo =
-      promos_manager_->NextPromoForDisplay();
+      promos_manager_->NextPromoForDisplay(context);
 
   EXPECT_FALSE(promo.has_value());
   histogram_tester.ExpectTotalCount(

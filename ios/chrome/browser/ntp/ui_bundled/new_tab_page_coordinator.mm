@@ -499,7 +499,12 @@
 }
 
 - (BOOL)isScrolledToTop {
-  return [self.NTPViewController isNTPScrolledToTop];
+  if (!self.webState) {
+    return YES;
+  }
+  NewTabPageTabHelper* NTPHelper =
+      NewTabPageTabHelper::FromWebState(self.webState);
+  return NTPHelper && NTPHelper->IsScrolledToTop();
 }
 
 - (void)scrollToTop {
@@ -772,6 +777,7 @@
 - (void)configureNTPMediator {
   NewTabPageMediator* NTPMediator = self.NTPMediator;
   DCHECK(NTPMediator);
+  NTPMediator.webState = self.webState;
   NTPMediator.feedVisibilityObserver = self;
   NTPMediator.feedControlDelegate = self;
   NTPMediator.NTPContentDelegate = self;
@@ -1653,6 +1659,7 @@
   }
 
   _webState = webState;
+  self.NTPMediator.webState = _webState;
   self.contentSuggestionsCoordinator.webState = _webState;
   [_searchEngineLogoMediator setWebState:_webState];
 }

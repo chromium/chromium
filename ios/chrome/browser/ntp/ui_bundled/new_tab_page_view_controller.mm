@@ -1704,6 +1704,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   CGFloat scrollPositionToSave = [self scrollPosition];
   scrollPositionToSave -= self.collectionShiftingOffset;
   self.mutator.scrollPositionToSave = scrollPositionToSave;
+  [self.mutator setIsScrolledToTop:[self isNTPScrolledToTop]];
 }
 
 // Updates the feed container's height constraint and z-position.

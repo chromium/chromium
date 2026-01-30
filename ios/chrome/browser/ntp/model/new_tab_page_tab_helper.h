@@ -45,6 +45,10 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Returns the saved scroll position of the associated NTP.
   CGFloat GetNTPScrollPosition();
 
+  // Setter/Getter for whether the NTP is scrolled to the top.
+  bool IsScrolledToTop() const;
+  void SetIsScrolledToTop(bool scrolled);
+
   // web::WebStateObserver overrides:
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
@@ -88,6 +92,9 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // position of the NTP is in advance, so we use `-CGFLOAT_MAX` to indicate
   // that it's scrolled to top.
   CGFloat scroll_position_ = -CGFLOAT_MAX;
+
+  // Whether the NTP is scrolled to the top.
+  bool is_scrolled_to_top_ = true;
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_TAB_HELPER_H_

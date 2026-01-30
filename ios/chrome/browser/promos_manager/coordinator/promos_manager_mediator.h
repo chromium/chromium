@@ -13,6 +13,8 @@
 #import "base/containers/small_map.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 
+class WebStateList;
+
 // Data used and cached to know what promo to show.
 struct PromoDisplayData {
   promos_manager::Promo promo;
@@ -27,6 +29,7 @@ struct PromoDisplayData {
 // Designated initializer.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                          promoConfigs:(PromoConfigsSet)promoConfigs
+                         webStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

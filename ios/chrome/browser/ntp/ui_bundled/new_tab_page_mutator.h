@@ -11,6 +11,9 @@
 // The current scroll position to save in the NTP state.
 @property(nonatomic, assign) CGFloat scrollPositionToSave;
 
+// Sets whether the NTP is scrolled to the top.
+- (void)setIsScrolledToTop:(BOOL)isScrolledToTop;
+
 // Notifies that the Lens "new" badge has been displayed.
 - (void)notifyLensBadgeDisplayed;
 

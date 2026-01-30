@@ -74,6 +74,14 @@ CGFloat NewTabPageTabHelper::GetNTPScrollPosition() {
   return scroll_position_;
 }
 
+bool NewTabPageTabHelper::IsScrolledToTop() const {
+  return is_scrolled_to_top_;
+}
+
+void NewTabPageTabHelper::SetIsScrolledToTop(bool scrolled) {
+  is_scrolled_to_top_ = scrolled;
+}
+
 #pragma mark - WebStateObserver
 
 void NewTabPageTabHelper::WebStateDestroyed(web::WebState* web_state) {
