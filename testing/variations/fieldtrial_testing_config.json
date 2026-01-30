@@ -26338,7 +26338,7 @@
             ]
         }
     ],
-    "ThrottleMainFrameTo60HzMacV2": [
+    "ThrottleMainFrameTo60HzMacV3": [
         {
             "platforms": [
                 "mac"
@@ -26347,6 +26347,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "HighFramerateRequestFromClient",
                         "ThrottleMainFrameTo60Hz",
                         "UrgentMainFrameForInput"
                     ]
