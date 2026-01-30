@@ -13554,53 +13554,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="LocalNetworkRequests">
-  <owner>uthakore@chromium.org</owner>
-  <owner>invernizzi@chromium.org</owner>
-  <summary>
-    Metrics that describe the resource request behavior of pages for which
-    navigation successfully commits. A separate entry is generated for every
-    unique IP address or localhost port number to which the loaded page makes a
-    resource request.
-  </summary>
-  <metric name="Count.Failed">
-    <summary>
-      The count of requests made by the page to the given resource for which a
-      response is not received or a network error occurs (i.e. |net_error| !=
-      |net::OK|) between the time navigation to the page commits and the time it
-      completes.
-    </summary>
-  </metric>
-  <metric name="Count.Successful">
-    <summary>
-      The count of requests made by the page to the given resource for which a
-      successful response is received (i.e. |net_error| == |net::OK|) between
-      the time navigation to the page commits and the time it completes.
-    </summary>
-  </metric>
-  <metric name="PortType">
-    <summary>
-      An enum value representing the type of port for requests to localhost. The
-      enum is defined in |LocalNetworkRequestsPageLoadMetricsObserver|. Possible
-      values are 1 for common web server ports, 2 for common database server
-      ports, 4 for common print server ports, 8 for common development server
-      ports, and 0 for all other ports.
-    </summary>
-  </metric>
-  <metric name="ResourceType">
-    <summary>
-      An enum value representing the type of resource requested. The enum is
-      defined in |LocalNetworkRequestsPageLoadMetricsObserver|. Possible values
-      are 0 for public resources requested by private pages, 1 for private
-      resources requested by public pages, 2 for private resources within the
-      same reserved IP space as the loaded private page, 4 for private resources
-      within a different reserved IP space than the loaded private page, 8 for
-      resources requested by public pages that are suspected to be routers, and
-      16 for localhost resources.
-    </summary>
-  </metric>
-</event>
-
 <event name="LoginDetectionV2" singular="True">
   <owner>yigu@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
