@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
 class PrefService;
@@ -16,9 +17,18 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace syncer {
+class SyncService;
+}
+
+#if !BUILDFLAG(IS_FUCHSIA)
+class GoogleGroupsManager;
+#endif
+
 namespace autofill {
 
 class AutofillClient;
+class EntityDataManager;
 
 // An AutofillAI-related action that a user may take directly or indirectly
 // (e.g., IPH).
@@ -98,6 +108,21 @@ bool MayPerformAutofillAiAction(
     std::optional<EntityType> entity_type = std::nullopt,
     std::string* debug_message = nullptr);
 
+bool MayPerformAutofillAiAction(
+#if !BUILDFLAG(IS_FUCHSIA)
+    const GoogleGroupsManager* google_groups_manager,
+#endif
+    const PrefService* prefs,
+    const EntityDataManager* edm,
+    const signin::IdentityManager* identity_manager,
+    const syncer::SyncService* sync_service,
+    bool is_wallet_storage_enabled,
+    bool is_off_the_record,
+    const GeoIpCountryCode& country_code,
+    AutofillAiAction action,
+    std::optional<EntityType> entity_type = std::nullopt,
+    std::string* debug_message = nullptr);
+
 // Returns the AutofillAI opt-in status for the profile and account tied to
 // `client`. Opt-in status is a profile pref, but keyed by (hashed) GAIA id. In
 // particular, it is always `false` for users without a signed-in primary
@@ -124,6 +149,18 @@ bool MayPerformAutofillAiAction(
 // (Enhanced Autofill) are.
 bool SetAutofillAiOptInStatus(AutofillClient& client,
                               AutofillAiOptInStatus opt_in_status);
+bool SetAutofillAiOptInStatus(
+#if !BUILDFLAG(IS_FUCHSIA)
+    const GoogleGroupsManager* google_groups_manager,
+#endif
+    PrefService* prefs,
+    const EntityDataManager* edm,
+    const signin::IdentityManager* identity_manager,
+    const syncer::SyncService* sync_service,
+    bool is_wallet_storage_enabled,
+    bool is_off_the_record,
+    const GeoIpCountryCode& country_code,
+    AutofillAiOptInStatus opt_in_status);
 
 // Returns whether the user has ever explicitly opted in or out of Autofill AI.
 //
