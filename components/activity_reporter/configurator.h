@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/version_info/channel.h"
 #include "components/update_client/configurator.h"
 
 class PrefService;
@@ -31,7 +32,9 @@ class ActivityReporterConfigurator final : public update_client::Configurator {
   ActivityReporterConfigurator(
       base::RepeatingCallback<PrefService*()> pref_service_provider,
       scoped_refptr<update_client::NetworkFetcherFactory>
-          network_fetcher_factory);
+          network_fetcher_factory,
+      base::RepeatingCallback<version_info::Channel()> channel_provider,
+      bool per_user_install);
   ActivityReporterConfigurator(const ActivityReporterConfigurator&) = delete;
   ActivityReporterConfigurator& operator=(
       const ActivityReporterConfigurator&&) = delete;
@@ -76,6 +79,8 @@ class ActivityReporterConfigurator final : public update_client::Configurator {
   base::RepeatingCallback<PrefService*()> pref_service_provider_;
   std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
+  base::RepeatingCallback<version_info::Channel()> channel_provider_;
+  const bool per_user_install_;
 };
 
 }  // namespace activity_reporter
