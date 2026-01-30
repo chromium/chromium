@@ -229,26 +229,29 @@ bool AccountHasChromeBenefits(Profile& profile, AggregatedJournal& journal) {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }  // namespace
 
-ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
-    : service_(service),
+ActorPolicyChecker::ActorPolicyChecker(
+    Profile& profile,
+    CanActOnWebChangedCallback change_callback,
+    AggregatedJournal& journal)
+    : profile_(&profile),
+      change_callback_(change_callback),
 #if BUILDFLAG(ENABLE_GLIC)
-      url_blocklist_manager_(service.GetProfile()->GetPrefs(),
+      url_blocklist_manager_(profile_->GetPrefs(),
                              glic::prefs::kGlicActuationOnWebBlockedForURLs,
                              glic::prefs::kGlicActuationOnWebAllowedForURLs),
 #endif  // BUILDFLAG(ENABLE_GLIC)
-      journal_(service.GetJournal().GetSafeRef()) {
-  InitActionBlocklist(service.GetProfile());
+      journal_(journal.GetSafeRef()) {
+  InitActionBlocklist(profile_);
 
 #if BUILDFLAG(ENABLE_GLIC)
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(service.GetProfile());
+      IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
   subscription_eligibility::SubscriptionEligibilityService*
-      subscription_service =
-          subscription_eligibility::SubscriptionEligibilityServiceFactory::
-              GetForProfile(service.GetProfile());
+      subscription_service = subscription_eligibility::
+          SubscriptionEligibilityServiceFactory::GetForProfile(profile_);
   if (subscription_service) {
     subscription_eligibility_service_observation_.Observe(subscription_service);
   }
@@ -257,7 +260,7 @@ ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
   std::tie(can_act_on_web_, cannot_act_on_web_reason_) =
       ComputeActOnWebCapability();
 
-  pref_change_registrar_.Init(service.GetProfile()->GetPrefs());
+  pref_change_registrar_.Init(profile_->GetPrefs());
 #if BUILDFLAG(ENABLE_GLIC)
   // Listens to policy changes.
   pref_change_registrar_.Add(
@@ -310,8 +313,7 @@ void ActorPolicyChecker::OnPrimaryAccountChanged(
 }
 
 void ActorPolicyChecker::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(service_->GetProfile());
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
       info.account_id == identity_manager->GetPrimaryAccountId(
                              signin::ConsentLevel::kSignin)) {
@@ -320,8 +322,7 @@ void ActorPolicyChecker::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
 }
 
 void ActorPolicyChecker::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(service_->GetProfile());
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
       info.account_id == identity_manager->GetPrimaryAccountId(
                              signin::ConsentLevel::kSignin)) {
@@ -393,7 +394,7 @@ void ActorPolicyChecker::OnPrefOrAccountChanged() {
   std::tie(can_act_on_web_, cannot_act_on_web_reason_) =
       ComputeActOnWebCapability();
   if (old_value != can_act_on_web_) {
-    service_->OnActOnWebCapabilityChanged(CanActOnWeb());
+    change_callback_.Run(CanActOnWeb());
   }
 }
 
@@ -431,10 +432,8 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
   // kGlicEligibilitySeparateAccountCapability), then that capability must be
   // checked here. This is because actuation currently implements stricter
   // account checks.
-  auto* profile = service_->GetProfile();
-  CHECK(profile);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      IdentityManagerFactory::GetForProfile(profile_);
   CHECK(identity_manager);
   // `account_info` is empty if the user has not signed in.
   auto can_use_model_execution_features =
@@ -456,14 +455,14 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
   }
 
   bool account_eligible_for_actuation =
-      IsAccountEligibleForActuation(*profile, *journal_);
+      IsAccountEligibleForActuation(*profile_, *journal_);
   if (!account_eligible_for_actuation) {
     return log_and_return(CanActOutcome::kNo,
                           CannotActReason::kManagedOrDataProtected);
   }
 
-  if (!IsBrowserManaged(*profile)) {
-    if (AccountHasChromeBenefits(*profile, *journal_)) {
+  if (!IsBrowserManaged(*profile_)) {
+    if (AccountHasChromeBenefits(*profile_, *journal_)) {
       // Only respect the consumer check if the browser is not managed.
       return log_and_return(CanActOutcome::kYes,
                             "Not managed: account has chrome benefits");
@@ -472,11 +471,11 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
                           CannotActReason::kAccountMissingChromeBenefits);
   }
 
-  if (ActuationEnabledForManagedUser(*profile, *journal_)) {
+  if (ActuationEnabledForManagedUser(*profile_, *journal_)) {
     return log_and_return(CanActOutcome::kYes,
                           "Managed: actuation enabled via policy");
   }
-  if (HasUrlAllowlist(*profile)) {
+  if (HasUrlAllowlist(*profile_)) {
     // If actuation in general is blocked by policy, but there is a non-empty
     // allow list, then we need `CanActOnWeb()` to be true so we can
     // attempt actuation up until the point where we evaluate a URL for its

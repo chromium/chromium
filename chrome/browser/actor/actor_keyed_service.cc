@@ -114,7 +114,11 @@ using ui::ActorUiStateManagerInterface;
 
 ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
-  policy_checker_ = std::make_unique<ActorPolicyChecker>(*this);
+  policy_checker_ = std::make_unique<ActorPolicyChecker>(
+      *profile,
+      base::BindRepeating(&ActorKeyedService::OnActOnWebCapabilityChanged,
+                          base::Unretained(this)),
+      GetJournal());
   profile_observation_.Observe(profile_);
 }
 

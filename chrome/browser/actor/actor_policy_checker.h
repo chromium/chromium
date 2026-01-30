@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_POLICY_CHECKER_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_POLICY_CHECKER_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -37,7 +38,6 @@ class TabInterface;
 
 namespace actor {
 
-class ActorKeyedService;
 class AggregatedJournal;
 class OriginChecker;
 
@@ -47,7 +47,12 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
                            public subscription_eligibility::
                                SubscriptionEligibilityService::Observer {
  public:
-  explicit ActorPolicyChecker(ActorKeyedService& service);
+  // Callback to run whenever the can_act_on_web_ value changes.
+  using CanActOnWebChangedCallback =
+      base::RepeatingCallback<void(bool /*can_act_on_web*/)>;
+  explicit ActorPolicyChecker(Profile& profile,
+                              CanActOnWebChangedCallback change_callback,
+                              AggregatedJournal& journal);
   ActorPolicyChecker(const ActorPolicyChecker&) = delete;
   ActorPolicyChecker& operator=(const ActorPolicyChecker&) = delete;
   ~ActorPolicyChecker() override;
@@ -114,8 +119,11 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
 
   std::pair<CanActOutcome, CannotActReason> ComputeActOnWebCapability();
 
-  // Owns `this`.
-  base::raw_ref<ActorKeyedService> service_;
+  // This class must be transitively owned by Proile ancannot outlive it.
+  raw_ptr<Profile> profile_;
+
+  // Client callback to run whenever the can_act_on_web_ value changes.
+  CanActOnWebChangedCallback change_callback_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
