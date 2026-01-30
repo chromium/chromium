@@ -501,7 +501,11 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
 
     MenuHost::InitParams new_init_params = init_params;
     new_init_params.contents_view = scroll_view_container_.get();
+    base::WeakPtr<SubmenuView> weak_ptr = weak_ptr_factory_.GetWeakPtr();
     host_->InitMenuHost(new_init_params);
+    if (!weak_ptr) {
+      return;
+    }
   }
 
   // Only fire kMenuStart when a top level menu is being shown to notify that

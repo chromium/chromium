@@ -215,6 +215,13 @@ void MenuHost::ShowMenuHost(bool do_capture) {
   base::AutoReset<bool> reseter(&ignore_capture_lost_, true);
   ShowInactive();
 
+  // ShowInactive() can trigger events that cause the menu to be destroyed
+  // (e.g., focus changes on macOS). If that happened, bail out early to avoid
+  // accessing the now-dangling parent_menu_item_ pointer in submenu_.
+  if (destroying_ || !submenu_) {
+    return;
+  }
+
   if (do_capture) {
     MenuController* menu_controller =
         submenu_->GetMenuItem()->GetMenuController();
