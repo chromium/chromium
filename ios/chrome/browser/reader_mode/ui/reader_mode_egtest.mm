@@ -1136,12 +1136,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
           grey_accessibilityID(kBadgeButtonIncognitoAccessibilityIdentifier)];
 }
 
-// Tests that overscroll actions can be used to refresh dismisses Reader mode.
-// TODO(crbug.com/446692216): Re-enable this test.
-- (void)DISABLED_testOverscrollToRefresh {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Overscroll Actions are only on iPhone.");
-  }
+// Tests that a reload action dismisses Reader mode.
+- (void)testReloadDismissesReaderMode {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
   // Open Reader Mode UI.
@@ -1150,12 +1146,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       @"Reader mode content could not be loaded");
   [self assertReaderModePageIsVisible];
 
-  // Pull down to reload.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::OverscrollSwipe(kGREYDirectionDown)];
-
-  // Wait for the page to reload.
-  [ChromeEarlGrey waitForPageToFinishLoading];
+  [ChromeEarlGrey reload];
 
   // The Reader Mode UI is not visible.
   [self assertReaderModePageIsHidden];
