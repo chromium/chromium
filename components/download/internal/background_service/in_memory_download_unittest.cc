@@ -182,9 +182,7 @@ class InMemoryDownloadTest : public testing::Test {
     EXPECT_EQ(storage::BlobReader::Status::DONE, status);
     EXPECT_EQ(bytes_read, static_cast<int>(expected.size()));
     EXPECT_EQ(async_bytes_read, 0);
-    for (size_t i = 0; i < expected.size(); i++) {
-      UNSAFE_TODO(EXPECT_EQ(expected[i], buffer->data()[i]));
-    }
+    EXPECT_EQ(expected, base::as_chars(buffer->first(bytes_read)));
   }
 
   // IO thread used by network and blob IO tasks.
