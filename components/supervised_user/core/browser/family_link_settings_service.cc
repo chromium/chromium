@@ -8,7 +8,6 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -32,6 +31,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace supervised_user {
 
@@ -287,7 +287,7 @@ FamilyLinkSettingsService::MergeDataAndStartSyncing(
   DCHECK_EQ(SUPERVISED_USER_SETTINGS, type);
   sync_processor_ = std::move(sync_processor);
 
-  std::set<std::string> seen_keys;
+  absl::flat_hash_set<std::string> seen_keys;
   for (const auto it : *GetAtomicSettings()) {
     seen_keys.insert(it.first);
   }
@@ -305,7 +305,7 @@ FamilyLinkSettingsService::MergeDataAndStartSyncing(
 
   // Clear all atomic and split settings, then recreate them from Sync data.
   Clear();
-  std::set<std::string> added_sync_keys;
+  absl::flat_hash_set<std::string> added_sync_keys;
   for (const SyncData& sync_data : initial_sync_data) {
     DCHECK_EQ(SUPERVISED_USER_SETTINGS, sync_data.GetDataType());
     const ::sync_pb::ManagedUserSettingSpecifics& supervised_user_setting =
@@ -324,7 +324,7 @@ FamilyLinkSettingsService::MergeDataAndStartSyncing(
     std::string name_key = name_suffix;
     base::DictValue* dict = GetDictionaryAndSplitKey(&name_suffix);
     dict->Set(name_suffix, std::move(*value));
-    if (seen_keys.find(name_key) == seen_keys.end()) {
+    if (!seen_keys.contains(name_key)) {
       added_sync_keys.insert(name_key);
     }
   }
