@@ -75,6 +75,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync/base/features.h"
@@ -452,13 +453,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   // Add the account to the other profile.
   signin::IdentityManager* other_identity_manager =
       IdentityManagerFactory::GetForProfile(other_profile);
-  other_identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-      account_info.gaia, account_info.email, "dummy_refresh_token",
-      /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::kUnknown,
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-  other_identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_info.account_id, signin::ConsentLevel::kSync);
+  signin::MakePrimaryAccountAvailable(other_identity_manager,
+                                      account_info.email,
+                                      signin::ConsentLevel::kSignin);
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
@@ -1688,7 +1685,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(primary_account_info.account_id,
-                          signin::ConsentLevel::kSync);
+                          signin::ConsentLevel::kSignin);
 
   AccountInfo account_info =
       MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
@@ -2296,7 +2293,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
 // non-syncing profile.
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorBrowserTest,
-    ForcedEnterpriseInterceptionPrimaryACcountReauthSyncDisabledTest) {
+    ForcedEnterpriseInterceptionPrimaryAccountReauthSyncDisabledTest) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
       MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
@@ -2514,13 +2511,10 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Add the account to the other profile.
   signin::IdentityManager* other_identity_manager =
       IdentityManagerFactory::GetForProfile(other_profile);
-  other_identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-      account_info.gaia, account_info.email, "dummy_refresh_token",
-      /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::kUnknown,
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-  other_identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_info.account_id, signin::ConsentLevel::kSync);
+
+  signin::MakePrimaryAccountAvailable(other_identity_manager,
+                                      account_info.email,
+                                      signin::ConsentLevel::kSignin);
   enterprise_util::SetUserAcceptedAccountManagement(other_profile, true);
 
   // Add a tab.
