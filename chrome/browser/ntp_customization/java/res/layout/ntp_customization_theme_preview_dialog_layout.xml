@@ -118,19 +118,20 @@ found in the LICENSE file.
         android:text="@android:string/cancel"
         android:contentDescription="@android:string/cancel"
         android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginBottom="@dimen/ntp_customization_back_button_margin_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/save_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         style="@style/FilledButton"
         android:text="@string/mtrl_picker_save"
         android:contentDescription="@string/mtrl_picker_save"
         android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
-        android:layout_marginBottom="@dimen/ntp_customization_back_button_margin_start"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@id/cancel_button"
+        app:layout_constraintBottom_toBottomOf="@id/cancel_button"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewLayout>
