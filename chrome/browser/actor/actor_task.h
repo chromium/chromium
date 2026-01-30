@@ -63,7 +63,6 @@ class ActorTask {
 
   ActorTask() = delete;
   ActorTask(Profile* profile,
-            std::unique_ptr<ExecutionEngine> execution_engine,
             std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
             webui::mojom::TaskOptionsPtr options,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
@@ -277,8 +276,8 @@ class ActorTask {
 
   std::unique_ptr<ActionTrackerForMetrics> action_tracker_for_metrics_;
 
-  // There are multiple possible execution engines. For now we only support
-  // ExecutionEngine.
+  // The engine responsible for actually processing and invoking a list of
+  // ToolRequests. Always non-null.
   std::unique_ptr<ExecutionEngine> execution_engine_;
 
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;

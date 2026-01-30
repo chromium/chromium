@@ -229,13 +229,11 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
 
     auto execution_engine = ExecutionEngine::CreateForTesting(
         profile(), std::move(ui_event_dispatcher));
-    auto raw_execution_engine = execution_engine.get();
-    task_ = std::make_unique<ActorTask>(profile(), std::move(execution_engine),
-                                        std::move(task_ui_event_dispatcher),
-                                        /*options=*/nullptr,
-                                        mock_actor_task_delegate_.GetWeakPtr());
+    task_ = std::make_unique<ActorTask>(
+        profile(), std::move(task_ui_event_dispatcher),
+        /*options=*/nullptr, mock_actor_task_delegate_.GetWeakPtr());
     task_->SetIdForTesting(0);
-    raw_execution_engine->SetOwner(task_.get());
+    task_->SetExecutionEngineForTesting(std::move(execution_engine));
 
     for (auto& mock :
          {mock_ui_event_dispatcher_, task_mock_ui_event_dispatcher_}) {

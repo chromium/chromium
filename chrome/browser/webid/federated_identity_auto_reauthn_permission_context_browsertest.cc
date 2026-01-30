@@ -53,12 +53,10 @@ IN_PROC_BROWSER_TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
 
   // Create actor task and attach it to the current tab.
   auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
-  std::unique_ptr<actor::ExecutionEngine> execution_engine =
-      std::make_unique<actor::ExecutionEngine>(browser()->profile());
 
   std::unique_ptr<actor::ActorTask> actor_task =
       std::make_unique<actor::ActorTask>(
-          browser()->profile(), std::move(execution_engine),
+          browser()->profile(),
           actor::ui::NewUiEventDispatcher(
               actor_service->GetActorUiStateManager()),
           /*options=*/nullptr);

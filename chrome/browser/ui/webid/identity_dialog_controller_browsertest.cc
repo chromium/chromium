@@ -228,9 +228,9 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
     auto execution_engine = actor::ExecutionEngine::CreateForTesting(
         browser()->profile(), std::move(ui_event_dispatcher));
     auto task = std::make_unique<actor::ActorTask>(
-        browser()->profile(), std::move(execution_engine),
-        std::move(task_ui_event_dispatcher),
+        browser()->profile(), std::move(task_ui_event_dispatcher),
         /*options=*/nullptr, mock_actor_task_delegate_.GetWeakPtr());
+    task->SetExecutionEngineForTesting(std::move(execution_engine));
     tabs::TabInterface* tab =
         tabs::TabInterface::GetFromContents(web_contents_);
     EXPECT_NE(tab, nullptr);

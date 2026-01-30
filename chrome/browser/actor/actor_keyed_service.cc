@@ -331,11 +331,9 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
     return TaskId();
   }
   RecordActorTaskCreated(true);
-  auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(
-      profile_.get(), std::move(execution_engine),
-      ui::NewUiEventDispatcher(GetActorUiStateManager()), std::move(options),
-      std::move(delegate));
+      profile_.get(), ui::NewUiEventDispatcher(GetActorUiStateManager()),
+      std::move(options), std::move(delegate));
   return AddActiveTask(std::move(actor_task));
 }
 

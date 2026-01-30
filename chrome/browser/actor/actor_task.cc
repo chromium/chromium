@@ -117,14 +117,13 @@ void ActorTask::ActorControlledTabState::OnVisibilityChanged(
 }
 
 ActorTask::ActorTask(Profile* profile,
-                     std::unique_ptr<ExecutionEngine> execution_engine,
                      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
                      webui::mojom::TaskOptionsPtr options,
                      base::WeakPtr<ActorTaskDelegate> delegate)
     : profile_(profile),
       create_time_(base::TimeTicks::Now()),
       action_tracker_for_metrics_(std::make_unique<ActionTrackerForMetrics>()),
-      execution_engine_(std::move(execution_engine)),
+      execution_engine_(std::make_unique<ExecutionEngine>(profile_)),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       title_(options && options->title.has_value() ? options->title.value()
@@ -458,16 +457,11 @@ void ActorTask::Uninterrupt(State resumed_state) {
     return;
   }
   SetState(resumed_state);
-
-  // TODO(bokan): execution_engine_ is always passed in constructor and never
-  // reset so we should be able to CHECK and assume it's non-null.
-  if (execution_engine_) {
-    execution_engine_->DidUninterruptTask();
-  }
+  execution_engine_->DidUninterruptTask();
 }
 
 bool ActorTask::CancelOngoingActions(mojom::ActionResultCode reason) {
-  if (!execution_engine_ || IsCompleted()) {
+  if (IsCompleted()) {
     return false;
   }
   did_add_tabs_callback_.Cancel();
