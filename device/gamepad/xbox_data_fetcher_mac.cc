@@ -173,14 +173,14 @@ bool XboxDataFetcher::TryOpenDevice(io_service_t service) {
 
   auto* controller = pending->controller.get();
   XboxControllerMac::OpenDeviceResult result = controller->OpenDevice(service);
-  if (result == XboxControllerMac::OpenDeviceResult::OPEN_SUCCEEDED) {
+  if (result == XboxControllerMac::OpenDeviceResult::kOpenSucceeded) {
     AddController(pending->controller.release());
     return true;
   }
 
   if (did_register_interest &&
       result ==
-          XboxControllerMac::OpenDeviceResult::OPEN_FAILED_EXCLUSIVE_ACCESS) {
+          XboxControllerMac::OpenDeviceResult::kOpenFailedExclusiveAccess) {
     pending_controllers_.insert(std::move(pending));
   }
   return false;

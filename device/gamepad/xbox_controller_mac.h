@@ -65,11 +65,17 @@ class XboxControllerMac final : public AbstractHapticGamepad {
     LED_NUM_PATTERNS
   };
 
-  enum OpenDeviceResult {
-    OPEN_SUCCEEDED = 0,
-    OPEN_FAILED,
-    OPEN_FAILED_EXCLUSIVE_ACCESS
+  // This enum is used for the Gamepad.UsbDeviceOpenMacResult histogram.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OpenDeviceResult)
+  enum class OpenDeviceResult {
+    kOpenSucceeded = 0,
+    kOpenFailed,
+    kOpenFailedExclusiveAccess,
+    kMaxValue = kOpenFailedExclusiveAccess
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:GamepadUsbDeviceOpenMacResult)
 
   struct Data {
     bool buttons[15];

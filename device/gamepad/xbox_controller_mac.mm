@@ -29,6 +29,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_uma.h"
 
@@ -313,6 +314,10 @@ std::string GetDeviceName(io_service_t service) {
   return std::string(device_name);
 }
 
+void RecordUsbDeviceOpenMac(XboxControllerMac::OpenDeviceResult result) {
+  UMA_HISTOGRAM_ENUMERATION("Gamepad.UsbDeviceOpenMacResult", result);
+}
+
 }  // namespace
 
 XboxControllerMac::XboxControllerMac(Delegate* delegate)
@@ -327,8 +332,10 @@ void XboxControllerMac::DoShutdown() {
   if (interface_ && interface_is_open_)
     (*interface_.get())->USBInterfaceClose(interface_.get());
   interface_.reset();
-  if (device_ && device_is_open_)
+  if (device_ && device_is_open_) {
     (*device_.get())->USBDeviceClose(device_.get());
+    VLOG(1) << "XboxControllerMac: called USBDeviceClose";
+  }
   device_.reset();
 }
 
@@ -368,22 +375,22 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
       service, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID, &plugin,
       &score);
   if (kr != KERN_SUCCESS)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
   base::mac::ScopedIOPluginInterface<IOCFPlugInInterface> plugin_ref(plugin);
 
   HRESULT res = (*plugin)->QueryInterface(
       plugin, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID320),
       (LPVOID*)&device_);
   if (!SUCCEEDED(res) || !device_)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
 
   kr = (*device_.get())->GetDeviceVendor(device_.get(), &vendor_id_);
   if (kr != KERN_SUCCESS)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
 
   kr = (*device_.get())->GetDeviceProduct(device_.get(), &product_id_);
   if (kr != KERN_SUCCESS)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
 
   // Record a connected XInput gamepad. Non-XInput devices are recorded
   // elsewhere.
@@ -435,20 +442,26 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
       request.bAlternateSetting = kIOUSBFindInterfaceDontCare;
       break;
     default:
-      return OPEN_FAILED;
+      return OpenDeviceResult::kOpenFailed;
   }
 
   // Open the device and configure it.
   kr = (*device_.get())->USBDeviceOpen(device_.get());
+  VLOG(1) << "XboxControllerMac: USBDeviceOpen returned " << kr;
   if (kr == kIOReturnExclusiveAccess) {
     // USBDeviceOpen may fail with kIOReturnExclusiveAccess if the device has
     // already been opened by another process. Usually this is temporary and
     // the device will soon become available. Signal to the data fetcher that
     // it should retry.
-    return OPEN_FAILED_EXCLUSIVE_ACCESS;
+    RecordUsbDeviceOpenMac(OpenDeviceResult::kOpenFailedExclusiveAccess);
+    return OpenDeviceResult::kOpenFailedExclusiveAccess;
   } else if (kr != KERN_SUCCESS) {
-    return OPEN_FAILED;
+    RecordUsbDeviceOpenMac(OpenDeviceResult::kOpenFailed);
+    return OpenDeviceResult::kOpenFailed;
+  } else {
+    RecordUsbDeviceOpenMac(OpenDeviceResult::kOpenSucceeded);
   }
+
   device_is_open_ = true;
 
   // Xbox controllers have one configuration option which has configuration
@@ -457,11 +470,11 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
   kr = (*device_.get())
            ->GetConfigurationDescriptorPtr(device_.get(), 0, &config_desc);
   if (kr != KERN_SUCCESS)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
   kr = (*device_.get())
            ->SetConfiguration(device_.get(), config_desc->bConfigurationValue);
   if (kr != KERN_SUCCESS)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
 
   // The device has 4 interfaces. They are as follows:
   // Protocol 1:
@@ -481,14 +494,14 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
   kr =
       (*device_.get())->CreateInterfaceIterator(device_.get(), &request, &iter);
   if (kr != KERN_SUCCESS)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
   base::mac::ScopedIOObject<io_iterator_t> iter_ref(iter);
 
   // There should be exactly one USB interface which matches the requested
   // settings.
   io_service_t usb_interface = IOIteratorNext(iter);
   if (!usb_interface)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
 
   // We need to make an InterfaceInterface to communicate with the device
   // endpoint. This is the same process as earlier: first make a
@@ -499,7 +512,7 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
       usb_interface, kIOUSBInterfaceUserClientTypeID, kIOCFPlugInInterfaceID,
       &plugin_interface, &score);
   if (kr != KERN_SUCCESS || !plugin_interface)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
   base::mac::ScopedIOPluginInterface<IOCFPlugInInterface> interface_ref(
       plugin_interface);
 
@@ -517,19 +530,19 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
                              (LPVOID*)&interface_);
 
   if (!SUCCEEDED(res) || !interface_)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
 
   // Actually open the interface.
   kr = (*interface_.get())->USBInterfaceOpen(interface_.get());
   if (kr != KERN_SUCCESS)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
   interface_is_open_ = true;
 
   CFRunLoopSourceRef source_ref;
   kr = (*interface_.get())
            ->CreateInterfaceAsyncEventSource(interface_.get(), &source_ref);
   if (kr != KERN_SUCCESS || !source_ref)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
   source_.reset(source_ref);
   CFRunLoopAddSource(CFRunLoopGetCurrent(), source_.get(),
                      kCFRunLoopDefaultMode);
@@ -539,7 +552,7 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
   uint8_t num_endpoints;
   kr = (*interface_.get())->GetNumEndpoints(interface_.get(), &num_endpoints);
   if (kr != KERN_SUCCESS || num_endpoints < 2)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
 
   for (int i = 1; i <= 2; i++) {
     uint8_t direction;
@@ -552,20 +565,20 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
              ->GetPipeProperties(interface_.get(), i, &direction, &number,
                                  &transfer_type, &max_packet_size, &interval);
     if (kr != KERN_SUCCESS || transfer_type != kUSBInterrupt)
-      return OPEN_FAILED;
+      return OpenDeviceResult::kOpenFailed;
     if (i == read_endpoint_) {
       if (direction != kUSBIn)
-        return OPEN_FAILED;
+        return OpenDeviceResult::kOpenFailed;
       read_buffer_ = base::HeapArray<uint8_t>::Uninit(max_packet_size);
       if (!QueueRead())
-        return OPEN_FAILED;
+        return OpenDeviceResult::kOpenFailed;
     } else if (i == control_endpoint_) {
       if (direction != kUSBOut)
-        return OPEN_FAILED;
+        return OpenDeviceResult::kOpenFailed;
 
       // Xbox One controllers require an initialization packet.
       if (xinput_type_ == kXInputTypeXboxOne && !WriteXboxOneInit())
-        return OPEN_FAILED;
+        return OpenDeviceResult::kOpenFailed;
     }
   }
 
@@ -574,9 +587,9 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
   // one USB hub and attached to another, the location ID will change).
   kr = (*device_.get())->GetLocationID(device_.get(), &location_id_);
   if (kr != KERN_SUCCESS)
-    return OPEN_FAILED;
+    return OpenDeviceResult::kOpenFailed;
 
-  return OPEN_SUCCEEDED;
+  return OpenDeviceResult::kOpenSucceeded;
 }
 
 void XboxControllerMac::SetLEDPattern(LEDPattern pattern) {

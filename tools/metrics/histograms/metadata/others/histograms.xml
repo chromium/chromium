@@ -4828,6 +4828,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gamepad.UsbDeviceOpenMacResult"
+    enum="GamepadUsbDeviceOpenMacResult" expires_after="2027-01-12">
+  <owner>robpitkin@google.com</owner>
+  <owner>mattreynolds@google.com</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the result of opening a USB Xbox gamepad on macOS. This helps
+    diagnose issues where Chrome fails to get exclusive access to the device.
+  </summary>
+</histogram>
+
 <histogram name="Gamepad.ValidSharedMemoryHandle" enum="HandleValidity"
     expires_after="2024-05-12">
   <owner>mattreynolds@google.com</owner>
