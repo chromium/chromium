@@ -53,6 +53,10 @@ class NetworkStateHandler;
 class SchedulerConfigurationManager;
 }  // namespace ash
 
+namespace component_updater {
+class ComponentUpdateService;
+}  // namespace component_updater
+
 namespace guest_os {
 class GuestOsStabilityMonitor;
 }  // namespace guest_os
@@ -188,9 +192,10 @@ class CrostiniManager : public KeyedService,
 
   static CrostiniManager* GetForProfile(Profile* profile);
 
-  // `scheduler_configuration_manager` must outlive `this`, but may be null in
-  // unit tests.
+  // `component_update_service` and `scheduler_configuration_manager` must
+  // outlive `this`, but both of them may be null in unit tests.
   explicit CrostiniManager(
+      const component_updater::ComponentUpdateService* component_update_service,
       ash::SchedulerConfigurationManager* scheduler_configuration_manager,
       Profile* profile);
 
@@ -770,6 +775,8 @@ class CrostiniManager : public KeyedService,
 
   bool ShouldWarnAboutExpiredVersion(const guest_os::GuestId& container_id);
 
+  const raw_ptr<const component_updater::ComponentUpdateService>
+      component_update_service_;
   const raw_ptr<ash::SchedulerConfigurationManager>
       scheduler_configuration_manager_;
 

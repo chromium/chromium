@@ -26,7 +26,9 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "components/component_updater/mock_component_updater_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace guest_os {
@@ -40,6 +42,9 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     ash::DebugDaemonClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
+    TestingBrowserProcess::GetGlobal()->SetComponentUpdater(
+        std::make_unique<testing::NiceMock<
+            component_updater::MockComponentUpdateService>>());
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->InitializeSchedulerConfigurationManager();
@@ -47,6 +52,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     // CrostiniManager will create a GuestOsStabilityMonitor for us.
     profile_ = std::make_unique<TestingProfile>();
     crostini_manager_ = std::make_unique<crostini::CrostiniManager>(
+        TestingBrowserProcess::GetGlobal()->component_updater(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->scheduler_configuration_manager(),
@@ -71,6 +77,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->ShutdownSchedulerConfigurationManager();
+    TestingBrowserProcess::GetGlobal()->SetComponentUpdater(nullptr);
 
     ash::SeneschalClient::Shutdown();
     ash::DebugDaemonClient::Shutdown();

@@ -1292,11 +1292,9 @@ void CrostiniManager::AddRunningContainerForTesting(std::string vm_name,
 
 void CrostiniManager::UpdateLaunchMetricsForEnterpriseReporting() {
   PrefService* const profile_prefs = profile_->GetPrefs();
-  const component_updater::ComponentUpdateService* const update_service =
-      g_browser_process->component_updater();
   const base::Clock* const clock = base::DefaultClock::GetInstance();
-  WriteMetricsForReportingToPrefsIfEnabled(profile_prefs, update_service,
-                                           clock);
+  WriteMetricsForReportingToPrefsIfEnabled(
+      profile_prefs, component_update_service_.get(), clock);
 }
 
 CrostiniManager* CrostiniManager::GetForProfile(Profile* profile) {
@@ -1304,12 +1302,17 @@ CrostiniManager* CrostiniManager::GetForProfile(Profile* profile) {
 }
 
 CrostiniManager::CrostiniManager(
+    const component_updater::ComponentUpdateService* component_update_service,
     ash::SchedulerConfigurationManager* scheduler_configuration_manager,
     Profile* profile)
-    : scheduler_configuration_manager_(scheduler_configuration_manager),
+    : component_update_service_(component_update_service),
+      scheduler_configuration_manager_(scheduler_configuration_manager),
       profile_(profile),
       owner_id_(CryptohomeIdForProfile(profile)),
       baguette_installer_(profile_, *profile_->GetPrefs()) {
+  if (!component_update_service_) {
+    CHECK_IS_TEST();
+  }
   if (!scheduler_configuration_manager_) {
     CHECK_IS_TEST();
   }

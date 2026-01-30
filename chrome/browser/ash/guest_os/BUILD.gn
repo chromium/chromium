@@ -197,6 +197,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/experiences/arc:arc_test_support",
+    "//components/component_updater:test_support",
     "//components/component_updater/ash:test_support",
     "//components/prefs",
     "//content/test:test_support",
