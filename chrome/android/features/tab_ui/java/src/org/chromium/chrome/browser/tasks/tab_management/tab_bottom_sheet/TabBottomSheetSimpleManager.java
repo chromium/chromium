@@ -26,7 +26,7 @@ public class TabBottomSheetSimpleManager implements Destroyable {
             new TabModelObserver() {
                 @Override
                 public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                    onDidSelectTab(tab);
+                    onDidSelectTab(tab, lastId);
                 }
             };
 
@@ -46,12 +46,12 @@ public class TabBottomSheetSimpleManager implements Destroyable {
 
     /** Attempts to show the Simple Tab BottomSheet. */
     // Temp for testing.
-    public static void tryToShowBottomSheet(Tab tab) {
+    public static void tryToShowBottomSheet(Tab tab, int requestId) {
         TabBottomSheetManager tabBottomSheetManager =
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
         if (tabBottomSheetManager != null) {
             tabBottomSheetManager.tryToShowBottomSheet(
-                    /* shouldShowToolbar= */ true, /* shouldShowFusebox */ true);
+                    requestId, /* shouldShowToolbar= */ true, /* shouldShowFusebox= */ true);
         }
     }
 
@@ -63,9 +63,9 @@ public class TabBottomSheetSimpleManager implements Destroyable {
     }
 
     /* Temp for testing */
-    private void onDidSelectTab(Tab tab) {
+    private void onDidSelectTab(Tab tab, int requestId) {
         if (checkConditionsForTab(tab)) {
-            tryToShowBottomSheet(tab);
+            tryToShowBottomSheet(tab, requestId);
         }
     }
 
@@ -80,44 +80,48 @@ public class TabBottomSheetSimpleManager implements Destroyable {
 
     // Native calls for glic.
     @CalledByNative
-    public static void show(Tab tab) {
+    public static boolean show(Tab tab, int requestId) {
         TabBottomSheetManager tabBottomSheetManager =
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
         if (tabBottomSheetManager != null) {
-            tabBottomSheetManager.tryToShowBottomSheet(
-                    /* shouldShowToolbar= */ true, /* shouldShowFusebox */ true);
+            return tabBottomSheetManager.tryToShowBottomSheet(
+                    requestId, /* shouldShowToolbar= */ true, /* shouldShowFusebox= */ true);
+        }
+        return false;
+    }
+
+    @CalledByNative
+    public static void close(Tab tab, int requestId) {
+        TabBottomSheetManager tabBottomSheetManager =
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+        if (tabBottomSheetManager != null) {
+            tabBottomSheetManager.tryToCloseBottomSheet(requestId);
         }
     }
 
     @CalledByNative
-    public static void close(Tab tab) {
+    public static boolean isOpen(Tab tab, int requestId) {
+        TabBottomSheetManager tabBottomSheetManager =
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+        return tabBottomSheetManager != null && tabBottomSheetManager.isSheetShowing(requestId);
+    }
+
+    @CalledByNative
+    public static boolean setWebContents(Tab tab, int requestId, WebContents webContents) {
         TabBottomSheetManager tabBottomSheetManager =
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
         if (tabBottomSheetManager != null) {
-            tabBottomSheetManager.tryToCloseBottomSheet();
+            return tabBottomSheetManager.setWebContents(requestId, webContents);
         }
+        return false;
     }
 
     @CalledByNative
-    public static boolean isOpen(Tab tab) {
+    public static @Nullable WebContents getWebContents(Tab tab, int requestId) {
         TabBottomSheetManager tabBottomSheetManager =
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
-        return tabBottomSheetManager != null ? tabBottomSheetManager.isSheetShowing() : false;
-    }
-
-    @CalledByNative
-    public static void setWebContents(Tab tab, WebContents webContents) {
-        TabBottomSheetManager tabBottomSheetManager =
-                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
-        if (tabBottomSheetManager != null) {
-            tabBottomSheetManager.setWebContents(webContents);
-        }
-    }
-
-    @CalledByNative
-    public static @Nullable WebContents getWebContents(Tab tab) {
-        TabBottomSheetManager tabBottomSheetManager =
-                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
-        return tabBottomSheetManager != null ? tabBottomSheetManager.getWebContents() : null;
+        return tabBottomSheetManager != null
+                ? tabBottomSheetManager.getWebContents(requestId)
+                : null;
     }
 }

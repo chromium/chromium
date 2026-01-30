@@ -92,10 +92,6 @@ public class TabBottomSheetCoordinator {
         mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
     }
 
-    public boolean isSheetShowing() {
-        return mIsSheetCurrentlyManagedByController;
-    }
-
     // Cleanup methods.
     public void destroy() {
         if (mIsSheetCurrentlyManagedByController && mSheetContent != null) {

@@ -40,6 +40,8 @@ public class TabBottomSheetManagerTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    private static final int REQUEST_ID = 0;
+
     private ChromeTabbedActivity mActivity;
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private WindowAndroid mWindowAndroid;
@@ -116,7 +118,9 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.tryToShowBottomSheet(
-                            /* shouldShowToolbar= */ true, /* shouldShowFusebox */ true);
+                            REQUEST_ID,
+                            /* shouldShowToolbar= */ true,
+                            /* shouldShowFusebox= */ true);
                 });
         assertNull(mManager.getTabBottomSheetCoordinatorForTesting());
     }
