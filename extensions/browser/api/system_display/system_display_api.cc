@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -18,6 +17,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
@@ -110,7 +110,7 @@ class OverscanTracker::OverscanWebObserver
   }
 
  private:
-  std::set<std::string> display_ids_;
+  absl::flat_hash_set<std::string> display_ids_;
 };
 
 static OverscanTracker* g_overscan_tracker = nullptr;
