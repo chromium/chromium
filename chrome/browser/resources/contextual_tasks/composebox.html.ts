@@ -10,7 +10,25 @@ import type {ContextualTasksComposeboxElement} from './composebox.js';
 
 // clang-format off
 export function getHtml(this: ContextualTasksComposeboxElement) {
+  const suggestions = this.enableNativeZeroStateSuggestions ?
+    html`
+      <cr-composebox-dropdown
+          id="coBrSuggestionsContainer"
+          role="listbox"
+          .result="${this.zeroStateSuggestions_}"
+          .selectedMatchIndex="${-1}"
+          .maxSuggestions="${5}"
+          .inDeepSearchMode="${false}"
+          ?hidden="${!this.isZeroState || !this.enableNativeZeroStateSuggestions}">
+      </cr-composebox-dropdown>`
+      : ``;
+
+  /* 'suggestions' ternary is to change DOM order:
+   *  Side panel has suggestions appear between header and composebox.
+   *  Full tab has suggestions appear below the composebox (which is below the header).
+   */
   return html`<!--_html_template_start_-->
+  ${this.isSidePanel ? suggestions : ``}
   <div id="composeboxContainer"
     style="
       --composebox-height: ${this.composeboxHeight_}px;
@@ -30,10 +48,13 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       .tabSuggestions="${this.tabSuggestions_}"
       .showLensButton="${this.isSidePanel}"
       .disableCaretColorAnimation="${true}"
+      .isInCoBrowsingZeroState = "${this.isZeroState}"
       .lensButtonTriggersOverlay="${true}"
+      @zero-state-result-changed="${this.onZeroStateResultReceived_}"
     >
     </cr-composebox>
   </div>
+  ${!this.isSidePanel ? suggestions : ``}
   <!--_html_template_end_-->`;
 }
 // clang-format on

@@ -183,6 +183,11 @@ const base::FeatureParam<bool> kEnableContextualTasksSmartCompose(
     "ContextualTasksEnableContextualTasksSmartCompose",
     true);
 
+const base::FeatureParam<bool> kContextualTasksEnableNativeZeroStateSuggestions(
+    &kContextualTasks,
+    "ContextualTasksEnableNativeZeroStateSuggestions",
+    false);
+
 int GetContextualTasksShowOnboardingTooltipSessionImpressionCap() {
   if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
     return 0;
@@ -310,6 +315,10 @@ std::string GetContextualTasksHelpUrl() {
 bool GetEnableContextualTasksSmartCompose() {
   return base::FeatureList::IsEnabled(kContextualTasks) &&
          kEnableContextualTasksSmartCompose.Get();
+}
+
+bool GetEnableNativeZeroStateSuggestions() {
+  return kContextualTasksEnableNativeZeroStateSuggestions.Get();
 }
 
 bool ShouldUseSearchResultsScope() {

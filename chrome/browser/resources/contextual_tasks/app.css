@@ -28,6 +28,8 @@
   --color-composebox-font-light: rgba(31, 31, 31, 1);
   --color-composebox-input-plate-outline: rgba(220, 223, 229, 1);
   --color-composebox-hover: rgba(233, 235, 240, 1);
+  --color-composebox-loading-end: rgba(236, 237, 239, 1);
+  --color-composebox-loading-start: rgba(241, 243, 244, 1);
   --color-composebox-pdf-chip-icon-background: rgba(219, 69, 55, 1);
   --color-composebox-pdf-chip-icon-border: rgba(255, 255, 255, 1);
   --color-composebox-type-ahead: rgba(117, 117, 117, 1);
@@ -36,6 +38,9 @@
   --color-search-animated-glow-dragging-opaque-frost:
       rgba(240, 242, 245);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
+  --color-composebox-zero-state-suggestions-background-hovered:
+      rgba(247, 248, 250, 1);
+  --color-suggestions-background-loading: rgba(241, 243, 244, 1);
   --color-zero-state-greeting: rgba(10, 10, 10, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
   --cr-composebox-background-color: rgba(243, 245, 246, 1);
@@ -132,10 +137,15 @@
   --color-composebox-hover: rgba(62, 63, 67, 1);
   --color-composebox-input-icon: var(--color-searchbox-results-icon);
   --color-composebox-input-plate-outline: rgba(45, 47, 56, 1);
+  --color-composebox-loading-end: rgba(77, 81, 86, 1);
+  --color-composebox-loading-start: rgba(60, 64, 67, 1);
   --color-composebox-type-ahead: rgba(199, 199, 199, 1);
   --color-composebox-type-ahead-chip: rgba(199, 199, 199, 1);
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
   --color-searchbox-results-background-hovered: rgba(54, 54, 54, 1);
+  --color-composebox-zero-state-suggestions-background-hovered:
+      rgba(23, 24, 31, 1);
+  --color-suggestions-background-loading: rgba(60, 64, 67, 1);
   --color-zero-state-greeting: rgba(230, 232, 240, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
   --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
@@ -202,7 +212,7 @@ error-page {
   visibility: hidden;
 }
 
-:host([is-zero-state_]:not([is-shown-in-tab])) #composebox {
+:host([is-zero-state_]:not([is-shown-in-tab_])) #composebox {
   /* Left/right flexbox padding implicitly added via centering is 20px. */
   width: calc(100% - 40px);
 }
@@ -235,14 +245,50 @@ error-page {
   display: flex;
   flex-direction: column;
   gap: 36px;
-  height: 51%;
   inset-inline-start: 0;
-  justify-content: flex-end;
+  justify-content: center;
   min-height: 300px;
   overflow-anchor: none;
   pointer-events: none;
   position: absolute;
   width: 100%;
+}
+:host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
+    .flex-center {
+  justify-content: flex-end;
+  height: 42%;
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab_]):not([enable-native-zero-state-suggestions]))
+    .flex-center {
+  height: 52%;
+}
+
+:host([is-zero-state_][is-shown-in-tab_]) .flex-center {
+  inset-inline-start: 76px;
+  top: 88px;
+  width: calc(100% - 76px);
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+  gap: 24px;
+  top: 0;
+}
+
+:host([is-zero-state_][enable-native-zero-state-suggestions][is-shown-in-tab_])
+    .flex-center {
+  height: calc(100% - 88px);
+}
+
+:host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
+    .flex-center {
+  height: 100%;
+  justify-content: flex-end;
+}
+
+:host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
+    #composebox {
+  bottom: 30px;
 }
 
 #toolbarOverlay {
@@ -307,15 +353,6 @@ error-page {
   width: calc(100% - 48px);  /* 20px space on right. */
 }
 
-:host([is-zero-state_][is-shown-in-tab_]) .flex-center {
-  inset-inline-start: 76px;
-  width: calc(100% - 76px);
-}
-
-:host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
-  gap: 24px;
-}
-
 @media (max-width: 480px) {
   :host([is-zero-state_][is-shown-in-tab_]) .flex-center {
     inset-inline-start: 0;
@@ -323,14 +360,7 @@ error-page {
   }
 }
 
-/* Give thread header more space when it wraps. */
 @media (max-width: 440px) {
-  #composeboxHeaderWrapper {
-    padding-bottom: 10px;
-  }
-  :host(:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
-    padding-bottom: 20px;
-  }
   :host([is-zero-state_]) #toolbarOverlay::after {
     height: 66px;
   }
@@ -338,7 +368,7 @@ error-page {
 
 @media (max-height: 580px) {
   :host([is-zero-state_]) #composeboxHeaderWrapper {
-    margin-top: 150px;
+    margin-top: 250px;
   }
 }
 

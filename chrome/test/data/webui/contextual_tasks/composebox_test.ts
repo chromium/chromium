@@ -45,6 +45,20 @@ function pressEnter(element: HTMLElement) {
   }));
 }
 
+// Checks if suggestions container is rendered yet.
+function checkIfCanFindSuggestionsContainer(
+    contextualTasksApp: MockContextualTasksAppElement, canFind: boolean) {
+  const suggestions = contextualTasksApp.$.composebox.shadowRoot.querySelector(
+      '#coBrSuggestionsContainer');
+
+  if (canFind) {
+    assertTrue(!!suggestions, 'Suggestions container should be present in DOM');
+  } else {
+    assertEquals(
+        null, suggestions, 'Suggestions container should not be in DOM');
+  }
+}
+
 async function dispatchDragAndDropEvent(dropZone: Element, files: File[]) {
   if (!dropZone) {
     throw new Error(
@@ -1406,6 +1420,133 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(composebox.animationState, GlowAnimationState.NONE);
   });
 
+  test(
+      'suggestions show correctly in side panel zero state based on loading',
+      async () => {
+        contextualTasksApp.isShownInTab_ = false;
+        contextualTasksApp.isZeroState_ = true;
+        contextualTasksApp.enableNativeZeroStateSuggestions = false;
+
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+
+        assertStyle(contextualTasksApp.$.composebox, 'bottom', '0px');
+        checkIfCanFindSuggestionsContainer(
+            contextualTasksApp, /*canFind=*/ false);
+
+        contextualTasksApp.enableNativeZeroStateSuggestions = true;
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+
+        assertStyle(contextualTasksApp.$.composebox, 'bottom', '30px');
+
+        (contextualTasksApp.$.composebox as any).isLoading_ = true;
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+        checkIfCanFindSuggestionsContainer(
+            contextualTasksApp, /*canFind=*/ true);
+        const firstMatch: any =
+            contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
+                .shadowRoot.querySelector('#match0');
+        assertTrue(
+            !!firstMatch.$.textContainer,
+            'First suggestion match should exist');
+        assertStyle(
+            firstMatch.$.textContainer, 'animation-duration', '2s',
+            'When in loading side panel but in zero-state, suggestions\
+                should be in loading state');
+
+        (contextualTasksApp.$.composebox as any).isLoading_ = false;
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
+            .updateComplete;
+        await firstMatch.updateComplete;
+        await microtasksFinished();
+
+        assertStyle(
+            firstMatch.$.textContainer, 'animation', 'none',
+            'When not in loading side panel zero-state,\
+                suggestions should be normal');
+
+        contextualTasksApp.isZeroState_ = false;
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+        assertTrue(
+            contextualTasksApp.$.composebox.$.coBrSuggestionsContainer.hidden,
+            'Dropdown should be hidden when NOT in zero state');
+      });
+
+  test(
+      'suggestions show correctly in full tab zero state based on loading',
+      async () => {
+        contextualTasksApp.isShownInTab_ = true;
+        contextualTasksApp.isZeroState_ = true;
+        contextualTasksApp.enableNativeZeroStateSuggestions = false;
+
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+        checkIfCanFindSuggestionsContainer(
+            contextualTasksApp, /*canFind=*/ false);
+        contextualTasksApp.enableNativeZeroStateSuggestions = true;
+
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
+        checkIfCanFindSuggestionsContainer(
+            contextualTasksApp, /*canFind=*/ true);
+        assertStyle(contextualTasksApp.$.flexCenterContainer, 'top', '88px');
+
+        (contextualTasksApp.$.composebox as any).isLoading_ = true;
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
+            .updateComplete;
+        const firstMatch: any =
+            contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
+                .shadowRoot.querySelector('#match0');
+        assertTrue(
+            !!firstMatch.$.textContainer,
+            'First suggestion match should exist');
+
+        await microtasksFinished();
+
+        assertStyle(
+            firstMatch.$.textContainer, 'animation-duration', '2s',
+            'When in loading full tab zero-state,\
+                suggestions should be in loading state');
+        (contextualTasksApp.$.composebox as any).isLoading_ = false;
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
+            .updateComplete;
+        await firstMatch.updateComplete;
+        await microtasksFinished();
+
+        assertStyle(
+            firstMatch.$.textContainer, 'animation', 'none',
+            'When not in loading full tab but in zero-state,\
+                suggestions should be normal');
+
+        contextualTasksApp.isZeroState_ = false;
+
+        await contextualTasksApp.updateComplete;
+        await contextualTasksApp.$.composebox.updateComplete;
+        await contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
+            .updateComplete;
+        await firstMatch.updateComplete;
+
+        await microtasksFinished();
+        assertTrue(
+            contextualTasksApp.$.composebox.$.coBrSuggestionsContainer.hidden,
+            'Dropdown should be hidden when NOT in zero state',
+        );
+      });
   test(
       'side panel handles AIM queries to show side panel zero state correctly',
       async () => {

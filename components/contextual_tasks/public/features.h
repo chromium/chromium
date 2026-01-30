@@ -103,6 +103,11 @@ extern const base::FeatureParam<std::string> kContextualTasksHelpUrl;
 extern const base::FeatureParam<std::string>
     kContextualTasksOnboardingTooltipHelpUrl;
 
+// Enables suggestions rendered on contextual tasks side, instead of from AIM
+// webpage.
+extern const base::FeatureParam<bool>
+    kContextualTasksEnableNativeZeroStateSuggestions;
+
 // The maximum number of times the onboarding tooltip can be shown to the user
 // in a single session before it no longer shows up.
 extern int GetContextualTasksShowOnboardingTooltipSessionImpressionCap();
@@ -172,6 +177,10 @@ extern std::string GetContextualTasksHelpUrl();
 
 // Returns whether smart compose is enabled for Contextual Tasks.
 extern bool GetEnableContextualTasksSmartCompose();
+
+// Returns whether native (cobrowsing instead of AIM webpage)
+// zero state suggestions are enabled for Contextual Tasks.
+extern bool GetEnableNativeZeroStateSuggestions();
 
 // Returns whether the kSearchResultsOAuth2Scope should be used instead of the
 // kChromeSyncOAuth2Scope.

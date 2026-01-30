@@ -77,8 +77,6 @@
 
   --submit-enabled-transition: opacity 255ms;
 
-
-
   border-radius: 30px;
   box-shadow: var(--cr-searchbox-shadow);
   font-size: var(--cr-composebox-font-size, 18px);
