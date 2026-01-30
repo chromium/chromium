@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "base/at_exit.h"
+#include "base/i18n/icu_util.h"
 #include "base/types/expected.h"
 #include "chrome/browser/page_load_metrics/observers/captcha_provider_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,6 +14,17 @@
 #include "url/gurl.h"
 
 using page_load_metrics::CaptchaProviderManager;
+
+struct IcuEnvironment {
+  IcuEnvironment() {
+    // Initialize ICU, which is required for GURL parsing.
+    CHECK(base::i18n::InitializeICU());
+  }
+  // Used by ICU integration.
+  base::AtExitManager at_exit_manager;
+};
+
+IcuEnvironment* env = new IcuEnvironment();
 
 void SetCaptchaProvidersDoesNotCrash(std::vector<std::string> input) {
   CaptchaProviderManager manager = CaptchaProviderManager::CreateForTesting();

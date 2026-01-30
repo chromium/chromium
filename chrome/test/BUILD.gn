@@ -13085,6 +13085,7 @@ test("captcha_provider_fuzztests") {
   deps = [
     ":test_support",
     "//base",
+    "//base:i18n",
     "//base/test:fuzztest_support",
     "//chrome/browser",
     "//testing/gtest",
