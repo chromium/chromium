@@ -405,6 +405,57 @@ TEST_F(AdTrackerSimTest, AdResourceDetectedByContext) {
       ad_tracker_->RequestWithUrlTaggedAsAd("https://example.com/foo.css"));
 }
 
+// `eval()` creates a new script id, so it's important to follow the eval
+// back to the script that created it, which the AdTracker should do.
+TEST_F(AdTrackerSimTest, AdScriptEvalIsAlsoAdScript) {
+  SimSubresourceRequest ad_script("https://example.com/ad_script.js",
+                                  "text/javascript");
+  SimRequest ad_iframe("https://example.com/ad_frame.html", "text/html");
+
+  main_resource_->Complete("<body><script src='ad_script.js'></script></body>");
+  ad_script.Complete(R"SCRIPT(
+      eval(`
+        var frame = document.createElement("iframe");
+        frame.src = "ad_frame.html";
+        document.body.appendChild(frame);
+      `);
+    )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+  ad_iframe.Complete("");
+
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  // Verify that the new frame is considered created by ad script.
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+}
+
+// Verify that nested `eval()`s are followed to the underlying ad script.
+TEST_F(AdTrackerSimTest, AdScriptNestedEvalIsAlsoAdScript) {
+  SimSubresourceRequest ad_script("https://example.com/ad_script.js",
+                                  "text/javascript");
+  SimRequest ad_iframe("https://example.com/ad_frame.html", "text/html");
+
+  main_resource_->Complete("<body><script src='ad_script.js'></script></body>");
+  ad_script.Complete(R"SCRIPT(
+    eval(`
+      eval(\`
+        var frame = document.createElement("iframe");
+        frame.src = "ad_frame.html";
+        document.body.appendChild(frame);
+      \`);
+    `);
+    )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+  ad_iframe.Complete("");
+
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  // Verify that the new frame is considered created by ad script.
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+}
+
 // When inline script in an ad frame inserts an iframe into a non-ad frame, the
 // new frame should be considered as created by ad script (and would therefore
 // be tagged as an ad).

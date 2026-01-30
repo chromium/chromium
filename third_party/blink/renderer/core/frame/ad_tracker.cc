@@ -454,8 +454,11 @@ bool AdTracker::IsAdScriptInStackHelper(
     return false;
   }
 
-  int top_script_id = v8::StackTrace::CurrentScriptId(isolate);
-  if (top_script_id <= 0) {
+  std::array<v8::StackTrace::ScriptIdAndContext, 1> stack_buffer;
+  auto stack =
+      v8::StackTrace::CurrentScriptIdsAndContexts(isolate, stack_buffer);
+
+  if (stack.empty()) {
     // There is nothing on the v8 stack. This means that we're in some
     // asynchronous continuation in blink code. Fall back on the async stack.
     if (!async_script_stack_.empty() &&
@@ -468,6 +471,8 @@ bool AdTracker::IsAdScriptInStackHelper(
 
     return false;
   }
+
+  int top_script_id = stack[0].id;
 
   auto script_it = ad_script_data_.find(top_script_id);
   if (script_it == ad_script_data_.end()) {
