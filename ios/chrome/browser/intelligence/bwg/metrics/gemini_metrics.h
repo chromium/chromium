@@ -202,6 +202,52 @@ enum class IOSGeminiAspectRatioBucket {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiAspectRatioBucket)
 
+// Enum for the IOS.Gemini.CameraFlow.OSCameraAuthorization.Result histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSGeminiCameraFlowOSCameraAuthorizationResult)
+enum class IOSGeminiCameraFlowOSCameraAuthorizationResult {
+  kGranted = 0,
+  kDenied = 1,
+  kMaxValue = kDenied,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiCameraFlowOSCameraAuthorizationResult)
+
+// UMA histogram key for
+// IOS.Gemini.CameraFlow.OSCameraAuthorizationRequest.Result.
+extern const char kCameraFlowOSAuthorizationRequestResultHistogram[];
+
+// Enum for the IOS.Gemini.CameraFlow.GoToOSSettingsAlert.Result histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSGeminiGoToOSSettingsAlertResult)
+enum class IOSGeminiGoToOSSettingsAlertResult {
+  kGoToSettings = 0,
+  kNoThanks = 1,
+  kMaxValue = kNoThanks,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiGoToOSSettingsAlertResult)
+
+// UMA histogram key for
+// IOS.Gemini.CameraFlow.GoToOSSettingsAlert.Result.
+extern const char kCameraFlowGoToOSSettingsAlertResultHistogram[];
+
+// Enum for the IOS.Gemini.CameraFlow.GeminiCameraPermissionAlert.Result
+// histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSGeminiCameraPermissionAlertResult)
+enum class IOSGeminiCameraPermissionAlertResult {
+  kAllow = 0,
+  kDontAllow = 1,
+  kMaxValue = kDontAllow,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiCameraPermissionAlertResult)
+
+// UMA histogram key for
+// IOS.Gemini.CameraFlow.GeminiCameraPermissionAlert.Result.
+extern const char kCameraFlowGeminiCameraPermissionAlertResultHistogram[];
+
 // UMA histogram key for
 // IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped.
 extern const char kImageRemixContextMenuEntryPointAspectRatioTappedHistogram[];
@@ -321,5 +367,14 @@ void RecordGeminiPromptSent(bool is_nano_banana_enabled,
                             int images_attached_count,
                             bool long_press_image_included,
                             bool has_page_context);
+
+// Records the result of an OS-level camera authorization request.
+void RecordGeminiCameraFlowOSAuthorizationResult(bool granted);
+
+// Records the result of the alert directing users to OS settings.
+void RecordGeminiCameraFlowGoToOSSettingsAlertResult(bool accepted);
+
+// Records the result of the Gemini camera permission alert.
+void RecordGeminiCameraFlowGeminiCameraPermissionAlertResult(bool accepted);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_

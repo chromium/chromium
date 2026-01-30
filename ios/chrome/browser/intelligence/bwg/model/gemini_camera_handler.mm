@@ -13,6 +13,7 @@
 #import "base/ios/block_types.h"
 #import "base/task/bind_post_task.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -88,6 +89,7 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
       base::OnceCallback<void(BOOL)> authorizationRequestCallback =
           base::BindPostTask(
               web::GetUIThreadTaskRunner({}), base::BindOnce(^(BOOL granted) {
+                RecordGeminiCameraFlowOSAuthorizationResult(granted);
                 if (!granted) {
                   [weakSelf presentGoToSettingsAlert];
                   return;
@@ -186,6 +188,7 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
                           IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT)
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action) {
+                RecordGeminiCameraFlowGeminiCameraPermissionAlertResult(true);
                 [weakSelf enableGeminiCameraPermissionPref];
                 if (showCameraCompletion) {
                   showCameraCompletion();
@@ -197,6 +200,7 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
                           IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY)
                 style:UIAlertActionStyleCancel
               handler:^(UIAlertAction* action) {
+                RecordGeminiCameraFlowGeminiCameraPermissionAlertResult(false);
                 [weakSelf
                     executeCompletionWithImages:nil
                                           error:[weakSelf
@@ -231,6 +235,7 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
               IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_GO_TO_SETTINGS)
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action) {
+                RecordGeminiCameraFlowGoToOSSettingsAlertResult(true);
                 [weakSelf openAppSettings];
               }];
 
@@ -240,6 +245,7 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
               IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_NO_THANKS)
                 style:UIAlertActionStyleCancel
               handler:^(UIAlertAction* action) {
+                RecordGeminiCameraFlowGoToOSSettingsAlertResult(false);
                 [weakSelf
                     executeCompletionWithImages:nil
                                           error:[self

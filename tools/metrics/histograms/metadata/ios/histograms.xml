@@ -2370,6 +2370,41 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Gemini.CameraFlow.GeminiCameraPermissionAlert.Result"
+    enum="IOSGeminiCameraPermissionAlertResult" expires_after="2027-01-27">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the result of the Gemini camera permission alert in the Gemini
+    camera flow. This alert appears after starting the camera flow when the
+    user's OS-level camera permission is confirmed but the Gemini camera
+    permission setting is false.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.CameraFlow.GoToOSSettingsAlert.Result"
+    enum="IOSGeminiGoToOSSettingsAlertResult" expires_after="2027-01-27">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the result of the alert directing users to OS camera settings in the
+    Gemini camera flow. This alert appears after starting the camera flow when
+    the OS-level camera permission has been denied by the user in the past.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.CameraFlow.OSCameraAuthorizationRequest.Result"
+    enum="IOSGeminiCameraFlowOSCameraAuthorizationResult"
+    expires_after="2027-01-27">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the result of an OS-level camera authorization request in the Gemini
+    camera flow. This alert appears after starting the camera flow when a user
+    has never previously responded to an OS-level camera authorization request.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.DynamicSettings.ItemShown"
     enum="IOSGeminiSettingsItem" expires_after="2027-01-05">
   <owner>joepeplowski@google.com</owner>

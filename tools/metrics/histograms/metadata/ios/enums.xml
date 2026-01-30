@@ -721,6 +721,30 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiAspectRatioBucket) -->
 
+<!-- LINT.IfChange(IOSGeminiCameraFlowOSCameraAuthorizationResult) -->
+
+<enum name="IOSGeminiCameraFlowOSCameraAuthorizationResult">
+  <summary>
+    Enum describing the result of an OS camera authorization request.
+  </summary>
+  <int value="0" label="Granted"/>
+  <int value="1" label="Denied"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiCameraFlowOSCameraAuthorizationResult) -->
+
+<!-- LINT.IfChange(IOSGeminiCameraPermissionAlertResult) -->
+
+<enum name="IOSGeminiCameraPermissionAlertResult">
+  <summary>
+    Enum describing the result of the Gemini camera permission alert.
+  </summary>
+  <int value="0" label="Allow"/>
+  <int value="1" label="Don't Allow"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiCameraPermissionAlertResult) -->
+
 <!-- LINT.IfChange(IOSGeminiEntryPoint) -->
 
 <enum name="IOSGeminiEntryPoint">
@@ -789,6 +813,20 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFREAction) -->
+
+<!-- LINT.IfChange(IOSGeminiGoToOSSettingsAlertResult) -->
+
+<enum name="IOSGeminiGoToOSSettingsAlertResult">
+  <summary>
+    Enum describing the result of the alert directing users to OS camera
+    settings in the Gemini camera flow, shown when OS camera permissions are not
+    authorized.
+  </summary>
+  <int value="0" label="Go to Settings"/>
+  <int value="1" label="No thanks"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiGoToOSSettingsAlertResult) -->
 
 <!--  LINT.IfChange(IOSGeminiSessionCancellationReason) -->
 

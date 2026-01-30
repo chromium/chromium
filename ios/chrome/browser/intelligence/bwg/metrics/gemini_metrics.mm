@@ -118,6 +118,15 @@ const char kFloatyViewStateTransitionHistogram[] =
 const char kImageRemixContextMenuEntryPointAspectRatioTappedHistogram[] =
     "IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped";
 
+const char kCameraFlowOSAuthorizationRequestResultHistogram[] =
+    "IOS.Gemini.CameraFlow.OSCameraAuthorizationRequest.Result";
+
+const char kCameraFlowGoToOSSettingsAlertResultHistogram[] =
+    "IOS.Gemini.CameraFlow.GoToOSSettingsAlert.Result";
+
+const char kCameraFlowGeminiCameraPermissionAlertResultHistogram[] =
+    "IOS.Gemini.CameraFlow.GeminiCameraPermissionAlert.Result";
+
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   switch (action) {
     case IOSGeminiFREAction::kAccept:
@@ -385,4 +394,46 @@ void RecordImageRemixContextMenuEntryPointTapped(double aspect_ratio) {
   base::UmaHistogramEnumeration(
       kImageRemixContextMenuEntryPointAspectRatioTappedHistogram,
       GetAspectRatioBucket(aspect_ratio));
+}
+
+void RecordGeminiCameraFlowOSAuthorizationResult(bool granted) {
+  if (granted) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiCameraFlowOSCameraAuthorizationRequestGranted"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiCameraFlowOSCameraAuthorizationRequestDenied"));
+  }
+  base::UmaHistogramEnumeration(
+      kCameraFlowOSAuthorizationRequestResultHistogram,
+      granted ? IOSGeminiCameraFlowOSCameraAuthorizationResult::kGranted
+              : IOSGeminiCameraFlowOSCameraAuthorizationResult::kDenied);
+}
+
+void RecordGeminiCameraFlowGoToOSSettingsAlertResult(bool accepted) {
+  if (accepted) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiCameraFlowGoToOSSettingsAlertGoToSettings"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiCameraFlowGoToOSSettingsAlertNoThanks"));
+  }
+  base::UmaHistogramEnumeration(
+      kCameraFlowGoToOSSettingsAlertResultHistogram,
+      accepted ? IOSGeminiGoToOSSettingsAlertResult::kGoToSettings
+               : IOSGeminiGoToOSSettingsAlertResult::kNoThanks);
+}
+
+void RecordGeminiCameraFlowGeminiCameraPermissionAlertResult(bool allowed) {
+  if (allowed) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiCameraFlowGeminiCameraPermissionAlertAllow"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiCameraFlowGeminiCameraPermissionAlertDontAllow"));
+  }
+  base::UmaHistogramEnumeration(
+      kCameraFlowGeminiCameraPermissionAlertResultHistogram,
+      allowed ? IOSGeminiCameraPermissionAlertResult::kAllow
+              : IOSGeminiCameraPermissionAlertResult::kDontAllow);
 }

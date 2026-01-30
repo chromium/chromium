@@ -26797,6 +26797,60 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiCameraFlowGeminiCameraPermissionAlertAllow">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped &quot;Allow&quot; on the Gemini camera permission alert in
+    the Gemini camera flow.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraFlowGeminiCameraPermissionAlertDontAllow">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped &quot;Don't Allow&quot; on the Gemini camera permission
+    alert in the Gemini camera flow.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraFlowGoToOSSettingsAlertGoToSettings">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped &quot;Go to Settings&quot; on the alert directing users to
+    OS camera settings in the Gemini camera flow.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraFlowGoToOSSettingsAlertNoThanks">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped &quot;No thanks&quot; on the alert directing users to OS
+    camera settings in the Gemini camera flow.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraFlowOSCameraAuthorizationRequestDenied">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The OS-level camera authorization request in the Gemini camera flow was
+    denied.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraFlowOSCameraAuthorizationRequestGranted">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The OS-level camera authorization request in the Gemini camera flow was
+    granted.
+  </description>
+</action>
+
 <action name="MobileGeminiCameraSettingsBack">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
