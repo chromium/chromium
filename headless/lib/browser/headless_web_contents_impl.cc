@@ -244,6 +244,11 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override {
+    if (!user_gesture) {
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kRequiresUserGesture);
+      return;
+    }
     web_contents->GotResponseToPointerLockRequest(
         blink::mojom::PointerLockResult::kSuccess);
   }
