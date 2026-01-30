@@ -90,7 +90,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   MOCK_METHOD(void,
               OnSearchResultsNavigationInSidePanel,
               (content::OpenURLParams url_params,
-               ContextualTasksUI* webui_controller),
+               ContextualTasksUIInterface* web_ui_interface),
               (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
   MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));

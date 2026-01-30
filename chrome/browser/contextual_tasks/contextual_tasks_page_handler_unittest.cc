@@ -155,7 +155,7 @@ class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
         std::make_unique<NiceMock<TestContextualTasksUI>>(&web_ui_);
 
     // Bind the mock page to the controller.
-    contextual_tasks_ui_->page().Bind(page_.BindAndGetRemote());
+    contextual_tasks_ui_->GetPageRemote().Bind(page_.BindAndGetRemote());
 
     mock_contextual_tasks_service_ = static_cast<MockContextualTasksService*>(
         ContextualTasksServiceFactory::GetForProfile(profile()));

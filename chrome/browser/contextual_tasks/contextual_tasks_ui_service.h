@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 
-#include <list>
 #include <map>
 #include <vector>
 
@@ -21,7 +20,6 @@
 
 class AimEligibilityService;
 class BrowserWindowInterface;
-class ContextualTasksUI;
 class GoogleServiceAuthError;
 class Profile;
 class TabStripModel;
@@ -47,6 +45,7 @@ class TabInterface;
 
 namespace contextual_tasks {
 class ContextualTasksService;
+class ContextualTasksUIInterface;
 
 // A service used to coordinate all of the side panel instances showing an AI
 // thread. Events like tab switching and Intercepted navigations from both the
@@ -93,7 +92,7 @@ class ContextualTasksUiService : public KeyedService {
   // a tab).
   virtual void OnSearchResultsNavigationInSidePanel(
       content::OpenURLParams url_params,
-      ContextualTasksUI* webui_controller);
+      ContextualTasksUIInterface* web_ui_interface);
 
   // A notification that a navigation is occurring. This method gives the
   // service the opportunity to prevent the navigation from happening in
