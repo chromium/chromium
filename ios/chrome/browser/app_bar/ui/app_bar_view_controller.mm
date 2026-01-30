@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -68,6 +71,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   UIImageView* _tabGridSymbolView;
   UILabel* _tabCountLabel;
   NSUInteger _tabCount;
+  // Whether the tab grid is currently visible.
+  BOOL _isTabGridVisible;
 }
 
 - (void)viewDidLoad {
@@ -97,12 +102,9 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   _tabCountLabel.attributedText = TextForTabCount(count, kTabGridFontSize);
 }
 
-- (void)willEnterTabGrid {
-  [self updateTabGridButtonForTabGridShowing:YES];
-}
-
-- (void)willExitTabGrid {
-  [self updateTabGridButtonForTabGridShowing:NO];
+- (void)setTabGridVisible:(BOOL)tabGridVisible {
+  _isTabGridVisible = tabGridVisible;
+  [self updateTabGridButtonForTabGridShowing:tabGridVisible];
 }
 
 #pragma mark - Private
@@ -219,11 +221,13 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 // Called when the Assistant button is tapped.
 - (void)didTapAssistantButton {
+  base::RecordAction(base::UserMetricsAction("MobileToolbarAssistant"));
   [self.sceneHandler showAssistant];
 }
 
 // Called when the New Tab button is tapped.
 - (void)didTapOpenNewTabButton:(UIView*)sender {
+  base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
   [self.mutator createNewTabFromView:sender];
 }
 
@@ -235,7 +239,13 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 // Called when the Tab Grid button is tapped.
 - (void)didTapTabGridButton {
-  [self.sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+  if (_isTabGridVisible) {
+    base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
+    [self.tabGridHandler exitTabGrid];
+  } else {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
+    [self.sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+  }
 }
 
 @end

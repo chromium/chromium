@@ -30505,7 +30505,11 @@ should be able to be added at any place in this file.
 <action name="MobileTabGridDone">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
-  <description>User tapped the 'Done' button in the iOS tab grid.</description>
+  <description>
+    User tapped the 'Done' button in the iOS tab grid. The UI of the bar changed
+    from a toolbar UI to an an appbar UI, which may affect usage. This change
+    happened when the flag ChromeNextIa was enabled.
+  </description>
 </action>
 
 <action name="MobileTabGridEndedWithoutReordering">
@@ -31262,6 +31266,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarAssistant">
+  <owner>gambard@chromium.org</owner>
+  <owner>meridian@google.com</owner>
+  <description>
+    The user tapped on the Assistant button in the toolbar.
+  </description>
+</action>
+
 <action name="MobileToolbarBack">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -31394,7 +31406,9 @@ should be able to be added at any place in this file.
   <owner>gambard@chromium.org</owner>
   <owner>stkhapugin@chromium.org</owner>
   <description>
-    User pressed the NewTab shortcut on the toolbar. iOS only.
+    User pressed the NewTab shortcut on the toolbar. iOS only. The UI of the bar
+    changed from a toolbar UI to an an appbar UI, which may affect usage. This
+    change happened when the flag ChromeNextIa was enabled.
   </description>
 </action>
 
@@ -31534,8 +31548,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarShowStackView">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>gambard@chromiumorg</owner>
+  <description>
+    User tapped on the toolbar button to show the TabGrid. On iOS the UI of the
+    bar changed from a toolbar UI to an an appbar UI, which may affect usage.
+    This change happened when the flag ChromeNextIa was enabled.
+  </description>
 </action>
 
 <action name="MobileToolbarShowTabGridMenu">

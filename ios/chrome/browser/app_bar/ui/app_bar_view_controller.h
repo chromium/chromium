@@ -12,6 +12,7 @@
 @protocol AppBarMutator;
 @class LayoutGuideCenter;
 @protocol SceneCommands;
+@protocol TabGridCommands;
 
 // View controller for the app bar.
 @interface AppBarViewController : UIViewController <AppBarConsumer>
@@ -22,6 +23,8 @@
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 // Command handler for the Scene commands.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
+// Tab Grid handler.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 
 @end
 

@@ -168,11 +168,11 @@
 - (void)willEnterTabGrid {
   _currentPage = _tabGridState.currentPage;
   self.currentTabGroup = _tabGridState.visibleTabGroup;
-  [self.consumer willEnterTabGrid];
+  [self.consumer setTabGridVisible:YES];
 }
 
 - (void)willExitTabGrid {
-  [self.consumer willExitTabGrid];
+  [self.consumer setTabGridVisible:NO];
   [self updateForIncognitoVisible:_incognitoState.incognitoContentVisible];
 }
 
@@ -264,6 +264,7 @@
     tabCount = self.currentWebStateList->count();
   }
   [self.consumer updateTabCount:tabCount];
+  [self.consumer setTabGridVisible:_tabGridState.tabGridVisible];
 }
 
 // Updates for entering tab grid `page`.

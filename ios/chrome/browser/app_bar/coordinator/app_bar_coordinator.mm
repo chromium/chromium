@@ -46,6 +46,7 @@
 
   _viewController = [[AppBarViewController alloc] init];
   _viewController.sceneHandler = sceneHandler;
+  _viewController.tabGridHandler = tabGridHandler;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
 
   SceneState* sceneState = _regularBrowser->GetSceneState();
