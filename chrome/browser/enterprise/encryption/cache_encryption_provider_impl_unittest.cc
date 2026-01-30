@@ -130,6 +130,57 @@ TEST_F(CacheEncryptionProviderImplTest,
 }
 
 TEST_F(CacheEncryptionProviderImplTest,
+       GetEncryptedCacheEncryptionKey_KeyDecryptionFails) {
+  // Create an encryptor and encrypt a dummy key with it.
+  os_crypt_async::Encryptor::KeyRing encryption_keys;
+  encryption_keys.emplace("test_provider",
+                          os_crypt_async::Encryptor::Key(
+                              std::vector<uint8_t>(32, 1),
+                              os_crypt_async::mojom::Algorithm::kAES256GCM));
+  TestEncryptor encryptor(std::move(encryption_keys), "test_provider",
+                          "test_provider");
+  std::optional<std::vector<uint8_t>> key =
+      encryptor.EncryptString(std::string(32, 2));
+  ASSERT_TRUE(key.has_value());
+
+  std::vector<uint8_t> stored_key;
+  base::RunLoop run_loop;
+  CacheEncryptionProviderImpl provider{
+      &os_crypt_async_, *key,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& new_key) {
+        stored_key = new_key;
+        run_loop.Quit();
+      })};
+
+  EXPECT_CALL(os_crypt_async_, GetInstance)
+      .WillOnce([&](base::OnceCallback<void(os_crypt_async::Encryptor)> cb,
+                    os_crypt_async::Encryptor::Option option) {
+        // Create an encryptor that CANNOT decrypt the key.
+        os_crypt_async::Encryptor::KeyRing decryption_keys;
+        decryption_keys.emplace(
+            "test_provider", os_crypt_async::Encryptor::Key(
+                                 std::vector<uint8_t>(32, 99),
+                                 os_crypt_async::mojom::Algorithm::kAES256GCM));
+        std::move(cb).Run(TestEncryptor(std::move(decryption_keys),
+                                        "test_provider", "test_provider"));
+      });
+
+  mojo::Remote<network::mojom::CacheEncryptionProvider> remote(
+      provider.BindNewRemote());
+
+  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  remote->GetEncryptedCacheEncryptionKey(future.GetCallback());
+  std::vector<uint8_t> returned_key = future.Take();
+
+  run_loop.Run();
+
+  // A new key should have been generated and returned.
+  EXPECT_FALSE(returned_key.empty());
+  EXPECT_NE(returned_key, *key);
+  EXPECT_EQ(returned_key, stored_key);
+}
+
+TEST_F(CacheEncryptionProviderImplTest,
        GetEncryptedCacheEncryptionKey_CreateNewKey) {
   std::vector<uint8_t> stored_key;
   base::RunLoop run_loop;

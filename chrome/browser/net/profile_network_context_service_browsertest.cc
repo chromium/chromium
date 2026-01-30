@@ -39,6 +39,8 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_constants.h"
@@ -877,61 +879,84 @@ class CacheEncryptionDisabledByPolicyTest
 
 IN_PROC_BROWSER_TEST_F(CacheEncryptionEnabledByPolicyTest,
                        BackendInitializesWithPolicyEnabled) {
+  // This test verifies that for the initial, default profile, the cache is
+  // initialized correctly on startup.
   VerifyCacheBackendInitialized();
   PrefService* prefs = browser()->profile()->GetPrefs();
   ASSERT_TRUE(prefs);
+  EXPECT_FALSE(
+      prefs->GetString(enterprise_connectors::kEncryptedCachePrimaryKey)
+          .empty());
   EXPECT_TRUE(
       prefs->GetBoolean(enterprise_connectors::kCacheEncryptionEnabledPref));
   EXPECT_TRUE(prefs->IsManagedPreference(
       enterprise_connectors::kCacheEncryptionEnabledPref));
 }
 
-#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(CacheEncryptionEnabledByPolicyTest,
-                       EncryptedCacheMasterKeyIsSaved) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+                       InitializesAndSetsKeyOnFirstUse) {
+  // This test creates a new profile to ensure that the cache initialization
+  // happens within the test body, which is required for code coverage.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath new_profile_path = profile_manager->user_data_dir().Append(
+      FILE_PATH_LITERAL("NewTestProfile"));
+
+  // Create the profile.
+  Profile& new_profile =
+      profiles::testing::CreateProfileSync(profile_manager, new_profile_path);
+
+  PrefService* prefs = new_profile.GetPrefs();
   ASSERT_TRUE(prefs);
-  EXPECT_TRUE(prefs->GetString(enterprise_connectors::kEncryptedCacheMasterKey)
+  // The key should not exist before the cache is initialized.
+  EXPECT_TRUE(prefs->GetString(enterprise_connectors::kEncryptedCachePrimaryKey)
                   .empty());
 
-  ProfileNetworkContextService* service =
-      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
-  ASSERT_TRUE(service);
+  // Create a browser for the new profile and navigate to trigger cache init.
+  Browser* new_browser = CreateBrowser(&new_profile);
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, url));
+  content::RunAllTasksUntilIdle();
+  new_profile.GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  content::RunAllTasksUntilIdle();
 
-  network::mojom::NetworkContextParams network_context_params;
-  cert_verifier::mojom::CertVerifierCreationParams
-      cert_verifier_creation_params;
-  service->ConfigureNetworkContextParams(
-      /*in_memory=*/false, /*relative_partition_path=*/base::FilePath(),
-      &network_context_params, &cert_verifier_creation_params);
-
-  ASSERT_TRUE(network_context_params.encryption_provider);
-  mojo::Remote<network::mojom::CacheEncryptionProvider> provider(
-      std::move(network_context_params.encryption_provider));
-
-  base::RunLoop run_loop;
-  PrefChangeRegistrar pref_registrar;
-  pref_registrar.Init(prefs);
-  pref_registrar.Add(enterprise_connectors::kEncryptedCacheMasterKey,
-                     run_loop.QuitClosure());
-
-  provider->GetEncryptedCacheEncryptionKey(base::DoNothing());
-
-  run_loop.Run();
-
-  // The master key should be created and saved to the user's preferences.
-  EXPECT_FALSE(prefs->GetString(enterprise_connectors::kEncryptedCacheMasterKey)
-                   .empty());
+  // After initialization, the key should have been created and stored.
+  EXPECT_FALSE(
+      prefs->GetString(enterprise_connectors::kEncryptedCachePrimaryKey)
+          .empty());
 }
-#endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(CacheEncryptionDisabledByPolicyTest,
                        BackendInitializesWithPolicyDisabled) {
-  VerifyCacheBackendInitialized();
   PrefService* prefs = browser()->profile()->GetPrefs();
   ASSERT_TRUE(prefs);
+  // The key pref should not exist before the cache is initialized.
+  EXPECT_FALSE(
+      prefs->HasPrefPath(enterprise_connectors::kEncryptedCachePrimaryKey));
+
+  VerifyCacheBackendInitialized();
+
+  // The key pref should still not exist if encryption is disabled.
+  EXPECT_FALSE(
+      prefs->HasPrefPath(enterprise_connectors::kEncryptedCachePrimaryKey));
+
   EXPECT_FALSE(
       prefs->GetBoolean(enterprise_connectors::kCacheEncryptionEnabledPref));
   EXPECT_TRUE(prefs->IsManagedPreference(
       enterprise_connectors::kCacheEncryptionEnabledPref));
+}
+
+IN_PROC_BROWSER_TEST_F(CacheEncryptionDisabledByPolicyTest,
+                       KeyPrefIsNotStoredWhenPolicyIsDisabled) {
+  // The pref should not be stored at all, if the policy is disabled.
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  EXPECT_FALSE(
+      prefs->GetBoolean(enterprise_connectors::kCacheEncryptionEnabledPref));
+  EXPECT_TRUE((prefs->IsManagedPreference(
+      enterprise_connectors::kCacheEncryptionEnabledPref)));
+  EXPECT_FALSE(
+      prefs->HasPrefPath(enterprise_connectors::kEncryptedCachePrimaryKey));
 }

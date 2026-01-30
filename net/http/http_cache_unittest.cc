@@ -21,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -15018,6 +15019,12 @@ class MockCacheEncryptionDelegate : public net::CacheEncryptionDelegate {
                    std::vector<uint8_t>* plaintext) override {
     return false;
   }
+  disk_cache::BackendFileOperationsFactory* GetEncryptionFileOperationsFactory(
+      scoped_refptr<disk_cache::BackendFileOperationsFactory>
+          file_operations_factory) override {
+    factory_ = base::MakeRefCounted<disk_cache::TrivialFileOperationsFactory>();
+    return factory_.get();
+  }
 
   void SetInitResult(net::Error result) { init_result_ = result; }
 
@@ -15032,6 +15039,7 @@ class MockCacheEncryptionDelegate : public net::CacheEncryptionDelegate {
   bool init_called_ = false;
   net::Error init_result_ = net::OK;
   base::OnceCallback<void(net::Error)> pending_callback_;
+  scoped_refptr<disk_cache::TrivialFileOperationsFactory> factory_;
 };
 
 // A backend factory that creates a disk cache and injects a mock
