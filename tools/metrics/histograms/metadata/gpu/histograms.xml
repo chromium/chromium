@@ -1033,6 +1033,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.Graphite.InsertRecordingStatus"
+    enum="GraphiteInsertRecordingStatus" expires_after="2026-04-30">
+  <owner>sunnyps@chromium.org</owner>
+  <owner>michaelludwig@google.com</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The return value for each Graphite insertRecording call made by Chromium.
+  </summary>
+</histogram>
+
 <histogram name="GPU.GraphValidation.Duration" units="ms"
     expires_after="2025-11-15">
   <owner>vasilyt@chromium.org</owner>

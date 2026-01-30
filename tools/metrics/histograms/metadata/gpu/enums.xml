@@ -1112,6 +1112,19 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="NoKillForGpuProgressInCrashDump"/>
 </enum>
 
+<!-- LINT.IfChange(GraphiteInsertRecordingStatus) -->
+
+<enum name="GraphiteInsertRecordingStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="InvalidRecording"/>
+  <int value="2" label="PromiseImageInstantiationFailed"/>
+  <int value="3" label="AddCommandsFailed"/>
+  <int value="4" label="AsyncShaderCompilesFailed"/>
+  <int value="5" label="OutOfOrderRecording"/>
+</enum>
+
+<!-- LINT.ThenChange(//gpu/command_buffer/service/graphite_shared_context.cc:InsertRecordingStatusUma) -->
+
 <enum name="HasDiscreteGpu">
   <int value="0" label="No"/>
   <int value="1" label="Yes"/>

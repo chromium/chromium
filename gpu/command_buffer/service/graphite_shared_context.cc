@@ -4,7 +4,10 @@
 
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -14,6 +17,44 @@
 namespace gpu {
 
 namespace {
+// This is emitted to UMA - values should not be reordered, only appended!
+// LINT.IfChange(InsertRecordingStatusUma)
+enum class InsertRecordingStatusUma {
+  kSuccess,
+  kInvalidRecording,
+  kPromiseImageInstantiationFailed,
+  kAddCommandsFailed,
+  kAsyncShaderCompilesFailed,
+  kOutOfOrderRecording,
+  kMaxValue = kOutOfOrderRecording
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:GraphiteInsertRecordingStatus)
+
+InsertRecordingStatusUma InsertRecordingStatusUma(
+    skgpu::graphite::InsertStatus insert_status) {
+  // InsertStatus almost behaves like an enum class, but not quite since it can
+  // convert to both bool and integer types and can't be used in a switch.
+  if (insert_status == skgpu::graphite::InsertStatus::kSuccess) {
+    return InsertRecordingStatusUma::kSuccess;
+  } else if (insert_status ==
+             skgpu::graphite::InsertStatus::kInvalidRecording) {
+    return InsertRecordingStatusUma::kInvalidRecording;
+  } else if (insert_status ==
+             skgpu::graphite::InsertStatus::kPromiseImageInstantiationFailed) {
+    return InsertRecordingStatusUma::kPromiseImageInstantiationFailed;
+  } else if (insert_status ==
+             skgpu::graphite::InsertStatus::kAddCommandsFailed) {
+    return InsertRecordingStatusUma::kAddCommandsFailed;
+  } else if (insert_status ==
+             skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed) {
+    return InsertRecordingStatusUma::kAsyncShaderCompilesFailed;
+  } else if (insert_status ==
+             skgpu::graphite::InsertStatus::kOutOfOrderRecording) {
+    return InsertRecordingStatusUma::kOutOfOrderRecording;
+  }
+  NOTREACHED();
+}
+
 struct RecordingContext {
   skgpu::graphite::GpuFinishedProc old_finished_proc;
   skgpu::graphite::GpuFinishedContext old_context;
@@ -216,20 +257,38 @@ bool GraphiteSharedContext::InsertRecordingImpl(
 
   auto insert_status = graphite_context_->insertRecording(*info_ptr);
 
-  // TODO(433845560): Check the kAddCommandsFailed failures.
-  // Crash only if we're not simulating a failure for testing.
   const bool simulating_insert_failure =
       info_ptr->fSimulatedStatus != skgpu::graphite::InsertStatus::kSuccess;
 
-  // InsertStatus::kAsyncShaderCompilesFailed is also an unrecoverable error for
-  // which we should also clear the disk shader cache in case the error was due
-  // to a corrupted cached shader blob.
+  // Crash, log, or emit UMA only if we're not simulating a failure for testing.
+  if (!simulating_insert_failure) {
+    if (base::ShouldRecordSubsampledMetric(0.01)) {
+      UMA_HISTOGRAM_ENUMERATION("GPU.Graphite.InsertRecordingStatus",
+                                InsertRecordingStatusUma(insert_status));
+    }
+    if (insert_status != skgpu::graphite::InsertStatus::kSuccess) {
+      // skgpu::graphite::InsertStatus almost behaves like an enum class, but
+      // not quite - it can't be static_cast to an int.
+      LOG(ERROR) << "Graphite insertRecording failed with status "
+                 << static_cast<int>(InsertRecordingStatusUma(insert_status));
+    }
+  }
+
+  // kAsyncShaderCompilesFailed and kOutOfOrderRecording are unrecoverable
+  // failures because they cause future recordings to be rendered incorrectly.
+  // TODO(433845560): Check the kAddCommandsFailed failures.
+  const bool is_unrecoverable_failure =
+      insert_status ==
+          skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed ||
+      insert_status == skgpu::graphite::InsertStatus::kOutOfOrderRecording;
+  // For kAsyncShaderCompilesFailed, we should also clear the disk shader
+  // cache in case the error was due to a corrupted cached shader blob.
+  std::optional<GpuProcessShmCount::ScopedIncrement> use_shader_cache;
   if (insert_status ==
       skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed) {
-    GpuProcessShmCount::ScopedIncrement use_shader_cache(
-        use_shader_cache_shm_count_);
-    CHECK(simulating_insert_failure);
+    use_shader_cache.emplace(use_shader_cache_shm_count_);
   }
+  CHECK(simulating_insert_failure || !is_unrecoverable_failure);
 
   // All other failure modes are recoverable in the sense that future recordings
   // will be rendered correctly, so merely return a boolean here so that callers
