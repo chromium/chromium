@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <array>
 #include <string_view>
 
 #include "base/compiler_specific.h"
@@ -803,11 +804,8 @@ TEST(CTAPResponseTest, TestReadGetInfoResponse) {
 }
 
 TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
-  uint8_t
-      get_info[sizeof(kTestAuthenticatorGetInfoResponseWithDuplicateVersion)];
-  UNSAFE_TODO(memcpy(get_info,
-                     kTestAuthenticatorGetInfoResponseWithDuplicateVersion,
-                     sizeof(get_info)));
+  auto get_info =
+      std::to_array(kTestAuthenticatorGetInfoResponseWithDuplicateVersion);
   // Should fail to parse with duplicate versions.
   EXPECT_FALSE(ReadCTAPGetInfoResponse(get_info));
 
@@ -815,8 +813,9 @@ TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
   // value. That should be sufficient to make the data parsable.
   static constexpr std::string_view kU2Fv9 = "U2F_V9";
   auto first_version = std::ranges::search(get_info, kU2Fv9);
-  ASSERT_FALSE(first_version.empty());
-  UNSAFE_TODO(memcpy(first_version.begin(), "U2F_V3", 6));
+  ASSERT_EQ(first_version.size(), kU2Fv9.size());
+  static constexpr std::string_view kU2Fv3 = "U2F_V3";
+  std::ranges::copy(kU2Fv3, first_version.begin());
   std::optional<AuthenticatorGetInfoResponse> response =
       ReadCTAPGetInfoResponse(get_info);
   ASSERT_TRUE(response);
