@@ -163,7 +163,7 @@ void WebUIMochaBrowserTest::SetUpOnMainThread() {
     base::FilePath devtools_code_coverage_dir =
         command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
     coverage_handler_ = std::make_unique<DevToolsAgentCoverageObserver>(
-        devtools_code_coverage_dir);
+        devtools_code_coverage_dir, base::NullCallback(), test_loader_host_);
   }
 #endif
 }

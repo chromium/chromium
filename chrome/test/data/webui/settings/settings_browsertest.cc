@@ -1788,13 +1788,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubModule) {
   RunTest("settings/safety_hub_module_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
-// TODO(crbug.com/41496635): Webviews don't work properly with JS coverage.
-#define MAYBE_SafetyHubPage DISABLED_SafetyHubPage
-#else
-#define MAYBE_SafetyHubPage SafetyHubPage
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, MAYBE_SafetyHubPage) {
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubPage) {
   RunTest("settings/safety_hub_page_test.js", "mocha.run()");
 }
 

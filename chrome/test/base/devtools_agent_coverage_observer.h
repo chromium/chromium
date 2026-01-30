@@ -30,6 +30,10 @@ class DevToolsAgentCoverageObserver
   DevToolsAgentCoverageObserver(
       base::FilePath devtools_code_coverage_dir,
       ShouldInspectDevToolsAgentHostCallback should_inspect_callback);
+  DevToolsAgentCoverageObserver(
+      base::FilePath devtools_code_coverage_dir,
+      ShouldInspectDevToolsAgentHostCallback should_inspect_callback,
+      std::string collect_coverage_for_host);
   ~DevToolsAgentCoverageObserver() override;
 
   bool CoverageEnabled() const;
@@ -55,6 +59,7 @@ class DevToolsAgentCoverageObserver
   base::FilePath devtools_code_coverage_dir_;
   DevToolsAgentMap devtools_agents_;
   ShouldInspectDevToolsAgentHostCallback should_inspect_callback_;
+  std::string collect_coverage_for_host_;
 };
 
 #endif  // CHROME_TEST_BASE_DEVTOOLS_AGENT_COVERAGE_OBSERVER_H_
