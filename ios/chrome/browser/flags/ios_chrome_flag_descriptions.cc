@@ -743,12 +743,6 @@ const char kIOSExpandedTipsDescription[] =
     "Enables a feature that adds several new Tips Notifications that can be "
     "sent.";
 
-const char kIOSFillRecoveryPasswordName[] =
-    "Enable autofilling with a recovery password";
-const char kIOSFillRecoveryPasswordDescription[] =
-    "When enabled, users will be able to attempt to log in using a recovery "
-    "password if the main one didn't work.";
-
 const char kIOSKeyboardAccessoryDefaultViewName[] =
     "Default Input Accessory View";
 const char kIOSKeyboardAccessoryDefaultViewDescription[] =

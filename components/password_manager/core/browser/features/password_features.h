@@ -127,10 +127,6 @@ BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
 // that are never provided.
 BASE_DECLARE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests);
 
-// Allows filling from a secondary recovery password saved as a backup on iOS.
-// Acts as an iOS kill switch for the `kImprovedPasswordChangeService` feature.
-BASE_DECLARE_FEATURE(kIOSFillRecoveryPassword);
-
 // The feature parameter that determines the minimal period of time in
 // milliseconds before the form extraction request times out.
 extern const base::FeatureParam<int>

@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/ios/features.h"
 #include "components/password_manager/ios/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -325,46 +324,22 @@ TEST_F(AccountSelectFillDataTest, RetrieveSuggestions_WithBackupPasswords) {
         /*is_password_field=*/false);
   };
 
-  {
-    // Enable the iOS backup password feature.
-    base::test::ScopedFeatureList scoped_feature_list{
-        password_manager::features::kIOSFillRecoveryPassword};
-
-    // There should be three suggestions:
-    //   * 1 for the preferred login.
-    //   * 1 for the preferred login's backup password.
-    //   * 1 for the additional login.
-    EXPECT_THAT(
-        retrieve_suggestions(),
-        ElementsAre(
-            AllOf(Field(&UsernameAndRealm::username,
-                        base::ASCIIToUTF16(kUsernames[0])),
-                  Field(&UsernameAndRealm::is_backup_credential, false)),
-            AllOf(Field(&UsernameAndRealm::username,
-                        base::ASCIIToUTF16(kUsernames[0])),
-                  Field(&UsernameAndRealm::is_backup_credential, true)),
-            AllOf(Field(&UsernameAndRealm::username,
-                        base::ASCIIToUTF16(kAdditionalUsernames[0])),
-                  Field(&UsernameAndRealm::is_backup_credential, false))));
-  }
-  {
-    // Disable the iOS backup password feature.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        password_manager::features::kIOSFillRecoveryPassword);
-
-    // An additional suggestion shouldn't have been created for the backup
-    // password.
-    EXPECT_THAT(
-        retrieve_suggestions(),
-        ElementsAre(
-            AllOf(Field(&UsernameAndRealm::username,
-                        base::ASCIIToUTF16(kUsernames[0])),
-                  Field(&UsernameAndRealm::is_backup_credential, false)),
-            AllOf(Field(&UsernameAndRealm::username,
-                        base::ASCIIToUTF16(kAdditionalUsernames[0])),
-                  Field(&UsernameAndRealm::is_backup_credential, false))));
-  }
+  // There should be three suggestions:
+  //   * 1 for the preferred login.
+  //   * 1 for the preferred login's backup password.
+  //   * 1 for the additional login.
+  EXPECT_THAT(
+      retrieve_suggestions(),
+      ElementsAre(
+          AllOf(Field(&UsernameAndRealm::username,
+                      base::ASCIIToUTF16(kUsernames[0])),
+                Field(&UsernameAndRealm::is_backup_credential, false)),
+          AllOf(Field(&UsernameAndRealm::username,
+                      base::ASCIIToUTF16(kUsernames[0])),
+                Field(&UsernameAndRealm::is_backup_credential, true)),
+          AllOf(Field(&UsernameAndRealm::username,
+                      base::ASCIIToUTF16(kAdditionalUsernames[0])),
+                Field(&UsernameAndRealm::is_backup_credential, false))));
 }
 
 TEST_F(AccountSelectFillDataTest, RetrievePSLMatchedSuggestions) {
@@ -672,10 +647,6 @@ class AccountSelectFillDataFieldAndCredentialTypeTest
 // comes with a backup password.
 TEST_P(AccountSelectFillDataFieldAndCredentialTypeTest,
        GetFillData_WithBackupPasswords) {
-  // Enable the iOS backup password feature.
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kIOSFillRecoveryPassword};
-
   PasswordFormFillData form_data = form_data_[0];
   form_data.preferred_login.backup_password_value = kBackupPassword;
 

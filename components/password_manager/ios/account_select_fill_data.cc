@@ -8,14 +8,11 @@
 #include <variant>
 
 #include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/ios/features.h"
 
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
@@ -161,9 +158,7 @@ std::vector<UsernameAndRealm> AccountSelectFillData::RetrieveSuggestions(
     usernames.push_back({credential.username, credential.realm});
     // If `credential` has a backup password, create a separate UsernameAndRealm
     // entry for it.
-    if (credential.backup_password &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kIOSFillRecoveryPassword)) {
+    if (credential.backup_password) {
       usernames.push_back({credential.username, credential.realm,
                            /*is_backup_credential=*/true});
     }

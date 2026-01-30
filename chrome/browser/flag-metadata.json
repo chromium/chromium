@@ -5724,11 +5724,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "ios-fill-recovery-password",
-    "owners": [ "noemies@google.com", "bling-transactions@google.com" ],
-    "expiry_milestone": 141
-  },
-  {
     "name": "ios-keyboard-accessory-default-view",
     "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 160

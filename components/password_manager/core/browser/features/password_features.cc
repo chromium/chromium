@@ -107,8 +107,6 @@ BASE_FEATURE(kImprovedPasswordChangeService, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSFillRecoveryPassword, base::FEATURE_ENABLED_BY_DEFAULT);
-
 const base::FeatureParam<int> kIosPasswordFormExtractionRequestsTimeoutMs = {
     &kIosCleanupHangingPasswordFormExtractionRequests,
     /*name=*/"period-ms", /*default_value=*/250};

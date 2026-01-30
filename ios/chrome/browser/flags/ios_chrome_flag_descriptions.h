@@ -459,9 +459,6 @@ extern const char kIOSExpandedSetupListDescription[];
 extern const char kIOSExpandedTipsName[];
 extern const char kIOSExpandedTipsDescription[];
 
-extern const char kIOSFillRecoveryPasswordName[];
-extern const char kIOSFillRecoveryPasswordDescription[];
-
 extern const char kIOSKeyboardAccessoryDefaultViewName[];
 extern const char kIOSKeyboardAccessoryDefaultViewDescription[];
 

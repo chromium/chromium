@@ -302,12 +302,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector
-            (testAutofillFormButtonForBackupCredentialFillsForm)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSFillRecoveryPassword);
-  }
-
   // The proactive password generation bottom sheet isn't tested here, it
   // is tested in its own suite in password_suggestion_egtest.mm.
   config.features_disabled.push_back(

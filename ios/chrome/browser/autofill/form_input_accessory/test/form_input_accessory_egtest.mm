@@ -16,7 +16,6 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
@@ -309,11 +308,6 @@ void SlowlyTypeText(NSString* text) {
     config.features_enabled.push_back(kAutofillRefillForFormsIos);
     config.features_enabled.push_back(
         autofill::features::kAutofillAcrossIframesIos);
-  }
-
-  if ([self isRunningTest:@selector(testUseBackupPassword)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSFillRecoveryPassword);
   }
 
   if ([self shouldEnableTwoBubbleFeature]) {

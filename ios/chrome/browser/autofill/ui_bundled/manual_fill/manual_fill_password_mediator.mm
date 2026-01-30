@@ -13,7 +13,6 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/form_fetcher_impl.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
@@ -415,9 +414,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
     // existing.
     std::optional<std::u16string> backupPassword =
         passwordForm.GetPasswordBackup();
-    if (backupPassword &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kIOSFillRecoveryPassword)) {
+    if (backupPassword) {
       PasswordForm tempPasswordForm = passwordForm;
       tempPasswordForm.password_value = backupPassword.value();
       ManualFillCredential* backupManualFillCredential =

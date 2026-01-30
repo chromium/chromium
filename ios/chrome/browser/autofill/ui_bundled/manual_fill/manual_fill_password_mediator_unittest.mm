@@ -11,7 +11,6 @@
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/fake_form_fetcher.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -209,19 +208,7 @@ TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerWithBackupCredential) {
     [saved_passwords_presenter_observer savedPasswordsDidChange];
   };
 
-  {
-    base::test::ScopedFeatureList feature_list{
-        password_manager::features::kIOSFillRecoveryPassword};
-
-    check_credentials(2);
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        password_manager::features::kIOSFillRecoveryPassword);
-
-    check_credentials(1);
-  }
+  check_credentials(2);
 
   EXPECT_OCMOCK_VERIFY(consumer());
 }
