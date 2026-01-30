@@ -91,7 +91,6 @@ bool IsPerformanceNavigationTimingConfidenceEnabled() {
 
 class LaunchNavigationBrowserTest
     : public InProcessBrowserTest,
-      public BrowserListObserver,
       public testing::WithParamInterface<LaunchNavigationBrowserTestParam> {
  public:
   LaunchNavigationBrowserTest() {

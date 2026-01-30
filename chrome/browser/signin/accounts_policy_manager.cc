@@ -26,9 +26,11 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
@@ -53,12 +55,12 @@
 // Manager that presents the profile will be deleted dialog on the first active
 // browser window.
 class AccountsPolicyManager::DeleteProfileDialogManager
-    : public BrowserListObserver {
+    : public BrowserCollectionObserver {
  public:
   DeleteProfileDialogManager(std::string primary_account_email,
                              AccountsPolicyManager* delegate)
       : primary_account_email_(primary_account_email), delegate_(delegate) {}
-  ~DeleteProfileDialogManager() override { BrowserList::RemoveObserver(this); }
+  ~DeleteProfileDialogManager() override = default;
 
   DeleteProfileDialogManager(const DeleteProfileDialogManager&) = delete;
   DeleteProfileDialogManager& operator=(const DeleteProfileDialogManager&) =
@@ -80,24 +82,25 @@ class AccountsPolicyManager::DeleteProfileDialogManager
 
       return;
     }
-
-    BrowserList::AddObserver(this);
+    auto* const browser_collection =
+        ProfileBrowserCollection::GetForProfile(profile);
+    browser_collection_observation_.Observe(browser_collection);
+    // Find the last active browser window for the profile.
     Browser* active_browser = chrome::FindLastActiveWithProfile(profile);
     if (active_browser) {
-      OnBrowserSetLastActive(active_browser);
+      OnBrowserActivated(active_browser);
     }
   }
 
-  void OnBrowserSetLastActive(Browser* browser) override {
+  void OnBrowserActivated(BrowserWindowInterface* browser) override {
     DCHECK(!profile_path_.empty());
-
-    if (profile_path_ != browser->profile()->GetPath()) {
+    if (profile_path_ != browser->GetProfile()->GetPath()) {
       return;
     }
 
     active_browser_ = browser;
     browser_did_become_inactive_subscription_ =
-        active_browser_->RegisterDidBecomeInactive(base::BindRepeating(
+        browser->RegisterDidBecomeInactive(base::BindRepeating(
             &DeleteProfileDialogManager::OnBrowserDidBecomeInactive,
             base::Unretained(this)));
 
@@ -115,7 +118,8 @@ class AccountsPolicyManager::DeleteProfileDialogManager
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
-                       weak_factory_.GetWeakPtr(), browser->AsWeakPtr()));
+                       weak_factory_.GetWeakPtr(),
+                       active_browser_->GetWeakPtr()));
   }
 
   // Called immediately after active_browser_ becomes inactive.
@@ -124,14 +128,15 @@ class AccountsPolicyManager::DeleteProfileDialogManager
     browser_did_become_inactive_subscription_ = {};
   }
 
-  void OnBrowserRemoved(Browser* browser) override {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (active_browser_ == browser) {
       active_browser_ = nullptr;
     }
   }
 
  private:
-  void ShowDeleteProfileDialog(base::WeakPtr<Browser> active_browser) {
+  void ShowDeleteProfileDialog(
+      base::WeakPtr<BrowserWindowInterface> active_browser) {
     // Block opening dialog from nested task.
     static bool is_dialog_shown = false;
     if (is_dialog_shown) {
@@ -146,9 +151,9 @@ class AccountsPolicyManager::DeleteProfileDialogManager
     }
 
     // Show the dialog.
-    DCHECK(active_browser_->window()->GetNativeWindow());
+    DCHECK(active_browser_->GetWindow()->GetNativeWindow());
     chrome::MessageBoxResult result = chrome::ShowWarningMessageBoxSync(
-        active_browser_->window()->GetNativeWindow(),
+        active_browser_->GetWindow()->GetNativeWindow(),
         l10n_util::GetStringUTF16(IDS_PROFILE_WILL_BE_DELETED_DIALOG_TITLE),
         l10n_util::GetStringFUTF16(
             IDS_PROFILE_WILL_BE_DELETED_DIALOG_DESCRIPTION,
@@ -166,7 +171,7 @@ class AccountsPolicyManager::DeleteProfileDialogManager
             FROM_HERE,
             base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
                            weak_factory_.GetWeakPtr(),
-                           active_browser_->AsWeakPtr()));
+                           active_browser_->GetWeakPtr()));
         break;
       }
       case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_YES:
@@ -186,8 +191,10 @@ class AccountsPolicyManager::DeleteProfileDialogManager
   std::string primary_account_email_;
   raw_ptr<AccountsPolicyManager> delegate_;
   base::FilePath profile_path_;
-  raw_ptr<Browser> active_browser_;
+  raw_ptr<BrowserWindowInterface> active_browser_;
   base::CallbackListSubscription browser_did_become_inactive_subscription_;
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   base::WeakPtrFactory<DeleteProfileDialogManager> weak_factory_{this};
 };
 

@@ -8,8 +8,9 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
@@ -20,16 +21,15 @@ PinnedTabService::PinnedTabService(Profile* profile) : profile_(profile) {
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
-        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        OnBrowserCreated(browser);
         return true;
       });
 
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-PinnedTabService::~PinnedTabService() {
-  BrowserList::RemoveObserver(this);
-}
+PinnedTabService::~PinnedTabService() = default;
 
 void PinnedTabService::OnClosingAllBrowsersChanged(bool closing) {
   // Saving of tabs happens when the user exits the application or closes the
@@ -52,21 +52,15 @@ void PinnedTabService::OnClosingAllBrowsersChanged(bool closing) {
   }
 }
 
-void PinnedTabService::OnBrowserAdded(Browser* browser) {
-  if (browser->profile() != profile_ || !browser->is_type_normal()) {
+void PinnedTabService::OnBrowserCreated(BrowserWindowInterface* browser) {
+  if (browser->GetProfile() != profile_ ||
+      browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     return;
   }
 
   need_to_write_pinned_tabs_ = true;
-  browser->tab_strip_model()->AddObserver(this);
-}
-
-void PinnedTabService::OnBrowserRemoved(Browser* browser) {
-  if (browser->profile() != profile_ || !browser->is_type_normal()) {
-    return;
-  }
-
-  browser->tab_strip_model()->RemoveObserver(this);
+  // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+  browser->GetTabStripModel()->AddObserver(this);
 }
 
 void PinnedTabService::OnTabStripModelChanged(

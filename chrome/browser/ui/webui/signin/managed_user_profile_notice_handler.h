@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -17,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -25,6 +25,7 @@
 #include "google_apis/gaia/core_account_id.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 struct AccountInfo;
 
@@ -37,7 +38,6 @@ class FilePath;
 class ManagedUserProfileNoticeHandler
     : public content::WebUIMessageHandler,
       public ProfileAttributesStorage::Observer,
-      public BrowserListObserver,
       public signin::IdentityManager::Observer {
  public:
   enum State {
@@ -74,11 +74,9 @@ class ManagedUserProfileNoticeHandler
       const base::FilePath& profile_path) override;
   void OnProfileIsManagedChanged(const base::FilePath& profile_path) override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
-
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnBrowserDidClose(BrowserWindowInterface* browser);
 
   // Access to construction parameters for tests.
   ManagedUserProfileNoticeUI::ScreenType GetTypeForTesting();
@@ -143,6 +141,7 @@ class ManagedUserProfileNoticeHandler
   base::OneShotTimer processing_timer_;
 
   raw_ptr<Browser> browser_ = nullptr;
+  base::CallbackListSubscription browser_did_close_subscription_;
   const ManagedUserProfileNoticeUI::ScreenType type_;
   const bool profile_creation_required_by_policy_;
 #if !BUILDFLAG(IS_CHROMEOS)

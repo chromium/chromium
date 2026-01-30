@@ -22,7 +22,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -138,11 +139,14 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
       (type_ !=
            ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation ||
        type_ == ManagedUserProfileNoticeUI::ScreenType::kProfilePicker));
-  BrowserList::AddObserver(this);
+  if (browser_) {
+    browser_did_close_subscription_ = browser_->RegisterBrowserDidClose(
+        base::BindRepeating(&ManagedUserProfileNoticeHandler::OnBrowserDidClose,
+                            base::Unretained(this)));
+  }
 }
 
 ManagedUserProfileNoticeHandler::~ManagedUserProfileNoticeHandler() {
-  BrowserList::RemoveObserver(this);
   if (!canceling_) {
     HandleCancel(base::ListValue());
   }
@@ -189,10 +193,10 @@ void ManagedUserProfileNoticeHandler::OnProfileIsManagedChanged(
   UpdateProfileInfo(profile_path);
 }
 
-void ManagedUserProfileNoticeHandler::OnBrowserRemoved(Browser* browser) {
-  if (browser_ == browser) {
-    browser_ = nullptr;
-  }
+void ManagedUserProfileNoticeHandler::OnBrowserDidClose(
+    BrowserWindowInterface* browser) {
+  CHECK_EQ(browser_, browser);
+  browser_ = nullptr;
 }
 
 void ManagedUserProfileNoticeHandler::OnExtendedAccountInfoUpdated(

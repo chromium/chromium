@@ -342,6 +342,7 @@ if (!is_chromeos) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/common",
       "//components/signin/public/identity_manager",
