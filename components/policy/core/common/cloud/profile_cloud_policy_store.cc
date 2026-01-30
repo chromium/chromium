@@ -31,6 +31,10 @@ const base::FilePath::CharType kKeyCache[] =
 // File in the above directory for storing extension install policy data.
 const base::FilePath::CharType kExtensionInstallPolicyCacheFile[] =
     FILE_PATH_LITERAL("Profile Cloud Extension Install Policy");
+// File in the above directory for storing extension install policy signing key
+// data.
+const base::FilePath::CharType kExtensionInstallKeyCacheFile[] =
+    FILE_PATH_LITERAL("Profile Cloud Extension Install Signing Key");
 
 }  // namespace
 
@@ -75,7 +79,8 @@ ProfileCloudPolicyStore::CreateForExtensionInstall(
   base::FilePath policy_dir = profile_dir.Append(kPolicy);
   base::FilePath policy_cache_file =
       policy_dir.Append(kExtensionInstallPolicyCacheFile);
-  base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
+  base::FilePath key_cache_file =
+      policy_dir.Append(kExtensionInstallKeyCacheFile);
   return std::make_unique<ProfileCloudPolicyStore>(
       policy_cache_file, key_cache_file,
       dm_protocol::kChromeExtensionInstallUserCloudPolicyType,

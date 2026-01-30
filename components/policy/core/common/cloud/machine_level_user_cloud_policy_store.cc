@@ -29,8 +29,12 @@ const base::FilePath::CharType kPolicyCache[] =
     FILE_PATH_LITERAL("Machine Level User Cloud Policy");
 const base::FilePath::CharType kKeyCache[] =
     FILE_PATH_LITERAL("Machine Level User Cloud Policy Signing Key");
+
 const base::FilePath::CharType kExtensionInstallPolicyCacheFile[] =
     FILE_PATH_LITERAL("Machine Level Extension Install Policy");
+const base::FilePath::CharType kExtensionInstallKeyCacheFile[] =
+    FILE_PATH_LITERAL("Machine Level Extension Install Policy Signing Key");
+
 constexpr base::FilePath::StringViewType kExternalPolicyCache =
     FILE_PATH_LITERAL("PolicyFetchResponse");
 constexpr base::FilePath::StringViewType kExternalPolicyInfo =
@@ -99,7 +103,8 @@ MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   base::FilePath policy_cache_file =
       policy_dir.Append(kExtensionInstallPolicyCacheFile);
-  base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
+  base::FilePath key_cache_file =
+      policy_dir.Append(kExtensionInstallKeyCacheFile);
   return std::make_unique<MachineLevelUserCloudPolicyStore>(
       machine_dm_token, machine_client_id,
       /*external_policy_path=*/base::FilePath(),

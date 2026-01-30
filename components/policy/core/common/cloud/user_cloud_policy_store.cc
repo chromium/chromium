@@ -35,7 +35,6 @@ const base::FilePath::CharType kPolicyDir[] = FILE_PATH_LITERAL("Policy");
 // File in the above directory for storing user policy data.
 const base::FilePath::CharType kPolicyCacheFile[] =
     FILE_PATH_LITERAL("User Policy");
-
 // File in the above directory for storing policy signing key data.
 const base::FilePath::CharType kKeyCacheFile[] =
     FILE_PATH_LITERAL("Signing Key");
@@ -43,7 +42,10 @@ const base::FilePath::CharType kKeyCacheFile[] =
 // File in the above directory for storing extension install policy data.
 const base::FilePath::CharType kExtensionInstallPolicyCacheFile[] =
     FILE_PATH_LITERAL("User Extension Install Policy");
-
+// File in the above directory for storing extension install policy signing key
+// data.
+const base::FilePath::CharType kExtensionInstallKeyCacheFile[] =
+    FILE_PATH_LITERAL("User Extension Install Signing Key");
 // Maximum policy and key size that will be loaded, in bytes.
 const size_t kPolicySizeLimit = 1024 * 1024;
 const size_t kKeySizeLimit = 16 * 1024;
@@ -484,7 +486,7 @@ UserCloudPolicyStore::CreateForExtensionInstall(
   base::FilePath policy_path =
       profile_path.Append(kPolicyDir).Append(kExtensionInstallPolicyCacheFile);
   base::FilePath key_path =
-      profile_path.Append(kPolicyDir).Append(kKeyCacheFile);
+      profile_path.Append(kPolicyDir).Append(kExtensionInstallKeyCacheFile);
   return base::WrapUnique(new UserCloudPolicyStore(
       policy_path, key_path,
       dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
