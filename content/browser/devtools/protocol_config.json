@@ -246,7 +246,6 @@
                 "domain": "SmartCardEmulation",
                 "exclude": [
                     "reportReleaseContextResult",
-                    "reportGetStatusChangeResult",
                     "reportPlainResult",
                     "reportDataResult",
                     "reportStatusResult",

@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/values.h"
@@ -30,6 +31,19 @@ testing::Matcher<const base::DictValue*> IsSuccess() {
       [](const base::DictValue& dict) { return dict.FindDict("error"); },
       testing::IsNull()));
 }
+
+// A simplified struct to make test assertions readable.
+// Note: This does not cover all Mojo reader state flags,
+// only the specific flags relevant to these tests.
+struct TestReaderStateOut {
+  std::string name;
+  int event_count = 0;
+  std::vector<uint8_t> atr;
+  // Selected flags
+  bool changed = false;
+  bool present = false;
+  bool empty = false;
+};
 
 }  // namespace
 
@@ -154,6 +168,46 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
       response.Set("activeProtocol", *active_protocol);
     }
     SendResponse("SmartCardEmulation.reportConnectResult", params,
+                 std::move(response));
+  }
+
+  // Helper: Waits for getStatusChangeRequested and sends a simulated response.
+  void HandleGetStatusChange(
+      const std::vector<TestReaderStateOut>& states,
+      int context_id = 123,
+      std::optional<std::string> error_code = std::nullopt) {
+    auto params = WaitForNotificationParams(
+        "SmartCardEmulation.getStatusChangeRequested");
+
+    EXPECT_EQ(params.FindInt("contextId"), context_id);
+
+    base::DictValue response;
+    if (error_code.has_value()) {
+      response.Set("resultCode", *error_code);
+      SendResponse("SmartCardEmulation.reportError", params,
+                   std::move(response));
+      return;
+    }
+    base::ListValue response_list;
+
+    for (const auto& state : states) {
+      base::DictValue dict;
+
+      dict.Set("reader", state.name);
+      dict.Set("eventCount", state.event_count);
+      dict.Set("atr", base::Base64Encode(state.atr));
+
+      base::DictValue flags;
+      flags.Set("changed", state.changed);
+      flags.Set("present", state.present);
+      flags.Set("empty", state.empty);
+      dict.Set("eventState", std::move(flags));
+
+      response_list.Append(std::move(dict));
+    }
+
+    response.Set("readerStates", std::move(response_list));
+    SendResponse("SmartCardEmulation.reportGetStatusChangeResult", params,
                  std::move(response));
   }
 
@@ -438,6 +492,159 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
   content::ExecuteScriptAsync(app_frame(), kScript);
 
   HandleEstablishContext();
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, GetStatusChangePnP) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const oldReaders = await context.listReaders();
+
+        let allReaders = await context.getStatusChange(
+            [{readerName: "\\\\?PnP?\\Notification", currentState: {}}],
+            {timeout: 10000})
+            .then((statesOut) => {
+                return context.listReaders();
+            });
+
+        let newReaders = allReaders.filter(x => !oldReaders.includes(x));
+        if (newReaders.length === 1 && newReaders[0] === "New Reader") {
+           window.domAutomationController.send("Success");
+        } else {
+           window.domAutomationController.send(
+            "Failure: " + JSON.stringify(newReaders));
+        }
+      } catch (e) {
+        window.domAutomationController.send(
+          "Error: " + e.name + " - " + e.message);
+      }
+    })();
+  )";
+
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders({});
+  HandleGetStatusChange(
+      {{.name = "\\\\?PnP?\\Notification", .event_count = 1, .changed = true}});
+  HandleListReaders({"New Reader"});
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       GetStatusChangeReturnsError) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+
+        await context.getStatusChange(
+            [{readerName: "Simulated Reader", currentState: {}}],
+            {timeout: 10000}
+        );
+
+        window.domAutomationController.send(
+          "Failure: Promise resolved but should have rejected.");
+
+      } catch (e) {
+        if (e.name === "SmartCardError") {
+           window.domAutomationController.send("Success");
+        } else {
+           window.domAutomationController.send(
+            "Failure: Wrong error type - " + e.name + ": " + e.message);
+        }
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders({"Simulated Reader"});
+  HandleGetStatusChange({}, 123, "no-service");
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       GetStatusChangeMultiReader) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        if (readers.length !== 2 || !readers.includes("Reader A") ||
+          !readers.includes("Reader B")) {
+            window.domAutomationController.send(
+              "Failure: Readers missing. Got: " + readers);
+            return;
+        }
+
+        const states = await context.getStatusChange([
+            {readerName: "Reader A", currentState: {empty: true}},
+            {readerName: "Reader B", currentState: {empty: true}}
+        ], {timeout: 10000});
+
+        const stateA = states.find(s => s.readerName === "Reader A");
+        const stateB = states.find(s => s.readerName === "Reader B");
+
+        if (!stateA || !stateB) {
+            throw new Error("Missing state for one or more readers.");
+        }
+
+        if (!stateA.eventState.changed || !stateA.eventState.present) {
+             throw new Error(
+              "Reader A failed: Expected changed/present. Got: " +
+                JSON.stringify(stateA));
+        }
+
+        if (stateB.eventState.changed || !stateB.eventState.empty) {
+             throw new Error(
+              "Reader B failed: Expected !changed/empty. Got: " +
+                JSON.stringify(stateB));
+        }
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send(
+          "Error: " + e.name + " - " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders({"Reader A", "Reader B"});
+  HandleGetStatusChange({{.name = "Reader A",
+
+                          .event_count = 1,
+                          .atr = {0x3B, 0x11},
+                          .changed = true,
+                          .present = true},
+                         {.name = "Reader B",
+                          .event_count = 0,
+                          .atr = {},
+                          .changed = false,
+                          .empty = true}});
 
   std::string message;
   ASSERT_TRUE(message_queue.WaitForMessage(&message));

@@ -30,6 +30,11 @@ protocol::Binary ToProtocolBinary(const std::vector<uint8_t>& data) {
   return protocol::Binary::fromSpan(std::move(data));
 }
 
+// Convert Protocol Binary to binary data (std::vector<uint8_t>).
+std::vector<uint8_t> ToVector(const protocol::Binary& binary) {
+  return std::vector<uint8_t>(binary.begin(), binary.end());
+}
+
 // Convert the Protocol error string to the Mojo error enum.
 device::mojom::SmartCardError ToMojoSmartCardError(
     const std::string& result_code) {
@@ -144,6 +149,30 @@ ToProtocolReaderStateFlags(
       .Build();
 }
 
+// Convert Pdl Reader State Flags to mojo.
+device::mojom::SmartCardReaderStateFlagsPtr ToMojoReaderStateFlags(
+    protocol::SmartCardEmulation::ReaderStateFlags* flags) {
+  auto mojo_flags = device::mojom::SmartCardReaderStateFlags::New();
+
+  if (!flags) {
+    return mojo_flags;
+  }
+
+  mojo_flags->unaware = flags->GetUnaware(false);
+  mojo_flags->ignore = flags->GetIgnore(false);
+  mojo_flags->changed = flags->GetChanged(false);
+  mojo_flags->unknown = flags->GetUnknown(false);
+  mojo_flags->unavailable = flags->GetUnavailable(false);
+  mojo_flags->empty = flags->GetEmpty(false);
+  mojo_flags->present = flags->GetPresent(false);
+  mojo_flags->exclusive = flags->GetExclusive(false);
+  mojo_flags->inuse = flags->GetInuse(false);
+  mojo_flags->mute = flags->GetMute(false);
+  mojo_flags->unpowered = flags->GetUnpowered(false);
+
+  return mojo_flags;
+}
+
 // Convert Mojo ReaderStates to Protocol Array.
 std::unique_ptr<protocol::Array<protocol::SmartCardEmulation::ReaderStateIn>>
 ToProtocolReaderStates(
@@ -162,6 +191,18 @@ ToProtocolReaderStates(
     protocol_states->push_back(std::move(in));
   }
   return protocol_states;
+}
+
+// Convert Protocol ReaderStateOut to Mojo SmartCardReaderStateOut.
+device::mojom::SmartCardReaderStateOutPtr ToMojoReaderStateOut(
+    protocol::SmartCardEmulation::ReaderStateOut& proto_state) {
+  auto mojo_state = device::mojom::SmartCardReaderStateOut::New();
+
+  mojo_state->reader = proto_state.GetReader();
+  mojo_state->event_count = proto_state.GetEventCount();
+  mojo_state->answer_to_reset = ToVector(proto_state.GetAtr());
+  mojo_state->event_state = ToMojoReaderStateFlags(proto_state.GetEventState());
+  return mojo_state;
 }
 
 // Convert Mojo Enum to Protocol String.
@@ -243,6 +284,25 @@ std::vector<std::string> ToMojoStringVector(
     return {};
   }
   return std::move(*in_readers);
+}
+
+// Convert the Protocol reader states array to a vector of Mojo reader states.
+std::vector<device::mojom::SmartCardReaderStateOutPtr> ToMojoReaderStates(
+    std::unique_ptr<
+        protocol::Array<protocol::SmartCardEmulation::ReaderStateOut>>
+        in_states) {
+  if (!in_states) {
+    return {};
+  }
+
+  std::vector<device::mojom::SmartCardReaderStateOutPtr> out_states;
+  out_states.reserve(in_states->size());
+
+  for (const auto& state : *in_states) {
+    out_states.push_back(ToMojoReaderStateOut(*state));
+  }
+
+  return out_states;
 }
 
 }  // namespace
@@ -427,6 +487,18 @@ base::expected<void, std::string> SmartCardEmulationHandler::CompleteConnect(
   return base::ok();
 }
 
+base::expected<void, std::string>
+SmartCardEmulationHandler::CompleteGetStatusChange(
+    const std::string& request_id,
+    std::vector<device::mojom::SmartCardReaderStateOutPtr> reader_states) {
+  ASSIGN_OR_RETURN(auto req,
+                   TakePendingRequest<PendingGetStatusChange>(request_id));
+  std::move(req.callback())
+      .Run(device::mojom::SmartCardStatusChangeResult::NewReaderStates(
+          std::move(reader_states)));
+  return base::ok();
+}
+
 base::expected<void, std::string> SmartCardEmulationHandler::FailRequest(
     const std::string& request_id,
     device::mojom::SmartCardError error) {
@@ -475,6 +547,21 @@ DispatchResponse SmartCardEmulationHandler::ReportConnectResult(
                   [](const std::string& error) {
                     return DispatchResponse::ServerError(error);
                   });
+  return DispatchResponse::Success();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportGetStatusChangeResult(
+    const String& in_requestId,
+    std::unique_ptr<
+        protocol::Array<protocol::SmartCardEmulation::ReaderStateOut>>
+        in_readerStates) {
+  RETURN_IF_ERROR(
+      CompleteGetStatusChange(in_requestId,
+                              ToMojoReaderStates(std::move(in_readerStates))),
+      [](const std::string& error) {
+        return DispatchResponse::ServerError(error);
+      });
+
   return DispatchResponse::Success();
 }
 
