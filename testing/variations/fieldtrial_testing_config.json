@@ -5124,7 +5124,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveyAddressBubbleSignin": [
+    "ChromeIdentitySurveyAddressBubbleSigninExtended": [
         {
             "platforms": [
                 "linux",
@@ -5145,7 +5145,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveyDiceWebSigninAccepted": [
+    "ChromeIdentitySurveyDiceWebSigninAcceptedExtended": [
         {
             "platforms": [
                 "linux",
@@ -5166,7 +5166,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveyDiceWebSigninDeclined": [
+    "ChromeIdentitySurveyDiceWebSigninDeclinedExtended": [
         {
             "platforms": [
                 "linux",
@@ -5187,7 +5187,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveyFirstRunSignin": [
+    "ChromeIdentitySurveyFirstRunSigninExtended": [
         {
             "platforms": [
                 "linux",
@@ -5208,7 +5208,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveyPasswordBubbleSignin": [
+    "ChromeIdentitySurveyPasswordBubbleSigninExtended": [
         {
             "platforms": [
                 "linux",
@@ -5229,7 +5229,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveyProfileMenuDismissed": [
+    "ChromeIdentitySurveyProfileMenuDismissedExtended": [
         {
             "platforms": [
                 "linux",
@@ -5250,7 +5250,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveyProfileMenuSignin": [
+    "ChromeIdentitySurveyProfileMenuSigninExtended": [
         {
             "platforms": [
                 "linux",
@@ -5271,7 +5271,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveyProfilePickerAddProfileSignin": [
+    "ChromeIdentitySurveyProfilePickerAddProfileSigninExtended": [
         {
             "platforms": [
                 "linux",
@@ -5292,7 +5292,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveySigninInterceptProfileSeparation": [
+    "ChromeIdentitySurveySigninInterceptProfileSeparationExtended": [
         {
             "platforms": [
                 "linux",
@@ -5313,7 +5313,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveySigninPromoBubbleDismissed": [
+    "ChromeIdentitySurveySigninPromoBubbleDismissedExtended": [
         {
             "platforms": [
                 "linux",
@@ -5334,7 +5334,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveySwitchProfileFromProfileMenu": [
+    "ChromeIdentitySurveySwitchProfileFromProfileMenuExtended": [
         {
             "platforms": [
                 "linux",
@@ -5355,7 +5355,7 @@
             ]
         }
     ],
-    "ChromeIdentitySurveySwitchProfileFromProfilePicker": [
+    "ChromeIdentitySurveySwitchProfileFromProfilePickerExtended": [
         {
             "platforms": [
                 "linux",
