@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -33,8 +34,8 @@ import org.chromium.ui.widget.RectProvider;
 class ExtensionsMenuMediator implements Destroyable {
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
     private final Context mContext;
+    private final ExtensionsMenuBridge mMenuBridge;
     private final ChromeAndroidTask mTask;
-    private final Runnable mOnUpdateFinishedRunnable;
     private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
     private final View mRootView;
 
@@ -43,14 +44,17 @@ class ExtensionsMenuMediator implements Destroyable {
             ChromeAndroidTask task,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ModelList extensionModels,
-            Runnable onUpdateFinishedRunnable,
             View rootView) {
         mTask = task;
 
-        mOnUpdateFinishedRunnable = onUpdateFinishedRunnable;
         mContext = context;
         mRootView = rootView;
 
+        mMenuBridge = new ExtensionsMenuBridge(mTask);
+
+        // TODO(crbug.com/473213114): get extensions menu information from the
+        // ExtensionsMenuViewModel (C++) through JNI bridge, and remove usage of
+        // ExtensionActionsUpdateHelper.
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
                         extensionModels, task, currentTabSupplier, mActionsUpdateDelegate);
@@ -110,6 +114,7 @@ class ExtensionsMenuMediator implements Destroyable {
 
     @Override
     public void destroy() {
+        mMenuBridge.destroy();
         mExtensionActionsUpdateHelper.destroy();
     }
 
@@ -143,8 +148,6 @@ class ExtensionsMenuMediator implements Destroyable {
         }
 
         @Override
-        public void onUpdateFinished() {
-            mOnUpdateFinishedRunnable.run();
-        }
+        public void onUpdateFinished() {}
     }
 }

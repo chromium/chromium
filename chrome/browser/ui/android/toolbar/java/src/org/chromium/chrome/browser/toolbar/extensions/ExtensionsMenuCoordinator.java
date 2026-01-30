@@ -32,6 +32,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,6 +47,7 @@ import org.chromium.ui.widget.RectProvider;
 @NullMarked
 public class ExtensionsMenuCoordinator implements Destroyable {
     private final Context mContext;
+    private final ListMenu mExtensionsMenu;
     private final ListMenuButton mExtensionsMenuButton;
     private final ThemeColorProvider mThemeColorProvider;
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
@@ -53,12 +55,11 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     private final View mContentView;
     private final PropertyModelChangeProcessor mChangeProcessor;
     private final ModelList mExtensionModels;
+    private final ChromeAndroidTask mTask;
 
     private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
 
     @Nullable @VisibleForTesting ExtensionsMenuMediator mMediator;
-
-    private boolean mShouldShowMenuOnInit;
 
     /**
      * Constructor.
@@ -80,27 +81,11 @@ public class ExtensionsMenuCoordinator implements Destroyable {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
         mTabCreator = tabCreator;
-
-        mExtensionsMenuButton = extensionsMenuButton;
-        mExtensionsMenuButton.setOnClickListener(view -> mShouldShowMenuOnInit = true);
-        mExtensionsMenuButton.setMenuMaxWidth(
-                context.getResources().getDimensionPixelSize(R.dimen.extension_menu_max_width));
-
-        mThemeColorProvider = themeColorProvider;
-        mThemeColorProvider.addTintObserver(mTintObserver);
+        mTask = task;
 
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.extensions_menu, null, false);
 
-        PropertyModel model = createMenuPropertyModel();
-
-        mChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        model, mContentView, ExtensionsMenuViewBinder::bind);
-
-        mExtensionModels = new ModelList();
-        setUpExtensionsRecyclerView(mContentView, mContext, mExtensionModels);
-
-        ListMenu listMenu =
+        mExtensionsMenu =
                 new ListMenu() {
                     @Override
                     public View getContentView() {
@@ -117,37 +102,83 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                     }
                 };
 
+        mExtensionsMenuButton = extensionsMenuButton;
+        mExtensionsMenuButton.setMenuMaxWidth(
+                context.getResources().getDimensionPixelSize(R.dimen.extension_menu_max_width));
+        mExtensionsMenuButton.setDelegate(
+                new ListMenuDelegate() {
+                    @Override
+                    public ListMenu getListMenu() {
+                        // TODO(crbug.com/473213114): we should only show the menu after actions are
+                        // initialized. This will be easier to do once we remove
+                        // ActionsUpdateDelegate and instead we populate actions from the ViewModel
+                        // (C++).
+                        createMediator();
+                        return mExtensionsMenu;
+                    }
+
+                    @Override
+                    public RectProvider getRectProvider(View listMenuHostingView) {
+                        return MenuBuilderHelper.getRectProvider(mExtensionsMenuButton);
+                    }
+                });
+        mExtensionsMenuButton.addPopupListener(
+                new ListMenuHost.PopupMenuShownListener() {
+                    @Override
+                    public void onPopupMenuShown() {}
+
+                    @Override
+                    public void onPopupMenuDismissed() {
+                        destroyMediator();
+                    }
+                });
+
+        mThemeColorProvider = themeColorProvider;
+        mThemeColorProvider.addTintObserver(mTintObserver);
+
+        PropertyModel model = createMenuPropertyModel();
+
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        model, mContentView, ExtensionsMenuViewBinder::bind);
+
+        mExtensionModels = new ModelList();
+        setUpExtensionsRecyclerView(mContentView, mContext, mExtensionModels);
+    }
+
+    /**
+     * Creates the extensions menu mediator and the associated JNI bridge.
+     *
+     * <p>This should only be called when the menu is about to be shown.
+     */
+    private void createMediator() {
+        if (mMediator != null) {
+            return;
+        }
+
+        // Clear old data before repopulating.
+        mExtensionModels.clear();
+
+        // Instantiate the mediator, which will initialize the JNI bridge to the native code.
         mMediator =
                 new ExtensionsMenuMediator(
                         mContext,
-                        task,
+                        mTask,
                         mCurrentTabSupplier,
                         mExtensionModels,
-                        () -> {
-                            mExtensionsMenuButton.setDelegate(
-                                    new ListMenuDelegate() {
-                                        @Override
-                                        public RectProvider getRectProvider(
-                                                View listMenuHostingView) {
-                                            return MenuBuilderHelper.getRectProvider(
-                                                    mExtensionsMenuButton);
-                                        }
-
-                                        @Override
-                                        public ListMenu getListMenu() {
-                                            return listMenu;
-                                        }
-                                    });
-                            if (mShouldShowMenuOnInit) {
-                                if (mExtensionsMenuButton.getHost().isMenuShowing()) {
-                                    mExtensionsMenuButton.dismiss();
-                                } else {
-                                    mExtensionsMenuButton.showMenu();
-                                }
-                                mShouldShowMenuOnInit = false;
-                            }
-                        },
                         mExtensionsMenuButton.getRootView());
+    }
+
+    /**
+     * Destroys the extensions menu mediator.
+     *
+     * <p>This should be called when the menu is closed.
+     */
+    private void destroyMediator() {
+        if (mMediator != null) {
+            mMediator.destroy();
+            mMediator = null;
+        }
     }
 
     private void openUrlFromMenu(String url) {
@@ -207,10 +238,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
 
     @Override
     public void destroy() {
-        if (mMediator != null) {
-            mMediator.destroy();
-            mMediator = null;
-        }
+        destroyMediator();
         mExtensionsMenuButton.setOnClickListener(null);
         mThemeColorProvider.removeTintObserver(mTintObserver);
         mChangeProcessor.destroy();
