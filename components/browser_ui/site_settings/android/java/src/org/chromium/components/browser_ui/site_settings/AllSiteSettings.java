@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.site_settings;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
+import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultTextColorLink;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -489,8 +490,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                     new SpannableString(
                             getResources().getString(R.string.clear_browsing_data_link));
             spannableString.setSpan(
-                    new ForegroundColorSpan(
-                            getContext().getColor(R.color.default_text_color_link_baseline)),
+                    new ForegroundColorSpan(getDefaultTextColorLink(getContext())),
                     0,
                     spannableString.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
