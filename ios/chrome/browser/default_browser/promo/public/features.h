@@ -7,27 +7,25 @@
 
 #import "base/feature_list.h"
 
-// Variations of Default Browser Promo Refresh.
-extern const char kDefaultBrowserPromoRefreshParam[];
-extern const char kDefaultBrowserPromoRefreshParamNoInstructions[];
-extern const char kDefaultBrowserPromoRefreshParamSystemAlertInstructions[];
-extern const char
-    kDefaultBrowserPromoRefreshParamPictureInPictureInstructions[];
-extern const char kDefaultBrowserPromoRefreshParamCarouselInstructions[];
+// Variations of Default Browser Promo Picture in Picture.
+extern const char kDefaultBrowserPictureInPictureParam[];
+extern const char kDefaultBrowserPictureInPictureParamEnabled[];
+extern const char kDefaultBrowserPictureInPictureParamDisabledDefaultApps[];
+extern const char kDefaultBrowserPictureInPictureParamEnabledDefaultApps[];
 
 // Feature flag to enable default browser iPad specific instructions.
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoIpadInstructions);
 
-// Feature flag to enable the default browser promo refresh.
-BASE_DECLARE_FEATURE(kDefaultBrowserPromoRefresh);
+// Feature flag to enable the default browser promo Picture in Picture.
+BASE_DECLARE_FEATURE(kDefaultBrowserPictureInPicture);
 
 // Returns true if the default browser iPad specific instructions are enabled.
 bool IsDefaultBrowserPromoIpadInstructions();
 
-// Returns true if the default browser promo refresh is enabled.
-bool IsDefaultBrowserPromoRefreshEnabled();
+// Returns true if the default browser promo Picture in Picture is enabled.
+bool IsDefaultBrowserPictureInPictureEnabled();
 
-// Returns the default browser promo refresh param.
-std::string DefaultBrowserPromoRefreshParam();
+// Returns the default browser promo Picture in Picture param.
+std::string DefaultBrowserPictureInPictureParam();
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_PUBLIC_FEATURES_H_

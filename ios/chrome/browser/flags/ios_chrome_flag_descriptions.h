@@ -267,14 +267,14 @@ extern const char kDefaultBrowserMagicStackIosDescription[];
 extern const char kDefaultBrowserOffCyclePromoName[];
 extern const char kDefaultBrowserOffCyclePromoDescription[];
 
+extern const char kDefaultBrowserPictureInPictureName[];
+extern const char kDefaultBrowserPictureInPictureDescription[];
+
 extern const char kDefaultBrowserPromoIpadInstructionsName[];
 extern const char kDefaultBrowserPromoIpadInstructionsDescription[];
 
 extern const char kDefaultBrowserPromoPropensityModelName[];
 extern const char kDefaultBrowserPromoPropensityModelDescription[];
-
-extern const char kDefaultBrowserPromoRefreshName[];
-extern const char kDefaultBrowserPromoRefreshDescription[];
 
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];

@@ -435,6 +435,12 @@ const char kDefaultBrowserOffCyclePromoName[] =
 const char kDefaultBrowserOffCyclePromoDescription[] =
     "When enabled, an off-cycle default browser promo will be shown.";
 
+const char kDefaultBrowserPictureInPictureName[] =
+    "Default Browser Promo Picture in Picture";
+const char kDefaultBrowserPictureInPictureDescription[] =
+    "When enabled, default browser instructions will be displayed in "
+    "picture-in-picture format over the iOS settings.";
+
 const char kDefaultBrowserPromoIpadInstructionsName[] =
     "Default Browser Promo iPad Instructions";
 const char kDefaultBrowserPromoIpadInstructionsDescription[] =
@@ -446,10 +452,6 @@ const char kDefaultBrowserPromoPropensityModelName[] =
 const char kDefaultBrowserPromoPropensityModelDescription[] =
     "When enabled, a propensity model will help make the determination of "
     "whether to show a default browser promo";
-
-const char kDefaultBrowserPromoRefreshName[] = "Default Browser Promo Refresh";
-const char kDefaultBrowserPromoRefreshDescription[] =
-    "When enabled, the default browser promo will be updated.";
 
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
