@@ -1110,6 +1110,7 @@ class LocationBarMediator
         input.setRequestType(AutocompleteRequestType.SEARCH);
         input.setPageUrl(mLocationBarDataProvider.getCurrentGurl());
         input.setPageTitle(mLocationBarDataProvider.getTitle());
+        input.setUrlFocusTime(System.currentTimeMillis());
         return input;
     }
 

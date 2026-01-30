@@ -132,7 +132,6 @@ class AutocompleteMediator
     private @Nullable PropertyModel mDeleteDialogModel;
 
     private boolean mNativeInitialized;
-    private long mUrlFocusTime;
     // Tracks whether the activity window is currently focused.
     // This flag is updated via the onTopResumedActivityChanged(boolean) callback:
     // https://developer.android.com/reference/android/app/Activity#onTopResumedActivityChanged(boolean)
@@ -466,7 +465,6 @@ class AutocompleteMediator
 
             mOmniboxFocusResultedInNavigation = false;
             mSuggestionsListScrolled = false;
-            mUrlFocusTime = System.currentTimeMillis();
         }
 
         // Ask directly for zero-suggestions related to current input, unless the user is
@@ -1138,7 +1136,9 @@ class AutocompleteMediator
             boolean openInNewTab,
             boolean openInNewWindow) {
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadUrlFromOmniboxMatch")) {
-            OmniboxMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
+            OmniboxMetrics.recordFocusToOpenTime(
+                    System.currentTimeMillis()
+                            - assumeNonNull(mAutocompleteInput).getUrlFocusTime());
 
             // Clear the deferred site load action in case it executes. Reclaims a bit of memory.
             mDeferredLoadAction = null;

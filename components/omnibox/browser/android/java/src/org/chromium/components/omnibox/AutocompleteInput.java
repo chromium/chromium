@@ -49,6 +49,7 @@ public class AutocompleteInput implements UserData {
         int COUNT = 4;
     }
 
+    private long mUrlFocusTime;
     private GURL mPageUrl;
     private int mPageClassification;
     private String mPageTitle;
@@ -301,7 +302,17 @@ public class AutocompleteInput implements UserData {
         mRefineActionUsage = RefineActionUsage.NOT_USED;
         mPageClassification = PageClassification.BLANK_VALUE;
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        mUrlFocusTime = 0;
 
+        return this;
+    }
+
+    public long getUrlFocusTime() {
+        return mUrlFocusTime;
+    }
+
+    public AutocompleteInput setUrlFocusTime(long urlFocusTime) {
+        mUrlFocusTime = urlFocusTime;
         return this;
     }
 }
