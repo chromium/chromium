@@ -379,6 +379,7 @@ source_set("browser_tests") {
 
   sources = [
     "actor_keyed_service_browsertest.cc",
+    "actor_policy_checker_browsertest.cc",
     "tools/navigate_tool_browsertest.cc",
   ]
   deps = [
@@ -387,6 +388,7 @@ source_set("browser_tests") {
     ":test_support",
     ":tools_test_support",
     "ui:event_dispatcher",
+    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/subscription_eligibility",
@@ -415,7 +417,6 @@ source_set("browser_tests") {
   if (!skip_android_unmigrated_actor_files && enable_glic) {
     sources += [
       "actor_functional_browsertest.cc",
-      "actor_policy_checker_browsertest.cc",
       "execution_engine_browsertest.cc",
       "execution_engine_origin_gating_browsertest.cc",
       "site_policy_browsertest.cc",
@@ -446,7 +447,6 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/affiliations",
       "//chrome/browser/autofill/glic:test_support",
-      "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/ui/views:file_system_access_test_support",
       "//components/affiliations/core/browser:test_support",

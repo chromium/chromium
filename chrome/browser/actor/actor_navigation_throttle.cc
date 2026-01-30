@@ -40,6 +40,12 @@ constexpr auto kBlockedMimeTypes = base::MakeFixedFlatSet<std::string_view>({
 // static
 void ActorNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kActorEnableAndroid)) {
+    return;
+  }
+#endif
+
   content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
 
   if (!navigation_handle.IsInPrimaryMainFrame() &&

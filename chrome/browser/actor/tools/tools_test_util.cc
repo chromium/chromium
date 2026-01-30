@@ -125,9 +125,13 @@ void ActorToolsTest::SetUpOnMainThread() {
   task_id_ = ActorKeyedService::Get(GetProfile())->CreateTask();
 
   // Optimization guide uses this histogram to signal initialization in tests.
-  optimization_guide::RetryForHistogramUntilCountReached(
-      &histogram_tester_for_init_,
-      "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
+  auto* optimization_guide_init_histogram =
+      "OptimizationGuide.HintsManager.HintCacheInitialized";
+  if (histogram_tester_for_init_.GetTotalSum(
+          optimization_guide_init_histogram) == 0) {
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester_for_init_, optimization_guide_init_histogram, 1);
+  }
 
   InitActionBlocklist(GetProfile());
 
