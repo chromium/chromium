@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
 #import "base/functional/callback_helpers.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -15,10 +16,30 @@ PageloadForegroundDurationTabHelper::PageloadForegroundDurationTabHelper(
     web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state);
+  CHECK(web_state_->IsRealized());
   scoped_observation_.Observe(web_state);
-  if (web_state->IsRealized()) {
-    CreateNotificationObservers();
-  }
+
+  base::RepeatingCallback<void(NSNotification*)> backgrounding_closure =
+      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
+          &PageloadForegroundDurationTabHelper::UpdateForAppDidBackground,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  base::RepeatingCallback<void(NSNotification*)> foreground_closure =
+      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
+          &PageloadForegroundDurationTabHelper::UpdateForAppWillForeground,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  background_notification_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationDidEnterBackgroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:base::CallbackToBlock(backgrounding_closure)];
+
+  foreground_notification_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationWillEnterForegroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:base::CallbackToBlock(foreground_closure)];
 }
 
 PageloadForegroundDurationTabHelper::~PageloadForegroundDurationTabHelper() =
@@ -100,50 +121,17 @@ void PageloadForegroundDurationTabHelper::RenderProcessGone(
   }
   RecordUkmIfInForeground();
 }
+
 void PageloadForegroundDurationTabHelper::WebStateDestroyed(
     web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   DCHECK(scoped_observation_.IsObservingSource(web_state));
   RecordUkmIfInForeground();
-  if (web_state_->IsRealized()) {
-    NSNotificationCenter* default_center = [NSNotificationCenter defaultCenter];
-    [default_center removeObserver:foreground_notification_observer_];
-    [default_center removeObserver:background_notification_observer_];
-  }
+  NSNotificationCenter* default_center = [NSNotificationCenter defaultCenter];
+  [default_center removeObserver:foreground_notification_observer_];
+  [default_center removeObserver:background_notification_observer_];
   scoped_observation_.Reset();
   web_state_ = nullptr;
-}
-
-void PageloadForegroundDurationTabHelper::WebStateRealized(
-    web::WebState* web_state) {
-  CreateNotificationObservers();
-}
-
-void PageloadForegroundDurationTabHelper::CreateNotificationObservers() {
-  CHECK(!background_notification_observer_);
-  CHECK(!foreground_notification_observer_);
-
-  base::RepeatingCallback<void(NSNotification*)> backgrounding_closure =
-      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
-          &PageloadForegroundDurationTabHelper::UpdateForAppDidBackground,
-          weak_ptr_factory_.GetWeakPtr()));
-
-  base::RepeatingCallback<void(NSNotification*)> foreground_closure =
-      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
-          &PageloadForegroundDurationTabHelper::UpdateForAppWillForeground,
-          weak_ptr_factory_.GetWeakPtr()));
-
-  background_notification_observer_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIApplicationDidEnterBackgroundNotification
-                  object:nil
-                   queue:nil
-              usingBlock:base::CallbackToBlock(backgrounding_closure)];
-
-  foreground_notification_observer_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIApplicationWillEnterForegroundNotification
-                  object:nil
-                   queue:nil
-              usingBlock:base::CallbackToBlock(foreground_closure)];
 }
 
 void PageloadForegroundDurationTabHelper::RecordUkmIfInForeground() {
