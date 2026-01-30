@@ -86,33 +86,72 @@ DataOffer::AsyncSendDataCallback AsyncEncodeAsRefCountedString(
       text, charset);
 }
 
+void OnReceiveTextFromClipboard(const std::string& charset,
+                                DataOffer::SendDataCallback callback,
+                                std::u16string text) {
+  std::move(callback).Run(EncodeAsRefCountedString(text, charset));
+}
+
 void ReadTextFromClipboard(const std::string& charset,
                            const ui::DataTransferEndpoint data_dst,
                            DataOffer::SendDataCallback callback) {
-  std::u16string text;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
+      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      base::BindOnce(&OnReceiveTextFromClipboard, charset,
+                     std::move(callback)));
+}
+
+void OnReceiveHTMLFromClipboard(const std::string& charset,
+                                DataOffer::SendDataCallback callback,
+                                std::u16string text,
+                                GURL src_url,
+                                uint32_t fragment_start,
+                                uint32_t fragment_end) {
   std::move(callback).Run(EncodeAsRefCountedString(text, charset));
 }
 
 void ReadHTMLFromClipboard(const std::string& charset,
                            const ui::DataTransferEndpoint data_dst,
                            DataOffer::SendDataCallback callback) {
-  std::u16string text;
-  std::string url;
-  uint32_t start, end;
   ui::Clipboard::GetForCurrentThread()->ReadHTML(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst, &text, &url, &start, &end);
-  std::move(callback).Run(EncodeAsRefCountedString(text, charset));
+      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      base::BindOnce(&OnReceiveHTMLFromClipboard, charset,
+                     std::move(callback)));
+}
+
+void OnReceiveRTFFromClipboard(DataOffer::SendDataCallback callback,
+                               std::string text) {
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(text)));
 }
 
 void ReadRTFFromClipboard(const ui::DataTransferEndpoint data_dst,
                           DataOffer::SendDataCallback callback) {
-  std::string text;
-  ui::Clipboard::GetForCurrentThread()->ReadRTF(ui::ClipboardBuffer::kCopyPaste,
-                                                &data_dst, &text);
-  std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedString>(std::move(text)));
+  ui::Clipboard::GetForCurrentThread()->ReadRTF(
+      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      base::BindOnce(&OnReceiveRTFFromClipboard, std::move(callback)));
+}
+
+void OnReceiveFilenamesFromClipboard(ui::EndpointType endpoint_type,
+                                     SecurityDelegate* security_delegate,
+                                     DataOffer::SendDataCallback callback,
+                                     std::vector<ui::FileInfo> filenames) {
+  if (filenames.empty()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  security_delegate->SendFileInfo(endpoint_type, std::move(filenames),
+                                  std::move(callback));
+}
+
+void ReadFilenamesFromClipboard(ui::EndpointType endpoint_type,
+                                SecurityDelegate* security_delegate,
+                                const ui::DataTransferEndpoint data_dst,
+                                DataOffer::SendDataCallback callback) {
+  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
+      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      base::BindOnce(&OnReceiveFilenamesFromClipboard, endpoint_type,
+                     security_delegate, std::move(callback)));
 }
 
 void OnReceivePNGFromClipboard(DataOffer::SendDataCallback callback,
@@ -364,20 +403,13 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
                             base::BindOnce(&ReadPNGFromClipboard, data_dst));
   }
 
-  // For clipboard, FilesApp filenames pickle is already converted to files
-  // in VolumeManager::OnClipboardDataChanged().
-  std::vector<ui::FileInfo> filenames;
   if (data.IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
-    data.ReadFilenames(ui::ClipboardBuffer::kCopyPaste, &data_dst, &filenames);
-  }
-  if (!filenames.empty()) {
     delegate_->OnOffer(std::string(ui::kMimeTypeUriList));
     data_callbacks_.emplace(
         std::string(ui::kMimeTypeUriList),
-        base::BindOnce(&SecurityDelegate::SendFileInfo,
-                       base::Unretained(delegate_->GetSecurityDelegate()),
-                       endpoint_type, std::move(filenames)));
+        base::BindOnce(&ReadFilenamesFromClipboard, endpoint_type,
+                       delegate_->GetSecurityDelegate(), data_dst));
   }
 }
 
