@@ -2,21 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <p>
-//   The <code>chrome.networking.onc</code> API is used for configuring
-//   network connections (Cellular, Ethernet, VPN or WiFi).
-//   This API is available in auto-launched Chrome OS kiosk sessions.
-// </p>
-// <p>
-//   Network connection configurations are specified following
-//   <a href="https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md">
-//   Open Network Configuration (ONC)</a> specification.
-// </p>
-// <p>
-//   <b>NOTE</b>: Most dictionary properties and enum values use UpperCamelCase
-//   to match the ONC specification instead of the JavaScript lowerCamelCase
-//   convention.
-// </p>
+// <p>The <code>chrome.networking.onc</code> API is used for configuring network
+// connections (Cellular, Ethernet, VPN or WiFi). This API is available in
+// auto-launched Chrome OS kiosk sessions.</p><p>Network connection
+// configurations are specified following <a
+// href="https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md">
+// Open Network Configuration (ONC)</a> specification.</p><p><b>NOTE</b>: Most
+// dictionary properties and enum values use UpperCamelCase to match the ONC
+// specification instead of the JavaScript lowerCamelCase convention.</p>
 namespace networking.onc {
   enum ActivationStateType {
     Activated, Activating, NotActivated, PartiallyActivated
