@@ -16805,6 +16805,21 @@
             ]
         }
     ],
+    "MetricsLogJobSchedulerUpload": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MetricsLogJobSchedulerUpload"
+                    ]
+                }
+            ]
+        }
+    ],
     "MetricsLogTrimming": [
         {
             "platforms": [
