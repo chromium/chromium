@@ -52,6 +52,14 @@ pub struct UntypedHandle {
     pub(crate) handle_value: std::num::NonZeroUsize,
 }
 
+impl UntypedHandle {
+    /// Create a new UntypedHandle from a raw value.
+    /// SAFETY: The value must represent a live, unonwned handle.
+    pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
+        Self { handle_value: raw_value.try_into().unwrap() }
+    }
+}
+
 impl Drop for UntypedHandle {
     fn drop(&mut self) {
         // SAFETY: Our invariant is that this handle is live
@@ -68,6 +76,14 @@ impl Drop for UntypedHandle {
 #[derive(Debug)] // Do NOT derive Copy or Clone!
 pub struct MessageHandle {
     pub(crate) handle_value: std::num::NonZeroUsize,
+}
+
+impl MessageHandle {
+    /// Create a new MessageHandle from a raw value.
+    /// SAFETY: The value must represent a live, unonwned handle.
+    pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
+        Self { handle_value: raw_value.try_into().unwrap() }
+    }
 }
 
 impl Drop for MessageHandle {

@@ -17,16 +17,11 @@ pub mod types {
     pub use raw_ffi::MojoAddTriggerFlags;
     pub use raw_ffi::MojoAppendMessageDataFlags;
     pub use raw_ffi::MojoArmTrapFlags;
-    pub use raw_ffi::MojoBeginReadDataFlags;
-    pub use raw_ffi::MojoBeginWriteDataFlags;
-    pub use raw_ffi::MojoCreateDataPipeFlags;
     pub use raw_ffi::MojoCreateMessageFlags;
     pub use raw_ffi::MojoCreateMessagePipeFlags;
     pub use raw_ffi::MojoCreateSharedBufferFlags;
     pub use raw_ffi::MojoCreateTrapFlags;
     pub use raw_ffi::MojoDuplicateBufferHandleFlags;
-    pub use raw_ffi::MojoEndReadDataFlags;
-    pub use raw_ffi::MojoEndWriteDataFlags;
     pub use raw_ffi::MojoGetBufferInfoFlags;
     pub use raw_ffi::MojoGetMessageDataFlags;
     pub use raw_ffi::MojoHandle;
@@ -34,14 +29,12 @@ pub mod types {
     pub use raw_ffi::MojoHandleSignalsState;
     pub use raw_ffi::MojoMapBufferFlags;
     pub use raw_ffi::MojoMessageHandle;
-    pub use raw_ffi::MojoReadDataFlags;
     pub use raw_ffi::MojoReadMessageFlags;
     pub use raw_ffi::MojoRemoveTriggerFlags;
     pub use raw_ffi::MojoTimeTicks;
     pub use raw_ffi::MojoTrapEventFlags;
     pub use raw_ffi::MojoTrapEventHandler;
     pub use raw_ffi::MojoTriggerCondition;
-    pub use raw_ffi::MojoWriteDataFlags;
     pub use raw_ffi::MojoWriteMessageFlags;
     pub type MojoResultCode = raw_ffi::MojoResult;
 }
@@ -58,15 +51,6 @@ pub mod types {
 // - Provide invariants (e.g. handles are alive as long as we have them)
 // - Detail the set of possible MojoResults
 // - Prune the set of possible MojoResults using invariants
-
-// SAFETY: The `num_bytes` argument to this function must not be null.
-// Additionally the `data` argument must have at least `num_bytes` of
-// valid memory. Additionally, for thread safety, one must have exclusive
-// access to `data_pipe_producer_handle`.
-pub use raw_ffi::MojoWriteData;
-
-// SAFETY: The `num_bytes` argument to this function must not be null.
-pub use raw_ffi::MojoReadData;
 
 // SAFETY: The handle ptr is allowed to be null so long as the number of handles
 // is 0. The option and buffer pointers are always allowed to be null.
@@ -107,7 +91,6 @@ pub use raw_ffi::MojoGetMessageData;
 pub use raw_ffi::MojoAddTrigger;
 pub use raw_ffi::MojoArmTrap;
 pub use raw_ffi::MojoClose;
-pub use raw_ffi::MojoCreateDataPipe;
 pub use raw_ffi::MojoCreateMessage;
 pub use raw_ffi::MojoCreateMessagePipe;
 pub use raw_ffi::MojoCreateTrap;
@@ -176,17 +159,8 @@ macro_rules! declare_mojo_options {
 declare_mojo_options!(MojoAppendMessageDataOptions, flags: types::MojoAppendMessageDataFlags);
 declare_mojo_options!(MojoCreateMessagePipeOptions, flags: types::MojoCreateMessagePipeFlags);
 declare_mojo_options!(MojoWriteMessageOptions, flags: types::MojoWriteMessageFlags);
-declare_mojo_options!(MojoReadDataOptions, flags: types::MojoReadDataFlags);
-declare_mojo_options!(MojoWriteDataOptions, flags: types::MojoWriteDataFlags);
 declare_mojo_options!(MojoCreateTrapOptions, flags: types::MojoCreateTrapFlags);
 declare_mojo_options!(MojoAddTriggerOptions,flags: types::MojoAddTriggerFlags);
 declare_mojo_options!(MojoRemoveTriggerOptions, flags: types::MojoRemoveTriggerFlags);
 declare_mojo_options!(MojoArmTrapOptions, flags: types::MojoArmTrapFlags);
 declare_mojo_options!(MojoGetMessageDataOptions, flags: types::MojoGetMessageDataFlags);
-
-declare_mojo_options!(
-    MojoCreateDataPipeOptions,
-    flags: types::MojoCreateDataPipeFlags,
-    element_num_bytes: u32,
-    capacity_num_bytes: u32
-);

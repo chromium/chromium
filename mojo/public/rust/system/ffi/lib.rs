@@ -31,11 +31,10 @@
 //! codes from the underlying API; consult the documentation of each function
 //! for information about what codes are possible.
 
-mod data_pipe;
+pub mod data_pipe;
 mod internal_options;
 mod mojo_handles;
 mod mojo_result;
 
-pub use data_pipe::*;
 pub use mojo_handles::*;
 pub use mojo_result::*;

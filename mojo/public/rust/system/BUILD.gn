@@ -18,6 +18,7 @@ rust_static_library("system") {
   ]
   allow_unsafe = true
   deps = [
+    ":ffi_new",
     ":mojo_ffi",
     "//third_party/rust/bitflags/v2:lib",
   ]
