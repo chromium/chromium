@@ -69,14 +69,7 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
 
   void SetUpOnMainThread() override {
     PageStabilityTest::SetUpOnMainThread();
-
-    auto event_dispatcher = ui::NewUiEventDispatcher(
-        actor_keyed_service()->GetActorUiStateManager());
-    auto actor_task =
-        std::make_unique<ActorTask>(GetProfile(), std::move(event_dispatcher),
-                                    /*options=*/nullptr);
-    task_id_ = ActorKeyedService::Get(browser()->profile())
-                   ->AddActiveTask(std::move(actor_task));
+    task_id_ = ActorKeyedService::Get(browser()->profile())->CreateTask();
   }
 
   void TearDownOnMainThread() override {

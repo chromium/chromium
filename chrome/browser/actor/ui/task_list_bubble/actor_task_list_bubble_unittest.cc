@@ -37,12 +37,19 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase,
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    base::test::FeatureRefAndParams enable_glic_policy = {
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}}};
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kGlicActorUiGlobalTaskIndicator);
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{enable_glic_policy,
+                                {features::kGlicActorUiGlobalTaskIndicator,
+                                 {}}},
+          /*disabled_features=*/{});
     } else {
-      feature_list_.InitAndDisableFeature(
-          features::kGlicActorUiGlobalTaskIndicator);
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{enable_glic_policy},
+          /*disabled_features=*/{features::kGlicActorUiGlobalTaskIndicator});
     }
 
     TestingProfile::Builder builder;

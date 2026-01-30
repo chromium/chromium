@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -124,7 +126,14 @@ class MockAccountSelectionView : public AccountSelectionView {
 
 class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
  public:
-  IdentityDialogControllerBrowserTest() = default;
+  IdentityDialogControllerBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}}},
+        /*disabled_features=*/{});
+  }
   ~IdentityDialogControllerBrowserTest() override = default;
   IdentityDialogControllerBrowserTest(IdentityDialogControllerBrowserTest&) =
       delete;
@@ -175,14 +184,9 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
   TaskId SimulateNewActiveActorTask() {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(browser()->profile());
-    EXPECT_NE(actor_service, nullptr);
+    CHECK(actor_service);
 
-    auto task = std::make_unique<actor::ActorTask>(
-        browser()->profile(),
-        actor::ui::NewUiEventDispatcher(
-            actor_service->GetActorUiStateManager()),
-        /*options=*/nullptr);
-    TaskId task_id = actor_service->AddActiveTask(std::move(task));
+    actor::TaskId task_id = actor_service->CreateTask();
 
     // Perform an arbitrary action in a tab to put the task into
     // UnderActorControl state and add the tab to the task.
@@ -210,6 +214,9 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
     actor_service->StopTask(task_id,
                             actor::ActorTask::StoppedReason::kTaskComplete);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,

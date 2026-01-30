@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
   std::unique_ptr<ToolRequest> action =
       MakeNavigateRequest(*active_tab(), url.spec());
   ActResultFuture result;
-  task_id_ = CreateNewTask();
+  task_id_ = ActorKeyedService::Get(GetProfile())->CreateTask();
   actor_task().Act(ToRequestList(action), result.GetCallback());
   actor_task().Pause(/*from_actor=*/true);
   EXPECT_EQ(actor_task().GetState(), ActorTask::State::kPausedByActor);
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  task_id_ = CreateNewTask();
+  task_id_ = ActorKeyedService::Get(GetProfile())->CreateTask();
 
   std::optional<int> button_id =
       GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#button1");
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  task_id_ = CreateNewTask();
+  task_id_ = ActorKeyedService::Get(GetProfile())->CreateTask();
 
   std::optional<int> button_id =
       GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#button1");
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
 
-  task_id_ = CreateNewTask();
+  task_id_ = ActorKeyedService::Get(GetProfile())->CreateTask();
 
   std::optional<int> link_id =
       GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
 
-  task_id_ = CreateNewTask();
+  task_id_ = ActorKeyedService::Get(GetProfile())->CreateTask();
 
   std::optional<int> link_id =
       GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");

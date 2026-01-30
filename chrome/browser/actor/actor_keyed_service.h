@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -64,9 +65,6 @@ class ActorKeyedService : public KeyedService,
   void SetActorUiStateManagerForTesting(
       std::unique_ptr<ui::ActorUiStateManagerInterface> ausm);
 
-  // Starts tracking an existing task. Returns the new task ID.
-  TaskId AddActiveTask(std::unique_ptr<ActorTask> task);
-
   const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
 
   std::vector<TaskId> FindTaskIdsInActive(
@@ -81,6 +79,10 @@ class ActorKeyedService : public KeyedService,
   TaskId CreateTask();
   TaskId CreateTaskWithOptions(webui::mojom::TaskOptionsPtr options,
                                base::WeakPtr<ActorTaskDelegate> delegate);
+  TaskId CreateTaskForTesting(
+      std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+      webui::mojom::TaskOptionsPtr options,
+      base::WeakPtr<ActorTaskDelegate> delegate);
 
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.
@@ -169,6 +171,11 @@ class ActorKeyedService : public KeyedService,
   base::WeakPtr<ActorKeyedService> GetWeakPtr();
 
  private:
+  TaskId CreateTaskImpl(
+      std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+      webui::mojom::TaskOptionsPtr options,
+      base::WeakPtr<ActorTaskDelegate> delegate);
+
   // The callback used for ExecutorEngine::Act.
   void OnActionsFinished(
       PerformActionsCallback callback,

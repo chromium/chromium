@@ -46,12 +46,19 @@ class GlicActorTaskIconManagerTest : public testing::Test,
 
   // testing::Test:
   void SetUp() override {
+    base::test::FeatureRefAndParams enable_glic_policy = {
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}}};
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kGlicActorUiGlobalTaskIndicator);
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{enable_glic_policy,
+                                {features::kGlicActorUiGlobalTaskIndicator,
+                                 {}}},
+          /*disabled_features=*/{});
     } else {
-      feature_list_.InitAndDisableFeature(
-          features::kGlicActorUiGlobalTaskIndicator);
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{enable_glic_policy},
+          /*disabled_features=*/{features::kGlicActorUiGlobalTaskIndicator});
     }
     profile_ = std::make_unique<TestingProfile>();
     actor_service_ = std::make_unique<ActorKeyedServiceFake>(profile_.get());

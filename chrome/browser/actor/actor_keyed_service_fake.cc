@@ -60,10 +60,9 @@ TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
 
   auto task_options = webui::mojom::TaskOptions::New();
   task_options->title = "Test Task";
-  auto actor_task = std::make_unique<ActorTask>(
-      GetProfile(), std::move(task_ui_event_dispatcher),
-      std::move(task_options));
-  return AddActiveTask(std::move(actor_task));
+  return ActorKeyedService::CreateTaskForTesting(  // IN-TEST
+      std::move(task_ui_event_dispatcher), std::move(task_options),
+      /*delegate=*/nullptr);
 }
 
 void ActorKeyedServiceFake::PauseTaskForTesting(TaskId task_id,  // IN-TEST

@@ -92,7 +92,11 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
         /*enabled_features=*/{{features::kGlicActorUi,
                                {{features::kGlicActorUiHandoffButtonName,
                                  "true"},
-                                {features::kGlicActorUiOverlayName, "true"}}}},
+                                {features::kGlicActorUiOverlayName, "true"}}},
+                              {features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}}},
         /*disabled_features=*/{});
 
     ON_CALL(mock_tab_, GetBrowserWindowInterface())

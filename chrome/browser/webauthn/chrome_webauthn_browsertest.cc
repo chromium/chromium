@@ -39,6 +39,7 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/test_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -1629,9 +1630,14 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
 
  public:
   WebAuthnActorBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnActorCheck, password_manager::features::kActorLogin},
-        {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{device::kWebAuthnActorCheck, {}},
+                              {password_manager::features::kActorLogin, {}},
+                              {features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}}},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -1654,13 +1660,9 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
 
   void CreateActingTask() {
     auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
+    actor::TaskId task_id = actor_service->CreateTask();
+    actor::ActorTask* actor_task = actor_service->GetTask(task_id);
 
-    std::unique_ptr<actor::ActorTask> actor_task =
-        std::make_unique<actor::ActorTask>(
-            browser()->profile(),
-            actor::ui::NewUiEventDispatcher(
-                actor_service->GetActorUiStateManager()),
-            /*options=*/nullptr);
     actor_task->SetState(actor::ActorTask::State::kActing);
 
     base::RunLoop loop;
@@ -1671,8 +1673,6 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
           loop.Quit();
         }));
     loop.Run();
-
-    actor_service->AddActiveTask(std::move(actor_task));
   }
 
   void PostRunTestOnMainThread() override {

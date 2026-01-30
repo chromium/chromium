@@ -61,20 +61,28 @@ class ActorTask {
                               std::optional<size_t>,
                               std::vector<ActionResultWithLatencyInfo>)>;
 
-  ActorTask() = delete;
-  ActorTask(Profile* profile,
+  // Created only via ActorKeyedService::CreateTask or the CreateForTesting
+  // method in this class.
+  ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
+            Profile* profile,
+            TaskId it,
             std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
             webui::mojom::TaskOptionsPtr options,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
-  ActorTask(const ActorTask&) = delete;
-  ActorTask& operator=(const ActorTask&) = delete;
   ~ActorTask();
 
-  // Can only be called by ActorKeyedService
-  void SetId(base::PassKey<ActorKeyedService>, TaskId id);
+  ActorTask() = delete;
+  ActorTask(const ActorTask&) = delete;
+  ActorTask& operator=(const ActorTask&) = delete;
+
+  static std::unique_ptr<ActorTask> CreateForTesting(
+      Profile* profile,
+      TaskId id,
+      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
+      webui::mojom::TaskOptionsPtr options,
+      base::WeakPtr<ActorTaskDelegate> delegate);
+
   TaskId id() const { return id_; }
-  // Can only be called by unit tests.
-  void SetIdForTesting(int id);
 
   const std::string& title() const { return title_; }
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
@@ -268,6 +276,8 @@ class ActorTask {
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;
 
+  TaskId id_;
+
   // The time at which the task was created.
   base::TimeTicks create_time_;
 
@@ -281,8 +291,6 @@ class ActorTask {
   std::unique_ptr<ExecutionEngine> execution_engine_;
 
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
-
-  TaskId id_;
 
   base::SafeRef<AggregatedJournal> journal_;
 

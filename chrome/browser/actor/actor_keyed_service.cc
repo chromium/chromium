@@ -285,17 +285,6 @@ base::WeakPtr<ActorKeyedService> ActorKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
-  TRACE_EVENT0("actor", "ActorKeyedService::AddActiveTask");
-  const TaskId task_id = next_task_id_.GenerateNextId();
-  task->SetId(base::PassKey<ActorKeyedService>(), task_id);
-
-  const ActorTask::State task_state = task->GetState();
-  active_tasks_[task_id] = std::move(task);
-  NotifyTaskStateChanged(task_id, task_state);
-  return task_id;
-}
-
 const std::map<TaskId, const ActorTask*> ActorKeyedService::GetActiveTasks()
     const {
   std::map<TaskId, const ActorTask*> active_tasks;
@@ -320,6 +309,22 @@ TaskId ActorKeyedService::CreateTask() {
 TaskId ActorKeyedService::CreateTaskWithOptions(
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
+  return CreateTaskImpl(ui::NewUiEventDispatcher(GetActorUiStateManager()),
+                        std::move(options), std::move(delegate));
+}
+
+TaskId ActorKeyedService::CreateTaskForTesting(
+    std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+    webui::mojom::TaskOptionsPtr options,
+    base::WeakPtr<ActorTaskDelegate> delegate) {
+  return CreateTaskImpl(std::move(ui_event_dispatcher), std::move(options),
+                        std::move(delegate));
+}
+
+TaskId ActorKeyedService::CreateTaskImpl(
+    std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+    webui::mojom::TaskOptionsPtr options,
+    base::WeakPtr<ActorTaskDelegate> delegate) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   if (!policy_checker_->CanActOnWeb()) {
     RecordActorTaskCreated(false);
@@ -329,11 +334,19 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
                          .Build());
     return TaskId();
   }
+
+  GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
+
   RecordActorTaskCreated(true);
+  const TaskId task_id = next_task_id_.GenerateNextId();
   auto actor_task = std::make_unique<ActorTask>(
-      profile_.get(), ui::NewUiEventDispatcher(GetActorUiStateManager()),
-      std::move(options), std::move(delegate));
-  return AddActiveTask(std::move(actor_task));
+      base::PassKey<ActorKeyedService>(), profile_.get(), task_id,
+      std::move(ui_event_dispatcher), std::move(options), std::move(delegate));
+
+  const ActorTask::State task_state = actor_task->GetState();
+  active_tasks_[task_id] = std::move(actor_task);
+  NotifyTaskStateChanged(task_id, task_state);
+  return task_id;
 }
 
 base::CallbackListSubscription ActorKeyedService::AddTaskStateChangedCallback(

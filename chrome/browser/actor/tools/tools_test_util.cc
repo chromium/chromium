@@ -122,7 +122,7 @@ void ActorToolsTest::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
 
-  task_id_ = CreateNewTask();
+  task_id_ = ActorKeyedService::Get(GetProfile())->CreateTask();
 
   // Optimization guide uses this histogram to signal initialization in tests.
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -185,16 +185,6 @@ ExecutionEngine& ActorToolsTest::execution_engine() {
 ActorTask& ActorToolsTest::actor_task() const {
   CHECK(task_id_);
   return *ActorKeyedService::Get(GetProfile())->GetTask(task_id_);
-}
-
-TaskId ActorToolsTest::CreateNewTask() {
-  auto event_dispatcher = ui::NewUiEventDispatcher(
-      ActorKeyedService::Get(GetProfile())->GetActorUiStateManager());
-  auto actor_task =
-      std::make_unique<ActorTask>(GetProfile(), std::move(event_dispatcher),
-                                  /*options=*/nullptr);
-  return ActorKeyedService::Get(GetProfile())
-      ->AddActiveTask(std::move(actor_task));
 }
 
 void ActorToolsTest::SetPageContent(

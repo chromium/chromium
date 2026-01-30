@@ -234,10 +234,9 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
               task, std::move(ui_event_dispatcher));
         }));
 
-    task_ = std::make_unique<ActorTask>(
-        profile(), std::move(task_ui_event_dispatcher),
+    task_ = ActorTask::CreateForTesting(
+        profile(), TaskId(0), std::move(task_ui_event_dispatcher),
         /*options=*/nullptr, mock_actor_task_delegate_.GetWeakPtr());
-    task_->SetIdForTesting(0);
 
     for (auto& mock :
          {mock_ui_event_dispatcher_, task_mock_ui_event_dispatcher_}) {

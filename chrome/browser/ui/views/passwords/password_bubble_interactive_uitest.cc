@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -132,7 +134,14 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest,
  public:
   PasswordBubbleInteractiveUiTest()
       : base::test::WithFeatureOverride(
-            autofill::features::kAutofillShowBubblesBasedOnPriorities) {}
+            autofill::features::kAutofillShowBubblesBasedOnPriorities) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}}},
+        /*disabled_features=*/{});
+  }
 
   PasswordBubbleInteractiveUiTest(const PasswordBubbleInteractiveUiTest&) =
       delete;
@@ -154,6 +163,9 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest,
             [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
     loop.Run();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {

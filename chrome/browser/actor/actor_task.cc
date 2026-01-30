@@ -116,11 +116,14 @@ void ActorTask::ActorControlledTabState::OnVisibilityChanged(
   task->RecomputeHasVisibleTab();
 }
 
-ActorTask::ActorTask(Profile* profile,
+ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
+                     Profile* profile,
+                     TaskId id,
                      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
                      webui::mojom::TaskOptionsPtr options,
                      base::WeakPtr<ActorTaskDelegate> delegate)
     : profile_(profile),
+      id_(id),
       create_time_(base::TimeTicks::Now()),
       action_tracker_for_metrics_(std::make_unique<ActionTrackerForMetrics>()),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
@@ -139,12 +142,16 @@ ActorTask::~ActorTask() {
   CHECK(IsCompleted());
 }
 
-void ActorTask::SetId(base::PassKey<ActorKeyedService>, TaskId id) {
-  id_ = id;
-}
-
-void ActorTask::SetIdForTesting(int id) {
-  id_ = TaskId(id);
+// static
+std::unique_ptr<ActorTask> ActorTask::CreateForTesting(
+    Profile* profile,
+    TaskId id,
+    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
+    webui::mojom::TaskOptionsPtr options,
+    base::WeakPtr<ActorTaskDelegate> delegate) {
+  return std::make_unique<ActorTask>(base::PassKey<ActorTask>(), profile, id,
+                                     std::move(ui_event_dispatcher),
+                                     std::move(options), std::move(delegate));
 }
 
 ExecutionEngine& ActorTask::GetExecutionEngine() const {
