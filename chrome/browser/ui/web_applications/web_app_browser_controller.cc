@@ -237,7 +237,8 @@ bool WebAppBrowserController::AppUsesTabbed() const {
 
 bool WebAppBrowserController::IsIsolatedWebApp() const {
   return is_isolated_web_app_for_testing_ ||
-         registrar().AppMatches(app_id(), WebAppFilter::IsIsolatedApp());
+         registrar().AppMatches(app_id(), WebAppFilter::IsIsolatedApp()) ||
+         registrar().AppMatches(app_id(), WebAppFilter::IsIsolatedSubApp());
 }
 
 void WebAppBrowserController::SetIsolatedWebAppTrueForTesting() {

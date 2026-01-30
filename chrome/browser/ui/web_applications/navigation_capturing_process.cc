@@ -365,6 +365,15 @@ NavigationCapturingProcess::NavigationCapturingProcess(
     CHECK(registrar.GetAppById(*first_navigation_app_id_));
     first_navigation_app_display_mode_ =
         registrar.GetAppEffectiveDisplayMode(*first_navigation_app_id_);
+
+    first_navigation_parent_app_id_ =
+        registrar.GetAppById(*first_navigation_app_id_)->parent_app_id();
+
+    CHECK(
+        !first_navigation_parent_app_id_ ||
+        url::IsSameOriginWith(
+            params.url, registrar.GetAppById(*first_navigation_parent_app_id_)
+                            ->start_url()));
   }
 
   isolated_web_app_navigation_ =
@@ -727,7 +736,9 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   // Prefer `params.browser` if it's a compatible IWA browser.
   bool iwa_browser =
       params.browser &&
-      web_app::AppBrowserController::IsForWebApp(params.browser, iwa_id);
+      (web_app::AppBrowserController::IsForWebApp(params.browser, iwa_id) ||
+       web_app::AppBrowserController::IsForIsolatedSubApp(
+           params.browser, first_navigation_parent_app_id_));
 
   bool capturing_disabled = [&]() {
     switch (disposition_) {
@@ -766,7 +777,9 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
                                    ui::PAGE_TRANSITION_LINK)) {
     // Any links: same-IWA or cross-IWA window.open(), same-IWA or cross-IWA
     // anchor link, cross-IWA meta tag redirect.
-    if (source_browser_app_id_ != iwa_id) {
+    if (source_browser_app_id_ != iwa_id &&
+        (!first_navigation_parent_app_id_.has_value() ||
+         source_browser_app_id_ != first_navigation_parent_app_id_.value())) {
       // TODO(crbug.com/424422466): Support cross-IWA navigations to start_url.
       return CancelInitialNavigation(
           NavigationCapturingInitialResult::kNavigationCanceled);

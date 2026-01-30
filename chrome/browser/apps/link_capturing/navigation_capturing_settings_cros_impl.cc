@@ -43,9 +43,18 @@ NavigationCapturingSettingsCrosImpl::~NavigationCapturingSettingsCrosImpl() =
 std::optional<webapps::AppId>
 NavigationCapturingSettingsCrosImpl::GetCapturingWebAppForUrl(const GURL& url) {
   if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
-    return WebAppProvider::GetForWebApps(&profile_.get())
-        ->registrar_unsafe()
-        .FindBestAppWithUrlInScope(url, WebAppFilter::IsIsolatedApp());
+    auto& registrar =
+        WebAppProvider::GetForWebApps(&profile_.get())->registrar_unsafe();
+
+    // Try handling navigation in an isolated sub app or a regular isolated app.
+    std::optional<webapps::AppId> sub_app_handling_navigation =
+        registrar.FindBestAppWithUrlInScope(url,
+                                            WebAppFilter::IsIsolatedSubApp());
+    if (sub_app_handling_navigation.has_value()) {
+      return sub_app_handling_navigation;
+    }
+    return registrar.FindBestAppWithUrlInScope(url,
+                                               WebAppFilter::IsIsolatedApp());
   }
 
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
