@@ -104,6 +104,12 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   def _CreateJvmArgsList(self, for_listing=False, allow_debugging=True):
     # Creates a list of jvm_args (robolectric, code coverage, etc...)
     jvm_args = [
+        # JDK 17+ requires explicit opens for Robolectric reflection on
+        # internal fields:
+        # https://docs.oracle.com/en/java/javase/17/migrate/migrating-jdk-8-later-jdk-releases.html
+        '--add-opens=java.base/java.io=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang=ALL-UNNAMED',
+        '--add-opens=java.base/java.util=ALL-UNNAMED',
         # Disable warning about mockito/bytebuddy dynamically adding an agent.
         '-XX:+EnableDynamicAgentLoading',
         '-Drobolectric.dependency.dir=%s' %
