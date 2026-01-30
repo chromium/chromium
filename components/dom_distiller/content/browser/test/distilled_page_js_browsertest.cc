@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -43,11 +44,18 @@ class DistilledPageJsTest : public content::ContentBrowserTest {
   void LoadAndExecuteTestScript(const std::string& file) {
     distilled_page_->AppendScriptFile(file);
     distilled_page_->Load(embedded_test_server(), shell()->web_contents());
+    // Listen for messages from domAutomationController.send() for debugging.
+    content::DOMMessageQueue message_queue(shell()->web_contents());
     // First, run the test.
     EXPECT_TRUE(content::ExecJs(shell()->web_contents(), "mocha.run()"));
     // Then, wait for the test to complete.
     EXPECT_TRUE(
         content::ExecJs(shell()->web_contents(), "window.completePromise"));
+    std::string message;
+    // Log any messages that were sent from the JavaScript.
+    while (message_queue.PopMessage(&message)) {
+      LOG(INFO) << "JS_DEBUG[" << file << "]: " << message;
+    }
   }
 
   std::unique_ptr<FakeDistilledPage> distilled_page_;
