@@ -1148,10 +1148,14 @@ INSTANTIATE_TEST_SUITE_P(,
                                          BaseFeatureStatus::kEnabled,
                                          BaseFeatureStatus::kDefault));
 
-// TODO(crbug.com/479593253) : re-enable test
 IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest,
-                       DISABLED_WithoutOriginTrialToken) {
+                       WithoutOriginTrialToken) {
   LoadPage(/*with_origin_trial_token=*/false);
+
+  // The loaded page has no manifest, so set timeout to 0 to avoid
+  // waiting unnecessarily and timing out the test.
+  base::AutoReset<int> manifest_wait_timeout =
+      web_app::WebAppDataRetriever::SetManifestWaitTimeoutForTesting(0);
 
   switch (GetParam()) {
     case BaseFeatureStatus::kDisabled:
@@ -1178,10 +1182,13 @@ IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest,
   }
 }
 
-// TODO(crbug.com/479593253) : re-enable test
-IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest,
-                       DISABLED_WithOriginTrialToken) {
+IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest, WithOriginTrialToken) {
   LoadPage(/*with_origin_trial_token=*/true);
+
+  // The loaded page has no manifest, so set timeout to 0 to avoid
+  // waiting unnecessarily and timing out the test.
+  base::AutoReset<int> manifest_wait_timeout =
+      web_app::WebAppDataRetriever::SetManifestWaitTimeoutForTesting(0);
 
   switch (GetParam()) {
     case BaseFeatureStatus::kDisabled:
@@ -1303,7 +1310,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                                 "console.log('Install failed');"
                                 "});");
 
-    // Small delay to stagger the calls slightly.
+    // Small delay to stagger the calls slightly. This lets us "allow" the
+    // install flow to progress slightly before we interrupt it.
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
