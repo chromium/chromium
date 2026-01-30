@@ -2517,9 +2517,9 @@ void StoragePartitionImpl::OnCertificateRequested(
   base::WeakPtr<WebContents> web_contents_weak;
   int process_id = network::mojom::kInvalidProcessId;
   if (context.type() == ContextType::kSharedOrServiceWorkerContext) {
-    CHECK(!context.process_id().is_browser());
     // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-    process_id = context.process_id().renderer_process().GetUnsafeValue();
+    // TODO(crbug.com/479742988) This can be the browser process and shouldn't.
+    process_id = context.process_id().GetUnsafeValue();
   } else {
     WebContents* web_contents = context.GetWebContents();
     // The WebContents is already invalid. Bail.
