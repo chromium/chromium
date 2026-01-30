@@ -97,7 +97,7 @@ dictionary FeedbackInfo {
   boolean includeBluetoothLogs;
 
   // Whether to show questionnaire in the report description based on detected
-  // domain-related keywords (crbug/1241169).
+  // domain-related keywords (crbug.com/1241169).
   boolean showQuestionnaire;
 
   // Whether or not triggered for Autofill.
