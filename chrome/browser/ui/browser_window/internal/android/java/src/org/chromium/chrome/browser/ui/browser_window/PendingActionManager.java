@@ -18,6 +18,7 @@ import org.chromium.ui.mojom.WindowShowState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Locale;
 
 /**
  * Class that holds business logic to track and manage actions requested on a {@code
@@ -233,7 +234,7 @@ final class PendingActionManager {
                 break;
             default:
                 throw new UnsupportedOperationException(
-                        "Attempting to apply an unsupported initial show state.");
+                        String.format(Locale.US, "Unsupported show state: %d", initialShowState));
         }
     }
 

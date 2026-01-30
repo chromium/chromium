@@ -22,22 +22,29 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
 BrowserWindowInterface* CreateBrowserWindowSync(
     BrowserWindowInterface::Type type,
-    Profile* profile) {
+    Profile* profile,
+    ui::mojom::WindowShowState initial_show_state =
+        ui::mojom::WindowShowState::kDefault) {
   BrowserWindowCreateParams create_params =
       BrowserWindowCreateParams(type, *profile, /*from_user_gesture=*/false);
+  create_params.initial_show_state = initial_show_state;
 
   return CreateBrowserWindow(std::move(create_params));
 }
 
 BrowserWindowInterface* CreateBrowserWindowAsync(
     BrowserWindowInterface::Type type,
-    Profile* profile) {
+    Profile* profile,
+    ui::mojom::WindowShowState initial_show_state =
+        ui::mojom::WindowShowState::kDefault) {
   BrowserWindowCreateParams create_params =
       BrowserWindowCreateParams(type, *profile, /*from_user_gesture=*/false);
+  create_params.initial_show_state = initial_show_state;
 
   base::test::TestFuture<BrowserWindowInterface*> future;
   CreateBrowserWindow(std::move(create_params), future.GetCallback());
@@ -129,6 +136,20 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowSync_UnsupportedInitialShowState_ReturnsNull) {
+  auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
+  Profile* profile = GetProfile();
+  auto initial_show_state =
+      ui::mojom::WindowShowState::kFullscreen;  // not supported on Android
+
+  BrowserWindowInterface* new_browser_window =
+      CreateBrowserWindowSync(type, profile, initial_show_state);
+
+  EXPECT_EQ(new_browser_window, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
     CreateBrowserWindowAsync_RegularProfile_TriggersCallbackWithRegularBrowserWindow) {
   auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
   Profile* profile = GetProfile();
@@ -190,6 +211,20 @@ IN_PROC_BROWSER_TEST_F(
 
   BrowserWindowInterface* new_browser_window =
       CreateBrowserWindowAsync(type, profile);
+
+  EXPECT_EQ(new_browser_window, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsync_UnsupportedInitialShowState_TriggersCallbackWithNull) {
+  auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
+  Profile* profile = GetProfile();
+  auto initial_show_state =
+      ui::mojom::WindowShowState::kFullscreen;  // not supported on Android
+
+  BrowserWindowInterface* new_browser_window =
+      CreateBrowserWindowAsync(type, profile, initial_show_state);
 
   EXPECT_EQ(new_browser_window, nullptr);
 }

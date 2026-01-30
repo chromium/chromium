@@ -11,6 +11,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.mojom.WindowShowState;
 
 import java.util.Locale;
 
@@ -58,6 +59,12 @@ final class BrowserWindowCreatorBridge {
         if (browserWindowType != BrowserWindowType.NORMAL
                 && browserWindowType != BrowserWindowType.POPUP) {
             Log.e(TAG, String.format(Locale.US, "Unsupported window type: %d", browserWindowType));
+            return false;
+        }
+
+        @WindowShowState.EnumType int initialShowState = createParams.getInitialShowState();
+        if (initialShowState == WindowShowState.FULLSCREEN) {
+            Log.e(TAG, String.format(Locale.US, "Unsupported show state: %d", initialShowState));
             return false;
         }
 
