@@ -112,7 +112,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -2404,8 +2403,9 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
                                                  bool locale_pref_checked) {
   TRACE_EVENT0("login", "UserSessionManager::DoBrowserLaunchInternal");
   if (browser_shutdown::IsTryingToQuit() ||
-      chrome::IsSendingStopRequestToSessionManager())
+      ash::SessionTerminationManager::IsSendingStopRequestToSessionManager()) {
     return;
+  }
 
   if (!locale_pref_checked) {
     RespectLocalePreferenceWrapper(
@@ -2525,8 +2525,9 @@ void UserSessionManager::RespectLocalePreferenceWrapper(
     Profile* profile,
     base::OnceClosure callback) {
   if (browser_shutdown::IsTryingToQuit() ||
-      chrome::IsSendingStopRequestToSessionManager())
+      ash::SessionTerminationManager::IsSendingStopRequestToSessionManager()) {
     return;
+  }
 
   const user_manager::User* const user =
       ProfileHelper::Get()->GetUserByProfile(profile);

@@ -10,9 +10,9 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -100,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(UserAllowlistPolicyTest, ShutdownIfNotAllowed) {
 
   // Only school users are allowed. Regular user session should be terminated.
   AllowUniqueUserToSignIn(kSchoolAllowlist);
-  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
+  EXPECT_TRUE(
+      ash::SessionTerminationManager::IsSendingStopRequestToSessionManager());
   run_loop.Run();
 }
 

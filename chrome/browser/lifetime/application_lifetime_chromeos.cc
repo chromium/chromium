@@ -46,9 +46,6 @@ chromeos::PowerManagerClient* GetPowerManagerClient() {
   return power_manager_client;
 }
 
-// Whether Chrome should send stop request to a session manager.
-bool g_send_stop_request_to_session_manager = false;
-
 void ReportSessionUMAMetrics() {
   // GetProfileByUser() will crash in tests if profile_manager() from
   // g_browser_process is not initialized.
@@ -113,7 +110,7 @@ void AttemptUserExit() {
       state->CommitPendingWrite();
     }
   }
-  SetSendStopRequestToSessionManager();
+  ash::SessionTerminationManager::SetSendStopRequestToSessionManager();
   // On ChromeOS, always terminate the browser, regardless of the result of
   // AreAllBrowsersCloseable(). See crbug.com/123107.
   browser_shutdown::NotifyAppTerminating();
@@ -175,14 +172,6 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   return false;
 }
 
-bool IsSendingStopRequestToSessionManager() {
-  return g_send_stop_request_to_session_manager;
-}
-
-void SetSendStopRequestToSessionManager(bool should_send_request) {
-  g_send_stop_request_to_session_manager = should_send_request;
-}
-
 void StopSession() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Only call this function once.
@@ -203,7 +192,7 @@ void StopSession() {
 
   // Signal session manager to stop the session if Chrome has initiated an
   // attempt to do so.
-  if (chrome::IsSendingStopRequestToSessionManager() &&
+  if (ash::SessionTerminationManager::IsSendingStopRequestToSessionManager() &&
       ash::SessionTerminationManager::Get()) {
     ash::SessionTerminationManager::Get()->StopSession(
         login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);

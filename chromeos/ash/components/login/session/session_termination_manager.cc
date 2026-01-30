@@ -18,6 +18,7 @@ namespace {
 const char kLockedToSingleUserRebootDescription[] = "Reboot forced by policy";
 const char kRemoteCommandSignoutRebootDescription[] =
     "Reboot remote command (sign out)";
+bool g_send_stop_request_to_session_manager = false;
 
 SessionTerminationManager* g_instance = nullptr;
 
@@ -97,6 +98,17 @@ base::OnceClosure
 SessionTerminationManager::GetClosureNotifyingAppTerminating() {
   return base::BindOnce(&SessionTerminationManager::OnAppTerminating,
                         weak_factory_.GetWeakPtr());
+}
+
+// static
+bool SessionTerminationManager::IsSendingStopRequestToSessionManager() {
+  return g_send_stop_request_to_session_manager;
+}
+
+// static
+void SessionTerminationManager::SetSendStopRequestToSessionManager(
+    bool should_send_request) {
+  g_send_stop_request_to_session_manager = should_send_request;
 }
 
 void SessionTerminationManager::DidWaitForServiceToBeAvailable(

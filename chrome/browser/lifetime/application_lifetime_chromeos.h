@@ -21,14 +21,6 @@ bool UpdatePending();
 // policy or the owner's locale.  Returns true if any pref has been modified.
 bool SetLocaleForNextStart(PrefService* local_state);
 
-// Returns true if we sent or are planning to send a stop session request to
-// session manager.
-bool IsSendingStopRequestToSessionManager();
-
-// Sets the flag to send a stop request to session manager instead of shutting
-// down/restarting Chrome in place.
-void SetSendStopRequestToSessionManager(bool should_send_request = true);
-
 // Sends stop request to session manager. If there is an update pending, this
 // will reboot.
 void StopSession();

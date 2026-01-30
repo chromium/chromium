@@ -41,7 +41,6 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,6 +56,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -312,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, PRE_CriticalUpdateInSession) {
           kNewVersion, kNoWarning, kNoWarning,
           false /* unmanaged_user_restricted */));
   run_loop.Run();
-  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
+  EXPECT_TRUE(
+      ash::SessionTerminationManager::IsSendingStopRequestToSessionManager());
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, CriticalUpdateInSession) {
@@ -460,7 +461,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           false /* unmanaged_user_restricted */));
-  EXPECT_FALSE(chrome::IsSendingStopRequestToSessionManager());
+  EXPECT_FALSE(
+      ash::SessionTerminationManager::IsSendingStopRequestToSessionManager());
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
@@ -471,7 +473,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           true /* unmanaged_user_restricted */));
-  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
+  EXPECT_TRUE(
+      ash::SessionTerminationManager::IsSendingStopRequestToSessionManager());
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NoNetworkNotificationClick) {
@@ -1033,7 +1036,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyChildUser,
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           false /* unmanaged_user_restricted */));
-  EXPECT_FALSE(chrome::IsSendingStopRequestToSessionManager());
+  EXPECT_FALSE(
+      ash::SessionTerminationManager::IsSendingStopRequestToSessionManager());
 
   // Reset the policy so that it can be applied again.
   SetDevicePolicyAndWaitForSettingChange(base::DictValue());
@@ -1043,7 +1047,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyChildUser,
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           true /* unmanaged_user_restricted */));
-  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
+  EXPECT_TRUE(
+      ash::SessionTerminationManager::IsSendingStopRequestToSessionManager());
 }
 
 }  // namespace policy

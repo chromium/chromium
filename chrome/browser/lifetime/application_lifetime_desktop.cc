@@ -40,6 +40,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #else  // !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -91,10 +92,11 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   KeepAliveRegistry::GetInstance()->SetRestarting();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(!chrome::IsSendingStopRequestToSessionManager());
+  DCHECK(
+      !ash::SessionTerminationManager::IsSendingStopRequestToSessionManager());
 
   ash::BootTimesRecorder::Get()->set_restart_requested();
-  chrome::SetSendStopRequestToSessionManager(false);
+  ash::SessionTerminationManager::SetSendStopRequestToSessionManager(false);
 
   // If an update is pending StopSession() will trigger a system reboot,
   // which in turn will send SIGTERM to Chrome, and that ends up processing

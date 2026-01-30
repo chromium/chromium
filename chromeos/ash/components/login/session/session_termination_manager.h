@@ -68,6 +68,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_SESSION)
   // callback.
   base::OnceClosure GetClosureNotifyingAppTerminating();
 
+  // Returns true if we sent or are planning to send a stop session request to
+  // session manager.
+  static bool IsSendingStopRequestToSessionManager();
+
+  // Sets the flag to send a stop request to session manager instead of
+  // shutting down/restarting Chrome in place.
+  static void SetSendStopRequestToSessionManager(
+      bool should_send_request = true);
+
  private:
   void DidWaitForServiceToBeAvailable(bool service_is_available);
   void ProcessCryptohomeLoginStatusReply(
