@@ -173,7 +173,17 @@ static const char kMenuWasRunCallbackKey = 0;
   cell.menu = _menu;
   // Use -selectItemWithTag: so if the index is out-of-bounds nothing bad
   // happens.
-  [cell selectItemWithTag:index];
+  if (index > -1) {
+    [cell selectItemWithTag:index];
+  } else {
+    // If the select element doesn't have any options selected, then index will
+    // be -1. In this case, selectItemWithTag would make the first option look
+    // checked, but selectItemAtIndex lets us open the picker with no options
+    // checked. Not calling anything here would also leave the first item
+    // checked, we have to explicitly uncheck them by calling selectItemAtIndex
+    // with -1. https://issues.chromium.org/issues/391648151
+    [cell selectItemAtIndex:-1];
+  }
 
   if (_rightAligned) {
     cell.userInterfaceLayoutDirection =
