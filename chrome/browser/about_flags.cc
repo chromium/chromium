@@ -1650,18 +1650,11 @@ const FeatureEntry::FeatureParam
         {"ShowRecentTabChip", "true"},
         {"ShowContextMenuTabPreviews", "true"},
 };
-const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
-    {"ShowContextMenu", "true"},
-    {"ShowToolsAndModels", "true"},
-    {"ShowComposeboxZps", "true"},
-    {"ShowComposeboxTypedSuggest", "true"},
-};
 const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"ShowContextMenu", "true"},
     {"ShowContextMenuTabPreviews", "true"},
     {"ShowComposeboxZps", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
-    {"ShowToolsAndModels", "true"},
     {"ShowRecentTabChip", "true"},
     {"CloseComposeboxByEscape", "false"},
     {"CloseComposeboxByClickOutside", "false"},
@@ -1673,39 +1666,35 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"ShowContextMenuTabPreviews", "true"},
     {"ShowComposeboxZps", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
-    {"ShowToolsAndModels", "true"},
     {"ShowRecentTabChip", "true"},
     {"CloseComposeboxByEscape", "false"},
     {"CloseComposeboxByClickOutside", "false"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
     {
-        {"MaxNumFiles", "1"},           {"ShowContextMenu", "true"},
-        {"ShowComposeboxZps", "true"},  {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowToolsAndModels", "true"}, {"ShowRecentTabChip", "true"},
-        {"ShowSubmit", "true"},
+        {"NtpComposeboxMaxNumFiles", "1"},
+        {"NtpComposeboxShowContextMenu", "true"},
+        {"NtpComposeboxShowComposeboxZps", "true"},
+        {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
+        {"NtpComposeboxShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
-    {"ShowContextMenu", "true"},
-    {"ShowComposeboxZps", "true"},
-    {"ShowComposeboxTypedSuggest", "true"},
-    {"ShowToolsAndModels", "true"},
-    {"ShowRecentTabChip", "true"},
-    {"ContextMenuEnableMultiTabSelection", "true"},
-    {"ShowSubmit", "true"},
+    {"NtpComposeboxShowContextMenu", "true"},
+    {"NtpComposeboxShowComposeboxZps", "true"},
+    {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
+    {"NtpComposeboxShowRecentTabChip", "true"},
+    {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
     {"EnableEphemeralContextMenuDescription", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextWithModelPicker[] = {
-    {"ShowContextMenu", "true"},
-    {"ShowComposeboxZps", "true"},
-    {"ShowComposeboxTypedSuggest", "true"},
-    {"ShowToolsAndModels", "true"},
-    {"ShowRecentTabChip", "true"},
-    {"ContextMenuEnableMultiTabSelection", "true"},
-    {"ShowSubmit", "true"},
+    {"NtpComposeboxShowContextMenu", "true"},
+    {"NtpComposeboxShowComposeboxZps", "true"},
+    {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
+    {"NtpComposeboxShowRecentTabChip", "true"},
+    {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
     {"EnableEphemeralContextMenuDescription", "true"},
     {"EnableThreadsRail", "true"},
-    {"ShowModelPicker", "true"},
+    {"NtpComposeboxShowModelPicker", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
@@ -1721,8 +1710,6 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews,
      std::size(kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews),
      nullptr},
-    {"- Show Contextual Input Menu and Suggest with Tools and Models",
-     kShowToolsAndModels, std::size(kShowToolsAndModels), nullptr},
     {"- Next Experience", kComposeboxNext, std::size(kComposeboxNext), nullptr},
     {"- Next Experience Single Context", kComposeboxNextSingleContext,
      std::size(kComposeboxNextSingleContext), nullptr},
