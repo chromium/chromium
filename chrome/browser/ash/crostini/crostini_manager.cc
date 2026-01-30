@@ -1307,10 +1307,11 @@ CrostiniManager::CrostiniManager(
     ash::SchedulerConfigurationManager* scheduler_configuration_manager,
     Profile* profile)
     : component_update_service_(component_update_service),
-      component_manager_ash_(std::move(component_manager_ash)),
+      component_manager_ash_(component_manager_ash),
       scheduler_configuration_manager_(scheduler_configuration_manager),
       profile_(profile),
       owner_id_(CryptohomeIdForProfile(profile)),
+      termina_installer_(std::move(component_manager_ash)),
       baguette_installer_(profile_, std::move(shared_url_loader_factory)) {
   if (!component_update_service_) {
     CHECK_IS_TEST();

@@ -10,9 +10,14 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
+
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
 
 namespace crostini {
 
@@ -21,7 +26,10 @@ namespace crostini {
 // if loading DLC fails.
 class TerminaInstaller {
  public:
-  TerminaInstaller();
+  // `component_manager_ash` may be null in unit tests.
+  explicit TerminaInstaller(
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash);
   ~TerminaInstaller();
 
   TerminaInstaller(const TerminaInstaller&) = delete;
@@ -80,6 +88,9 @@ class TerminaInstaller {
 
   void OnUninstallFinished(base::OnceCallback<void(bool)> callback,
                            std::vector<UninstallResult> partial_results);
+
+  const scoped_refptr<component_updater::ComponentManagerAsh>
+      component_manager_ash_;
 
   std::optional<base::FilePath> termina_location_{std::nullopt};
   std::optional<std::string> dlc_id_{};
