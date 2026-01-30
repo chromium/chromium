@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SMART_CARD_EMULATION_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SMART_CARD_EMULATION_HANDLER_H_
 
+#include "base/types/expected.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/smart_card_emulation.h"
@@ -36,6 +37,64 @@ class CONTENT_EXPORT SmartCardEmulationHandler
   // SmartCardEmulation::Backend implementation.
   DispatchResponse Enable() override;
   DispatchResponse Disable() override;
+
+  template <typename CallbackType, typename ResultType>
+  class PendingRequestImpl {
+   public:
+    explicit PendingRequestImpl(CallbackType cb) : callback_(std::move(cb)) {}
+
+    void ReportError(device::mojom::SmartCardError error) {
+      std::move(callback_).Run(ResultType::NewError(error));
+    }
+
+    CallbackType& callback() { return callback_; }
+
+   private:
+    CallbackType callback_;
+  };
+
+  using PendingCreateContext = PendingRequestImpl<
+      device::mojom::SmartCardContextFactory::CreateContextCallback,
+      device::mojom::SmartCardCreateContextResult>;
+
+  using PendingListReaders =
+      PendingRequestImpl<device::mojom::SmartCardContext::ListReadersCallback,
+                         device::mojom::SmartCardListReadersResult>;
+
+  using PendingGetStatusChange = PendingRequestImpl<
+      device::mojom::SmartCardContext::GetStatusChangeCallback,
+      device::mojom::SmartCardStatusChangeResult>;
+
+  using PendingConnect =
+      PendingRequestImpl<device::mojom::SmartCardContext::ConnectCallback,
+                         device::mojom::SmartCardConnectResult>;
+
+  // Handles Cancel, Disconnect, SetAttrib, EndTransaction.
+  using PendingPlainResult = PendingRequestImpl<
+      base::OnceCallback<void(device::mojom::SmartCardResultPtr)>,
+      device::mojom::SmartCardResult>;
+
+  // Handles Transmit, Control, GetAttrib.
+  using PendingDataResult = PendingRequestImpl<
+      base::OnceCallback<void(device::mojom::SmartCardDataResultPtr)>,
+      device::mojom::SmartCardDataResult>;
+
+  using PendingStatus =
+      PendingRequestImpl<device::mojom::SmartCardConnection::StatusCallback,
+                         device::mojom::SmartCardStatusResult>;
+
+  using PendingBeginTransaction = PendingRequestImpl<
+      device::mojom::SmartCardConnection::BeginTransactionCallback,
+      device::mojom::SmartCardTransactionResult>;
+
+  using PendingRequest = std::variant<PendingCreateContext,
+                                      PendingListReaders,
+                                      PendingGetStatusChange,
+                                      PendingConnect,
+                                      PendingPlainResult,
+                                      PendingDataResult,
+                                      PendingStatus,
+                                      PendingBeginTransaction>;
 
  private:
   static std::vector<SmartCardEmulationHandler*> ForAgentHost(
@@ -122,6 +181,16 @@ class CONTENT_EXPORT SmartCardEmulationHandler
       device::mojom::SmartCardDisposition disposition,
       device::mojom::SmartCardTransaction::EndTransactionCallback callback)
       override;
+
+  void AddPendingRequest(const std::string& request_id, PendingRequest request);
+
+  template <typename T>
+  base::expected<T, std::string> TakePendingRequest(
+      const std::string& request_id);
+
+  // The Handler needs to store Mojo callbacks for "paused" requests so they can
+  // be resumed later when the DevTools frontend replies.
+  std::unordered_map<std::string, PendingRequest> pending_requests_;
 
   bool IsEnabled() const { return !!factory_; }
 
