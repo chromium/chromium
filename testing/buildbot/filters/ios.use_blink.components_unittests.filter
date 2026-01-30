@@ -2,13 +2,11 @@
 
 # TODO(crbug.com/40946218): currently fail with use_blink due to spinning up on
 # an unexpected thread.
--AutofillAcrossIframesTest.FeatureDisabled
 -AutofillAcrossIframesTest.NoChildFrames
 -AutofillAcrossIframesTest.WithChildFrames
 -AutofillAcrossIframesTest.Resolve
 -AutofillAcrossIframesTest.SetAndGetParent
 -AutofillAcrossIframesTest.TriggerExtractionInFrame
--AutofillAcrossIframesTest.FillForm
 
 # TODO(crbug.com/40945935): Test currently fails on iOS blink.
 -AutofillAgentTests.OnFormDataFilledTestWithFrameMessagingUsingRendererIDs
@@ -16,15 +14,11 @@
 -AutofillAgentTests.DriverFillSpecificFormField
 -AutofillAgentTests.DriverPreviewSpecificFormField
 -AutofillAgentTests.FillSpecificFormField
--AutofillAgentTests.FrameInitializationOrderFrames
--AutofillAgentTests.UpdateFieldManagerWithFillingResults
 -AutofillAgentTests.onSuggestionsReady_ClearForm
 -AutofillAgentTests.onSuggestionsReady_ClearFormWithGPay
--AutofillAgentTests.onSuggestionsReady_ShowAccountCards
 -AutofillAgentTests.showAutofillPopup_EmptyIconInCreditCardSuggestion
 -AutofillAgentTests.showAutofillPopup_PlusAddresses
 -AutofillAgentTests.showAutofillPopup_PreferCustomIconForCreditCardSuggestions
--AutofillAgentTests.showAutofillPopup_ShowIconForCreditCardSuggestionsOnly
 -AutofillAgentTests.showAutofillPopup_ShowVirtualCards
 -AutofillAgentTests.FillSpecificFormField_UpdateWithResults_WhenFailure
 -AutofillAgentTests.FillSpecificFormField_UpdateWithResults_WhenSuccess
@@ -75,7 +69,6 @@
 -FormActivityTabHelperTest.FocusSameOriginIFrame
 -FormActivityTabHelperTest.FormSubmittedFromSameOriginIFrame
 -FormActivityTabHelperTest.KeyUpEventNotFocused
--FormActivityTabHelperTest.TestFormSubmittedHook
 -FormActivityTabHelperTest.TestObserverDocumentSubmitted
 -FormMutationFormControlElements.AddedFormControlElement/0
 -FormMutationFormControlElements.AddedFormControlElement/1
@@ -127,9 +120,6 @@
 # TODO(crbug.com/40945946): Test currently fails on iOS blink.
 -PasswordFormHelperTest.FindPasswordFormsInView
 -PasswordFormHelperTest.ExtractPasswordFormData
--PasswordFormHelperTest.FillPasswordFormWithFillData
--PasswordFormHelperTest.FillPasswordFormWithFillDataFillingFailure
--PasswordFormHelperTest.FillPasswordIntoFormWithUserTypedUsername
 -PasswordFormHelperTest.HandleFormSubmittedMessage
 -PasswordFormHelperTest.HandleFormSubmittedMessage_CantExtractFormData
 -PasswordFormHelperTest.HandleFormSubmittedMessage_InvalidFormat
@@ -163,7 +153,6 @@
 -SharedPasswordControllerTest.LastFocusedFieldData
 -SharedPasswordControllerTest.NoFormsArePropagatedOnNonHTMLPageLoad
 -SharedPasswordControllerTest.PasswordManagerDidNavigationMainFrameOnNavigationFinished
--SharedPasswordControllerTest.PasswordManagerIsNotifiedAboutServerPredictions
 -SharedPasswordControllerTest.PresavesGeneratedPassword
 -SharedPasswordControllerTest.RetrieveSuggestionsForFormCrossOriginIframe
 -SharedPasswordControllerTest.ReturnsGenerateSuggestionIfFormIsEligibleForGeneration
@@ -216,14 +205,6 @@
 -UkmUrlRecorderTest.IgnoreDownloadUrl
 -UkmUrlRecorderTest.IgnoreUrlInSubframe
 -UkmUrlRecorderTest.InitialUrl
-
-# TODO(crbug.com/341124496): Test currently fails on iOS Blink.
--ProfileInteractionManagerTestSuiteInstantiation/ProfileInteractionManagerTest.OnPageActivationComputesLevelAndDecision/FPFDisabled_UserOptIn_Exception
--ProfileInteractionManagerTestSuiteInstantiation/ProfileInteractionManagerTest.OnPageActivationComputesLevelAndDecision/FPFDisabled_UserOptOut_Exception
--ProfileInteractionManagerTestSuiteInstantiation/ProfileInteractionManagerTest.OnPageActivationComputesLevelAndDecision/FPFEnabled_UserOptIn_Exception
--ProfileInteractionManagerTestSuiteInstantiation/ProfileInteractionManagerTest.OnPageActivationComputesLevelAndDecision/FPFEnabled_UserOptIn_NoException
--ProfileInteractionManagerTestSuiteInstantiation/ProfileInteractionManagerTest.OnPageActivationComputesLevelAndDecision/FPFEnabled_UserOptIn_NoException_EnableOn3pcBlocked_3pcBlocked
--ProfileInteractionManagerTestSuiteInstantiation/ProfileInteractionManagerTest.OnPageActivationComputesLevelAndDecision/FPFEnabled_UserOptOut_Exception
 
 # TODO(crbug.com/347197919): ThrottleManagerEnabledTest has been failing since
 # https://crrev.com/c/5527553. Need to consider if we can support the
@@ -279,9 +260,6 @@
 # TODO(crbug.com/349653214): Currently fail with use_blink due to spinning up on
 # an unexpected thread after https://crrev.com/c/5614910 added the tests.
 -AutofillAcrossIframesTest.AskForFillDataOnMultiFrameForm
--AutofillAcrossIframesTest.FillMultiFrameForm
--AutofillAcrossIframesTest.FillMultiFrameForm_SingleField
--AutofillAcrossIframesTest.FillSingleFrameForm
 -AutofillAcrossIframesTest.SubmitMultiFrameForm
 -AutofillAcrossIframesTest.SubmitMultiFrameForm_XHR
 -AutofillAcrossIframesTest.TextChangeOnMultiFrameForm
@@ -310,33 +288,20 @@
 # TODO(crbug.com/364348914): These tests have been failing since
 # https://crrev.com/c/5774002.
 -AutofillAcrossIframesFillSecurityTest.Fill_MultiFrameForm_XoriginTrigger_Siloed
--AutofillAcrossIframesFillSecurityTest.Fill_MultiFrameForm_XoriginTrigger_Siloed
--AutofillAcrossIframesFillSecurityTest.MainOriginTrigger
 -AutofillAcrossIframesFillSecurityTest.MainOriginTrigger
 -AutofillAcrossIframesFillSecurityTest.XoriginTrigger
--AutofillAcrossIframesFillSecurityTest.XoriginTrigger
--AutofillAcrossIframesFillSecurityTest.XoriginTrigger_NestedFrame
 -AutofillAcrossIframesFillSecurityTest.XoriginTrigger_NestedFrame
 -AutofillAcrossIframesFillSecurityTest.XoriginTrigger_SensitiveFieldsOnMainOrigin
--AutofillAcrossIframesFillSecurityTest.XoriginTrigger_SensitiveFieldsOnMainOrigin
--AutofillAcrossIframesTest.Fill_MainFrameForm
 -AutofillAcrossIframesTest.Fill_MainFrameForm
 -AutofillAcrossIframesTest.Fill_MultiFrameForm
--AutofillAcrossIframesTest.Fill_MultiFrameForm
 -AutofillAcrossIframesTest.FrameAndFormIdsDontMatch
--AutofillAcrossIframesTest.FrameAndFormIdsDontMatch
--AutofillAcrossIframesTest.TriggerExtraction_AcrossFrames
 -AutofillAcrossIframesTest.TriggerExtraction_AcrossFrames
 
 # TODO(crbug.com/365245828): These tests have been failing since
 # https://crrev.com/c/5829970.
 -BackgroundTracingUtilsTest.SetupBackgroundTracingFromProtoConfigFile
--BackgroundTracingUtilsTest.SetupBackgroundTracingFromProtoConfigFile
--BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrial
 -BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrial
 -BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrialOutputPath
--BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrialOutputPath
--BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
 -BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
 
 # TODO(crbug.com/370751353): These tests have been failing since
