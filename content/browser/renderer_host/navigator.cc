@@ -830,16 +830,6 @@ void Navigator::DidNavigate(
   delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details);
 }
 
-// LINT.IfChange(InputStartPresence)
-enum class InputStartPresence {
-  kNone = 0,
-  kOnlyOld = 1,
-  kOnlyNew = 2,
-  kBoth = 3,
-  kMaxValue = kBoth,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:InputStartPresence)
-
 void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
                          ReloadType reload_type) {
   TRACE_EVENT0("browser,navigation", "Navigator::Navigate");
@@ -916,31 +906,29 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
     base::UmaHistogramTimes(
         "Navigation.BrowserInitiated.DuplicateNavStartTimeDiff2",
         nav_start_diff);
-    const auto& new_input_start = request->common_params().input_start;
-    const auto& old_input_start =
-        ongoing_navigation_request->common_params().input_start;
-    const std::string histogram_prefix = base::StrCat(
-        {"Navigation.", request->IsRendererInitiated() ? "Renderer" : "Browser",
-         "Initiated."});
-    InputStartPresence presence;
-    if (new_input_start.is_null() && old_input_start.is_null()) {
-      presence = InputStartPresence::kNone;
-    } else if (new_input_start.is_null()) {
-      presence = InputStartPresence::kOnlyOld;
-    } else if (old_input_start.is_null()) {
-      presence = InputStartPresence::kOnlyNew;
-    } else {
-      presence = InputStartPresence::kBoth;
-    }
-    base::UmaHistogramEnumeration(
-        base::StrCat(
-            {histogram_prefix, "DuplicateNavigationInputStartPresence"}),
-        presence);
-    if (presence == InputStartPresence::kBoth) {
-      const base::TimeDelta input_diff = new_input_start - old_input_start;
-      base::UmaHistogramTimes(
-          base::StrCat({histogram_prefix, "DuplicateNavInputTimeDiff"}),
-          input_diff);
+    if (request->IsRendererInitiated()) {
+      const auto& new_input_start = request->common_params().input_start;
+      const auto& old_input_start =
+          ongoing_navigation_request->common_params().input_start;
+      blink::InputStartPresence presence;
+      if (new_input_start.is_null() && old_input_start.is_null()) {
+        presence = blink::InputStartPresence::kNone;
+      } else if (new_input_start.is_null()) {
+        presence = blink::InputStartPresence::kOnlyOld;
+      } else if (old_input_start.is_null()) {
+        presence = blink::InputStartPresence::kOnlyNew;
+      } else {
+        presence = blink::InputStartPresence::kBoth;
+      }
+      base::UmaHistogramEnumeration(
+          "Navigation.BrowserInitiated.DuplicateNavigationInputStartPresence",
+          presence);
+      if (presence == blink::InputStartPresence::kBoth) {
+        const base::TimeDelta input_diff = new_input_start - old_input_start;
+        base::UmaHistogramTimes(
+            "Navigation.BrowserInitiated.DuplicateNavInputTimeDiff",
+            input_diff);
+      }
     }
     if (start_diff_under_threshold &&
         GetContentClient()->ShouldIgnoreDuplicateNavs(

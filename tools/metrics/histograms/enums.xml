@@ -6278,7 +6278,7 @@ shown properly on the user-facing crash UI.
   <int value="3" label="Both"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/renderer_host/navigator.cc:InputStartPresence) -->
+<!-- LINT.ThenChange(//third_party/blink/public/common/navigation/navigation_policy.h:InputStartPresence) -->
 
 <enum name="InstallableStatusCode">
   <int value="0" label="No error"/>

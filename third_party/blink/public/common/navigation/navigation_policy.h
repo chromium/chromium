@@ -40,6 +40,16 @@ enum class NavigationDownloadType {
   kMaxValue = kNoGesture
 };
 
+// LINT.IfChange(InputStartPresence)
+enum class InputStartPresence {
+  kNone = 0,
+  kOnlyOld = 1,
+  kOnlyNew = 2,
+  kBoth = 3,
+  kMaxValue = kBoth,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:InputStartPresence)
+
 // Stores the navigation types that may be of interest to the download-related
 // metrics to be reported at download-discovery time. Also controls how
 // navigations behave when they turn into downloads. By default, navigation is

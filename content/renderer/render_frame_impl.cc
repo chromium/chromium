@@ -6314,6 +6314,28 @@ void RenderFrameImpl::BeginNavigationInternal(
     base::UmaHistogramTimes(
         "Navigation.RendererInitiated.DuplicateNavStartTimeDiff2",
         nav_start_diff);
+    const auto& new_input_start = common_params->input_start;
+    const auto& old_input_start =
+        navigation_client_impl_->common_params().input_start;
+    blink::InputStartPresence presence;
+    if (new_input_start.is_null() && old_input_start.is_null()) {
+      presence = blink::InputStartPresence::kNone;
+    } else if (new_input_start.is_null()) {
+      presence = blink::InputStartPresence::kOnlyOld;
+    } else if (old_input_start.is_null()) {
+      presence = blink::InputStartPresence::kOnlyNew;
+    } else {
+      presence = blink::InputStartPresence::kBoth;
+    }
+    base::UmaHistogramEnumeration(
+        "Navigation.RendererInitiated.DuplicateNavigationInputStartPresence2",
+        presence);
+    if (presence == blink::InputStartPresence::kBoth) {
+      const base::TimeDelta input_diff = new_input_start - old_input_start;
+      base::UmaHistogramTimes(
+          "Navigation.RendererInitiated.DuplicateNavInputTimeDiff2",
+          input_diff);
+    }
     if (start_diff_under_threshold &&
         GetContentClient()->ShouldIgnoreDuplicateNavs(
             common_params->url, /*is_renderer_initiated=*/true)) {
