@@ -1152,6 +1152,7 @@ if (is_android) {
       "$target_gen_dir/data_model/autofill_ai/entity_type_names.h",
       "data_model/autofill_ai/entity_instance.h",
       "data_model/autofill_ai/entity_type.h",
+      "permissions/autofill_ai/autofill_ai_permission_utils.h",
     ]
     deps = [ ":entity_schema_enums_and_functions" ]
   }

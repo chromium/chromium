@@ -83,6 +83,7 @@ enum class AutofillAiAction {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(AutofillAiOptInStatus)
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai
 enum class AutofillAiOptInStatus {
   kOptedOut = 0,
   kOptedIn = 1,

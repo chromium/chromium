@@ -7,18 +7,25 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check_deref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
+#include "chrome/browser/autofill/account_setting_service_factory.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/autofill/android/entity_type_android.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -30,8 +37,20 @@ namespace autofill {
 EntityDataManagerAndroid::EntityDataManagerAndroid(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
+    const GoogleGroupsManager* google_groups_manager,
+    PrefService* prefs,
+    const signin::IdentityManager* identity_manager,
+    const syncer::SyncService* sync_service,
+    const AccountSettingService* account_setting_service,
+    bool is_off_the_record,
     EntityDataManager* entity_data_manager)
     : weak_java_obj_(env, obj),
+      google_groups_manager_(google_groups_manager),
+      prefs_(prefs),
+      identity_manager_(identity_manager),
+      sync_service_(sync_service),
+      account_setting_service_(account_setting_service),
+      is_off_the_record_(is_off_the_record),
       entity_data_manager_(CHECK_DEREF(entity_data_manager)) {}
 
 EntityDataManagerAndroid::~EntityDataManagerAndroid() = default;
@@ -42,12 +61,46 @@ static int64_t JNI_EntityDataManager_Init(JNIEnv* env,
   CHECK(profile);
   EntityDataManagerAndroid* entity_data_manager_android =
       new EntityDataManagerAndroid(
-          env, obj, AutofillEntityDataManagerFactory::GetForProfile(profile));
+          env, obj, GoogleGroupsManagerFactory::GetForBrowserContext(profile),
+          profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+          SyncServiceFactory::GetForProfile(profile),
+          AccountSettingServiceFactory::GetForBrowserContext(profile),
+          profile->IsOffTheRecord(),
+          AutofillEntityDataManagerFactory::GetForProfile(profile));
   return reinterpret_cast<intptr_t>(entity_data_manager_android);
 }
 
 void EntityDataManagerAndroid::Destroy(JNIEnv* env) {
   delete this;
+}
+
+bool EntityDataManagerAndroid::IsEligibleToAutofillAi(JNIEnv* env) {
+  const bool is_wallet_storage_enabled =
+      account_setting_service_ &&
+      account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();
+
+  return MayPerformAutofillAiAction(
+      google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
+      sync_service_, is_wallet_storage_enabled, is_off_the_record_,
+      entity_data_manager_->GetVariationCountryCode(),
+      AutofillAiAction::kOptIn);
+}
+
+bool EntityDataManagerAndroid::GetAutofillAiOptInStatus(JNIEnv* env) {
+  return autofill::GetAutofillAiOptInStatus(prefs_, identity_manager_);
+}
+
+bool EntityDataManagerAndroid::SetAutofillAiOptInStatus(
+    JNIEnv* env,
+    AutofillAiOptInStatus opt_in_status) {
+  const bool is_wallet_storage_enabled =
+      account_setting_service_ &&
+      account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();
+
+  return autofill::SetAutofillAiOptInStatus(
+      google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
+      sync_service_, is_wallet_storage_enabled, is_off_the_record_,
+      entity_data_manager_->GetVariationCountryCode(), opt_in_status);
 }
 
 jni_zero::ScopedJavaLocalRef<jobject>
