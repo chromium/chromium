@@ -1292,4 +1292,29 @@ TEST(ActionChipGeneratorTest,
                           Eq(std::cref(GetStaticImageGenerationChip()))));
 }
 
+TEST(ActionChipGeneratorTest,
+     NoRecentTabChipWhenNtpNextShowStaticRecentTabChipParamIsFalse) {
+  EnvironmentFixture env;
+  const GURL page_url("https://www.google.com/");
+  const std::u16string page_title(u"Some Title");
+  TabFixture tab_fixture(page_url, page_title);
+  GeneratorFixture generator_fixture;
+
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpNextFeatures,
+      {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
+       {ntp_features::kNtpNextShowStaticRecentTabChipParam.name, "false"}});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  generator_fixture.GenerateActionChips(&tab_fixture.mock_tab(), run_loop,
+                                        actual);
+  run_loop.Run();
+
+  EXPECT_THAT(actual,
+              ElementsAre(Eq(std::cref(GetStaticDeepSearchChip())),
+                          Eq(std::cref(GetStaticImageGenerationChip()))));
+}
+
 }  // namespace
