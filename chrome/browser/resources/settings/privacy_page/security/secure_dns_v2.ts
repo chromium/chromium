@@ -491,7 +491,7 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
       return;
     }
 
-    const enforced = this.getPref('dns_over_https.mode').enforcement ===
+    const enforced = this.secureDnsTogglePref_.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED;
 
     this.$.automaticRadioButton.disabled = enforced;
@@ -501,7 +501,6 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
     this.isSecureDnsWarningIconVisible_ =
         !this.secureDnsTogglePref_.value && !enforced;
   }
-
 
   /**
    * Updates the UI to match the provided configuration parameters.

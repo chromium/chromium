@@ -321,6 +321,39 @@ suite('SettingsSecureDnsV2', function() {
     // TODO(crbug.com/441316657): Add a check for the policy indicator icon.
   });
 
+  test('SecureDnsWarningIconWithManagementMode', async function() {
+    // Initial state: OFF, no override. Icon should be visible.
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.OFF,
+      config: '',
+      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    });
+    await flushTasks();
+    assertTrue(secureDnsToggle.iconVisible, 'The icon should be visible');
+
+    // Switch to OFF with DISABLED_MANAGED.
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.OFF,
+      config: '',
+      managementMode: SecureDnsUiManagementMode.DISABLED_MANAGED,
+    });
+    await flushTasks();
+    assertFalse(
+        secureDnsToggle.iconVisible,
+        'The icon should not be visible when disabled in managed environment');
+
+    // Switch to OFF with DISABLED_PARENTAL_CONTROLS.
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.OFF,
+      config: '',
+      managementMode: SecureDnsUiManagementMode.DISABLED_PARENTAL_CONTROLS,
+    });
+    await flushTasks();
+    assertFalse(
+        secureDnsToggle.iconVisible,
+        'The icon should not be visible when disabled with parental controls');
+  });
+
   test('RadioButtonsDisabledWhenEnforced', async function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
