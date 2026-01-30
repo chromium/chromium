@@ -49,6 +49,8 @@ source_set("legion") {
     "connection_basic.cc",
     "connection_basic.h",
     "connection_factory.h",
+    "connection_factory_impl.cc",
+    "connection_factory_impl.h",
     "connection_metrics.cc",
     "connection_metrics.h",
     "connection_timeout.cc",

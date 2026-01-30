@@ -73,6 +73,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "connection_factory_impl_browsertest.cc",
       "private_ai_service_browsertest.cc",
       "secure_session_async_impl_browsertest.cc",
       "websocket_client_browsertest.cc",
