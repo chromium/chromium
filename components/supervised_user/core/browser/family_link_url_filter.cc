@@ -767,7 +767,7 @@ WebFilterType FamilyLinkUrlFilter::GetWebFilterType() const {
   // LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_settings_service.cc:GetWebFilterType)
 }
 
-bool FamilyLinkUrlFilter::RunAsyncChecker(
+void FamilyLinkUrlFilter::RunAsyncChecker(
     const GURL& url,
     WebFilteringResult::Callback callback) {
   // The parental setting may allow all sites to be visited.
@@ -775,11 +775,11 @@ bool FamilyLinkUrlFilter::RunAsyncChecker(
     std::move(callback).Run(
         {url, FilteringBehavior::kAllow,
          supervised_user::FilteringBehaviorReason::DEFAULT});
-    return true;
+    return;
   }
 
   CHECK(async_url_checker_) << "Filter must always have a checker.";
-  return async_url_checker_->CheckURL(
+  async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
       base::BindOnce(&FamilyLinkUrlFilter::CheckCallback,
                      weak_factory_.GetWeakPtr(), std::move(callback), url));

@@ -145,12 +145,13 @@ class SupervisedUserTestEnvironment {
       const SupervisedUserTestEnvironment&) = delete;
   ~SupervisedUserTestEnvironment();
 
+  MockUrlCheckerClient& family_link_url_checker_client();
+
   FamilyLinkUrlFilter* url_filter() const;
   SupervisedUserService* service() const;
   SupervisedUserUrlFilteringService* url_filtering_service() const;
   PrefService* pref_service();
   sync_preferences::TestingPrefServiceSyncable* pref_service_syncable();
-  safe_search_api::FakeURLCheckerClient* url_checker_client();
   DeviceParentalControlsTestImpl& device_parental_controls();
 
   // Simulators of parental controls. Instance methods use services from this
@@ -181,6 +182,8 @@ class SupervisedUserTestEnvironment {
   void Shutdown();
 
  private:
+  MockUrlCheckerClient family_link_url_checker_client_;
+
   SupervisedUserPrefStoreTestEnvironment pref_store_environment_;
 
   signin::IdentityTestEnvironment identity_test_env_;
@@ -191,10 +194,6 @@ class SupervisedUserTestEnvironment {
   std::unique_ptr<SupervisedUserService> service_;
   std::unique_ptr<SupervisedUserUrlFilteringService> url_filtering_service_;
   std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
-
-  // The objects are actually owned by the service_, but are referenced here for
-  // convenience.
-  raw_ptr<safe_search_api::FakeURLCheckerClient> url_checker_client_;
 };
 }  // namespace supervised_user
 

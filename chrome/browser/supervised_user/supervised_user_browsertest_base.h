@@ -20,26 +20,11 @@
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
-
-class MockUrlCheckerClient : public ::safe_search_api::URLCheckerClient {
- public:
-  MockUrlCheckerClient();
-  ~MockUrlCheckerClient() override;
-
-  MOCK_METHOD(void,
-              CheckURL,
-              (const GURL& url, ClientCheckCallback callback),
-              (override));
-
-  base::WeakPtr<MockUrlCheckerClient> GetWeakPtr();
-
- private:
-  base::WeakPtrFactory<MockUrlCheckerClient> weak_ptr_factory_{this};
-};
 
 // Base class for supervised user browser tests. It offers a common
 // scaffolding for supervised user browser tests across Desktop and Android,

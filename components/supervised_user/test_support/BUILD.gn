@@ -29,6 +29,7 @@ source_set("test_support") {
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/safe_search_api",
+    "//components/safe_search_api:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",

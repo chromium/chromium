@@ -390,8 +390,8 @@ TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForAsyncBlock) {
           GURL("http://example.com"), /*skip_manual_parent_filter=*/false,
           base::DoNothing(),
           WebFilterMetricsOptions{.filtering_context = GetParam().context});
-  supervised_user_test_environment_.url_checker_client()->RunCallback(
-      safe_search_api::ClientClassification::kRestricted);
+  supervised_user_test_environment_.family_link_url_checker_client()
+      .RunFirstCallack(safe_search_api::ClientClassification::kRestricted);
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(
@@ -412,8 +412,8 @@ TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForAsyncAllow) {
           GURL("http://example.com"), /*skip_manual_parent_filter=*/false,
           base::DoNothing(),
           WebFilterMetricsOptions{.filtering_context = GetParam().context});
-  supervised_user_test_environment_.url_checker_client()->RunCallback(
-      safe_search_api::ClientClassification::kAllowed);
+  supervised_user_test_environment_.family_link_url_checker_client()
+      .RunFirstCallack(safe_search_api::ClientClassification::kAllowed);
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(

@@ -43,25 +43,8 @@
 namespace supervised_user {
 
 namespace {
-// A URLCheckerClient that wraps a MockUrlCheckerClient. Effectively, this
-// allows the URLChecker to get a wrapper of the mock (as a WeakPtr) without
-// giving up ownership of the mock.
-class WrappedUrlCheckerClient : public safe_search_api::URLCheckerClient {
- public:
-  explicit WrappedUrlCheckerClient(base::WeakPtr<MockUrlCheckerClient> client)
-      : client_(std::move(client)) {}
-  ~WrappedUrlCheckerClient() override = default;
-
-  void CheckURL(const GURL& url, ClientCheckCallback callback) override {
-    client_->CheckURL(url, std::move(callback));
-  }
-
- private:
-  base::WeakPtr<MockUrlCheckerClient> client_;
-};
-
 std::unique_ptr<KeyedService> BuildSupervisedUserService(
-    base::WeakPtr<MockUrlCheckerClient> mock_url_checker_client,
+    MockUrlCheckerClient& mock_url_checker_client,
     SupervisedUserBrowserTestBase::InitialSupervisedUserState initial_state,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
@@ -78,7 +61,7 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       std::make_unique<FamilyLinkUrlFilter>(
           settings_service, *profile->GetPrefs(),
           std::make_unique<FakeURLFilterDelegate>(),
-          std::make_unique<WrappedUrlCheckerClient>(mock_url_checker_client)),
+          std::make_unique<UrlCheckerClientWrapper>(mock_url_checker_client)),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
       g_browser_process->device_parental_controls());
 }
@@ -111,9 +94,9 @@ void SupervisedUserBrowserTestBase::SetUpBrowserContextKeyedServices(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
-      context, base::BindRepeating(&BuildSupervisedUserService,
-                                   mock_url_checker_client_.GetWeakPtr(),
-                                   initial_state_));
+      context,
+      base::BindRepeating(&BuildSupervisedUserService,
+                          std::ref(mock_url_checker_client_), initial_state_));
 
   browser_context_keyed_services_set_up_ = true;
 }
@@ -138,13 +121,6 @@ SupervisedUserBrowserTestBase::GetSupervisedUserUrlFilteringService() const {
 
 MockUrlCheckerClient& SupervisedUserBrowserTestBase::GetMockUrlCheckerClient() {
   return mock_url_checker_client_;
-}
-
-MockUrlCheckerClient::MockUrlCheckerClient() = default;
-MockUrlCheckerClient::~MockUrlCheckerClient() = default;
-
-base::WeakPtr<MockUrlCheckerClient> MockUrlCheckerClient::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 #if BUILDFLAG(IS_ANDROID)

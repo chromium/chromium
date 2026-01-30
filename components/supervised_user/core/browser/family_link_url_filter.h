@@ -187,8 +187,7 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
 
   bool IsExemptedFromGuardianApproval(const GURL& effective_url) const;
 
-  virtual bool RunAsyncChecker(const GURL& url,
-                               WebFilteringResult::Callback callback);
+  void RunAsyncChecker(const GURL& url, WebFilteringResult::Callback callback);
 
   FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url) const;
 

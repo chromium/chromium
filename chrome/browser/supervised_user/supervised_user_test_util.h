@@ -84,13 +84,6 @@ template <typename URLFilter,
 std::unique_ptr<KeyedService> BuildSupervisedUserService(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
-      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess();
   supervised_user::FamilyLinkSettingsService& settings_service = CHECK_DEREF(
       supervised_user::FamilyLinkSettingsServiceFactory::GetInstance()
           ->GetForKey(profile->GetProfileKey()));
@@ -104,11 +97,7 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       std::make_unique<URLFilter>(
           settings_service, *profile->GetPrefs(),
           std::make_unique<URLFilterDelegate>(),
-          std::make_unique<
-              supervised_user::KidsChromeManagementURLCheckerClient>(
-              identity_manager, url_loader_factory, *profile->GetPrefs(),
-              platform_delegate->GetCountryCode(),
-              platform_delegate->GetChannel())),
+          std::make_unique<supervised_user::MockUrlCheckerClient>()),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
       g_browser_process->device_parental_controls());
 }
