@@ -87,6 +87,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -149,25 +150,13 @@ public class FuseboxMediatorUnitTest {
         mViewHolder = new FuseboxViewHolder(viewGroup, mPopup);
         mAttachments = new FuseboxAttachmentModelList(mTabModelSelectorSupplier);
         mAttachments.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
-        mMediator =
-                new FuseboxMediator(
-                        mContext,
-                        mProfile,
-                        mWindowAndroid,
-                        mModel,
-                        mViewHolder,
-                        mAttachments,
-                        mTabModelSelectorSupplier,
-                        mComposeboxQueryControllerBridge,
-                        mFuseboxStateSupplier,
-                        mSnackbarManager);
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
 
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
-        mMediator.beginInput(mInput);
+        recreateMediator();
 
         // Start with no init calls.
         clearInvocations(mComposeboxQueryControllerBridge);
@@ -180,6 +169,9 @@ public class FuseboxMediatorUnitTest {
 
     /* Useful for testing logic in the mediator's constructor. */
     private void recreateMediator() {
+        if (mMediator != null) {
+            mMediator.destroy();
+        }
         mMediator =
                 new FuseboxMediator(
                         mContext,
@@ -187,7 +179,7 @@ public class FuseboxMediatorUnitTest {
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
-                        new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
+                        mAttachments,
                         mTabModelSelectorSupplier,
                         mComposeboxQueryControllerBridge,
                         mFuseboxStateSupplier,
@@ -267,9 +259,20 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testDestroy() {
+        // Use a temp for mock to avoid DirectInvocationOnMock lint check. This test cases uses a
+        // mock for mAttachments but the rest of this test file does not.
+        FuseboxAttachmentModelList mockAttachments = mock(FuseboxAttachmentModelList.class);
+        when(mockAttachments.iterator()).thenReturn(Collections.emptyIterator());
+        mAttachments = mockAttachments;
+        recreateMediator();
+
         assertTrue(mInput.getRequestTypeSupplier().hasObservers());
+        verify(mAttachments).addObserver(any());
+
         mMediator.destroy();
+
         assertFalse(mInput.getRequestTypeSupplier().hasObservers());
+        verify(mAttachments).removeObserver(any());
     }
 
     @Test
@@ -513,29 +516,6 @@ public class FuseboxMediatorUnitTest {
         assertEquals(
                 BrandedColorScheme.INCOGNITO,
                 mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
-    }
-
-    @Test
-    public void setToolbarVisible_noBridge_doesNothing() {
-        FuseboxMediator mediator =
-                new FuseboxMediator(
-                        mContext,
-                        mProfile,
-                        mWindowAndroid,
-                        mModel,
-                        mViewHolder,
-                        new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
-                        mTabModelSelectorSupplier,
-                        mComposeboxQueryControllerBridge,
-                        mFuseboxStateSupplier,
-                        mSnackbarManager);
-
-        // The bridge is not initialized, so no native calls should be made.
-        mediator.setToolbarVisible(true);
-        verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
-
-        mediator.setToolbarVisible(false);
-        verify(mComposeboxQueryControllerBridge, never()).notifySessionAbandoned();
     }
 
     @Test

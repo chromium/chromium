@@ -51,6 +51,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -79,6 +80,18 @@ public class FuseboxMediator {
             this::onAutocompleteRequestTypeChanged;
     private final SnackbarManager mSnackbarManager;
     private final Snackbar mAttachmentUploadFailedSnackbar;
+    private final ListObserver<Void> mListObserver =
+            new ListObserver<>() {
+                @Override
+                public void onItemRangeInserted(ListObservable source, int index, int count) {
+                    onAttachmentsChanged();
+                }
+
+                @Override
+                public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                    onAttachmentsChanged();
+                }
+            };
     private @Nullable AutocompleteInput mInput;
 
     FuseboxMediator(
@@ -104,7 +117,7 @@ public class FuseboxMediator {
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mSnackbarManager = snackbarManager;
 
-        // Create the upload failed snackbar
+        // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
                 createStyledSnackbar(
                         context.getText(R.string.fusebox_upload_failed),
@@ -128,22 +141,12 @@ public class FuseboxMediator {
                 FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE,
                 mComposeboxQueryControllerBridge.isPdfUploadEligible());
 
-        mModelList.addObserver(
-                new ListObservable.ListObserver<>() {
-                    @Override
-                    public void onItemRangeInserted(ListObservable source, int index, int count) {
-                        onAttachmentsChanged();
-                    }
-
-                    @Override
-                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                        onAttachmentsChanged();
-                    }
-                });
+        mModelList.addObserver(mListObserver);
         onAttachmentsChanged();
     }
 
     public void destroy() {
+        mModelList.removeObserver(mListObserver);
         endInput();
     }
 

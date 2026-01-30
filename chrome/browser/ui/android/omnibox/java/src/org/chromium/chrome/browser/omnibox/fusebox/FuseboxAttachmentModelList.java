@@ -424,4 +424,8 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
     public void removeAttachmentChangeListener(FuseboxAttachmentChangeListener listener) {
         mAttachmentChangeListeners.removeObserver(listener);
     }
+
+    public ModelList getModelListForTesting() {
+        return mModelList;
+    }
 }
