@@ -346,17 +346,21 @@ bool GlicGlobalEnabling::IsEnabledByFlags() {
                     locale_enablement_.value_or(true) &&
                     country_enablement_.value_or(true);
 #if BUILDFLAG(IS_CHROMEOS)
-  constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(8);
+  static const bool supported_system_requirements = [] {
+    constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(8);
 
-  // TODO(b:468055370): Remove the bypassing once the glic is fully launched.
-  const bool bypass_cbx_requirement =
-      base::FeatureList::IsEnabled(
-          chromeos::features::kGlicEnableFor8GbDevices) &&
-      base::SysInfo::AmountOfPhysicalMemory() >= kMinimumMemoryThreshold;
+    // TODO(b:468055370): Remove the bypassing once the glic is fully launched.
+    const bool bypass_cbx_requirement =
+        base::FeatureList::IsEnabled(
+            chromeos::features::kGlicEnableFor8GbDevices) &&
+        base::SysInfo::AmountOfPhysicalMemory() >= kMinimumMemoryThreshold;
 
-  is_enabled = is_enabled && (bypass_cbx_requirement ||
-                              base::FeatureList::IsEnabled(
-                                  chromeos::features::kFeatureManagementGlic));
+    return (bypass_cbx_requirement ||
+            base::FeatureList::IsEnabled(
+                chromeos::features::kFeatureManagementGlic));
+  }();
+
+  is_enabled = is_enabled && supported_system_requirements;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return is_enabled;
 }
