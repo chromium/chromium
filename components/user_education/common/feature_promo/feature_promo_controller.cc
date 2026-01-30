@@ -42,6 +42,14 @@ namespace user_education {
 
 namespace {
 
+// Implementation for test callback list.
+using TestResultCallbackList =
+    base::RepeatingCallbackList<void(const base::Feature&, FeaturePromoResult)>;
+TestResultCallbackList& GetTestResultCallbackList() {
+  static base::NoDestructor<TestResultCallbackList> instance;
+  return *instance.get();
+}
+
 // Returns the most relevant valid context for a bubble that is already showing.
 //
 // Typically, this is the `bubble_context` - i.e. the context of the surface
@@ -76,8 +84,10 @@ FeaturePromoController::FeaturePromoController() = default;
 FeaturePromoController::~FeaturePromoController() = default;
 
 void FeaturePromoController::PostShowPromoResult(
+    const base::Feature& feature,
     ShowPromoResultCallback callback,
     FeaturePromoResult result) {
+  GetTestResultCallbackList().Notify(feature, result);
   if (callback) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -86,6 +96,13 @@ void FeaturePromoController::PostShowPromoResult(
                FeaturePromoResult result) { std::move(callback).Run(result); },
             std::move(callback), result));
   }
+}
+
+// static
+base::CallbackListSubscription
+FeaturePromoController::AddResultCallbackForTesting(  // IN-TEST
+    TestResultCallback callback) {
+  return GetTestResultCallbackList().Add(std::move(callback));
 }
 
 FeaturePromoControllerCommon::FeaturePromoControllerCommon(

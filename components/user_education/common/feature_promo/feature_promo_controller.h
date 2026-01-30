@@ -16,6 +16,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -202,8 +203,15 @@ class FeaturePromoController {
 
   // Posts `result` to `callback` on a fresh call stack. Requires a functioning
   // message pump.
-  static void PostShowPromoResult(ShowPromoResultCallback callback,
+  static void PostShowPromoResult(const base::Feature& feature,
+                                  ShowPromoResultCallback callback,
                                   FeaturePromoResult result);
+
+  // Add the ability to have a global callback for promo results for tests.
+  using TestResultCallback =
+      base::RepeatingCallback<void(const base::Feature&, FeaturePromoResult)>;
+  static base::CallbackListSubscription AddResultCallbackForTesting(
+      TestResultCallback callback);
 
  protected:
   friend class FeaturePromoHandle;

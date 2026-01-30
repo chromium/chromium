@@ -154,7 +154,7 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
     LOG(ERROR) << "Attempting to show IPH " << params.feature->name
                << state_desc << "; IPH will not be shown.";
     user_education::FeaturePromoController::PostShowPromoResult(
-        std::move(params.show_promo_result_callback),
+        *params.feature, std::move(params.show_promo_result_callback),
         user_education::FeaturePromoResult::kError);
     return;
   }
@@ -165,7 +165,7 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
   }
 
   user_education::FeaturePromoController::PostShowPromoResult(
-      std::move(params.show_promo_result_callback),
+      *params.feature, std::move(params.show_promo_result_callback),
       user_education::FeaturePromoResult::kBlockedByContext);
 }
 
@@ -181,7 +181,7 @@ void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
     LOG(ERROR) << "Attempting to show IPH " << params.feature->name
                << " after browser shutdown; IPH will not be shown.";
     user_education::FeaturePromoController::PostShowPromoResult(
-        std::move(params.show_promo_result_callback),
+        *params.feature, std::move(params.show_promo_result_callback),
         user_education::FeaturePromoResult::kError);
     return;
   }
@@ -193,7 +193,7 @@ void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
   }
 
   user_education::FeaturePromoController::PostShowPromoResult(
-      std::move(params.show_promo_result_callback),
+      *params.feature, std::move(params.show_promo_result_callback),
       user_education::FeaturePromoResult::kBlockedByContext);
 }
 
@@ -264,7 +264,7 @@ void BrowserUserEducationInterfaceImpl::ClearQueuedPromos(
     user_education::FeaturePromoResult::Failure failure) {
   for (auto& params : queued_params_) {
     user_education::FeaturePromoController::PostShowPromoResult(
-        std::move(params.show_promo_result_callback), failure);
+        *params.feature, std::move(params.show_promo_result_callback), failure);
   }
   queued_params_.clear();
 }

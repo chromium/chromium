@@ -71,14 +71,16 @@ void FeaturePromoController20::MaybeShowStartupPromo(
   if (!in_iph_demo_mode_ && !base::FeatureList::IsEnabled(*iph_feature)) {
     RecordPromoNotShown(iph_feature->name,
                         FeaturePromoResult::kFeatureDisabled);
-    PostShowPromoResult(std::move(params.show_promo_result_callback),
+    PostShowPromoResult(*params.feature,
+                        std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kFeatureDisabled);
     return;
   }
 
   // If the promo is currently running or already queued, fail.
   if (GetCurrentPromoFeature() == iph_feature || IsPromoQueued(*iph_feature)) {
-    PostShowPromoResult(std::move(params.show_promo_result_callback),
+    PostShowPromoResult(*params.feature,
+                        std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kAlreadyQueued);
     return;
   }
@@ -86,7 +88,8 @@ void FeaturePromoController20::MaybeShowStartupPromo(
   // Get the specification.
   const auto* spec = registry()->GetParamsForFeature(*iph_feature);
   if (!spec) {
-    PostShowPromoResult(std::move(params.show_promo_result_callback),
+    PostShowPromoResult(*params.feature,
+                        std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kError);
     return;
   }
@@ -247,7 +250,8 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
 void FeaturePromoController20::MaybeShowPromo(FeaturePromoParams params,
                                               UserEducationContextPtr context) {
   auto callback = std::move(params.show_promo_result_callback);
-  PostShowPromoResult(std::move(callback),
+  const base::Feature& feature = *params.feature;
+  PostShowPromoResult(feature, std::move(callback),
                       MaybeShowPromoImpl(std::move(params), std::move(context),
                                          ShowSource::kNormal));
 }
@@ -257,15 +261,15 @@ void FeaturePromoController20::MaybeShowPromoForDemoPage(
     UserEducationContextPtr context) {
   // Override all queued promos.
   for (auto& data : queued_promos_) {
-    auto& cb = data.params.show_promo_result_callback;
-    if (cb) {
-      std::move(cb).Run(FeaturePromoResult::kBlockedByPromo);
-    }
+    PostShowPromoResult(*data.params.feature,
+                        std::move(data.params.show_promo_result_callback),
+                        FeaturePromoResult::kBlockedByPromo);
   }
   queued_promos_.clear();
 
   auto callback = std::move(params.show_promo_result_callback);
-  PostShowPromoResult(std::move(callback),
+  const base::Feature& feature = *params.feature;
+  PostShowPromoResult(feature, std::move(callback),
                       MaybeShowPromoImpl(std::move(params), std::move(context),
                                          ShowSource::kDemo));
 }
@@ -286,10 +290,9 @@ bool FeaturePromoController20::MaybeUnqueuePromo(
     const base::Feature& iph_feature) {
   const auto it = FindQueuedPromo(iph_feature);
   if (it != queued_promos_.end()) {
-    auto& cb = it->params.show_promo_result_callback;
-    if (cb) {
-      std::move(cb).Run(FeaturePromoResult::kCanceled);
-    }
+    PostShowPromoResult(*it->params.feature,
+                        std::move(it->params.show_promo_result_callback),
+                        FeaturePromoResult::kCanceled);
     queued_promos_.erase(it);
     return true;
   }
@@ -405,13 +408,12 @@ void FeaturePromoController20::MaybeShowQueuedPromo() {
   queued_promos_.erase(next);
   ShowPromoResultCallback callback =
       std::move(params.show_promo_result_callback);
+  const base::Feature& feature = *params.feature;
 
   // Try to start the promo, assuming the tracker was successfully initialized.
   const FeaturePromoResult result = MaybeShowPromoImpl(
       std::move(params), std::move(context), ShowSource::kQueue);
-  if (callback) {
-    std::move(callback).Run(result);
-  }
+  PostShowPromoResult(feature, std::move(callback), result);
 
   // On failure, there may still be promos to show, so attempt to show the next
   // one in the queue (this method exits immediately if the queue is empty).
@@ -548,10 +550,9 @@ void FeaturePromoController20::OnFeatureEngagementTrackerInitialized(
 
 void FeaturePromoController20::FailQueuedPromos() {
   for (auto& data : queued_promos_) {
-    auto& cb = data.params.show_promo_result_callback;
-    if (cb) {
-      std::move(cb).Run(FeaturePromoResult::kError);
-    }
+    PostShowPromoResult(*data.params.feature,
+                        std::move(data.params.show_promo_result_callback),
+                        FeaturePromoResult::kError);
   }
   queued_promos_.clear();
 }

@@ -797,6 +797,30 @@ TEST_P(
                              help_bubble->SimulateButtonPress(0));
 }
 
+TEST_P(FeaturePromoControllerQueueTest, CallsTestCallbackOnSuccess) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::TestResultCallback, result);
+  auto subscription =
+      FeaturePromoController::AddResultCallbackForTesting(result.Get());
+  EXPECT_ASYNC_CALL_IN_SCOPE(result,
+                             Run(testing::Ref(kIPHTestLowPriorityToast),
+                                 FeaturePromoResult::Success()),
+                             promo_controller().MaybeShowStartupPromo(
+                                 kIPHTestLowPriorityToast, promo_context()));
+}
+
+TEST_P(FeaturePromoControllerQueueTest, CallsTestCallbackOnFailure) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::TestResultCallback, result);
+  auto subscription =
+      FeaturePromoController::AddResultCallbackForTesting(result.Get());
+  EXPECT_CALL(*promo_context(), IsValid).WillRepeatedly(testing::Return(false));
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result,
+      Run(testing::Ref(kIPHTestLowPriorityToast),
+          FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)),
+      promo_controller().MaybeShowPromo(kIPHTestLowPriorityToast,
+                                        promo_context()));
+}
+
 class FeaturePromoControllerQueueNoInitializationTest
     : public FeaturePromoControllerQueueTest {
  public:

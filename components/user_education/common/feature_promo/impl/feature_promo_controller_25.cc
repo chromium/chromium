@@ -212,21 +212,24 @@ void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params,
                                               UserEducationContextPtr context) {
   auto* const spec = registry()->GetParamsForFeature(*params.feature);
   if (!spec) {
-    PostShowPromoResult(std::move(params.show_promo_result_callback),
+    PostShowPromoResult(*params.feature,
+                        std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kError);
     return;
   }
 
   if (current_promo() &&
       current_promo()->iph_feature() == &params.feature.get()) {
-    PostShowPromoResult(std::move(params.show_promo_result_callback),
+    PostShowPromoResult(*params.feature,
+                        std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kAlreadyQueued);
     return;
   }
 
   // If the context is not valid, it should abort immediately.
   if (!context->IsValid()) {
-    PostShowPromoResult(std::move(params.show_promo_result_callback),
+    PostShowPromoResult(*params.feature,
+                        std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kAnchorNotVisible);
     return;
   }
@@ -263,7 +266,8 @@ void FeaturePromoController25::MaybeShowPromoForDemoPage(
     UserEducationContextPtr context) {
   auto* const spec = registry()->GetParamsForFeature(*params.feature);
   if (!spec) {
-    PostShowPromoResult(std::move(params.show_promo_result_callback),
+    PostShowPromoResult(*params.feature,
+                        std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kError);
     return;
   }
@@ -466,6 +470,7 @@ void FeaturePromoController25::UpdateQueuesAndMaybeShowPromo() {
 
     // Need to send the result regardless of success or failure.
     PostShowPromoResult(
+        *promo_data.params().feature,
         std::move(promo_data.params().show_promo_result_callback), result);
 
     // On failure to show, try to poll the queue again immediately.
