@@ -123,55 +123,106 @@ class ReviewMonitor:
 
         return False, stats, False, running
 
+    def _run_gerrit_command(self, cmd, ignorable_msgs=None):
+        """Runs a gerrit_client command and handles success/failure."""
+        ignorable_msgs = ignorable_msgs or []
+        # 409 is the standard Gerrit conflict code, but gerrit_util often
+        # wraps others into a (200) error if the response isn't JSON.
+        ignorable_msgs.append("409")
+
+        print(f"      {' '.join(cmd)}")
+        if self.dry_run:
+            return
+
+        out, code = run_command(cmd)
+        if code != 0 and not any(msg in out for msg in ignorable_msgs):
+            print(f"      ❌ Failed: {out}")
+        else:
+            print(f"      ✅ Success")
+
     def add_reviewer(self, reviewer):
         print(f"   Adding reviewer: {reviewer}")
         body = json.dumps({"reviewer": reviewer})
-        add_cmd = [
+        cmd = [
             'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
             '--method', 'POST', '--path',
-            f'/changes/{self.issue_id}/reviewers', '--body', body
+            f'/changes/{self.issue_id}/reviewers', '--body', body,
+            '--accept_status', '200,204,409'
         ]
-        print(add_cmd)
-        if not self.dry_run:
-            out, code = run_command(add_cmd)
-            if code != 0:
-                print(f"      ❌ Failed: {out}")
-            else:
-                print(f"      ✅ Success")
+        self._run_gerrit_command(cmd)
 
     def set_wip(self, message=None):
         print(f"   Setting CL {self.issue_id} to WIP...")
         cmd = [
             'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
-            '--method', 'POST', '--path', f'/changes/{self.issue_id}/wip'
+            '--method', 'POST', '--path', f'/changes/{self.issue_id}/wip',
+            '--accept_status', '200,204,409'
         ]
         if message:
             cmd.extend(['--body', json.dumps({"message": message})])
 
-        print(f"      {' '.join(cmd)}")
-        if not self.dry_run:
-            out, code = run_command(cmd)
-            if code != 0 and "409" not in out:
-                print(f"      ❌ Failed: {out}")
-            else:
-                print(f"      ✅ Success")
+        self._run_gerrit_command(cmd,
+                                 ignorable_msgs=["already work in progress"])
 
     def set_ready(self, message=None):
         print(f"   Setting CL {self.issue_id} to Ready for Review...")
         cmd = [
             'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
-            '--method', 'POST', '--path', f'/changes/{self.issue_id}/ready'
+            '--method', 'POST', '--path', f'/changes/{self.issue_id}/ready',
+            '--accept_status', '200,204,409'
         ]
         if message:
             cmd.extend(['--body', json.dumps({"message": message})])
 
-        print(f"      {' '.join(cmd)}")
-        if not self.dry_run:
+        self._run_gerrit_command(cmd,
+                                 ignorable_msgs=["already ready for review"])
+
+    def get_cq_label(self):
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            temp_path = f.name
+
+        try:
+            cmd = [
+                'vpython3', self.gerrit_client, 'rawapi',
+                f'--host={self.host}', '--method', 'GET', '--path',
+                f'/changes/{self.issue_id}/?o=LABELS', '--json_file',
+                temp_path, '--accept_status', '200'
+            ]
             out, code = run_command(cmd)
-            if code != 0 and "409" not in out:
-                print(f"      ❌ Failed: {out}")
-            else:
-                print(f"      ✅ Success")
+            if code != 0:
+                return 0
+
+            with open(temp_path, 'r') as f:
+                data = json.load(f)
+
+            cq = data.get('labels', {}).get('Commit-Queue', {})
+            if 'approved' in cq: return 2
+            if 'recommended' in cq: return 1
+
+            max_v = 0
+            for approval in cq.get('all', []):
+                max_v = max(max_v, approval.get('value', 0))
+            return max_v
+        except:
+            return 0
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+    def trigger_dry_run(self, message=None):
+        print(f"   Triggering CQ Dry Run for CL {self.issue_id}...")
+        review_input = {"labels": {"Commit-Queue": 1}}
+        if message:
+            review_input["message"] = message
+        body = json.dumps(review_input)
+        cmd = [
+            'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
+            '--method', 'POST', '--path',
+            f'/changes/{self.issue_id}/revisions/{self.patchset}/review',
+            '--body', body, '--accept_status', '200,204,409'
+        ]
+        self._run_gerrit_command(cmd)
 
     def monitor(self):
         print(f"🚀 Monitoring CQ for CL {self.issue_id} "
@@ -183,8 +234,15 @@ class ReviewMonitor:
         print(f"⏱️  Timeout: {TIMEOUT_HOURS} hours\n")
 
         self.set_wip(
-            message="[automated] Monitoring CQ dry run; will mark "
+            message=
+            "[automated] Triggering and monitoring CQ dry run; will mark "
             "Ready for Review upon success (via send_after_cq_dryrun.py).")
+
+        if self.get_cq_label() < 1:
+            self.trigger_dry_run(
+                message=
+                "[automated] Triggering CQ dry run (via send_after_cq_dryrun.py)."
+            )
 
         start_time = time.time()
         try:
