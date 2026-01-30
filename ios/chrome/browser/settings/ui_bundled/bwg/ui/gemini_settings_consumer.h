@@ -1,16 +1,16 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_BWG_SETTINGS_CONSUMER_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_BWG_SETTINGS_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_GEMINI_SETTINGS_CONSUMER_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_GEMINI_SETTINGS_CONSUMER_H_
 
 #import <UIKit/UIKit.h>
 
 @class GeminiDynamicSettingsItem;
 
-// Consumer protocol for BWG settings.
-@protocol BWGSettingsConsumer
+// Consumer protocol for Gemini settings.
+@protocol GeminiSettingsConsumer
 
 // Sets the Precise Location boolean.
 - (void)setPreciseLocationEnabled:(BOOL)enabled;
@@ -26,4 +26,4 @@
     (NSArray<GeminiDynamicSettingsItem*>*)newItems;
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_BWG_SETTINGS_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_GEMINI_SETTINGS_CONSUMER_H_

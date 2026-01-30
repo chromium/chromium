@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_dynamic_settings_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
-#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_consumer.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_settings_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -81,7 +81,7 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   _pageContentPref = nil;
 }
 
-- (void)setConsumer:(id<BWGSettingsConsumer>)consumer {
+- (void)setConsumer:(id<GeminiSettingsConsumer>)consumer {
   if (_consumer == consumer) {
     return;
   }

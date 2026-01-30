@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mutator.h"
 
 class AuthenticationService;
-@protocol BWGSettingsConsumer;
+@protocol GeminiSettingsConsumer;
 class PrefService;
 @protocol SceneCommands;
 
@@ -21,7 +21,7 @@ class PrefService;
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Usually the view controller.
-@property(nonatomic, weak) id<BWGSettingsConsumer> consumer;
+@property(nonatomic, weak) id<GeminiSettingsConsumer> consumer;
 
 // Designated initializer. All the parameters should not be null.
 // 'authService': authentication service for the profile.
