@@ -417,13 +417,6 @@ void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
                            template_url_starter_pack_data::kPage) {
     return;
   }
-
-  if (LensSearchController* lens_search_controller =
-          GetLensSearchController(location_bar_->GetWebContents())) {
-    // TODO(crbug.com/408073216): Create and use new dismissal source.
-    lens_search_controller->CloseLensAsync(
-        lens::LensOverlayDismissalSource::kEscapeKeyPress);
-  }
 }
 
 void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
