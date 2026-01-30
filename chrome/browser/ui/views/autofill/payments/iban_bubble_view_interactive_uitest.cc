@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
+#include "components/autofill/core/browser/payments/iban_save_manager_test_api.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
@@ -186,7 +187,7 @@ class IbanBubbleViewFullFormBrowserTest
     iban_save_manager_ =
         test_api(*autofill_manager()->client().GetFormDataImporter())
             .iban_save_manager();
-    iban_save_manager_->SetEventObserverForTesting(this);
+    test_api(*iban_save_manager_).SetEventObserverForTesting(this);
     AddEventObserverToController();
   }
 
@@ -515,10 +516,10 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_FALSE(GetSaveIbanBubbleView());
-  EXPECT_EQ(
-      1, iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
-             IbanSaveManager::GetPartialIbanHashString(
-                 kIbanValueWithoutWhitespaces)));
+  EXPECT_EQ(1, test_api(*iban_save_manager_)
+                   .GetIbanSaveStrikeDatabase()
+                   ->GetStrikes(IbanSaveManager::GetPartialIbanHashString(
+                       kIbanValueWithoutWhitespaces)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
       autofill_metrics::SaveIbanPromptOffer::kShown, 1);
@@ -541,10 +542,10 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_FALSE(GetSaveIbanBubbleView());
-  EXPECT_EQ(
-      1, iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
-             IbanSaveManager::GetPartialIbanHashString(
-                 kIbanValueWithoutWhitespaces)));
+  EXPECT_EQ(1, test_api(*iban_save_manager_)
+                   .GetIbanSaveStrikeDatabase()
+                   ->GetStrikes(IbanSaveManager::GetPartialIbanHashString(
+                       kIbanValueWithoutWhitespaces)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
       autofill_metrics::SaveIbanPromptOffer::kShown, 1);
@@ -572,7 +573,8 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        StrikeDatabase_Local_FullFlowTest) {
   base::HistogramTester histogram_tester;
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
-  for (int i = 0; i < iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()
+  for (int i = 0; i < test_api(*iban_save_manager_)
+                          .GetIbanSaveStrikeDatabase()
                           ->GetMaxStrikesLimit();
        ++i) {
     FillForm(kIbanValue);
@@ -582,12 +584,13 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
     ClickOnCancelButton();
     ASSERT_TRUE(WaitForObservedEvent());
   }
-  EXPECT_EQ(
-      iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
-          IbanSaveManager::GetPartialIbanHashString(
-              kIbanValueWithoutWhitespaces)),
-      iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()
-          ->GetMaxStrikesLimit());
+  EXPECT_EQ(test_api(*iban_save_manager_)
+                .GetIbanSaveStrikeDatabase()
+                ->GetStrikes(IbanSaveManager::GetPartialIbanHashString(
+                    kIbanValueWithoutWhitespaces)),
+            test_api(*iban_save_manager_)
+                .GetIbanSaveStrikeDatabase()
+                ->GetMaxStrikesLimit());
   // Submit the form a fourth time. Since the IBAN now has maximum strikes,
   // the bubble should not be shown.
   FillForm(kIbanValue);
@@ -597,7 +600,8 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(
-      iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()
+      test_api(*iban_save_manager_)
+          .GetIbanSaveStrikeDatabase()
           ->ShouldBlockFeature(IbanSaveManager::GetPartialIbanHashString(
               kIbanValueWithoutWhitespaces)));
 
@@ -867,10 +871,10 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
 
   EXPECT_TRUE(GetSaveIbanBubbleView());
   ASSERT_TRUE(WaitForObservedEvent());
-  EXPECT_EQ(
-      1, iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
-             IbanSaveManager::GetPartialIbanHashString(
-                 kIbanValueWithoutWhitespaces)));
+  EXPECT_EQ(1, test_api(*iban_save_manager_)
+                   .GetIbanSaveStrikeDatabase()
+                   ->GetStrikes(IbanSaveManager::GetPartialIbanHashString(
+                       kIbanValueWithoutWhitespaces)));
 }
 
 // Tests the local save fallback bubble. Ensures that when a upload save fails,
@@ -934,10 +938,10 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
   ResetEventWaiterForSequence({DialogEvent::DECLINE_SAVE_IBAN_COMPLETE});
   ClickOnCancelButton();
   ASSERT_TRUE(WaitForObservedEvent());
-  EXPECT_EQ(
-      1, iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
-             IbanSaveManager::GetPartialIbanHashString(
-                 kIbanValueWithoutWhitespaces)));
+  EXPECT_EQ(1, test_api(*iban_save_manager_)
+                   .GetIbanSaveStrikeDatabase()
+                   ->GetStrikes(IbanSaveManager::GetPartialIbanHashString(
+                       kIbanValueWithoutWhitespaces)));
 }
 
 // Test that upload save should not be offered when the preflight call failed.

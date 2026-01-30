@@ -77,57 +77,9 @@ class IbanSaveManager {
   // the save prompt manually.
   [[nodiscard]] bool AttemptToOfferSave(Iban& import_candidate);
 
-  // TODO(b/352643261): Add TestApi for below ForTesting methods.
-  void OnUserDidDecideOnLocalSaveForTesting(
-      const Iban& import_candidate,
-      payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
-      std::u16string_view nickname = u"") {
-    OnUserDidDecideOnLocalSave(import_candidate, user_decision, nickname);
-  }
-
-  void OnUserDidDecideOnUploadSaveForTesting(
-      const Iban& import_candidate,
-      bool show_save_prompt,
-      payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
-      std::u16string_view nickname = u"") {
-    OnUserDidDecideOnUploadSave(import_candidate, show_save_prompt,
-                                user_decision, nickname);
-  }
-
-  // Returns the IbanSaveStrikeDatabase for `client_`.
-  IbanSaveStrikeDatabase* GetIbanSaveStrikeDatabaseForTesting() {
-    return GetIbanSaveStrikeDatabase();
-  }
-
-  void SetEventObserverForTesting(ObserverForTest* observer) {
-    observer_for_testing_ = observer;
-  }
-
-  // TODO(crbug.com/b/40937065): Iban needs to be immutable reference
-  // and pass it by value in this case.
-  bool AttemptToOfferLocalSaveForTesting(Iban& iban) {
-    return AttemptToOfferLocalSave(iban);
-  }
-
-  bool AttemptToOfferUploadSaveForTesting(Iban& iban) {
-    return AttemptToOfferUploadSave(iban);
-  }
-
-  TypeOfOfferToSave DetermineHowToSaveIbanForTesting(
-      const Iban& import_candidate) {
-    return DetermineHowToSaveIban(import_candidate);
-  }
-
-  void OnDidUploadIbanForTesting(
-      const Iban& import_candidate,
-      bool show_save_prompt,
-      payments::PaymentsAutofillClient::PaymentsRpcResult result) {
-    OnDidUploadIban(import_candidate, show_save_prompt, result);
-  }
-
-  bool HasContextTokenForTesting() const { return !context_token_.empty(); }
-
  private:
+  friend class IbanSaveManagerTestApi;
+
   // Sets the `record_type` of this given `import_candidate`.
   void UpdateRecordType(Iban& import_candidate);
 
