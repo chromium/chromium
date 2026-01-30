@@ -64,6 +64,7 @@ enum FeedbackSource {
   kFeedbackSourceBocaApp = 45,
   kFeedbackSourceTrackingProtections = 46,
   kFeedbackSourceSplitView = 47,
+  kFeedbackSourceVerticalTabs = 48,
 
   // ATTENTION: Before making any changes or adding to feedback collection,
   // please ensure the teams that operationalize feedback are aware and

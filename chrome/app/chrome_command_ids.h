@@ -84,6 +84,7 @@
 #define IDC_MOVE_TAB_TO_NEW_WINDOW      34054
 #define IDC_NEW_SPLIT_TAB               34055
 #define IDC_TOGGLE_VERTICAL_TABS        34056
+#define IDC_VERTICAL_TABS_SEND_FEEDBACK 34057
 
 // Web app window commands
 #define IDC_COPY_URL                    34060

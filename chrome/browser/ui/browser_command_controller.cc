@@ -25,12 +25,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/defaults.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/devtools/devtools_policy_dialog.h"
-#endif
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -120,6 +118,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/devtools/devtools_policy_dialog.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
@@ -591,7 +593,13 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_TOGGLE_VERTICAL_TABS:
       ToggleVerticalTabs(browser_);
       break;
-
+    case IDC_VERTICAL_TABS_SEND_FEEDBACK:
+      chrome::ShowFeedbackPage(browser_, feedback::kFeedbackSourceVerticalTabs,
+                               /*description_template=*/"",
+                               /*description_placeholder_text=*/"",
+                               /*category_tag=*/"vertical_tabs",
+                               /*extra_diagnostics=*/"");
+      break;
     // Window management commands
     case IDC_NEW_WINDOW:
       NewWindow(browser_);
@@ -1501,6 +1509,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_DECLUTTER_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_VERTICAL_TABS, true);
+  command_updater_.UpdateCommandEnabled(IDC_VERTICAL_TABS_SEND_FEEDBACK, true);
 #if BUILDFLAG(IS_CHROMEOS)
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_MULTITASK_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);

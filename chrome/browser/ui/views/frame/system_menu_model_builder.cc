@@ -128,8 +128,11 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  IDS_SWITCH_TO_VERTICAL_TAB);
     }
-    model->SetElementIdentifierAt(model->GetItemCount() - 1,
-                                  kToggleVerticalTabsElementId);
+    model->SetElementIdentifierAt(
+        model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
+        kToggleVerticalTabsElementId);
+    model->AddItemWithStringId(IDC_VERTICAL_TABS_SEND_FEEDBACK,
+                               IDS_VERTICAL_TABS_SEND_FEEDBACK);
   }
 
   if (chrome::CanOpenTaskManager()) {
