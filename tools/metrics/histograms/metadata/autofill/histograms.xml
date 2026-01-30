@@ -769,13 +769,13 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </variants>
 
 <variants name="AutofillSeamlessnessMeasurementTime">
-  <variant name=".AtFillTimeAfterSecurityPolicy"
+  <variant name="AtFillTimeAfterSecurityPolicy"
       summary="Recorded after applying restrictions due to the cross-frame
                security policy."/>
-  <variant name=".AtFillTimeBeforeSecurityPolicy"
+  <variant name="AtFillTimeBeforeSecurityPolicy"
       summary="Recorded before applying restrictions due to the cross-frame
                security policy."/>
-  <variant name=".AtSubmissionTime"
+  <variant name="AtSubmissionTime"
       summary="Recorded at submission time. May be missed due to submission
                detection problems."/>
 </variants>
@@ -805,15 +805,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="IBANSave" summary="IBAN save"/>
   <variant name="SaveAndFill" summary="save and fill"/>
   <variant name="VirtualCardEnrollment" summary="virtual card enrollment"/>
-</variants>
-
-<variants name="ClassificationMatchesFillingProduct">
-  <variant name=".TriggeringFieldDoesNotMatchFillingProduct"
-      summary="The filling product chosen by the user does not match the
-               triggering field type."/>
-  <variant name=".TriggeringFieldMatchesFillingProduct"
-      summary="The filling product chosen by the user matches the triggering
-               field type."/>
 </variants>
 
 <variants name="CreditCardDataAvailability">
@@ -2808,7 +2799,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}"
+    name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}.{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}"
     enum="CreditCardSeamlessFill" expires_after="2026-07-26">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2852,7 +2843,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}.Bitmask"
+    name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}.{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}.Bitmask"
     enum="AutofillCreditCardSeamlessnessBitmask" expires_after="2026-07-26">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
