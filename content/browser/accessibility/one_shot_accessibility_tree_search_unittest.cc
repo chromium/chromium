@@ -252,11 +252,11 @@ TEST_F(OneShotAccessibilityTreeSearchTest, ForwardsWithStartNodeAndScope) {
   EXPECT_EQ(9, search.GetMatchAtIndex(0)->GetId());
 }
 
-TEST_F(OneShotAccessibilityTreeSearchTest, ResultLimitZero) {
+TEST_F(OneShotAccessibilityTreeSearchTest, ResultLimitOne) {
   ui::OneShotAccessibilityTreeSearch search(
       tree_->GetBrowserAccessibilityRoot());
-  search.SetResultLimit(0);
-  ASSERT_EQ(0U, search.CountMatches());
+  search.SetResultLimit(1);
+  ASSERT_EQ(1U, search.CountMatches());
 }
 
 TEST_F(OneShotAccessibilityTreeSearchTest, ResultLimitFive) {
@@ -264,6 +264,65 @@ TEST_F(OneShotAccessibilityTreeSearchTest, ResultLimitFive) {
       tree_->GetBrowserAccessibilityRoot());
   search.SetResultLimit(5);
   ASSERT_EQ(5U, search.CountMatches());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest, SearchLimitOne) {
+  ui::OneShotAccessibilityTreeSearch search(
+      tree_->GetBrowserAccessibilityRoot());
+  search.SetSearchLimit(1);
+  ASSERT_EQ(1U, search.CountMatches());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest, SearchLimitFive) {
+  ui::OneShotAccessibilityTreeSearch search(
+      tree_->GetBrowserAccessibilityRoot());
+  search.SetSearchLimit(5);
+  ASSERT_EQ(5U, search.CountMatches());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest,
+       ResultLimitReachedBeforeSearchLimit) {
+  ui::OneShotAccessibilityTreeSearch search(
+      tree_->GetBrowserAccessibilityRoot());
+  search.SetResultLimit(5);
+  search.SetSearchLimit(10);
+  ASSERT_EQ(5U, search.CountMatches());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest,
+       SearchLimitReachedBeforeResultLimit) {
+  ui::OneShotAccessibilityTreeSearch search(
+      tree_->GetBrowserAccessibilityRoot());
+  search.SetResultLimit(10);
+  search.SetSearchLimit(7);
+  ASSERT_EQ(7U, search.CountMatches());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest, ScopeFinishedBeforeSearchLimit) {
+  ui::OneShotAccessibilityTreeSearch search(tree_->GetFromID(7));
+  search.SetSearchLimit(100);
+  ASSERT_EQ(3U, search.CountMatches());
+  EXPECT_EQ(7, search.GetMatchAtIndex(0)->GetId());
+  EXPECT_EQ(8, search.GetMatchAtIndex(1)->GetId());
+  EXPECT_EQ(9, search.GetMatchAtIndex(2)->GetId());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest, SearchLimitReachedBeforeScope) {
+  ui::OneShotAccessibilityTreeSearch search(tree_->GetFromID(7));
+  search.SetSearchLimit(2);
+  ASSERT_EQ(2U, search.CountMatches());
+  EXPECT_EQ(7, search.GetMatchAtIndex(0)->GetId());
+  EXPECT_EQ(8, search.GetMatchAtIndex(1)->GetId());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest, SearchLimitCountsFromStartNode) {
+  ui::OneShotAccessibilityTreeSearch search(
+      tree_->GetBrowserAccessibilityRoot());
+  search.SetStartNode(tree_->GetFromID(7));
+  search.SetSearchLimit(2);
+  ASSERT_EQ(2U, search.CountMatches());
+  EXPECT_EQ(8, search.GetMatchAtIndex(0)->GetId());
+  EXPECT_EQ(9, search.GetMatchAtIndex(1)->GetId());
 }
 
 TEST_F(OneShotAccessibilityTreeSearchTest, DescendantsOnlyOfRoot) {

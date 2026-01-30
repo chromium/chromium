@@ -36,15 +36,7 @@ void GetNodeStrings(BrowserAccessibility* node,
 
 OneShotAccessibilityTreeSearch::OneShotAccessibilityTreeSearch(
     BrowserAccessibility* scope)
-    : tree_(scope->manager()),
-      scope_node_(scope),
-      start_node_(scope),
-      direction_(OneShotAccessibilityTreeSearch::FORWARDS),
-      result_limit_(UNLIMITED_RESULTS),
-      immediate_descendants_only_(false),
-      can_wrap_to_last_element_(false),
-      onscreen_only_(false),
-      did_search_(false) {}
+    : tree_(scope->manager()), scope_node_(scope), start_node_(scope) {}
 
 OneShotAccessibilityTreeSearch::~OneShotAccessibilityTreeSearch() = default;
 
@@ -67,6 +59,11 @@ void OneShotAccessibilityTreeSearch::SetDirection(Direction direction) {
 void OneShotAccessibilityTreeSearch::SetResultLimit(int result_limit) {
   DCHECK(!did_search_);
   result_limit_ = result_limit;
+}
+
+void OneShotAccessibilityTreeSearch::SetSearchLimit(int search_limit) {
+  DCHECK(!did_search_);
+  search_limit_ = search_limit;
 }
 
 void OneShotAccessibilityTreeSearch::SetImmediateDescendantsOnly(
@@ -146,11 +143,18 @@ void OneShotAccessibilityTreeSearch::SearchByIteratingOverChildren() {
       index--;
   }
 
-  while (index < count && (result_limit_ == UNLIMITED_RESULTS ||
-                           static_cast<int>(matches_.size()) < result_limit_)) {
+  int nodes_checked_count = 0;
+  while (index < count &&
+         (result_limit_ == kUnlimitedResults ||
+          static_cast<int>(matches_.size()) < result_limit_) &&
+         (search_limit_ == kUnlimitedSearchLimit ||
+          nodes_checked_count < search_limit_)) {
     BrowserAccessibility* node = scope_node_->PlatformGetChild(index);
-    if (Matches(node))
+
+    if (Matches(node)) {
       matches_.push_back(node);
+    }
+    nodes_checked_count++;
 
     if (direction_ == FORWARDS)
       index++;
@@ -185,11 +189,16 @@ void OneShotAccessibilityTreeSearch::SearchByWalkingTree() {
     stop_node = tree_->PreviousInTreeOrder(scope_node_, /* wrap */ false);
   }
 
+  int nodes_checked_count = 0;
   while (node && node != stop_node &&
-         (result_limit_ == UNLIMITED_RESULTS ||
-          static_cast<int>(matches_.size()) < result_limit_)) {
-    if (Matches(node))
+         (result_limit_ == kUnlimitedResults ||
+          static_cast<int>(matches_.size()) < result_limit_) &&
+         (search_limit_ == kUnlimitedSearchLimit ||
+          nodes_checked_count < search_limit_)) {
+    if (Matches(node)) {
       matches_.push_back(node);
+    }
+    nodes_checked_count++;
 
     if (direction_ == FORWARDS) {
       node = tree_->NextInTreeOrder(node);
