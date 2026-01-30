@@ -13,9 +13,13 @@ import "third_party/blink/public/common/storage_key/proto/storage_key.proto";
 
 // Bind a new FileSystemManager remote
 message NewFileSystemManagerAction {
+  // To maintain backwards compatibility to a time when the process ID was
+  // allowed to be 0 and these were used as an index into an array of processes,
+  // the int values here are numbered so that they continue to correspond to the
+  // indices but the names match the PID.
   enum RenderProcessId {
-    ZERO = 0;
-    ONE = 1;
+    ONE = 0;
+    TWO = 1;
   }
 
   required uint32 id = 1;

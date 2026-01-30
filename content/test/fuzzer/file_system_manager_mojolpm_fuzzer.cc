@@ -97,8 +97,8 @@ class FileSystemManagerTestcase
   void TearDownOnIOThread(base::OnceClosure done_closure);
   void TearDownOnUIThread(base::OnceClosure done_closure);
 
-  // Used by AddFileSystemManager to create and bind FileSystemManagerImpl on the
-  // UI thread.
+  // Used by AddFileSystemManager to create and bind FileSystemManagerImpl on
+  // the UI thread.
   void AddFileSystemManagerImpl(
       uint32_t id,
       content::fuzzing::file_system_manager::proto::NewFileSystemManagerAction::
@@ -122,8 +122,8 @@ class FileSystemManagerTestcase
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
 
-  // Mapping from renderer id to FileSystemManagerImpl instances being fuzzed.
-  // Access only from UI thread.
+  // Array of FileSystemManagerImpl instances being fuzzed. Render process ID is
+  // equal to array index + 1. Access only from UI thread.
   std::unique_ptr<FileSystemManagerImpl>
       file_system_manager_impls_[kNumRenderers];
 };
@@ -175,11 +175,14 @@ void FileSystemManagerTestcase::SetUpOnUIThread(
   // other methods are expected to be called on the IO thread - see comments in
   // content/browser/file_system/file_system_manager_impl.h
   for (size_t i = 0; i < kNumRenderers; i++) {
+    // Process IDs must be greater than 0.
+    uint32_t process_id = i + 1;
+
     // TODO(crbug.com/379869738) Remove FromUnsafeValue.
     file_system_manager_impls_[i] = std::make_unique<FileSystemManagerImpl>(
-        ChildProcessId::FromUnsafeValue(i), file_system_context_,
+        ChildProcessId::FromUnsafeValue(process_id), file_system_context_,
         blob_storage_context_);
-    p->Add(i, &browser_context_);
+    p->Add(process_id, &browser_context_);
   }
 
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
@@ -207,8 +210,9 @@ void FileSystemManagerTestcase::TearDownOnUIThread(
     base::OnceClosure done_closure) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  for (size_t i = 0; i < kNumRenderers; i++) {
-    p->Remove(i);
+
+  for (size_t process_id = 1; process_id <= kNumRenderers; process_id++) {
+    p->Remove(process_id);
   }
 
   GetIOThreadTaskRunner({})->PostTask(
@@ -266,12 +270,9 @@ void FileSystemManagerTestcase::AddFileSystemManagerImpl(
         RenderProcessId render_process_id,
     const storage_key_proto::StorageKey& storage_key,
     mojo::PendingReceiver<::blink::mojom::FileSystemManager>&& receiver) {
-  size_t offset = render_process_id ==
-                          content::fuzzing::file_system_manager::proto::
-                              NewFileSystemManagerAction_RenderProcessId_ZERO
-                      ? 0
-                      : 1;
-  file_system_manager_impls_[offset]->BindReceiver(
+  // Int value of `RenderProcessId` corresponds to the index of that process in
+  // the array.
+  file_system_manager_impls_[static_cast<int>(render_process_id)]->BindReceiver(
       storage_key_proto::Convert(storage_key), std::move(receiver));
 }
 
