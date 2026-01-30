@@ -13653,21 +13653,6 @@
             ]
         }
     ],
-    "IOSAutoOpenRemoteTabGroupsSettings": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSAutoOpenRemoteTabGroupsSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillPaymentsSheetV3": [
         {
             "platforms": [

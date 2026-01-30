@@ -224,13 +224,9 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
     return;
   }
 
-  // Check if auto open remote tab groups feature is enabled and respect users'
-  // preference.
-  if (IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()) {
-    PrefService* pref_service = browser->GetProfile()->GetPrefs();
-    if (!pref_service->GetBoolean(prefs::kAutomaticallyOpenTabGroupsEnabled)) {
-      return;
-    }
+  PrefService* pref_service = browser->GetProfile()->GetPrefs();
+  if (!pref_service->GetBoolean(prefs::kAutomaticallyOpenTabGroupsEnabled)) {
+    return;
   }
 
   CreateLocalTabGroupImpl(saved_tab_group, browser);

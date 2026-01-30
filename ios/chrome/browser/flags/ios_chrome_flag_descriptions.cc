@@ -699,12 +699,6 @@ const char kIOSAppBundlePromoEphemeralCardDescription[] =
     "Enables showing a promotional card for the Best of Google app "
     "bundle in the Magic Stack.";
 
-const char kIOSAutoOpenRemoteTabGroupsSettingsName[] =
-    "Enable Automatically open tab groups from other devices settings";
-const char kIOSAutoOpenRemoteTabGroupsSettingsDescription[] =
-    "When enabled, provides settings controls to auto open remote devices tab "
-    "groups.";
-
 const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";

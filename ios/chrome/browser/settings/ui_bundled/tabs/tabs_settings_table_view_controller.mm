@@ -51,10 +51,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    self.title = l10n_util::GetNSString(
-        IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()
-            ? IDS_IOS_TABS_AND_TAB_GROUPS_MANAGEMENT_SETTINGS
-            : IDS_IOS_TABS_MANAGEMENT_SETTINGS);
+    self.title =
+        l10n_util::GetNSString(IDS_IOS_TABS_AND_TAB_GROUPS_MANAGEMENT_SETTINGS);
   }
   return self;
 }
@@ -87,11 +85,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierInactiveTabs];
   [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
 
-  if (IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()) {
-    [model addSectionWithIdentifier:SectionIdentifierTabGroups];
-    [model addItem:[self automaticallyOpenTabGroupsItem]
-        toSectionWithIdentifier:SectionIdentifierTabGroups];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierTabGroups];
+  [model addItem:[self automaticallyOpenTabGroupsItem]
+      toSectionWithIdentifier:SectionIdentifierTabGroups];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -122,7 +118,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)setAutomaticallyOpenTabGroupsEnabled:(BOOL)enabled {
-  CHECK(IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled());
   _automaticallyOpenTabGroupsEnabled = enabled;
   // Do not update UI when model is not loaded.
   if (!_automaticallyOpenTabGroupsItem) {
@@ -155,7 +150,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Returns a newly created TableViewSwitchItem for the automatically open tab
 // groups settings menu.
 - (TableViewSwitchItem*)automaticallyOpenTabGroupsItem {
-  CHECK(IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled());
   _automaticallyOpenTabGroupsItem = [[TableViewSwitchItem alloc]
       initWithType:ItemTypeAutomaticallyOpenTabGroups];
   _automaticallyOpenTabGroupsItem.text = l10n_util::GetNSString(
@@ -172,7 +166,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Switch Action
 
 - (void)openTabGroupsSwitchToggled:(UISwitch*)sender {
-  CHECK(IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled());
   [self.delegate tabsSettingsTableViewController:self
                       didUpdateAutoOpenTabGroups:sender.isOn];
 }

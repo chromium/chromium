@@ -7448,9 +7448,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_TABS_AND_TAB_GROUPS_MANAGEMENT_SETTINGS" desc="Title for the tabs and tab groups management panel in settings [Length: unlimited] [iOS only]">
         Tabs and tab groups
       </message>
-      <message name="IDS_IOS_TABS_MANAGEMENT_SETTINGS" desc="Title for the tabs management panel in settings [Length: 30em] [iOS only]">
-        Tabs
-      </message>
       <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT" desc="The number of the open tabs found as search results in the tab grid.">
         <ph name="COUNT">$1<ex>2</ex></ph> found
       </message>

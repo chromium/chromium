@@ -886,13 +886,6 @@ bool IsMultilineBrowserOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kMultilineBrowserOmnibox);
 }
 
-BASE_FEATURE(kIOSAutoOpenRemoteTabGroupsSettings,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kIOSAutoOpenRemoteTabGroupsSettings);
-}
-
 BASE_FEATURE(kDisableKeyboardAccessory, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kDisableKeyboardAccessoryParam[] = "kDisableKeyboardAccessoryParam";

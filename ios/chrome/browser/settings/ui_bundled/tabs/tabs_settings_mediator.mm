@@ -56,15 +56,13 @@
                                : InactiveTabsTimeThreshold(_prefs).InDays();
     [_consumer setInactiveTabsTimeThreshold:currentThreshold];
 
-    if (IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()) {
-      // Observe changes to the automatically open tab groups preference.
-      _automaticallyOpenTabGroupsEnabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:_prefs
-                     prefName:prefs::kAutomaticallyOpenTabGroupsEnabled];
-      [_automaticallyOpenTabGroupsEnabled setObserver:self];
-      BOOL openTabGroups = _automaticallyOpenTabGroupsEnabled.value;
-      [_consumer setAutomaticallyOpenTabGroupsEnabled:openTabGroups];
-    }
+    // Observe changes to the automatically open tab groups preference.
+    _automaticallyOpenTabGroupsEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:_prefs
+                   prefName:prefs::kAutomaticallyOpenTabGroupsEnabled];
+    [_automaticallyOpenTabGroupsEnabled setObserver:self];
+    BOOL openTabGroups = _automaticallyOpenTabGroupsEnabled.value;
+    [_consumer setAutomaticallyOpenTabGroupsEnabled:openTabGroups];
   }
   return self;
 }
@@ -89,8 +87,7 @@
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  if (IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled() &&
-      observableBoolean == _automaticallyOpenTabGroupsEnabled) {
+  if (observableBoolean == _automaticallyOpenTabGroupsEnabled) {
     [_consumer setAutomaticallyOpenTabGroupsEnabled:observableBoolean.value];
   }
 }
@@ -116,7 +113,6 @@
 - (void)tabsSettingsTableViewController:
             (TabsSettingsTableViewController*)tabsSettingsTableViewController
              didUpdateAutoOpenTabGroups:(BOOL)autoOpenTabGroups {
-  CHECK(IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled());
   _automaticallyOpenTabGroupsEnabled.value = autoOpenTabGroups;
 }
 

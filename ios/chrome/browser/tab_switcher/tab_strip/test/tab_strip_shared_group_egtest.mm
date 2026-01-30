@@ -11,8 +11,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
@@ -78,7 +78,6 @@ void AddSharedGroup(BOOL owner,
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
-  config.features_disabled.push_back(kIOSAutoOpenRemoteTabGroupsSettings);
   // Add the flag to use FakeTabGroupSyncService.
   config.additional_args.push_back(
       "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
@@ -92,6 +91,8 @@ void AddSharedGroup(BOOL owner,
   [ChromeEarlGrey
       setUserDefaultsObject:@YES
                      forKey:kSharedTabGroupUserEducationShownOnceKey];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kAutomaticallyOpenTabGroupsEnabled];
 
   // `fakeIdentity2` joins shared groups as member.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];

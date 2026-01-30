@@ -432,9 +432,6 @@ extern const char kHttpsUpgradesDescription[];
 extern const char kIOSAppBundlePromoEphemeralCardName[];
 extern const char kIOSAppBundlePromoEphemeralCardDescription[];
 
-extern const char kIOSAutoOpenRemoteTabGroupsSettingsName[];
-extern const char kIOSAutoOpenRemoteTabGroupsSettingsDescription[];
-
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];
 

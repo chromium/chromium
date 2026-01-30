@@ -5661,11 +5661,6 @@
     "expiry_milestone": 147
   },
   {
-    "name": "ios-auto-open-remote-tab-groups-settings",
-    "owners": ["lpromero@chromium.org", "gambard@chromium.org", "tianye@microsoft.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "ios-best-features-screen",
     "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 148
