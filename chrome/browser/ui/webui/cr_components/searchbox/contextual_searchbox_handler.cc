@@ -505,8 +505,17 @@ void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model) {
   input_state_model_->setActiveModel(model);
 }
 
+void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
+  if (input_state_) {
+    std::move(callback).Run(contextual_search::ToMojom(*input_state_));
+  } else {
+    std::move(callback).Run(nullptr);
+  }
+}
+
 void ContextualSearchboxHandler::OnInputStateChanged(
     const contextual_search::InputState& state) {
+  input_state_ = std::make_unique<contextual_search::InputState>(state);
   if (!IsRemoteBound()) {
     return;
   }

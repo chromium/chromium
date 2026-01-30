@@ -318,7 +318,7 @@ export class ComposeboxElement extends I18nMixinLit
         new DragAndDropHandler(this, this.dragAndDropEnabled_);
   }
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
 
     // Set the initial expanded state based on the inputted property.
@@ -365,6 +365,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     this.searchboxHandler_.notifySessionStarted();
     this.refreshTabSuggestions_();
+    this.inputState_ = (await this.searchboxHandler_.getInputState()).state;
 
     if (this.ntpRealboxNextEnabled) {
       this.fire('composebox-initialized', {

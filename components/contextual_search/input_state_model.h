@@ -28,6 +28,7 @@ using omnibox::ToolMode;
 // LINT.IfChange(InputState)
 struct InputState {
   InputState();
+  InputState(const InputState&);
   ~InputState();
   // The set of allowed tools, models, and input types.
   std::vector<ToolMode> allowed_tools;
