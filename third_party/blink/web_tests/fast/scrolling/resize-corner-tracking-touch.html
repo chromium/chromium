@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<script src='../../resources/gesture-util.js'></script>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src='../../resources/gesture-util.js'></script>
 <style>
 div {
   overflow: auto;
@@ -14,7 +17,8 @@ textarea {
 }
 
 iframe {
-  border: blue 2px solid;
+  height: 200px;
+  width: 200px;
 }
 
 </style>
@@ -25,28 +29,36 @@ we have enough elements to scroll the page</div>
 <textarea id="textarea1" style="width: 150px; height: 100px;"></textarea>
 <br>
 <script type="text/javascript">
-  async function touchDrag(target, offset, delta) {
+  async function dragResizer(target, offset, delta) {
     const rect = target.getBoundingClientRect();
-    const x0 = rect.right + offset.x;
-    const y0 = rect.bottom + offset.y;
-    drag = {
-        start_x: x0,
-        start_y: y0,
-        end_x: x0 + delta.dx,
-        end_y: y0 + delta.dy
-    };
-    await touchDragTo(drag);
 
+    const x0 = Math.round(rect.right + offset.x);
+    const y0 = Math.round(rect.bottom + offset.y);
+    const targetX = Math.round(x0 + delta.dx);
+    const targetY = Math.round(y0 + delta.dy);
+
+    await new test_driver.Actions()
+      .addPointer("pointer1", "touch")
+      .pointerMove(x0, y0)
+      .pointerDown()
+      .pause(40)
+      .pointerMove(targetX, targetY, {duration: 100})
+      .pause(40)
+      .pointerUp()
+      .send();
+
+    await waitForCompositorCommit();
     return waitForCompositorCommit();
   }
 
-  async function touchpadScroll(target, offset, delta, device) {
-    var rect = target.getBoundingClientRect();
-    const precise_scroll_delta = true;
-    await smoothScrollWithXY(-delta.dx, -delta.dy,
-                             rect.right + offset.x, rect.bottom + offset.y,
-                             GestureSourceType.TOUCHPAD_INPUT, SPEED_INSTANT,
-                             precise_scroll_delta);
+  async function touchpadScroll(target, offset, delta) {
+    const rect = target.getBoundingClientRect();
+    const x0 = Math.round(rect.right + offset.x);
+    const y0 = Math.round(rect.bottom + offset.y);
+
+    await wheelScroll(x0, y0, -delta.dx, -delta.dy, null);
+
+    await waitForCompositorCommit();
     return waitForCompositorCommit();
   }
 
@@ -89,7 +101,7 @@ we have enough elements to scroll the page</div>
       const target = document.getElementById("div");
       const oldBounds = target.getBoundingClientRect();
 
-      await touchDrag(target, {x: -6, y: -7}, {dx: -20, dy: -10});
+      await dragResizer(target, {x: -6, y: -7}, {dx: -20, dy: -10});
       assert_resize(target, oldBounds);
     }, 'Touch drag inside the resizer area of div will do the resize.');
 
@@ -101,7 +113,7 @@ we have enough elements to scroll the page</div>
       const target = document.getElementById("div");
       const oldBounds = target.getBoundingClientRect();
 
-      await touchDrag(target, {x: 6, y: 7}, {dx: -20, dy: -10});
+      await dragResizer(target, {x: 6, y: 7}, {dx: -20, dy: -10});
       assert_no_resize(target, oldBounds);
     }, 'Touch drag outside of div will not do the resize.');
 
@@ -115,7 +127,7 @@ we have enough elements to scroll the page</div>
       const target = document.getElementById("textarea1");
       const oldBounds = target.getBoundingClientRect();
 
-      await touchDrag(target, {x: -20, y: -20}, {dx: -20, dy: -10});
+      await dragResizer(target, {x: -20, y: -20}, {dx: -20, dy: -10});
       assert_resize(target, oldBounds);
     }, 'Touch drag a little off the resizer area of textarea will do ' +
        'the resize.');
