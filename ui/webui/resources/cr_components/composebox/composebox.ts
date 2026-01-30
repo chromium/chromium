@@ -916,6 +916,10 @@ export class ComposeboxElement extends I18nMixinLit
   protected async setDeepSearchMode_(
       e: CustomEvent<{inDeepSearchMode: boolean}>) {
     this.inDeepSearchMode_ = e.detail.inDeepSearchMode;
+    if (this.showModelPicker_) {
+      this.inCreateImageMode_ = false;
+      this.inCanvasMode_ = false;
+    }
     this.searchboxHandler_.setActiveToolMode(
         this.inDeepSearchMode_ ? ToolMode.kDeepSearch : ToolMode.kUnspecified);
     this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
@@ -929,6 +933,10 @@ export class ComposeboxElement extends I18nMixinLit
   protected async setCreateImageMode_(
       e: CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>) {
     this.inCreateImageMode_ = e.detail.inCreateImageMode;
+    if (this.showModelPicker_) {
+      this.inDeepSearchMode_ = false;
+      this.inCanvasMode_ = false;
+    }
     this.searchboxHandler_.setActiveToolMode(
         this.inCreateImageMode_ ? ToolMode.kImageGen : ToolMode.kUnspecified);
     this.pageHandler_.setCreateImageMode(
@@ -942,6 +950,8 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected async setCanvasMode_(e: CustomEvent<{inCanvasMode: boolean}>) {
     this.inCanvasMode_ = e.detail.inCanvasMode;
+    this.inDeepSearchMode_ = false;
+    this.inCreateImageMode_ = false;
     this.searchboxHandler_.setActiveToolMode(
         this.inCanvasMode_ ? ToolMode.kCanvas : ToolMode.kUnspecified);
     this.queryAutocomplete(/* clearMatches= */ true);
