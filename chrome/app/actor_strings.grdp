@@ -53,4 +53,9 @@
   <message name="IDS_TOOLTIP_TAB_ALERT_STATE_ACTOR_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini" translateable="true">
     Gemini is working on your task...
   </message>
+   <message name="IDS_TAB_AX_LABEL_ACTOR_ACCESSING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the Gemini is working on tab">
+    <ph name="WINDOW_TITLE">
+      $1<ex>Wikipedia</ex>
+    </ph> - Gemini is working on your task...
+  </message>
 </grit-part>

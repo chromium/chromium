@@ -224,6 +224,7 @@ int TabAlertController::GetAccessibleAlertStringId(const TabAlert alert_state) {
       return IDS_TAB_AX_LABEL_VR_PRESENTING;
     case TabAlert::kActorAccessing:
     case TabAlert::kActorWaitingOnUser:
+      return IDS_TAB_AX_LABEL_ACTOR_ACCESSING;
     case TabAlert::kGlicAccessing:
 #if BUILDFLAG(ENABLE_GLIC)
       return IDS_TAB_AX_LABEL_GLIC_ACCESSING;
