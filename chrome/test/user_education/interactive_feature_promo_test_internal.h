@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <sstream>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,7 @@
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/test/user_education_session_test_util.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -92,6 +94,10 @@ class InteractiveFeaturePromoTestPrivate
   // behaviors.
   void CreateServicesCallback(content::BrowserContext* context);
 
+  // Called when a promo shows or fails to show.
+  void OnFeaturePromoResult(const base::Feature& feature,
+                            user_education::FeaturePromoResult result);
+
   // Called when a tracker will be generated and the test is in `UseMockTracker`
   // mode.
   static std::unique_ptr<KeyedService> CreateMockTracker(
@@ -118,6 +124,10 @@ class InteractiveFeaturePromoTestPrivate
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};
   base::CallbackListSubscription create_services_subscription_;
+  ui::test::internal::InteractiveTestPrivate::AdditionalContext
+      feature_promo_result_context_;
+  std::ostringstream feature_promo_result_string_;
+  base::CallbackListSubscription feature_promo_result_subscription_;
   base::WeakPtrFactory<InteractiveFeaturePromoTestPrivate> weak_ptr_factory_{
       this};
 };
