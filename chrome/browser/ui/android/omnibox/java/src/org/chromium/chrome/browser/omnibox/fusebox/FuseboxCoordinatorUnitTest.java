@@ -83,7 +83,7 @@ public class FuseboxCoordinatorUnitTest {
 
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private AutocompleteController.Natives mControllerJniMock;
-    @Mock private ComposeBoxQueryControllerBridge.Natives mComposeboxController;
+    @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxController;
     @Mock private FuseboxMediator mMediator;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
@@ -110,7 +110,7 @@ public class FuseboxCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxController);
+        ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxController);
 
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
@@ -164,7 +164,7 @@ public class FuseboxCoordinatorUnitTest {
 
         doReturn(/* nativeInstance= */ 1L)
                 .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         mProfileSupplier.set(mProfile);
         assertNotNull(mCoordinator.getMediatorForTesting());
         assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
@@ -178,7 +178,7 @@ public class FuseboxCoordinatorUnitTest {
 
         doReturn(/* nativeInstance= */ 0L)
                 .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         mProfileSupplier.set(mProfile);
         assertNull(mCoordinator.getMediatorForTesting());
     }
@@ -191,7 +191,7 @@ public class FuseboxCoordinatorUnitTest {
 
         mProfileSupplier.set(mProfile);
         verify(mComposeboxController, never())
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         assertNull(mCoordinator.getMediatorForTesting());
     }
 
@@ -203,7 +203,7 @@ public class FuseboxCoordinatorUnitTest {
 
         doReturn(/* nativeInstance= */ 1L)
                 .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         mProfileSupplier.set(mProfile);
         assertNotNull(mCoordinator.getMediatorForTesting());
         assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
@@ -297,7 +297,7 @@ public class FuseboxCoordinatorUnitTest {
     public void testNtpAiModeButtonPress() {
         doReturn(/* nativeInstance= */ 1L)
                 .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         mProfileSupplier.set(mProfile);
         ShadowLooper.idleMainLooper();
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
@@ -311,7 +311,7 @@ public class FuseboxCoordinatorUnitTest {
     public void createImageButtonVisibility_isCreateImagesEligible() {
         doReturn(/* nativeInstance= */ 1L)
                 .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
 
         doReturn(true).when(mComposeboxController).isCreateImagesEligible(anyLong());
         mProfileSupplier.set(mIncognitoProfile);
@@ -333,7 +333,7 @@ public class FuseboxCoordinatorUnitTest {
     public void createImageButtonVisibility_incognitoProfile() {
         doReturn(/* nativeInstance= */ 1L)
                 .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         doReturn(true).when(mComposeboxController).isCreateImagesEligible(anyLong());
 
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(false);
@@ -357,7 +357,7 @@ public class FuseboxCoordinatorUnitTest {
     public void createImageButtonVisibility_regularProfile() {
         doReturn(/* nativeInstance= */ 1L)
                 .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         doReturn(true).when(mComposeboxController).isCreateImagesEligible(anyLong());
 
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(false);

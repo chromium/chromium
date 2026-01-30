@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FuseboxAttachmentModelListUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private FuseboxAttachmentModelList.FuseboxAttachmentChangeListener mListener;
 
@@ -68,9 +68,9 @@ public class FuseboxAttachmentModelListUnitTest {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         mFuseboxAttachmentModelList = new FuseboxAttachmentModelList(mTabModelSelectorSupplier);
-        mFuseboxAttachmentModelList.setComposeBoxQueryControllerBridge(
-                mComposeBoxQueryControllerBridge);
-        verify(mComposeBoxQueryControllerBridge).setFileUploadObserver(mFuseboxAttachmentModelList);
+        mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
+                mComposeboxQueryControllerBridge);
+        verify(mComposeboxQueryControllerBridge).setFileUploadObserver(mFuseboxAttachmentModelList);
         mResources = ContextUtils.getApplicationContext().getResources();
         mFuseboxAttachmentModelList.addAttachmentChangeListener(mListener);
     }
@@ -79,102 +79,102 @@ public class FuseboxAttachmentModelListUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(tabId);
         var attachment = FuseboxAttachment.forTab(tab, mResources);
-        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(tabId)).thenReturn(token);
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(tabId)).thenReturn(token);
         return attachment;
     }
 
     @Test
     public void testAdd_withValidToken_startsSessionAndAddsItem() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("valid-token");
 
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
         FuseboxAttachment attachment = createTestAttachment("test");
         mFuseboxAttachmentModelList.add(attachment);
 
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("test.txt"), eq("mime/test"), eq("test".getBytes()));
         assertEquals(1, mFuseboxAttachmentModelList.size());
         assertTrue(mFuseboxAttachmentModelList.isSessionStarted());
         assertEquals("valid-token", attachment.getToken());
         assertFalse(attachment.isUploadComplete());
 
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testAdd_withInvalidToken_doesNotAddItem() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn(null);
 
         FuseboxAttachment attachment = createTestAttachment("test");
         mFuseboxAttachmentModelList.add(attachment);
 
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("test.txt"), eq("mime/test"), eq("test".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
         assertEquals(0, mFuseboxAttachmentModelList.size());
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testAdd_withEmptyToken_doesNotAddItem() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("");
 
         FuseboxAttachment attachment = createTestAttachment("test");
         mFuseboxAttachmentModelList.add(attachment);
 
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("test.txt"), eq("mime/test"), eq("test".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
         assertEquals(0, mFuseboxAttachmentModelList.size());
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testAdd_withNullBridge_doesNotAddItem() {
         FuseboxAttachment attachment = createTestAttachment("test");
 
-        mFuseboxAttachmentModelList.setComposeBoxQueryControllerBridge(null);
-        verify(mComposeBoxQueryControllerBridge).setFileUploadObserver(null);
+        mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(null);
+        verify(mComposeboxQueryControllerBridge).setFileUploadObserver(null);
 
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
         mFuseboxAttachmentModelList.add(attachment);
 
         assertEquals(0, mFuseboxAttachmentModelList.size());
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
-        verify(mComposeBoxQueryControllerBridge, never()).addFile(anyString(), anyString(), any());
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verify(mComposeboxQueryControllerBridge, never()).addFile(anyString(), anyString(), any());
+        verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testRemove_withValidToken_removesFromBackendAndAbandonsSession() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("test-token");
         FuseboxAttachment attachment = createTestAttachment("test");
         mFuseboxAttachmentModelList.add(attachment);
 
         mFuseboxAttachmentModelList.remove(attachment);
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("test.txt"), eq("mime/test"), eq("test".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("test-token");
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge).removeAttachment("test-token");
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
         assertEquals(0, mFuseboxAttachmentModelList.size());
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testRemove_multipleItems_doesNotAbandonSessionUntilEmpty() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("token1", "token2");
         FuseboxAttachment firstAttachment = createTestAttachment("first");
         FuseboxAttachment secondAttachment = createTestAttachment("second");
@@ -182,25 +182,25 @@ public class FuseboxAttachmentModelListUnitTest {
         mFuseboxAttachmentModelList.add(secondAttachment);
 
         mFuseboxAttachmentModelList.remove(firstAttachment);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge, never()).notifySessionAbandoned();
         assertTrue(mFuseboxAttachmentModelList.isSessionStarted());
 
         mFuseboxAttachmentModelList.remove(secondAttachment);
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("first.txt"), eq("mime/first"), eq("first".getBytes()));
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("second.txt"), eq("mime/second"), eq("second".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("token1");
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("token2");
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge).removeAttachment("token1");
+        verify(mComposeboxQueryControllerBridge).removeAttachment("token2");
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testClear_removesAllIndividuallyAndAbandonsSession() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("token1", "token2");
         FuseboxAttachment firstAttachment = createTestAttachment("first");
         FuseboxAttachment secondAttachment = createTestAttachment("second");
@@ -210,22 +210,22 @@ public class FuseboxAttachmentModelListUnitTest {
 
         mFuseboxAttachmentModelList.clear();
 
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("first.txt"), eq("mime/first"), eq("first".getBytes()));
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("second.txt"), eq("mime/second"), eq("second".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("token1");
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("token2");
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge).removeAttachment("token1");
+        verify(mComposeboxQueryControllerBridge).removeAttachment("token2");
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
         assertEquals(0, mFuseboxAttachmentModelList.size());
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testSessionLifecycle_multipleAdditions_onlyStartsSessionOnce() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("token1", "token2", "token3");
 
         FuseboxAttachment attachment1 = createTestAttachment("first");
@@ -236,61 +236,61 @@ public class FuseboxAttachmentModelListUnitTest {
         mFuseboxAttachmentModelList.add(attachment2);
         mFuseboxAttachmentModelList.add(attachment3);
 
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("first.txt"), eq("mime/first"), eq("first".getBytes()));
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("second.txt"), eq("mime/second"), eq("second".getBytes()));
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("third.txt"), eq("mime/third"), eq("third".getBytes()));
         assertEquals(3, mFuseboxAttachmentModelList.size());
         assertTrue(mFuseboxAttachmentModelList.isSessionStarted());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testRemove_withNullBridge_stillRemovesFromUIAndBackend() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("test-token");
         FuseboxAttachment attachment = createTestAttachment("test");
         mFuseboxAttachmentModelList.add(attachment);
         assertEquals(1, mFuseboxAttachmentModelList.size());
 
-        mFuseboxAttachmentModelList.setComposeBoxQueryControllerBridge(null);
-        verify(mComposeBoxQueryControllerBridge).setFileUploadObserver(null);
+        mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(null);
+        verify(mComposeboxQueryControllerBridge).setFileUploadObserver(null);
 
         assertEquals(0, mFuseboxAttachmentModelList.size());
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("test.txt"), eq("mime/test"), eq("test".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("test-token");
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verify(mComposeboxQueryControllerBridge).removeAttachment("test-token");
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testDestroy_removesAttachmentsFromBackend() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("test-token");
         FuseboxAttachment attachment = createTestAttachment("test");
         mFuseboxAttachmentModelList.add(attachment);
         assertEquals(1, mFuseboxAttachmentModelList.size());
 
         mFuseboxAttachmentModelList.destroy();
-        verify(mComposeBoxQueryControllerBridge).setFileUploadObserver(null);
+        verify(mComposeboxQueryControllerBridge).setFileUploadObserver(null);
 
         assertEquals(0, mFuseboxAttachmentModelList.size());
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("test.txt"), eq("mime/test"), eq("test".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("test-token");
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verify(mComposeboxQueryControllerBridge).removeAttachment("test-token");
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testClear_mixedAttachmentTypes_removesAllProperly() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("file-token", "tab-token");
 
         FuseboxAttachment fileAttachment = createTestAttachment("file");
@@ -301,30 +301,30 @@ public class FuseboxAttachmentModelListUnitTest {
 
         mFuseboxAttachmentModelList.clear();
 
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("file.txt"), eq("mime/file"), eq("file".getBytes()));
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("tab.txt"), eq("mime/tab"), eq("tab".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("file-token");
-        verify(mComposeBoxQueryControllerBridge).removeAttachment("tab-token");
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge).removeAttachment("file-token");
+        verify(mComposeboxQueryControllerBridge).removeAttachment("tab-token");
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
         assertEquals(0, mFuseboxAttachmentModelList.size());
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testAddAttachment_needsTokenUpload_uploadsAndSucceeds() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("uploaded-token");
 
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
         FuseboxAttachment attachment = createTestAttachment("test");
         mFuseboxAttachmentModelList.add(attachment);
 
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("test.txt"), eq("mime/test"), eq("test".getBytes()));
         assertEquals(1, mFuseboxAttachmentModelList.size());
         assertTrue(mFuseboxAttachmentModelList.isSessionStarted());
@@ -334,29 +334,29 @@ public class FuseboxAttachmentModelListUnitTest {
         mFuseboxAttachmentModelList.onFileUploadStatusChanged(
                 "uploaded-token", FileUploadStatus.UPLOAD_SUCCESSFUL);
         assertTrue(attachment.isUploadComplete());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testAddAttachment_uploadFails_doesNotAdd() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn(null);
 
         FuseboxAttachment attachment = createTestAttachment("test");
         mFuseboxAttachmentModelList.add(attachment);
 
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("test.txt"), eq("mime/test"), eq("test".getBytes()));
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge).notifySessionAbandoned();
         assertEquals(0, mFuseboxAttachmentModelList.size());
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
     public void testAddAttachment_mixedScenarios_handlesAllCorrectly() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("pretokenized-token", "uploaded-token");
 
         FuseboxAttachment preTokenizedAttachment = createTestAttachment("pretokenized");
@@ -368,13 +368,13 @@ public class FuseboxAttachmentModelListUnitTest {
         mFuseboxAttachmentModelList.add(uploadedAttachment);
         assertEquals(2, mFuseboxAttachmentModelList.size());
         assertTrue(mFuseboxAttachmentModelList.isSessionStarted());
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(
                         eq("pretokenized.txt"),
                         eq("mime/pretokenized"),
                         eq("pretokenized".getBytes()));
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(eq("uploaded.txt"), eq("mime/uploaded"), eq("uploaded".getBytes()));
         assertEquals("pretokenized-token", preTokenizedAttachment.getToken());
         assertEquals("uploaded-token", uploadedAttachment.getToken());
@@ -397,7 +397,7 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Test
     public void testMaxAttachments() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("pretokenized-token", "uploaded-token");
         for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
             FuseboxAttachment attachment = createTestAttachment("pretokenized");
@@ -449,7 +449,7 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(false).when(tab).isFrozen();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
-        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
+        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
         doReturn(tab).when(mTabModelSelector).getCurrentTab();
 
         FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(tab, mResources);
@@ -469,7 +469,7 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(true).when(tab).isIncognitoBranded();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
-        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
+        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
         doReturn(null).when(mTabModelSelector).getCurrentTab();
 
         FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(tab, mResources);
@@ -488,8 +488,8 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(false).when(tab).isFrozen();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
-        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
-        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("");
+        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("");
         doReturn(null).when(mTabModelSelector).getCurrentTab();
 
         FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(tab, mResources);
@@ -507,14 +507,14 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(false).when(tab).isFrozen();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
-        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("token");
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("token");
         doReturn(null).when(mTabModelSelector).getCurrentTab();
 
         FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(tab, mResources);
         mFuseboxAttachmentModelList.add(tabAttachment);
         assertEquals("token", tabAttachment.getToken());
 
-        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
+        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
         mFuseboxAttachmentModelList.onFileUploadStatusChanged(
                 "token", FileUploadStatus.VALIDATION_FAILED);
         assertEquals("token2", tabAttachment.getToken());
@@ -526,7 +526,7 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Test
     public void batchEdit_singleAdd_notifiesChangeOnce() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("valid-token");
 
         try (var token = mFuseboxAttachmentModelList.beginBatchEdit()) {
@@ -541,7 +541,7 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Test
     public void batchEdit_multipleAdds_notifiesChangeOnce() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("token1", "token2");
 
         try (var token = mFuseboxAttachmentModelList.beginBatchEdit()) {
@@ -564,7 +564,7 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Test
     public void batchEdit_nestedEdits_notifiesChangeOnceAtTheEnd() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("token1", "token2");
 
         try (var outerToken = mFuseboxAttachmentModelList.beginBatchEdit()) {
@@ -582,7 +582,7 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Test
     public void batchEdit_addAndRemove_notifiesChangeOnce() {
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("token1", "token2");
         FuseboxAttachment attachment1 = createTestAttachment("first");
         FuseboxAttachment attachment2 = createTestAttachment("second");

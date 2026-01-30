@@ -94,7 +94,7 @@ public final class FuseboxAttachment extends ListItem {
      * @return true if upload succeeded, false otherwise
      */
     /* package */ boolean uploadToBackend(
-            ComposeBoxQueryControllerBridge bridge,
+            ComposeboxQueryControllerBridge bridge,
             @Nullable Tab currentlySelectedTab,
             boolean forceFreshTabFetch) {
         assert !hasToken() || forceFreshTabFetch
@@ -133,7 +133,7 @@ public final class FuseboxAttachment extends ListItem {
      *
      * @param bridge The bridge to use for removal
      */
-    public void removeFromBackend(ComposeBoxQueryControllerBridge bridge) {
+    public void removeFromBackend(ComposeboxQueryControllerBridge bridge) {
         if (hasToken()) {
             bridge.removeAttachment(getToken());
         }
@@ -164,7 +164,7 @@ public final class FuseboxAttachment extends ListItem {
 
     public boolean retryUpload(
             @Nullable TabModelSelector tabModelSelector,
-            ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge) {
+            ComposeboxQueryControllerBridge composeBoxQueryControllerBridge) {
         if (type == FuseboxAttachmentType.ATTACHMENT_TAB && mIsFetchingTabDataFromCache) {
             // Fetch from cache can fail with a delay. Try to fetch fresh data instead of
             // giving up entirely.

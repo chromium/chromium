@@ -14,7 +14,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
-import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -349,7 +349,7 @@ public class AutocompleteController {
     }
 
     public void setComposeboxQueryControllerBridge(
-            @Nullable ComposeBoxQueryControllerBridge bridge) {
+            @Nullable ComposeboxQueryControllerBridge bridge) {
         AutocompleteControllerJni.get()
                 .setComposeboxQueryControllerBridge(
                         mNativeController, bridge == null ? 0L : bridge.getNativeInstance());

@@ -54,7 +54,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlFocusChangeListener.java",
-    "java/src/org/chromium/chrome/browser/omnibox/fusebox/ComposeBoxQueryControllerBridge.java",
+    "java/src/org/chromium/chrome/browser/omnibox/fusebox/ComposeboxQueryControllerBridge.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachment.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentDetailsFetcher.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentModelList.java",
@@ -306,7 +306,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteSchemeClassifier.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxPrerender.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxViewUtil.java",
-    "java/src/org/chromium/chrome/browser/omnibox/fusebox/ComposeBoxQueryControllerBridge.java",
+    "java/src/org/chromium/chrome/browser/omnibox/fusebox/ComposeboxQueryControllerBridge.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteController.java",
   ]

@@ -74,7 +74,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final FuseboxAttachmentModelList mModelList;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable FuseboxMediator mMediator;
-    private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private @Nullable ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     private @Nullable AutocompleteInput mInput;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private TemplateUrlService mTemplateUrlService;
@@ -179,17 +179,17 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             mMediator = null;
         }
 
-        mComposeBoxQueryControllerBridge = ComposeBoxQueryControllerBridge.getForProfile(profile);
+        mComposeboxQueryControllerBridge = ComposeboxQueryControllerBridge.getForProfile(profile);
         AutocompleteController.getForProfile(profile)
-                .setComposeboxQueryControllerBridge(mComposeBoxQueryControllerBridge);
-        if (mComposeBoxQueryControllerBridge == null) return;
+                .setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
+        if (mComposeboxQueryControllerBridge == null) return;
 
         // Set the bridge for the model list to enable tight coupling.
-        mModelList.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
+        mModelList.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
 
         mModel.set(
                 FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
-                mComposeBoxQueryControllerBridge.isCreateImagesEligible()
+                mComposeboxQueryControllerBridge.isCreateImagesEligible()
                         && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
                                 || !profile.isIncognitoBranded()));
         mMediator =
@@ -201,7 +201,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         assumeNonNull(mViewHolder),
                         mModelList,
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge,
+                        mComposeboxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
         if (mLastBrandedColorScheme != null) {
@@ -221,9 +221,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             mTemplateUrlService.removeObserver(this);
         }
         mModelList.destroy();
-        if (mComposeBoxQueryControllerBridge != null) {
-            mComposeBoxQueryControllerBridge.destroy();
-            mComposeBoxQueryControllerBridge = null;
+        if (mComposeboxQueryControllerBridge != null) {
+            mComposeboxQueryControllerBridge.destroy();
+            mComposeboxQueryControllerBridge = null;
         }
         if (mViewportRectProvider != null) {
             mViewportRectProvider.destroy();

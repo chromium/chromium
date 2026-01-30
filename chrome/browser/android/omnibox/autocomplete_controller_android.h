@@ -211,7 +211,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // destroyed.
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
 
-  // The ComposeBoxQueryController instance related to the same input session.
+  // The ComposeboxQueryController instance related to the same input session.
   // This may and often will be unset.
   base::WeakPtr<ComposeboxQueryControllerBridge>
       composebox_query_controller_bridge_;

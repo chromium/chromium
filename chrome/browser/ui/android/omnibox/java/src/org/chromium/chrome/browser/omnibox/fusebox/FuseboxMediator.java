@@ -73,7 +73,7 @@ public class FuseboxMediator {
     private final FuseboxPopup mPopup;
     private final FuseboxAttachmentModelList mModelList;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private final ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
@@ -89,7 +89,7 @@ public class FuseboxMediator {
             FuseboxViewHolder viewHolder,
             FuseboxAttachmentModelList modelList,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
+            ComposeboxQueryControllerBridge composeBoxQueryControllerBridge,
             SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
             SnackbarManager snackbarManager) {
         mContext = context;
@@ -100,7 +100,7 @@ public class FuseboxMediator {
         mPopup = viewHolder.popup;
         mModelList = modelList;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
+        mComposeboxQueryControllerBridge = composeBoxQueryControllerBridge;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mSnackbarManager = snackbarManager;
 
@@ -126,7 +126,7 @@ public class FuseboxMediator {
 
         mModel.set(
                 FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE,
-                mComposeBoxQueryControllerBridge.isPdfUploadEligible());
+                mComposeboxQueryControllerBridge.isPdfUploadEligible());
 
         mModelList.addObserver(
                 new ListObservable.ListObserver<>() {
@@ -286,7 +286,7 @@ public class FuseboxMediator {
      * @param callback The callback to run with the URL for the AIM service.
      */
     void getAimUrl(GURL url, Callback<GURL> callback) {
-        mComposeBoxQueryControllerBridge.getAimUrl(url, callback);
+        mComposeboxQueryControllerBridge.getAimUrl(url, callback);
     }
 
     /**
@@ -294,7 +294,7 @@ public class FuseboxMediator {
      * @param callback The callback to run with the URL for the image generation service.
      */
     void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
-        mComposeBoxQueryControllerBridge.getImageGenerationUrl(url, callback);
+        mComposeboxQueryControllerBridge.getImageGenerationUrl(url, callback);
     }
 
     @VisibleForTesting

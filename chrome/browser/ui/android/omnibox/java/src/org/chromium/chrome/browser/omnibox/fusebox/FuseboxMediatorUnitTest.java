@@ -101,7 +101,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private FuseboxPopup mPopup;
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private Clipboard mClipboard;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab1;
@@ -148,7 +148,7 @@ public class FuseboxMediatorUnitTest {
 
         mViewHolder = new FuseboxViewHolder(viewGroup, mPopup);
         mAttachments = new FuseboxAttachmentModelList(mTabModelSelectorSupplier);
-        mAttachments.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
+        mAttachments.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
         mMediator =
                 new FuseboxMediator(
                         mContext,
@@ -158,7 +158,7 @@ public class FuseboxMediatorUnitTest {
                         mViewHolder,
                         mAttachments,
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge,
+                        mComposeboxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
         Clipboard.setInstanceForTesting(mClipboard);
@@ -170,7 +170,7 @@ public class FuseboxMediatorUnitTest {
         mMediator.beginInput(mInput);
 
         // Start with no init calls.
-        clearInvocations(mComposeBoxQueryControllerBridge);
+        clearInvocations(mComposeboxQueryControllerBridge);
     }
 
     @After
@@ -189,7 +189,7 @@ public class FuseboxMediatorUnitTest {
                         mViewHolder,
                         new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge,
+                        mComposeboxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
         mMediator.beginInput(mInput);
@@ -208,14 +208,14 @@ public class FuseboxMediatorUnitTest {
             when(mockTab.getId()).thenReturn(0);
             when(mockTab.getWebContents())
                     .thenReturn(null); // This will trigger addTabContextFromCache path
-            when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
-            when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
+            when(mComposeboxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
+            when(mComposeboxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
             attachment = FuseboxAttachment.forTab(mockTab, mResources);
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE) {
-            doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
+            doReturn(token).when(mComposeboxQueryControllerBridge).addFile(eq(title), any(), any());
             attachment = FuseboxAttachment.forFile(null, title, "image/", new byte[0]);
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
-            doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
+            doReturn(token).when(mComposeboxQueryControllerBridge).addFile(eq(title), any(), any());
             attachment =
                     FuseboxAttachment.forCameraImage(
                             /* thumbnail= */ null, title, "image/", new byte[0]);
@@ -235,8 +235,8 @@ public class FuseboxMediatorUnitTest {
         when(tab.getTitle()).thenReturn("Tab " + id);
         when(mTabModelSelector.getTabById(id)).thenReturn(tab);
 
-        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn(token);
-        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(id)).thenReturn(token);
+        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn(token);
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(id)).thenReturn(token);
         return tab;
     }
 
@@ -353,9 +353,9 @@ public class FuseboxMediatorUnitTest {
         assertNull(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON));
 
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
-        doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
+        doReturn("token").when(mComposeboxQueryControllerBridge).addTabContext(mTab1);
         mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run();
-        verify(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
+        verify(mComposeboxQueryControllerBridge).addTabContext(mTab1);
         assertEquals(mBitmap, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
@@ -386,18 +386,18 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void addAttachment_addAttachment_success() {
         // Success is captured with a valid unique token.
-        doReturn("123").when(mComposeBoxQueryControllerBridge).addFile(any(), any(), any());
+        doReturn("123").when(mComposeboxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
         FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachment);
         assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
-        verify(mComposeBoxQueryControllerBridge).addFile("title", "image", byteArray);
+        verify(mComposeboxQueryControllerBridge).addFile("title", "image", byteArray);
     }
 
     @Test
     public void addAttachment_addAttachment_failure() {
         // Failure: no token.
-        doReturn(null).when(mComposeBoxQueryControllerBridge).addFile(any(), any(), any());
+        doReturn(null).when(mComposeboxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
         FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachment);
@@ -436,7 +436,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void activateAiMode_startsSession() {
         mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
@@ -445,7 +445,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void activateImageGeneration_startsSession() {
         mMediator.activateImageGeneration();
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
                 (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
@@ -453,7 +453,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void activateImageGeneration_disablesNonImageInput() {
-        doReturn(true).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
+        doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
@@ -526,43 +526,43 @@ public class FuseboxMediatorUnitTest {
                         mViewHolder,
                         new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge,
+                        mComposeboxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
 
         // The bridge is not initialized, so no native calls should be made.
         mediator.setToolbarVisible(true);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
+        verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
 
         mediator.setToolbarVisible(false);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
+        verify(mComposeboxQueryControllerBridge, never()).notifySessionAbandoned();
     }
 
     @Test
     public void setToolbarVisible_stateNotChanged_doesNothing() {
         // Initial state is false. Calling with false should do nothing.
         mMediator.setToolbarVisible(false);
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
 
         // Transition to true. Should NOT start a session.
         mMediator.setAutocompleteRequestTypeChangeable(true);
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
 
         // Manually start a session to test the hiding part.
         mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
 
         // Calling with true again. Should do nothing.
         mMediator.setAutocompleteRequestTypeChangeable(true);
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
 
         // Transition to false. Should abandon the session.
         mMediator.setAutocompleteRequestTypeChangeable(false);
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
 
         // Calling with false again. Should do nothing.
         mMediator.setAutocompleteRequestTypeChangeable(false);
-        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test
@@ -581,14 +581,14 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onToggleAttachmentsPopup_pdfUploadEligible_showsFileButton() {
-        doReturn(true).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
+        doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
         assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_pdfUploadNotEligible_hidesFileButton() {
-        doReturn(false).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
+        doReturn(false).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
         assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
     }
@@ -658,7 +658,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testUploadAndAddAttachment_integrationFlow_noCasting() {
         // Setup: Mock successful file upload
-        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any(byte[].class)))
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any(byte[].class)))
                 .thenReturn("integration-token");
 
         // Create attachment without token
@@ -674,7 +674,7 @@ public class FuseboxMediatorUnitTest {
 
         // Verification: Should work without any casting
         assertEquals(1, mAttachments.size());
-        verify(mComposeBoxQueryControllerBridge)
+        verify(mComposeboxQueryControllerBridge)
                 .addFile(
                         eq("integration-test.txt"),
                         eq("text/plain"),
@@ -687,7 +687,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testAddAttachment_disablesCreateImage() {
-        doReturn("token-tab1").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
+        doReturn("token-tab1").when(mComposeboxQueryControllerBridge).addTabContext(mTab1);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();

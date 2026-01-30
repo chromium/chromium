@@ -46,7 +46,7 @@
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/ui/android/omnibox/jni_headers/ComposeBoxQueryControllerBridge_jni.h"
+#include "chrome/browser/ui/android/omnibox/jni_headers/ComposeboxQueryControllerBridge_jni.h"
 #include "components/contextual_search/jni_headers/InputState_jni.h"
 
 namespace {
@@ -59,7 +59,7 @@ void RunJavaCallback(
 }
 }  // namespace
 
-static int64_t JNI_ComposeBoxQueryControllerBridge_Init(
+static int64_t JNI_ComposeboxQueryControllerBridge_Init(
     JNIEnv* env,
     Profile* profile,
     const base::android::JavaRef<jobject>& java_obj) {
@@ -341,7 +341,7 @@ void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
     contextual_search::FileUploadStatus file_upload_status,
     const std::optional<contextual_search::FileUploadErrorType>& error_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ComposeBoxQueryControllerBridge_onFileUploadStatusChanged(
+  Java_ComposeboxQueryControllerBridge_onFileUploadStatusChanged(
       env, java_obj_,
       base::android::ConvertUTF8ToJavaString(env, file_token.ToString()),
       static_cast<int>(file_upload_status));
@@ -437,8 +437,8 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
           state.disabled_tools, state.disabled_models,
           state.disabled_input_types);
 
-  Java_ComposeBoxQueryControllerBridge_onInputStateChanged(env, java_obj_,
+  Java_ComposeboxQueryControllerBridge_onInputStateChanged(env, java_obj_,
                                                            j_input_state);
 }
 
-DEFINE_JNI(ComposeBoxQueryControllerBridge)
+DEFINE_JNI(ComposeboxQueryControllerBridge)
