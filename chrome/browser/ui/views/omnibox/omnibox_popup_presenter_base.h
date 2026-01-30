@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
@@ -79,6 +80,8 @@ class OmniboxPopupPresenterBase {
   }
 
   views::Widget* GetWidget() const { return widget_.get(); }
+
+  virtual std::string_view GetPopupShowToPaintMetric() const = 0;
 
   // The height of the popup content. Can be 0 if not specified.
   int content_height_ = 0;

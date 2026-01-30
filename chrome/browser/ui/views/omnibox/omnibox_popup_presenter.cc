@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/views/view_utils.h"
@@ -51,4 +53,8 @@ bool OmniboxPopupPresenter::ShouldShowLocationBarCutout() const {
 bool OmniboxPopupPresenter::ShouldReceiveFocus() const {
   return views::AsViewClass<OmniboxPopupWebUIContent>(GetWebUIContent())
       ->wants_focus();
+}
+
+std::string_view OmniboxPopupPresenter::GetPopupShowToPaintMetric() const {
+  return "Omnibox.Popup.WebUI.PresenterShowLatency.ToPaint";
 }
