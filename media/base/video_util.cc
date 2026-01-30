@@ -765,8 +765,7 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
 // Media pixel format enums have names opposite to their byte order.
 // That's why PIXEL_FORMAT_ABGR corresponds to kRGBA_8888_SkColorType
 // and so on.
-MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
-                                             size_t plane) {
+SkColorType SkColorTypeForPlaneNoCheck(VideoPixelFormat format, size_t plane) {
   switch (format) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
@@ -798,12 +797,18 @@ MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
     case PIXEL_FORMAT_RGBAF16:
       return kRGBA_F16_SkColorType;
     default:
-      NOTREACHED();
+      return kUnknown_SkColorType;
   }
 }
 
-MEDIA_EXPORT VideoPixelFormat
-VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque) {
+SkColorType SkColorTypeForPlane(VideoPixelFormat format, size_t plane) {
+  const auto result = SkColorTypeForPlaneNoCheck(format, plane);
+  CHECK_NE(result, kUnknown_SkColorType);
+  return result;
+}
+
+VideoPixelFormat VideoPixelFormatFromSkColorType(SkColorType sk_color_type,
+                                                 bool is_opaque) {
   switch (sk_color_type) {
     case kRGBA_8888_SkColorType:
       return is_opaque ? PIXEL_FORMAT_XBGR : PIXEL_FORMAT_ABGR;
@@ -813,6 +818,68 @@ VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque) {
       return PIXEL_FORMAT_RGBAF16;
     default:
       return PIXEL_FORMAT_UNKNOWN;
+  }
+}
+
+SkYUVAInfo::PlaneConfig SkYUVAPlaneConfigForFormat(VideoPixelFormat format) {
+  switch (format) {
+    case PIXEL_FORMAT_UYVY:
+    case PIXEL_FORMAT_YUY2:
+    case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_BGRA:
+    case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_RGB24:
+    case PIXEL_FORMAT_MJPEG:
+    case PIXEL_FORMAT_Y16:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
+    case PIXEL_FORMAT_XR30:
+    case PIXEL_FORMAT_XB30:
+    case PIXEL_FORMAT_RGBAF16:
+    case PIXEL_FORMAT_UNKNOWN:
+      return SkYUVAInfo::PlaneConfig::kUnknown;
+    case PIXEL_FORMAT_I420:
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_I444:
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV422P10:
+    case PIXEL_FORMAT_YUV444P10:
+    case PIXEL_FORMAT_YUV420P12:
+    case PIXEL_FORMAT_YUV422P12:
+    case PIXEL_FORMAT_YUV444P12:
+      return SkYUVAInfo::PlaneConfig::kY_U_V;
+    case PIXEL_FORMAT_YV12:
+      return SkYUVAInfo::PlaneConfig::kY_V_U;
+    case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_I422A:
+    case PIXEL_FORMAT_I444A:
+    case PIXEL_FORMAT_YUV420AP10:
+    case PIXEL_FORMAT_YUV422AP10:
+    case PIXEL_FORMAT_YUV444AP10:
+      return SkYUVAInfo::PlaneConfig::kY_U_V_A;
+    case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV21:
+    case PIXEL_FORMAT_NV24:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
+      return SkYUVAInfo::PlaneConfig::kY_UV;
+    case PIXEL_FORMAT_NV12A:
+      return SkYUVAInfo::PlaneConfig::kY_UV_A;
+  }
+}
+
+SkYUVAInfo::Subsampling SkYUVASubsamplingForFormat(VideoPixelFormat format) {
+  switch (VideoPixelFormatToChromaSampling(format)) {
+    case VideoChromaSampling::k420:
+      return SkYUVAInfo::Subsampling::k420;
+    case VideoChromaSampling::k422:
+      return SkYUVAInfo::Subsampling::k422;
+    case VideoChromaSampling::k444:
+      return SkYUVAInfo::Subsampling::k444;
+    default:
+      return SkYUVAInfo::Subsampling::kUnknown;
   }
 }
 

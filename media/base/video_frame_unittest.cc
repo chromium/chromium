@@ -31,6 +31,7 @@
 #include "media/base/simple_sync_token_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace {
 // Creates the backing storage for a frame suitable for WrapExternalData. Note
@@ -1126,4 +1127,152 @@ TEST(VideoFrame, WrappedPlaneDataAccess) {
   EXPECT_EQ(frame->data(VideoFrame::Plane::kV), nullptr);
   EXPECT_TRUE(frame->data_span(VideoFrame::Plane::kV).empty());
 }
+
+TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
+  const int kWidth = 64;
+  const int kHeight = 48;
+  const gfx::Size kCodedSize(kWidth, kHeight);
+  const gfx::Rect kVisibleRect(10, 10, 32, 24);
+  const gfx::Size kNaturalSize(32, 24);
+
+  {
+    auto frame =
+        VideoFrame::CreateFrame(PIXEL_FORMAT_I420, kCodedSize, kVisibleRect,
+                                kNaturalSize, base::TimeDelta());
+    ASSERT_TRUE(frame);
+
+    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
+    EXPECT_TRUE(yuva_info.isValid());
+    EXPECT_EQ(yuva_info.dimensions().width(), kVisibleRect.width());
+    EXPECT_EQ(yuva_info.dimensions().height(), kVisibleRect.height());
+    EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kY_U_V);
+    EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k420);
+
+    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
+    EXPECT_EQ(pixmaps.size(), 3u);
+    auto pm_y = pixmaps[VideoFrame::Plane::kY];
+    auto pm_u = pixmaps[VideoFrame::Plane::kU];
+    auto pm_v = pixmaps[VideoFrame::Plane::kV];
+
+    EXPECT_EQ(pm_y.width(), kVisibleRect.width());
+    EXPECT_EQ(pm_y.height(), kVisibleRect.height());
+    EXPECT_EQ(pm_y.addr(), frame->visible_data(VideoFrame::Plane::kY));
+    EXPECT_EQ(pm_y.rowBytes(),
+              static_cast<size_t>(frame->stride(VideoFrame::Plane::kY)));
+    EXPECT_EQ(pm_y.colorType(), kAlpha_8_SkColorType);
+
+    EXPECT_EQ(pm_u.width(), kVisibleRect.width() / 2);
+    EXPECT_EQ(pm_u.height(), kVisibleRect.height() / 2);
+    EXPECT_EQ(pm_u.addr(), frame->visible_data(VideoFrame::Plane::kU));
+    EXPECT_EQ(pm_u.rowBytes(),
+              static_cast<size_t>(frame->stride(VideoFrame::Plane::kU)));
+    EXPECT_EQ(pm_u.colorType(), kAlpha_8_SkColorType);
+
+    EXPECT_EQ(pm_v.width(), kVisibleRect.width() / 2);
+    EXPECT_EQ(pm_v.height(), kVisibleRect.height() / 2);
+    EXPECT_EQ(pm_v.addr(), frame->visible_data(VideoFrame::Plane::kV));
+    EXPECT_EQ(pm_v.rowBytes(),
+              static_cast<size_t>(frame->stride(VideoFrame::Plane::kV)));
+    EXPECT_EQ(pm_v.colorType(), kAlpha_8_SkColorType);
+  }
+
+  {
+    auto frame =
+        VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, kCodedSize, kVisibleRect,
+                                kNaturalSize, base::TimeDelta());
+    ASSERT_TRUE(frame);
+
+    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
+    EXPECT_TRUE(yuva_info.isValid());
+    EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kY_UV);
+    EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k420);
+
+    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
+    EXPECT_EQ(pixmaps.size(), 2u);
+    auto pm_y = pixmaps[VideoFrame::Plane::kY];
+    auto pm_uv = pixmaps[VideoFrame::Plane::kUV];
+
+    EXPECT_EQ(pm_y.width(), kVisibleRect.width());
+    EXPECT_EQ(pm_y.height(), kVisibleRect.height());
+    EXPECT_EQ(pm_y.addr(), frame->visible_data(VideoFrame::Plane::kY));
+    EXPECT_EQ(pm_y.colorType(), kAlpha_8_SkColorType);
+
+    EXPECT_EQ(pm_uv.width(), kVisibleRect.width() / 2);
+    EXPECT_EQ(pm_uv.height(), kVisibleRect.height() / 2);
+    EXPECT_EQ(pm_uv.addr(), frame->visible_data(VideoFrame::Plane::kUV));
+    EXPECT_EQ(pm_uv.colorType(), kR8G8_unorm_SkColorType);
+  }
+
+  {
+    auto frame =
+        VideoFrame::CreateFrame(PIXEL_FORMAT_I420A, kCodedSize, kVisibleRect,
+                                kNaturalSize, base::TimeDelta());
+    ASSERT_TRUE(frame);
+
+    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
+    EXPECT_TRUE(yuva_info.isValid());
+    EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kY_U_V_A);
+    EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k420);
+
+    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
+    EXPECT_EQ(pixmaps.size(), 4u);
+    auto pm_y = pixmaps[VideoFrame::Plane::kY];
+    auto pm_u = pixmaps[VideoFrame::Plane::kU];
+    auto pm_v = pixmaps[VideoFrame::Plane::kV];
+    auto pm_a = pixmaps[VideoFrame::Plane::kA];
+
+    EXPECT_EQ(pm_y.width(), kVisibleRect.width());
+    EXPECT_EQ(pm_y.height(), kVisibleRect.height());
+    EXPECT_EQ(pm_y.addr(), frame->visible_data(VideoFrame::Plane::kY));
+    EXPECT_EQ(pm_y.colorType(), kAlpha_8_SkColorType);
+
+    EXPECT_EQ(pm_u.width(), kVisibleRect.width() / 2);
+    EXPECT_EQ(pm_u.height(), kVisibleRect.height() / 2);
+    EXPECT_EQ(pm_u.addr(), frame->visible_data(VideoFrame::Plane::kU));
+    EXPECT_EQ(pm_u.colorType(), kAlpha_8_SkColorType);
+
+    EXPECT_EQ(pm_v.width(), kVisibleRect.width() / 2);
+    EXPECT_EQ(pm_v.height(), kVisibleRect.height() / 2);
+    EXPECT_EQ(pm_v.addr(), frame->visible_data(VideoFrame::Plane::kV));
+    EXPECT_EQ(pm_v.colorType(), kAlpha_8_SkColorType);
+
+    EXPECT_EQ(pm_a.width(), kVisibleRect.width());
+    EXPECT_EQ(pm_a.height(), kVisibleRect.height());
+    EXPECT_EQ(pm_a.addr(), frame->visible_data(VideoFrame::Plane::kA));
+    EXPECT_EQ(pm_a.colorType(), kAlpha_8_SkColorType);
+  }
+
+  {
+    auto frame =
+        VideoFrame::CreateFrame(PIXEL_FORMAT_ABGR, kCodedSize, kVisibleRect,
+                                kNaturalSize, base::TimeDelta());
+    ASSERT_TRUE(frame);
+
+    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
+    EXPECT_FALSE(yuva_info.isValid());
+
+    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
+    EXPECT_EQ(pixmaps.size(), 1u);
+    auto pm = pixmaps[VideoFrame::Plane::kARGB];
+
+    EXPECT_EQ(pm.width(), kVisibleRect.width());
+    EXPECT_EQ(pm.height(), kVisibleRect.height());
+    EXPECT_EQ(pm.addr(), frame->visible_data(VideoFrame::Plane::kARGB));
+    EXPECT_EQ(pm.colorType(), kRGBA_8888_SkColorType);
+  }
+
+  {
+    auto frame =
+        VideoFrame::CreateFrame(PIXEL_FORMAT_MJPEG, kCodedSize, kVisibleRect,
+                                kNaturalSize, base::TimeDelta());
+    ASSERT_TRUE(frame);
+
+    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
+    EXPECT_FALSE(yuva_info.isValid());
+
+    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
+    EXPECT_TRUE(pixmaps.empty());
+  }
+}
+
 }  // namespace media

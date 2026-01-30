@@ -215,9 +215,25 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 MEDIA_EXPORT VideoPixelFormat
 VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque);
 
-// Get SkColor suitable type for various formats and planes.
+// Get the SkColorType for various formats and planes. This will CHECK if there
+// is no suitable SkColorType.
 MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
                                              size_t plane);
+
+// This is the same as the above but will return kUnknown_SkColorType on
+// failure.
+MEDIA_EXPORT SkColorType SkColorTypeForPlaneNoCheck(VideoPixelFormat format,
+                                                    size_t plane);
+
+// The SkYUVAInfo::PlaneConfig for a VideoPixelFormat. This will return
+// SkYUVAInfo::PlaneConfig::kUnknown on failure.
+MEDIA_EXPORT SkYUVAInfo::PlaneConfig SkYUVAPlaneConfigForFormat(
+    VideoPixelFormat format);
+
+// The SkYUVAInfo::Subsampling for a VideoPixelFormat. This will return
+// SkYUVAInfo::Subsampling::kUnknown on failure.
+MEDIA_EXPORT SkYUVAInfo::Subsampling SkYUVASubsamplingForFormat(
+    VideoPixelFormat format);
 
 // Backs a VideoFrame with a SkImage. The created frame takes a ref on the
 // provided SkImage to make this operation zero copy. Only works with CPU
