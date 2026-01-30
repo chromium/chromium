@@ -31,6 +31,10 @@ constexpr int64_t kSecondMapId = 1566;
 constexpr const char kThirdSessionId[] = "5fe0e896_c6d8_4d2b_8b3c_d26f47832125";
 constexpr int64_t kThirdMapId = 1567;
 
+std::vector<uint8_t> ToBytes(std::string_view str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+
 }  // namespace
 
 class SessionStorageSqliteTest : public testing::Test {
@@ -352,6 +356,57 @@ TEST_F(SessionStorageSqliteTest, UpdateMaps) {
                                               kSecondStorageKey, kSecondMapId};
   ASSERT_NO_FATAL_FAILURE(
       TestUpdateMaps(*database, map1_locator, map2_locator));
+}
+
+// Verifies that `CloneMap()` correctly copies all key/value pairs from the
+// source map to the target map while leaving the source map unchanged.
+TEST_F(SessionStorageSqliteTest, CloneMap) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  DomStorageDatabase::MapLocator source_map_locator{
+      kFirstSessionId, kFirstStorageKey, kFirstMapId};
+  DomStorageDatabase::MapLocator target_map_locator{
+      kSecondSessionId, kSecondStorageKey, kSecondMapId};
+
+  // Insert key/value pairs into the source map.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kSourceMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+          {ToBytes("key_2"), ToBytes("value_2")},
+          {ToBytes("key_3"), ToBytes("value_3")},
+      };
+
+  std::vector<DomStorageDatabase::MapBatchUpdate> source_update;
+  source_update.emplace_back(source_map_locator.Clone());
+  for (const auto& entry : kSourceMapEntries) {
+    source_update.back().entries_to_add.emplace_back(entry.first, entry.second);
+  }
+
+  DbStatus status = database->UpdateMaps(std::move(source_update));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the source map has the expected entries.
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> source_entries),
+                       database->ReadMapKeyValues(source_map_locator.Clone()));
+  EXPECT_EQ(source_entries, kSourceMapEntries);
+
+  // Clone the source map to the target map.
+  status = database->CloneMap(source_map_locator.Clone(),
+                              target_map_locator.Clone());
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the target map now contains the same entries as the source map.
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> target_entries),
+                       database->ReadMapKeyValues(target_map_locator.Clone()));
+  EXPECT_EQ(target_entries, kSourceMapEntries);
+
+  // Verify the source map is unchanged.
+  ASSERT_OK_AND_ASSIGN(source_entries,
+                       database->ReadMapKeyValues(source_map_locator.Clone()));
+  EXPECT_EQ(source_entries, kSourceMapEntries);
 }
 
 }  // namespace storage

@@ -93,6 +93,23 @@ DbStatus MapEntriesTable::UpdateMap(
   return DbStatus::OK();
 }
 
+DbStatus MapEntriesTable::CloneMap(int64_t source_map_id,
+                                   int64_t target_map_id) {
+  // Copy all key/value pairs from the source map to the target map using a
+  // `INSERT...SELECT` statement.
+  constexpr const char kCloneMapEntries[] =
+      "INSERT INTO map_entries(map_id, key, value) "
+      "SELECT ?, key, value FROM map_entries WHERE map_id = ?";
+
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kCloneMapEntries));
+  statement.BindInt64(0, target_map_id);
+  statement.BindInt64(1, source_map_id);
+
+  RETURN_STATUS_ON_ERROR(statement.Run());
+  return DbStatus::OK();
+}
+
 DbStatus MapEntriesTable::DeleteMap(int64_t map_id) {
   CHECK(database_->HasActiveTransactions());
 

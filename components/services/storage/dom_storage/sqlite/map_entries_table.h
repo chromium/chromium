@@ -48,6 +48,11 @@ class MapEntriesTable {
   // calling this function.
   DbStatus UpdateMap(DomStorageDatabase::MapBatchUpdate map_update);
 
+  // Copies all key/value pairs from `source_map_id` to `target_map_id`. The
+  // target map must be empty or non-existent; existing entries in the target
+  // are not deleted first.
+  DbStatus CloneMap(int64_t source_map_id, int64_t target_map_id);
+
   // Delete all of the key/value pairs in `map_id`. The
   // caller must begin a database transaction before calling this function.
   DbStatus DeleteMap(int64_t map_id);

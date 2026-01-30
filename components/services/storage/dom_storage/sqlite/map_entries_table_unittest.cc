@@ -45,6 +45,9 @@ class MapEntriesTableTest : public testing::Test {
   // Deletes all entries for the specified map within a transaction.
   void DeleteMap(int64_t map_id);
 
+  // Clones all entries from source map to target map within a transaction.
+  void CloneMap(int64_t source_map_id, int64_t target_map_id);
+
   DomStorageDatabase::MapLocator kFirstMapLocator{
       /*session_id=*/"36356e0b_1627_4492_a474_db76a8996bed",
       blink::StorageKey::CreateFromStringForTesting("https://a-fake.test"),
@@ -92,6 +95,17 @@ void MapEntriesTableTest::DeleteMap(int64_t map_id) {
   EXPECT_TRUE(transaction.Begin());
 
   DbStatus status = map_entries_table_->DeleteMap(map_id);
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  EXPECT_TRUE(transaction.Commit());
+}
+
+void MapEntriesTableTest::CloneMap(int64_t source_map_id,
+                                   int64_t target_map_id) {
+  sql::Transaction transaction(&database_);
+  EXPECT_TRUE(transaction.Begin());
+
+  DbStatus status = map_entries_table_->CloneMap(source_map_id, target_map_id);
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   EXPECT_TRUE(transaction.Commit());
@@ -268,6 +282,64 @@ TEST_F(MapEntriesTableTest, DeleteMap) {
   ASSERT_OK_AND_ASSIGN(actual_entries, map_entries_table_->GetMapKeyValues(
                                            kSecondMapLocator.map_id().value()));
   EXPECT_EQ(actual_entries, kSecondMapEntries);
+}
+
+// Verifies that cloning a map copies all key/value pairs from the source map
+// to the target map while leaving the source map unchanged.
+TEST_F(MapEntriesTableTest, CloneMap) {
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kSourceMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+          {ToBytes("key_2"), ToBytes("value_2")},
+          {ToBytes("key_3"), ToBytes("value_3")},
+      };
+
+  // Insert entries into the source map.
+  InsertMapEntries(kFirstMapLocator, kSourceMapEntries);
+
+  // Verify the source map has the expected entries.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           source_entries),
+      map_entries_table_->GetMapKeyValues(kFirstMapLocator.map_id().value()));
+  EXPECT_EQ(source_entries, kSourceMapEntries);
+
+  // Clone the source map to the target map.
+  CloneMap(/*source_map_id=*/kFirstMapLocator.map_id().value(),
+           /*target_map_id=*/kSecondMapLocator.map_id().value());
+
+  // Verify the target map now contains the same entries as the source map.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           target_entries),
+      map_entries_table_->GetMapKeyValues(kSecondMapLocator.map_id().value()));
+  EXPECT_EQ(target_entries, kSourceMapEntries);
+
+  // Verify the source map is unchanged.
+  ASSERT_OK_AND_ASSIGN(source_entries, map_entries_table_->GetMapKeyValues(
+                                           kFirstMapLocator.map_id().value()));
+  EXPECT_EQ(source_entries, kSourceMapEntries);
+}
+
+// Verifies that cloning an empty source map results in an empty target map.
+TEST_F(MapEntriesTableTest, CloneEmptyMap) {
+  // Verify the source map is empty.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           source_entries),
+      map_entries_table_->GetMapKeyValues(kFirstMapLocator.map_id().value()));
+  EXPECT_TRUE(source_entries.empty());
+
+  // Clone the empty source map to the target map.
+  CloneMap(/*source_map_id=*/kFirstMapLocator.map_id().value(),
+           /*target_map_id=*/kSecondMapLocator.map_id().value());
+
+  // Verify the target map is also empty.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           target_entries),
+      map_entries_table_->GetMapKeyValues(kSecondMapLocator.map_id().value()));
+  EXPECT_TRUE(target_entries.empty());
 }
 
 }  // namespace storage

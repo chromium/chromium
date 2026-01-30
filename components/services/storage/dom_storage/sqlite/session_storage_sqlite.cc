@@ -108,9 +108,9 @@ DbStatus SessionStorageSqlite::UpdateMaps(
 
 DbStatus SessionStorageSqlite::CloneMap(MapLocator source_map,
                                         MapLocator target_map) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  // Copy all key/value pairs from the source map to the target map.
+  return map_entries_table_->CloneMap(source_map.map_id().value(),
+                                      target_map.map_id().value());
 }
 
 StatusOr<DomStorageDatabase::Metadata> SessionStorageSqlite::ReadAllMetadata() {
