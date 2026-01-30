@@ -73,8 +73,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
       SimpleFileTracker* file_tracker,
       int64_t max_bytes,
       net::CacheType cache_type,
-      net::NetLog* net_log,
-      net::CacheEncryptionDelegate* cache_encryption_delegate);
+      net::NetLog* net_log);
 
   ~SimpleBackendImpl() override;
 
@@ -292,7 +291,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   scoped_refptr<SimplePostOperationWaiterTable> post_open_by_hash_waiting_;
 
   const raw_ptr<net::NetLog> net_log_;
-  const raw_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate_;
   uint32_t entry_count_ = 0;
 
 #if BUILDFLAG(IS_ANDROID)

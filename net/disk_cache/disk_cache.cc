@@ -168,8 +168,7 @@ void CacheCreator::Run() {
        kSimpleBackendIsDefault)) {
     auto cache = std::make_unique<disk_cache::SimpleBackendImpl>(
         file_operations_factory_, path_, cleanup_tracker_.get(),
-        /* file_tracker = */ nullptr, max_bytes_, type_, net_log_,
-        cache_encryption_delegate_);
+        /* file_tracker = */ nullptr, max_bytes_, type_, net_log_);
     disk_cache::SimpleBackendImpl* simple_cache = cache.get();
     created_cache_ = std::move(cache);
 #if BUILDFLAG(IS_ANDROID)

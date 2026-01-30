@@ -213,8 +213,7 @@ SimpleBackendImpl::SimpleBackendImpl(
     SimpleFileTracker* file_tracker,
     int64_t max_bytes,
     net::CacheType cache_type,
-    net::NetLog* net_log,
-    net::CacheEncryptionDelegate* cache_encryption_delegate)
+    net::NetLog* net_log)
     : Backend(cache_type),
       file_operations_factory_(
           file_operations_factory
@@ -229,8 +228,7 @@ SimpleBackendImpl::SimpleBackendImpl(
           base::MakeRefCounted<SimplePostOperationWaiterTable>()),
       post_open_by_hash_waiting_(
           base::MakeRefCounted<SimplePostOperationWaiterTable>()),
-      net_log_(net_log),
-      cache_encryption_delegate_(cache_encryption_delegate) {
+      net_log_(net_log) {
   // Treat negative passed-in sizes same as in other backends, as default.
   if (orig_max_size_ < 0)
     orig_max_size_ = 0;
