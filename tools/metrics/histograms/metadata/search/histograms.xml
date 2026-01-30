@@ -642,9 +642,8 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.ContextualSearch.All.Searches"
-    enum="BooleanBottomSearchKind" expires_after="2026-07-12">
-<!-- TODO(donnd): change expires_after to "never" once established and
-       approved. -->
+    enum="BooleanBottomSearchKind" expires_after="never">
+<!-- expires-never: part of vital metric ChromeSearch.Actions -->
 
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>

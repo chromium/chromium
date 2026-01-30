@@ -199,6 +199,8 @@ chromium-metrics-reviews@google.com.
     enum="ContextMenuOptionAndroid" expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
 
+<!-- expires-never: part of vital metric ChromeSearch.Actions -->
+
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -765,6 +767,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="RenderViewContextMenu.Used" enum="RenderViewContextMenuItem"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
+
+<!-- expires-never: part of vital metric ChromeSearch.Actions -->
 
   <owner>avi@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
