@@ -16,11 +16,12 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -231,15 +232,22 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
 
   GURL Title2() const { return embedded_test_server()->GetURL("/title2.html"); }
 
-  TabUnderlineView* GetUnderlineOfActiveTab() {
+  TabUnderlineView* GetUnderlineOfTab(Browser* browser, int index) {
     TabStripRegionView* tab_strip_view =
-        browser()->window()->AsBrowserView()->tab_strip_view();
+        browser->window()->AsBrowserView()->tab_strip_view();
     views::View* underline =
-        tab_strip_view
-            ->GetTabAnchorViewAt(browser()->tab_strip_model()->active_index())
-            ->GetViewByElementId(TabUnderlineView::kGlicTabUnderlineElementId);
+        tab_strip_view->GetTabAnchorViewAt(index)->GetViewByElementId(
+            TabUnderlineView::kGlicTabUnderlineElementId);
     CHECK(underline);
     return views::AsViewClass<TabUnderlineView>(underline);
+  }
+
+  TabUnderlineView* GetUnderlineOfActiveTab(Browser* browser = nullptr) {
+    if (!browser) {
+      browser = this->browser();
+    }
+    return GetUnderlineOfTab(browser,
+                             browser->tab_strip_model()->active_index());
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -256,8 +264,11 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
         ->sharing_manager();
   }
 
-  tabs::TabHandle TabHandleAtIndex(int index) {
-    return browser()->tab_strip_model()->GetTabAtIndex(index)->GetHandle();
+  tabs::TabHandle TabHandleAtIndex(int index, Browser* browser = nullptr) {
+    if (!browser) {
+      browser = this->browser();
+    }
+    return browser->tab_strip_model()->GetTabAtIndex(index)->GetHandle();
   }
 
   void PinTabs(base::span<const tabs::TabHandle> tab_handles) {
@@ -593,6 +604,84 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewFeatureDisabledBrowserTest,
 
   // The pinned tab should have a visible tab alert indicator.
   EXPECT_TRUE(GetAlertIndicatorButtonOfActiveTab()->GetVisible());
+}
+
+class TabUnderlineViewMultiInstanceUiTest : public TabUnderlineViewUiTest {
+ public:
+  TabUnderlineViewMultiInstanceUiTest() {
+    // kGlicMultiInstance, kGlicMultiTab, kGlicMultitabUnderlines are required
+    // for IsMultiInstanceEnabled().
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kGlicMultiInstance,
+         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
+        {});
+  }
+  ~TabUnderlineViewMultiInstanceUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewMultiInstanceUiTest,
+                       AttachPinnedTabToNewWindow) {
+  // Set up two windows, each with one tab
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  // Second browser window; this will be active.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, Title2()));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  ASSERT_EQ(browser2->tab_strip_model()->count(), 1);
+
+  tabs::TabHandle handle1 = TabHandleAtIndex(0);
+  tabs::TabHandle handle2 = TabHandleAtIndex(0, browser2);
+  ASSERT_TRUE(handle1.Get());
+  ASSERT_TRUE(handle2.Get());
+
+  // Set up glic multi-instance sharing manager.
+  auto& manager = glic_service()->sharing_manager();
+  EXPECT_TRUE(manager.GetPinnedTabs().empty());
+  // Toggle Glic on second browser window to create an instance. Because the
+  // second browser is active, the main sharing manager will delegate to this
+  // instance's sharing manager.
+  glic_service()->ToggleUI(browser2, false,
+                           mojom::InvocationSource::kTopChromeButton);
+  auto* instance = glic_service()->GetInstanceForActiveTab(browser2);
+  ASSERT_TRUE(instance);
+
+  // Pin both tabs on the instance's sharing manager.
+  auto& instance_sharing_manager = instance->host().sharing_manager();
+  instance_sharing_manager.PinTabs({handle1, handle2});
+  EXPECT_TRUE(instance_sharing_manager.IsTabPinned(handle1));
+  EXPECT_TRUE(instance_sharing_manager.IsTabPinned(handle2));
+
+  // Verify the main sharing manager sees it (to show that delegation is
+  // working).
+  EXPECT_TRUE(manager.IsTabPinned(handle1));
+  EXPECT_TRUE(manager.IsTabPinned(handle2));
+
+  // Verify both tabs have underlines showing.
+  auto* underline1 = GetUnderlineOfActiveTab(browser());
+  auto* underline2 = GetUnderlineOfActiveTab(browser2);
+  ASSERT_TRUE(underline1);
+  ASSERT_TRUE(underline2);
+  static_cast<TesterImpl*>(underline1->tester())->WaitForAnimationStart();
+  static_cast<TesterImpl*>(underline2->tester())->WaitForAnimationStart();
+  EXPECT_TRUE(underline1->IsShowing());
+  EXPECT_TRUE(underline2->IsShowing());
+
+  // Simulate attachment of browser2's tab to browser1.
+  std::unique_ptr<tabs::TabModel> moved_tab =
+      browser2->tab_strip_model()->DetachTabAtForInsertion(0);
+  browser()->tab_strip_model()->InsertDetachedTabAt(1, std::move(moved_tab),
+                                                    AddTabTypes::ADD_NONE);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Check that the newly attached tab has its underline showing.
+  auto* underline_attached = GetUnderlineOfTab(browser(), 1);
+  ASSERT_TRUE(underline_attached);
+  static_cast<TesterImpl*>(underline_attached->tester())
+      ->WaitForAnimationStart();
+  EXPECT_TRUE(underline_attached->IsShowing());
 }
 
 }  // namespace glic
