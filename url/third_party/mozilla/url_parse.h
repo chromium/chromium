@@ -74,7 +74,7 @@ struct Component {
 
   // Returns a string_view using `source` as a backend.
   template <typename CharT>
-  std::basic_string_view<CharT> AsViewOn(
+  constexpr std::basic_string_view<CharT> AsViewOn(
       std::basic_string_view<CharT> source) const {
     DCHECK(is_valid());
     return source.substr(static_cast<size_t>(begin), static_cast<size_t>(len));
