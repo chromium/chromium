@@ -9,17 +9,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import android.app.Notification;
 import android.os.Bundle;
 import android.util.Pair;
-
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import java.util.concurrent.TimeoutException;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,8 +35,12 @@ import org.chromium.components.gcm_driver.instance_id.FakeInstanceIDWithSubtype;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
-
-import java.util.concurrent.TimeoutException;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Instrumentation tests for the Push API and the integration with the Notifications API on Android.
@@ -118,24 +114,24 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
                 "Permission prompt should not be shown",
                 PermissionDialogController.getInstance().isDialogShownForTest());
 
-        // Notifications permission should still be denied.
-        Assert.assertEquals("\"denied\"", runScriptBlocking("Notification.permission"));
-    }
+    // Notifications permission should still be denied.
+    Assert.assertEquals("\"denied\"", runScriptBlocking("Notification.permission"));
+  }
 
-    /** Verifies that PushManager.subscribe() fails if permission is dismissed or blocked. */
-    @Test
-    @MediumTest
-    @Feature({"Browser", "PushMessaging"})
-    @DisableFeatures("PermissionsAndroidClapperLoud")
-    public void testPushPermissionDenied() throws TimeoutException {
-        // Notifications permission should initially be prompt.
-        Assert.assertEquals("\"default\"", runScriptBlocking("Notification.permission"));
+  /** Verifies that PushManager.subscribe() fails if permission is dismissed or blocked. */
+  @Test
+  @MediumTest
+  @Feature({"Browser", "PushMessaging"})
+  @DisableFeatures({"PermissionsAndroidClapperLoud", "PermissionsGestureGatedPrompts"})
+  public void testPushPermissionDenied() throws TimeoutException {
+    // Notifications permission should initially be prompt.
+    Assert.assertEquals("\"default\"", runScriptBlocking("Notification.permission"));
 
-        // PushManager.subscribePush() should show the notifications permission prompt.
-        Assert.assertFalse(
-                "Permission prompt should not be shown",
-                PermissionDialogController.getInstance().isDialogShownForTest());
-        runScript("subscribePush()");
+    // PushManager.subscribePush() should show the notifications permission prompt.
+    Assert.assertFalse(
+        "Permission prompt should not be shown",
+        PermissionDialogController.getInstance().isDialogShownForTest());
+    runScript("subscribePush()");
 
         // Dismissing the prompt should cause subscribe() to fail.
         PermissionTestRule.waitForDialog(mNotificationTestRule.getActivity());
