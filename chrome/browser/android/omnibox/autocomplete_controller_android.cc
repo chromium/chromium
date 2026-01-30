@@ -560,10 +560,6 @@ void AutocompleteControllerAndroid::CreateNavigationObserver(
     JNIEnv* env,
     uintptr_t navigation_handle_ptr,
     uintptr_t match_ptr) {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxShortcutsAndroid)) {
-    return;
-  }
-
   auto* navigation_handle =
       reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
   const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
