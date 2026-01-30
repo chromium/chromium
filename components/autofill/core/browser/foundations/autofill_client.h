@@ -681,9 +681,13 @@ class AutofillClient {
   // Shows a bubble asking whether the user wants to save or update Autofill AI
   // data. `old_entity` is present in the update cases. It is used to give users
   // a better understanding of what was updated.
+  // `save_is_synchronous` indicates whether accepting the prompt requires a
+  // (notably) asynchronous operation. The UI can use this information to decide
+  // whether to close the prompt upon acceptance.
   virtual void ShowEntityImportBubble(
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
+      bool save_is_synchronous,
       EntityImportPromptResultCallback prompt_result_callback);
 
   // Hides the Autofill AI import bubble if it is currently showing.

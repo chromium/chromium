@@ -47,7 +47,7 @@ class AutofillAiImportDataBubbleView : public AutofillLocationBarBubble {
   std::unique_ptr<views::View> BuildEntityAttributeRow(
       const EntityAttributeUpdateDetails& detail);
 
-  void OnDialogAccepted() const;
+  bool OnDialogAccepted() const;
 
   std::unique_ptr<views::Label> GetLocalEntitySubtitle() const;
   std::unique_ptr<views::StyledLabel> GetWalletableEntitySubtitle() const;

@@ -96,6 +96,7 @@ void AutofillAiImportDataController::Hide(content::WebContents& web_contents) {
 void AutofillAiImportDataControllerImpl::ShowPrompt(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
+    bool close_on_accept,
     AutofillClient::EntityImportPromptResultCallback prompt_result_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view() || !MaySetUpBubble()) {
@@ -106,23 +107,21 @@ void AutofillAiImportDataControllerImpl::ShowPrompt(
     return;
   }
 
-  SetupPrompt(std::move(new_entity), std::move(old_entity),
-              std::move(prompt_result_callback));
-  QueueOrShowBubble();
-}
-
-void AutofillAiImportDataControllerImpl::SetupPrompt(
-    EntityInstance new_entity,
-    std::optional<EntityInstance> old_entity,
-    AutofillClient::EntityImportPromptResultCallback prompt_result_callback) {
   was_bubble_shown_ = false;
   new_entity_ = std::move(new_entity);
   old_entity_ = std::move(old_entity);
   prompt_result_callback_ = std::move(prompt_result_callback);
+  close_on_accept_ = close_on_accept;
+  QueueOrShowBubble();
 }
 
 void AutofillAiImportDataControllerImpl::OnSaveButtonClicked() {
-  OnBubbleClosed(AutofillClient::AutofillAiBubbleResult::kAccepted);
+  if (close_on_accept_) {
+    OnBubbleClosed(AutofillClient::AutofillAiBubbleResult::kAccepted);
+  } else if (!prompt_result_callback_.is_null()) {
+    std::move(prompt_result_callback_)
+        .Run(AutofillClient::AutofillAiBubbleResult::kAccepted);
+  }
 }
 
 std::u16string AutofillAiImportDataControllerImpl::GetPrimaryAccountEmail()
@@ -251,6 +250,10 @@ int AutofillAiImportDataControllerImpl::GetTitleImagesResourceId() const {
 base::optional_ref<const EntityInstance>
 AutofillAiImportDataControllerImpl::GetAutofillAiData() const {
   return new_entity_;
+}
+
+bool AutofillAiImportDataControllerImpl::CloseOnAccept() const {
+  return close_on_accept_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillAiImportDataControllerImpl);

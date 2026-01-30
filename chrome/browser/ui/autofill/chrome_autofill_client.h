@@ -236,6 +236,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void ShowEntityImportBubble(
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
+      bool save_is_synchronous,
       EntityImportPromptResultCallback prompt_result_callback) override;
   void CloseEntityImportBubble() override;
   void ShowEmailVerifiedToast() final;

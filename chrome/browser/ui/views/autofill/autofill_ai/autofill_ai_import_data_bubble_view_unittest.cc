@@ -30,10 +30,15 @@
 // both the controller and the view working together.
 namespace autofill {
 
+using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace {
+
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 class AutofillAiImportDataBubbleViewTest : public ChromeViewsTestBase {
  public:
@@ -70,7 +75,7 @@ class AutofillAiImportDataBubbleViewTest : public ChromeViewsTestBase {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<AutofillAiImportDataBubbleView> view_ = nullptr;
-  testing::NiceMock<MockAutofillAiImportDataController> mock_controller_;
+  NiceMock<MockAutofillAiImportDataController> mock_controller_;
 };
 
 void AutofillAiImportDataBubbleViewTest::CreateViewAndShow() {
@@ -106,7 +111,8 @@ void AutofillAiImportDataBubbleViewTest::CreateViewAndShow() {
           /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
-      .WillByDefault(testing::Return(details));
+      .WillByDefault(Return(details));
+  ON_CALL(mock_controller(), CloseOnAccept()).WillByDefault(Return(true));
 
   auto view_unique = std::make_unique<AutofillAiImportDataBubbleView>(
       anchor_widget_->GetContentsView(), web_contents_.get(),
@@ -132,6 +138,21 @@ TEST_F(AutofillAiImportDataBubbleViewTest, AcceptInvokesTheController) {
 
   view()->AcceptDialog();
   run_loop.Run();
+}
+
+// Tests that the bubble is not closed when the controller does not want to
+// close it on accept.
+TEST_F(AutofillAiImportDataBubbleViewTest, AcceptDoesNotCloseTheBubble) {
+  CreateViewAndShow();
+  EXPECT_CALL(mock_controller(), CloseOnAccept()).WillOnce(Return(false));
+  EXPECT_CALL(mock_controller(), OnSaveButtonClicked);
+  EXPECT_CALL(mock_controller(), OnBubbleClosed).Times(0);
+  view()->AcceptDialog();
+
+  task_environment()->RunUntilIdle();
+  // Clear expectations explicitly since the widget is destroyed during tear
+  // down.
+  Mock::VerifyAndClearExpectations(&mock_controller());
 }
 
 TEST_F(AutofillAiImportDataBubbleViewTest, CancelInvokesTheController) {

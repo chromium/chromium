@@ -42,6 +42,7 @@ class AutofillAiImportDataController {
   // of what was changed.
   virtual void ShowPrompt(EntityInstance new_entity,
                           std::optional<EntityInstance> old_entity,
+                          bool close_on_accept,
                           AutofillClient::EntityImportPromptResultCallback
                               prompt_result_callback) = 0;
 
@@ -79,6 +80,9 @@ class AutofillAiImportDataController {
   // Returns the Autofill AI data to be displayed in the UI.
   virtual base::optional_ref<const EntityInstance> GetAutofillAiData()
       const = 0;
+
+  // Whether the bubble should be closed when the user accepts the prompt.
+  virtual bool CloseOnAccept() const = 0;
 
   // Called when the Autofill AI data bubble is closed.
   virtual void OnBubbleClosed(

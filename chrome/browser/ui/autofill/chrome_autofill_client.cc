@@ -1411,6 +1411,7 @@ ChromeAutofillClient::GetMqlsUploadService() {
 void ChromeAutofillClient::ShowEntityImportBubble(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
+    bool save_is_synchronous,
     EntityImportPromptResultCallback prompt_result_callback) {
 #if BUILDFLAG(IS_ANDROID)
   autofill_ai_save_update_entity_flow_manager_->OfferSave(
@@ -1419,6 +1420,7 @@ void ChromeAutofillClient::ShowEntityImportBubble(
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
           web_contents(), GetAppLocale())) {
     controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
+                           /*close_on_accept=*/save_is_synchronous,
                            std::move(prompt_result_callback));
   } else {
     std::move(prompt_result_callback)

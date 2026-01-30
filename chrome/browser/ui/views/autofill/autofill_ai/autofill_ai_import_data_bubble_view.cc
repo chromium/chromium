@@ -124,9 +124,9 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON));
   DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
                                  controller_->GetDialogPrimaryButtonText());
-  SetAcceptCallback(
-      base::BindOnce(&AutofillAiImportDataBubbleView::OnDialogAccepted,
-                     base::Unretained(this)));
+  SetAcceptCallbackWithClose(
+      base::BindRepeating(&AutofillAiImportDataBubbleView::OnDialogAccepted,
+                          base::Unretained(this)));
   SetShowCloseButton(true);
 }
 
@@ -238,10 +238,13 @@ void AutofillAiImportDataBubbleView::WindowClosing() {
   controller_ = nullptr;
 }
 
-void AutofillAiImportDataBubbleView::OnDialogAccepted() const {
+bool AutofillAiImportDataBubbleView::OnDialogAccepted() const {
   if (controller_) {
     controller_->OnSaveButtonClicked();
+    return controller_->CloseOnAccept();
   }
+  // Always close the bubble when the controller is no longer available.
+  return true;
 }
 
 BEGIN_METADATA(AutofillAiImportDataBubbleView)

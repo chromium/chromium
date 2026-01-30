@@ -339,9 +339,9 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
       entity_instance = *client_->GetEntityDataManager()->GetEntityInstance(
           candidate_entity.guid());
     }
-    client_->ShowEntityImportBubble(std::move(candidate_entity),
-                                    std::move(entity_instance),
-                                    std::move(prompt_result_callback));
+    client_->ShowEntityImportBubble(
+        std::move(candidate_entity), std::move(entity_instance),
+        /*save_is_synchronous=*/true, std::move(prompt_result_callback));
   }
   return prompt_shown;
 }

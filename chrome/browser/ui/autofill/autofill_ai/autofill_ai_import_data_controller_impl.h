@@ -42,6 +42,7 @@ class AutofillAiImportDataControllerImpl
   // AutofillAiImportDataController:
   void ShowPrompt(EntityInstance new_entity,
                   std::optional<EntityInstance> old_entity,
+                  bool close_on_accept,
                   AutofillClient::EntityImportPromptResultCallback
                       prompt_result_callback) override;
   void OnSaveButtonClicked() override;
@@ -57,6 +58,7 @@ class AutofillAiImportDataControllerImpl
       const override;
   bool IsSavePrompt() const override;
   int GetTitleImagesResourceId() const override;
+  bool CloseOnAccept() const override;
 
   // BubbleControllerBase:
   void OnBubbleDiscarded() override;
@@ -81,14 +83,6 @@ class AutofillAiImportDataControllerImpl
   friend class content::WebContentsUserData<AutofillAiImportDataControllerImpl>;
   friend class AutofillAiImportDataControllerImplTest;
 
-  // Configures the controller's state for the Autofill AI data
-  // save/update/migrate prompt. `new_entity` is the data detected on the page,
-  // `old_entity` is the existing data to be updated (if any), and
-  // `prompt_closed_callback` is the callback to run upon user decision.
-  void SetupPrompt(
-      EntityInstance new_entity,
-      std::optional<EntityInstance> old_entity,
-      AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
 
   // The browser's locale when the object was instantiated.
   const std::string app_locale_;
@@ -110,6 +104,8 @@ class AutofillAiImportDataControllerImpl
   // leads to a navigation. In situations like this the bubble is closed,
   // focusing back on the tab should re-open it.
   bool reopen_bubble_when_web_contents_becomes_visible_ = false;
+
+  bool close_on_accept_ = true;
 
   base::WeakPtrFactory<AutofillAiImportDataControllerImpl> weak_ptr_factory_{
       this};
