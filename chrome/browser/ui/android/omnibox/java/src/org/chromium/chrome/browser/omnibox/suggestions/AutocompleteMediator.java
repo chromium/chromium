@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
-import org.chromium.chrome.browser.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
@@ -57,6 +56,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.RefineActionUsage;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -145,8 +145,6 @@ class AutocompleteMediator
     private @Nullable Long mFirstSuggestionListModelCreatedTime;
 
     private @Nullable Boolean mOmniboxInZeroPrefixState;
-
-    private @RefineActionUsage int mRefineActionUsage = RefineActionUsage.NOT_USED;
 
     // The timestamp (using SystemClock.elapsedRealtime()) at the point when the user started
     // modifying the omnibox with new input.
@@ -465,7 +463,7 @@ class AutocompleteMediator
             }
 
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
-            mRefineActionUsage = RefineActionUsage.NOT_USED;
+
             mOmniboxFocusResultedInNavigation = false;
             mSuggestionsListScrolled = false;
             mUrlFocusTime = System.currentTimeMillis();
@@ -514,7 +512,8 @@ class AutocompleteMediator
                 mAutocompleteInput.getRequestType(),
                 mOmniboxFocusResultedInNavigation,
                 mFuseboxCoordinator.getAttachmentsCount() > 0);
-        OmniboxMetrics.recordRefineActionUsage(mRefineActionUsage);
+        OmniboxMetrics.recordRefineActionUsage(mAutocompleteInput.getRefineActionUsage());
+
         OmniboxMetrics.recordSuggestionsListScrolled(
                 mAutocompleteInput.getPageClassification(), mSuggestionsListScrolled);
 
@@ -717,10 +716,12 @@ class AutocompleteMediator
             // Note: the logic below toggles assumes individual values to be represented by
             // individual bits. This allows proper reporting of different refine button uses
             // during single interaction with the Omnibox.
-            mRefineActionUsage |=
-                    isZeroPrefix
-                            ? RefineActionUsage.SEARCH_WITH_ZERO_PREFIX
-                            : RefineActionUsage.SEARCH_WITH_PREFIX;
+            assumeNonNull(mAutocompleteInput)
+                    .setRefineActionUsage(
+                            mAutocompleteInput.getRefineActionUsage()
+                                    | (isZeroPrefix
+                                            ? RefineActionUsage.SEARCH_WITH_ZERO_PREFIX
+                                            : RefineActionUsage.SEARCH_WITH_PREFIX));
         }
     }
 

@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput.RefineActionUsage;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -76,22 +77,6 @@ public class OmniboxMetrics {
     /** The result of prefetches started by touch down events within an omnibox session */
     public static final String HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT =
             "Android.Omnibox.SearchPrefetch.TouchDownPrefetchResult.NavigationPrefetch";
-
-    @IntDef({
-        RefineActionUsage.NOT_USED,
-        RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
-        RefineActionUsage.SEARCH_WITH_PREFIX,
-        RefineActionUsage.SEARCH_WITH_BOTH,
-        RefineActionUsage.COUNT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface RefineActionUsage {
-        int NOT_USED = 0; // User did not interact with Refine button.
-        int SEARCH_WITH_ZERO_PREFIX = 1; // User interacted with Refine button in zero-prefix mode.
-        int SEARCH_WITH_PREFIX = 2; // User interacted with Refine button in non-zero-prefix mode.
-        int SEARCH_WITH_BOTH = 3; // User interacted with Refine button in both contexts.
-        int COUNT = 4;
-    }
 
     @IntDef({
         ActionInSuggestIntentResult.SUCCESS,

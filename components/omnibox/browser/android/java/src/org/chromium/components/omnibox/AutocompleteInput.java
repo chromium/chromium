@@ -6,6 +6,8 @@ package org.chromium.components.omnibox;
 
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -17,6 +19,8 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AimToolsProto.ToolMode;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /**
@@ -27,6 +31,24 @@ import java.util.Locale;
  */
 @NullMarked
 public class AutocompleteInput implements UserData {
+    @IntDef(
+            value = {
+                RefineActionUsage.NOT_USED,
+                RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
+                RefineActionUsage.SEARCH_WITH_PREFIX,
+                RefineActionUsage.SEARCH_WITH_BOTH,
+                RefineActionUsage.COUNT
+            },
+            flag = true)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface RefineActionUsage {
+        int NOT_USED = 0; // User did not interact with Refine button.
+        int SEARCH_WITH_ZERO_PREFIX = 1; // User interacted with Refine button in zero-prefix mode.
+        int SEARCH_WITH_PREFIX = 2; // User interacted with Refine button in non-zero-prefix mode.
+        int SEARCH_WITH_BOTH = 3; // User interacted with Refine button in both contexts.
+        int COUNT = 4;
+    }
+
     private GURL mPageUrl;
     private int mPageClassification;
     private String mPageTitle;
@@ -35,6 +57,7 @@ public class AutocompleteInput implements UserData {
     private boolean mHasAttachments;
     private int mSelectionStart;
     private int mSelectionEnd;
+    private @RefineActionUsage int mRefineActionUsage;
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mRequestTypeSupplier = new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
 
@@ -247,6 +270,20 @@ public class AutocompleteInput implements UserData {
         return mSelectionEnd;
     }
 
+    /** Returns the current RefineActionUsage. */
+    public @RefineActionUsage int getRefineActionUsage() {
+        return mRefineActionUsage;
+    }
+
+    /**
+     * Sets the refine action usage.
+     *
+     * @param refineActionUsage The new refine action usage.
+     */
+    public void setRefineActionUsage(@RefineActionUsage int refineActionUsage) {
+        mRefineActionUsage = refineActionUsage;
+    }
+
     /**
      * Resets the AutocompleteInput to its default state.
      *
@@ -261,6 +298,7 @@ public class AutocompleteInput implements UserData {
         mHasAttachments = false;
         mSelectionStart = 0;
         mSelectionEnd = 0;
+        mRefineActionUsage = RefineActionUsage.NOT_USED;
         mPageClassification = PageClassification.BLANK_VALUE;
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
 
