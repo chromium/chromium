@@ -42,6 +42,7 @@ source_set("save_to_drive") {
     "//chrome/browser/download:status_text_builder_utils",
     "//chrome/browser/extensions",
     "//chrome/browser/pdf",
+    "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/signin",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/save_to_drive",
@@ -68,6 +69,7 @@ source_set("browser_tests") {
   deps = [
     ":save_to_drive",
     "//chrome/browser/pdf:pdf_extension_test_utils",
+    "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/ui/hats:test_support",
     "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions/api",
