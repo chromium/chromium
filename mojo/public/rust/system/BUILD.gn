@@ -23,11 +23,31 @@ rust_static_library("system") {
   ]
 }
 
+# FOR_RELEASE: Rename this mojo_ffi and get rid of the old one once it's fully
+# implemented.
+rust_static_library("ffi_new") {
+  crate_root = "ffi/lib.rs"
+  sources = [
+    "ffi/data_pipe.rs",
+    "ffi/internal_options.rs",
+    "ffi/lib.rs",
+    "ffi/mojo_handles.rs",
+    "ffi/mojo_result.rs",
+  ]
+  deps = [
+    ":mojo_c_system_bindings",
+    "//third_party/rust/bitflags/v2:lib",
+    "//third_party/rust/static_assertions/v1:lib",
+  ]
+  allow_unsafe = true
+}
+
 rust_bindgen("mojo_c_system_bindings") {
   header = "//mojo/public/c/system/thunks.h"
   deps = [ "//mojo/public/c/system" ]
 }
 
+# FOR_RELEASE: Replace this with ffi_new
 rust_static_library("mojo_ffi") {
   crate_root = "ffi.rs"
   sources = [ "ffi.rs" ]
