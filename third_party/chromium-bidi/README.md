@@ -19,52 +19,12 @@ at [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
 
 ## Performance Benchmarks
 
-We use several approaches to measure performance. Performance data, while not entirely
-stable (especially on macOS), is collected from GitHub Actions and offers insights into
-the project's performance.
+The project continuously monitors the performance and overhead of the WebDriver BiDi implementation.
 
-- https://googlechromelabs.github.io/chromium-bidi/bench/
+- **Dashboard:** [Chromium-BiDi Performance Benchmarks](https://googlechromelabs.github.io/chromium-bidi/bench/)
+- **Details:** Refer to [docs/benchmark.md](docs/benchmark.md) for detailed information about the benchmarking infrastructure, methodology, and statistical analysis.
 
-### Puppeteer CDP vs BiDi benchmark
-
-Metrics with the `pup-` prefix compare Puppeteer performance in CDP and BiDi modes. The
-benchmark uses the script
-[`tools/benchmark-puppeteer.mjs`](https://github.com/GoogleChromeLabs/chromium-bidi/tree/main/tools/benchmark-puppeteer.mjs)
-to evaluate JavaScript execution involving selectors and DOM manipulation. This direct
-comparison aims to mitigate the impact of hardware fluctuations.
-
-#### Running locally
-
-To run the benchmark locally, you would need some preparation:
-
-1. Build Chromium BiDi.
-1. Add Puppeteer to your project dependencies (!Important: don't commit it!).
-1. Link Chromium BiDi and use linked version in your project. This is required for Puppeteer
-   to use this version of Chromium BiDi instead of one it depends on.
-1. Run the benchmark.
-
-```bash
-npm run build
-npm install puppeteer@24.36.0
-npm link
-npm link chromium-bidi
-node tools/benchmark-puppeteer.mjs
-```
-
-### E2E benchmark
-
-Metrics with the `e2e-` prefix are derived from E2E tests in the
-[`tests/performance`](https://github.com/GoogleChromeLabs/chromium-bidi/tree/main/tests/performance)
-folder. They measure the absolute time, so they are more sensitive to hardware
-fluctuations.
-
-#### Running locally
-
-Run the e2e tests with the `-rP` option to get the performance metrics in the output.
-
-```bash
-PYTEST_ADDOPTS="-rP" npm run e2e -- tests/performance | grep "PERF_METRIC"
-```
+Note that performance data can be sensitive to CI environment fluctuations, especially on macOS.
 
 ## BiDi+
 
