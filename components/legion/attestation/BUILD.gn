@@ -11,6 +11,7 @@ source_set("attestation") {
     "server_evidence.h",
     "server_verification_key.cc",
     "server_verification_key.h",
+    "server_verification_key_data.inc",
     "verification_key_utils.cc",
     "verification_key_utils.h",
   ]
