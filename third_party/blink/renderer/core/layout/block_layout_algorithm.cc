@@ -1792,9 +1792,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
   // realize that the child isn't going to fit beside the floats at the current
   // position, and therefore re-resolve the BFC block offset with the child's
   // margin non-adjoining. This is akin to clearance.
-  MarginStrut adjoining_margin_strut(previous_inflow_position->margin_strut);
-  adjoining_margin_strut.Append(child_data.margins.block_start,
-                                child_style.HasMarginBlockStartQuirk());
+  MarginStrut adjoining_margin_strut(child_data.margin_strut);
   LayoutUnit adjoining_bfc_offset_estimate =
       child_data.bfc_offset_estimate.block_offset +
       adjoining_margin_strut.Sum();
