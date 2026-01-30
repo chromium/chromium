@@ -242,7 +242,6 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                     int selectionStart = savedState.getInt(KEY_SELECTION_START);
                     int selectionEnd = savedState.getInt(KEY_SELECTION_END);
                     queryEdit.setSelection(selectionStart, selectionEnd);
-                    queryEdit.requestFocus();
                 }
                 restoreFragmentState();
             }
@@ -523,7 +522,6 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         showBackArrowInSingleColumnMode(true);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
-        setUpQueryEdit(queryEdit);
 
         // Clearing the fragment before popping the back stack. Otherwise the existing
         // fragment is visible behind the popped one through the transparent background.
@@ -660,7 +658,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         view.setLayoutParams(lp);
     }
 
-    private void updateSingleColumnSearchUiWidth() {
+    public void updateSingleColumnSearchUiWidth() {
         var menuView = getHelpMenuView();
         if (menuView == null) {
             mHandler.post(this::updateSingleColumnSearchUiWidth);
@@ -698,8 +696,8 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                         // with menu icon on the right side.
                         queryWidth = searchBoxWidth - menuWidth;
                     }
-                    updateView(searchBox, margin, margin, searchBoxWidth);
-                    updateView(query, startMargin, endMargin, queryWidth);
+                    if (searchBox != null) updateView(searchBox, margin, margin, searchBoxWidth);
+                    if (query != null) updateView(query, startMargin, endMargin, queryWidth);
                 });
     }
 
@@ -851,7 +849,9 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
     }
 
     private void onQueryUpdated(String query) {
-        performSearch(query, SettingsSearchCoordinator.this::displayResultsFragment);
+        if (mFragmentState == FS_SEARCH) {
+            performSearch(query, SettingsSearchCoordinator.this::displayResultsFragment);
+        }
     }
 
     public void onTitleTapped(@Nullable String entryName) {

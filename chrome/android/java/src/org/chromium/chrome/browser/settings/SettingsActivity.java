@@ -310,17 +310,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (isMultiColumnSettingEnabled()) {
                 assert mMultiColumnSettings != null;
                 createMultiColumnTitleUpdater();
-
+                createSearchCoordinator(savedInstanceState);
             } else {
                 mTitleUpdater = new TitleUpdater();
                 fragmentManager.registerFragmentLifecycleCallbacks(
                         mTitleUpdater, /* recursive= */ true);
-            }
-            createSearchCoordinator(savedInstanceState);
-        } else {
-            // We need search only on MainSettings in single column mode.
-            if (getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT) == null) {
-                createSearchCoordinator(savedInstanceState);
+                // We need search only on MainSettings in single column mode.
+                if (getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT) == null) {
+                    createSearchCoordinator(savedInstanceState);
+                }
             }
         }
 
@@ -725,6 +723,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
                     .addToBackStack(null)
                     .commit();
+        }
+        if (mMultiColumnSettings == null && mSearchCoordinator != null) {
+            // In single-column settings, refresh the search UI layout as it can have been
+            // cluttered while showing other settings activities on top.
+            mSearchCoordinator.updateSingleColumnSearchUiWidth();
         }
     }
 
