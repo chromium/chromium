@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -59,6 +60,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -346,15 +348,34 @@ TEST_F(AppMenuModelTest, DeclutterTabsItem) {
 #if BUILDFLAG(ENABLE_GLIC)
 TEST_F(AppMenuModelTest, GlicItem) {
   feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      {features::kGlic, features::kGlicRollout, features::kTabstripComboButton},
-      {});
+  feature_list_.InitWithFeatures({features::kGlic, features::kGlicRollout}, {});
 
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
   model.ExecuteCommand(IDC_OPEN_GLIC, 0);
   EXPECT_EQ(1, model.log_metrics_count_);
 }
+
+TEST_F(AppMenuModelTest, TabSearchItem) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlic, features::kGlicRollout,
+#if BUILDFLAG(IS_CHROMEOS)
+                            chromeos::features::kFeatureManagementGlic
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      /*disabled_features=*/{features::kGlicLocaleFiltering,
+                             features::kGlicCountryFiltering});
+
+  AppMenuModel model(this, browser());
+  model.Init();
+  ToolsMenuModel toolModel(&model, browser());
+  std::optional<size_t> tab_search_index =
+      toolModel.GetIndexOfCommandId(IDC_TAB_SEARCH);
+  EXPECT_TRUE(tab_search_index.has_value());
+  EXPECT_TRUE(toolModel.IsEnabledAt(tab_search_index.value()));
+}
+
 #endif
 
 TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
@@ -781,31 +802,4 @@ TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
   new_model.ActivatedAt(menu_index);
   EXPECT_TRUE(new_model.IsEnabledAt(menu_index));
   EXPECT_FALSE(new_model.GetLabelAt(menu_index).empty());
-}
-
-class TabSearchMenuModelTest : public AppMenuModelTest {
- public:
-  TabSearchMenuModelTest() = default;
-  ~TabSearchMenuModelTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kTabstripComboButton,
-          {{"tab_search_toolbar_button", "true"}}}},
-        /*disabled_features=*/{});
-    AppMenuModelTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(TabSearchMenuModelTest, TabSearchItem) {
-  AppMenuModel model(this, browser());
-  model.Init();
-  ToolsMenuModel toolModel(&model, browser());
-  size_t tab_search_index =
-      toolModel.GetIndexOfCommandId(IDC_TAB_SEARCH).value();
-  EXPECT_TRUE(toolModel.IsEnabledAt(tab_search_index));
 }

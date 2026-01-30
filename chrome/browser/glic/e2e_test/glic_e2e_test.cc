@@ -89,8 +89,7 @@ GlicE2ETest::GlicE2ETest() {
                             features::kGlicKeyboardShortcutNewBadge,
                             features::kGlicRollout,
                             contextual_cueing::kContextualCueing,
-                            mojom::features::kZeroStateSuggestionsV2,
-                            features::kTabstripComboButton},
+                            mojom::features::kZeroStateSuggestionsV2},
       /*disabled_features=*/{
           syncer::kReplaceSyncPromosWithSignInPromos,
           // Don't disable glic based on country/locale.

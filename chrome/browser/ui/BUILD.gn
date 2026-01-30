@@ -5624,7 +5624,6 @@ source_set("tab_search_feature") {
     "tab_search_feature.h",
   ]
   deps = [
-    ":ui_features",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/common:buildflags",
