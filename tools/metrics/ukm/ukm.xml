@@ -8384,59 +8384,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="DIPS.NavigationFlowNode" singular="True">
-  <owner>svend@google.com</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    When a user visits three consecutive pages A-&gt;B-&gt;C within a tab, B
-    accesses cookies or storage, and the site (eTLD+1) for B is different from
-    the sites of A and C, then this event is recorded.
-  </summary>
-  <metric name="DidHaveSuccessfulWAA" enum="Boolean">
-    <summary>
-      True if this page had a successful WebAuthn assertion during the visit.
-    </summary>
-  </metric>
-  <metric name="DidHaveUserActivation" enum="Boolean">
-    <summary>
-      True if this page received user activation (click, etc.) during the visit.
-    </summary>
-  </metric>
-  <metric name="VisitDurationMilliseconds">
-    <summary>
-      The number of milliseconds this page was the primary page for,
-      exponentially bucketed. The duration increases as long as the page is the
-      primary page in its tab, even if the tab is not the active tab.
-    </summary>
-  </metric>
-  <metric name="WasEntryUserInitiated" enum="Boolean">
-    <summary>
-      True if the navigation from the prior page to this page was initiated by a
-      user gesture (e.g., typing a URL into the omnibar, clicking a link, etc.).
-    </summary>
-  </metric>
-  <metric name="WasExitUserInitiated" enum="Boolean">
-    <summary>
-      True if the navigation from this page to the next page was initiated by a
-      user gesture (e.g., typing a URL into the omnibar, clicking a link, etc.).
-    </summary>
-  </metric>
-  <metric name="WereEntryAndExitRendererInitiated" enum="Boolean">
-    <summary>
-      True if both the navigation from the prior page to this page, as well as
-      the navigation from this page to the next page, were initiated from the
-      renderer (e.g., by clicking a link in page content, etc.).
-    </summary>
-  </metric>
-  <metric name="WerePreviousAndNextSiteSame" enum="Boolean">
-    <summary>
-      True if the site (eTLD+1) for the page visited immediately prior to this
-      one (in the same tab) is the same as the site for the page visited
-      immediately after this one (in the same tab).
-    </summary>
-  </metric>
-</event>
-
 <event name="DIPS.Redirect" singular="True">
   <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
@@ -8531,63 +8478,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="DIPS.SuspectedTrackerFlowEntrypointV2" singular="True">
-  <owner>svend@google.com</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    For this event to be emitted for a URL B, all of the following must be true:
-    a tab's primary main frame was navigated to three consecutive URLs
-    A-&gt;B-&gt;C; the eTLD+1 for B was different from the eTLD+1s of A and C;
-    at least A and C committed (became the primary main page); and the
-    navigation A-&gt;B was content-initiated but not user-initiated. One of the
-    following must also be true: a) B did not commit and the navigation B-&gt;C
-    was a server redirect; or b) B did commit and the navigation B-&gt;C was
-    content-initiated but not user-initiated.
-  </summary>
-  <metric name="ExitRedirectType" enum="DIPSRedirectType">
-    <summary>
-      The type of the navigation away from this URL: client redirect (a
-      content-initiated but not user-initiated navigation) or server redirect.
-    </summary>
-  </metric>
-  <metric name="FlowId">
-    <summary>
-      A randomly-generated 32-bit id to connect this event with its matching
-      DIPS.SuspectedTrackerFlowReferrerV2 event.
-    </summary>
-  </metric>
-  <metric name="HadActiveStorageAccess" enum="Boolean">
-    <summary>
-      Whether the entrypoint actively accessed browser storage (cookies,
-      localStorage, etc.) during this visit. &quot;Actively&quot; means that the
-      entrypoint specifically requested the access; e.g., receiving cookies
-      because the browser automatically sent them in the HTTP request doesn't
-      count.
-    </summary>
-  </metric>
-</event>
-
-<event name="DIPS.SuspectedTrackerFlowReferrerV2" singular="True">
-  <owner>svend@google.com</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    For this event to be emitted for a URL A, all of the following must be true:
-    a tab's primary main frame was navigated to three consecutive URLs
-    A-&gt;B-&gt;C; the eTLD+1 for B was different from the eTLD+1s of A and C;
-    at least A and C committed (became the primary main page); and the
-    navigation A-&gt;B was content-initiated but not user-initiated. One of the
-    following must also be true: a) B did not commit and the navigation B-&gt;C
-    was a server redirect; or b) B did commit and the navigation B-&gt;C was
-    content-initiated but not user-initiated.
-  </summary>
-  <metric name="FlowId">
-    <summary>
-      A randomly-generated 32-bit id to connect this event with its matching
-      DIPS.SuspectedTrackerFlowEntrypointV2 event.
-    </summary>
-  </metric>
-</event>
-
 <event name="DIPS.TriggeringAction">
   <owner>kaklilu@google.com</owner>
   <owner>dc-komics@google.com</owner>
@@ -8616,82 +8506,6 @@ be describing additional metrics about the same event.
     <summary>
       True for sites wrote to the browser's storage since the last time the DIPS
       instance attempted to clear site storage.
-    </summary>
-  </metric>
-</event>
-
-<event name="DIPS.TrustIndicator.DirectNavigationV2" singular="True">
-  <owner>svend@google.com</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    Recorded when a user navigates directly to a URL via the omnibar or a
-    bookmark. In the case of a server redirect, this event is recorded for the
-    initial target of the navigation (i.e., the URL that was in the omnibar or
-    saved as a bookmark). Only recorded if the navigation eventually results in
-    a committed page.
-  </summary>
-  <metric name="NavigationSource" enum="DIPSDirectNavigationSource">
-    <summary>
-      The source of the direct navigation (e.g., omnibar or bookmark).
-    </summary>
-  </metric>
-</event>
-
-<event name="DIPS.TrustIndicator.InFlowInteractionV2" singular="True">
-  <owner>svend@google.com</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    For this event to be emitted for a URL B, all of the following must be true:
-    a tab's primary main frame was navigated to three consecutive URLs
-    A-&gt;B-&gt;C; B accessed cookies or storage; the eTLD+1 for B was different
-    from the eTLD+1s of A and C; A, B, and C committed (became the primary main
-    page); the navigations A-&gt;B and B-&gt;C were content-initiated but not
-    user-initiated; and B received user activation (click, scroll, etc.).
-  </summary>
-  <metric name="FlowId">
-    <summary>
-      A randomly-generated 32-bit id to connect this event with its matching
-      DIPS.SuspectedTrackerFlowEntrypoint event.
-    </summary>
-  </metric>
-</event>
-
-<event name="DIPS.TrustIndicator.InFlowSuccessorInteraction">
-  <owner>svend@google.com</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    For this event to be emitted for a URL B, all of the following must be true:
-    a tab's primary main frame must be navigated to at least four consecutive
-    URLs A-&gt;B-&gt;C-&gt;D(-&gt;E…); A must commit; the eTLD+1s for A and B
-    must be different; and the navigation from A-&gt;B must be content-initiated
-    and not user-initiated. There must also be a URL C or later (the
-    &quot;successor&quot;), for which all of the following are true: all
-    navigations in the subchain B-&gt;…-&gt;successor are either server
-    redirects or both content-initiated and not user-initiated; all subchain
-    URLs [B, …, successor] have the same eTLD+1; the successor commits; and the
-    successor receives user activation. There must also be another URL after the
-    successor in the navigation chain (the &quot;flow end&quot;) for which all
-    of the following are true: the flow end commits; all navigations in the
-    subchain successor-&gt;…-&gt;flow end are content-initiated or server
-    redirects; all subchain URLs [successor, …, flow end) (exclusive of flow end
-    itself) have the same eTLD+1; and successor and flow end have different
-    eTLD+1s. This event will be emitted once for each qualifying successor, but
-    this event is not singular because it is emitted with a source of URL B,
-    rather than the successor, and can therefore have multiple emissions for the
-    same source.
-  </summary>
-  <metric name="DidEntrypointAccessStorage">
-    <summary>
-      Whether the entrypoint of the flow accessed browser storage (cookies,
-      etc.).
-    </summary>
-  </metric>
-  <metric name="SuccessorRedirectIndex">
-    <summary>
-      What number redirect the page was that received the interaction, after the
-      entrypoint, including both client and server redirects. 1-indexed, so a
-      value of 1 means the URL was the destination of the first redirect from
-      the entrypoint.
     </summary>
   </metric>
 </event>

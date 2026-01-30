@@ -536,7 +536,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
   <token key="Source">
     <variant name="BtmBounceDetector"/>
-    <variant name="PageVisitObserver"/>
   </token>
 </histogram>
 
