@@ -55,7 +55,7 @@ export enum PagesValue {
  * 、 U+3001 IDEOGRAPHIC COMMA
  */
 export const COMMA_REGEX: RegExp =
-    /\u002c|\u055d|\u060c|\u0f14|\u104a|\u1363|\u1802|\u1808|\u3001/;
+    /\u002c|\u00b7|\u055d|\u060c|\u0f14|\u104a|\u1363|\u1802|\u1808|\u3001/;
 
 /**
  * Normalizes non-ASCII digits to ASCII digits. This list is partially derived
