@@ -118,6 +118,9 @@ std::optional<RelocUnitWin32> RelocRvaReaderWin32::GetNext() {
 
 bool RelocRvaReaderWin32::LoadRelocBlock(
     ConstBufferView::const_iterator block_begin) {
+  if (!block_begin) {
+    return false;
+  }
   ConstBufferView header_buf(block_begin, sizeof(pe::RelocHeader));
   if (header_buf.end() >= end_it_ ||
       end_it_ - header_buf.end() < kRelocUnitSize) {

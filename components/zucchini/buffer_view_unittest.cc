@@ -57,10 +57,10 @@ TEST_F(BufferViewTest, FromRange) {
   EXPECT_EQ(std::begin(raw_data), mutable_buffer.begin());
 
 #if GTEST_HAS_DEATH_TEST
-  EXPECT_DCHECK_DEATH(
+  EXPECT_CHECK_DEATH(
       ConstBufferView::FromRange(std::end(raw_data), std::begin(raw_data)));
 
-  UNSAFE_TODO(EXPECT_DCHECK_DEATH(MutableBufferView::FromRange(
+  UNSAFE_TODO(EXPECT_CHECK_DEATH(MutableBufferView::FromRange(
       std::begin(raw_data) + 1, std::begin(raw_data))));
 #endif
 }
@@ -95,7 +95,7 @@ TEST_F(BufferViewTest, Shrink) {
   buffer.shrink(2);
   EXPECT_EQ(size_t(2), buffer.size());
 #if GTEST_HAS_DEATH_TEST
-  EXPECT_DCHECK_DEATH(buffer.shrink(bytes_.size()));
+  EXPECT_CHECK_DEATH(buffer.shrink(bytes_.size()));
 #endif
 }
 

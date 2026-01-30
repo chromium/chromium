@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_span.h"
 #include "components/zucchini/algorithm.h"
 
 namespace zucchini {
@@ -49,54 +50,60 @@ namespace internal {
 // TODO(huangs): Rename to BasicBufferView.
 // BufferViewBase should not be used directly; it is an implementation used for
 // both BufferView and MutableBufferView.
-template <class T>
-class BufferViewBase {
+template <class ElementType>
+class GSL_POINTER BufferViewBase {
  public:
-  using value_type = T;
-  using reference = T&;
-  using pointer = T*;
-  using iterator = T*;
-  using const_iterator = typename std::add_const<T>::type*;
-  using size_type = std::size_t;
-  using difference_type = std::ptrdiff_t;
+  using element_type = ElementType;
+  using span_type = base::raw_span<element_type, DanglingUntriaged>;
 
-  static BufferViewBase FromRange(iterator first, iterator last) {
-    DCHECK_GE(last, first);
-    BufferViewBase ret;
-    ret.first_ = first;
-    ret.last_ = last;
-    return ret;
+  using pointer = span_type::pointer;
+  using reference = span_type::reference;
+  using const_reference = span_type::const_reference;
+  using size_type = span_type::size_type;
+
+  // TODO(crbug.com/439964610): `iterator` and `const_iterator` should be
+  // `span_type::iterator` and `span_type::const_iterator` which are backed by
+  // `base::CheckedContiguousIterator` hence safe, however for backwards
+  // compatibility the code using BufferViewBase assumes iterator is always a
+  // pointer.
+  using iterator = span_type::pointer;
+  using const_iterator = span_type::const_pointer;
+
+  static BufferViewBase FromRange(pointer first, pointer last) {
+    return BufferViewBase(UNSAFE_TODO(span_type(first, last)));
   }
 
-  BufferViewBase() = default;
+  constexpr BufferViewBase() noexcept = default;
+  // Support a conversion from BufferViewBase<T> to BufferViewBase<const T>.
+  template <typename T>
+    requires(std::same_as<std::remove_const_t<element_type>, T> &&
+             !std::same_as<element_type, T>)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr BufferViewBase(const BufferViewBase<T>& other)
+      : span_(other.span_) {}
+  // TODO(crbug.com/439964610): The second argument type should be
+  // `base::StrictNumeric<size_type>`.
+  constexpr BufferViewBase(pointer first, size_type count)
+      : UNSAFE_TODO(span_(first, count)) {}
 
-  BufferViewBase(iterator first, size_type size)
-      : first_(first), last_(UNSAFE_TODO(first_ + size)) {
-    DCHECK_GE(last_, first_);
-  }
-
-  template <class U>
-  BufferViewBase(const BufferViewBase<U>& that)
-      : first_(that.begin()), last_(that.end()) {}
-
-  template <class U>
-  BufferViewBase(BufferViewBase<U>&& that)
-      : first_(that.begin()), last_(that.end()) {}
-
-  BufferViewBase(const BufferViewBase&) = default;
-  BufferViewBase& operator=(const BufferViewBase&) = default;
+  constexpr BufferViewBase(const BufferViewBase& other) noexcept = default;
+  constexpr BufferViewBase(BufferViewBase&& other) noexcept = default;
+  constexpr BufferViewBase& operator=(const BufferViewBase& other) noexcept =
+      default;
+  constexpr BufferViewBase& operator=(BufferViewBase&& other) noexcept =
+      default;
 
   // Iterators
 
-  iterator begin() const { return first_; }
-  iterator end() const { return last_; }
-  const_iterator cbegin() const { return begin(); }
-  const_iterator cend() const { return end(); }
+  iterator begin() const { return base::to_address(span_.begin()); }
+  iterator end() const { return base::to_address(span_.end()); }
+  const_iterator cbegin() const { return base::to_address(span_.cbegin()); }
+  const_iterator cend() const { return base::to_address(span_.cend()); }
 
   // Capacity
 
-  bool empty() const { return first_ == last_; }
-  size_type size() const { return last_ - first_; }
+  constexpr size_type size() const noexcept { return span_.size(); }
+  [[nodiscard]] constexpr bool empty() const noexcept { return span_.empty(); }
 
   // Returns whether the buffer is large enough to cover |region|.
   bool covers(const BufferRegion& region) const {
@@ -105,7 +112,7 @@ class BufferViewBase {
 
   // Returns whether the buffer is large enough to cover an array starting at
   // |offset| with |num| elements, each taking |elt_size| bytes.
-  bool covers_array(size_t offset, size_t num, size_t elt_size) {
+  bool covers_array(size_type offset, size_type num, size_type elt_size) const {
     DCHECK_GT(elt_size, 0U);
     // Use subtraction and division to avoid overflow.
     return offset <= size() && (size() - offset) / elt_size >= num;
@@ -113,41 +120,41 @@ class BufferViewBase {
 
   // Element access
 
-  // Returns the raw value at specified location |pos|.
+  // Returns a reference to the raw value at specified location |pos|.
   // If |pos| is not within the range of the buffer, the process is terminated.
-  reference operator[](size_type pos) const {
-    CHECK_LT(pos, size());
-    return UNSAFE_TODO(first_[pos]);
+  constexpr const_reference operator[](size_type index) const {
+    return span_[index];
   }
+  constexpr reference operator[](size_type index) { return span_[index]; }
 
   // Returns a sub-buffer described by |region|.
   BufferViewBase operator[](BufferRegion region) const {
-    DCHECK_LE(region.offset, size());
-    DCHECK_LE(region.size, size() - region.offset);
-    return {UNSAFE_TODO(begin() + region.offset), region.size};
+    return span_.subspan(region.offset, region.size);
   }
 
-  template <class U>
-  U read(size_type pos) const {
-    // TODO(huangs): Use can_access<U>(pos) after fixing can_access().
-    CHECK_LE(sizeof(U), size());
-    CHECK_LE(pos, size() - sizeof(U));
-    U ret = {};
-    UNSAFE_TODO(::memcpy(&ret, begin() + pos, sizeof(U)));
-    return ret;
+  // TODO(crbug.com/439964610): The argument type should be
+  // `base::StrictNumeric<size_type>`.
+  template <class T>
+  T read(size_type pos) const {
+    T value;
+    base::byte_span_from_ref(value).copy_from_nonoverlapping(
+        base::as_bytes(span_.subspan(pos)).first(sizeof value));
+    return value;
   }
 
-  template <class U>
-  void write(size_type pos, const U& value) {
-    // TODO(huangs): Use can_access<U>(pos) after fixing can_access().
-    CHECK_LE(sizeof(U), size());
-    CHECK_LE(pos, size() - sizeof(U));
-    UNSAFE_TODO(::memcpy(begin() + pos, &value, sizeof(U)));
+  // TODO(crbug.com/439964610): The first argument type should be
+  // `base::StrictNumeric<size_type>`.
+  template <class T>
+  void write(size_type pos, const T& value) {
+    base::as_writable_bytes(span_.subspan(pos))
+        .copy_prefix_from(base::byte_span_from_ref(value));
   }
 
-  template <class U>
+  // TODO(crbug.com/439964610): The argument type should be
+  // `base::StrictNumeric<size_type>`.
+  template <class T>
   bool can_access(size_type pos) const {
-    return pos < size() && size() - pos >= sizeof(U);
+    return pos < size() && size() - pos >= sizeof(T);
   }
 
   // Returns a BufferRegion describing the full view, with offset = 0. If the
@@ -155,49 +162,61 @@ class BufferViewBase {
   // original region used for its definition (hence "local").
   BufferRegion local_region() const { return BufferRegion{0, size()}; }
 
-  bool equals(BufferViewBase other) const {
-    return std::ranges::equal(*this, other);
+  bool equals(const BufferViewBase& other) const {
+    return span_ == other.span_;
   }
 
   // Modifiers
 
-  void shrink(size_type new_size) {
-    UNSAFE_TODO(DCHECK_LE(first_ + new_size, last_));
-    last_ = UNSAFE_TODO(first_ + new_size);
-  }
+  // TODO(crbug.com/439964610): The argument type should be
+  // `base::StrictNumeric<size_type>`.
+  void shrink(size_type new_size) { span_ = span_.first(new_size); }
 
   // Moves the start of the view forward by n bytes.
-  void remove_prefix(size_type n) {
-    DCHECK_LE(n, size());
-    UNSAFE_TODO(first_ += n);
-  }
+  // TODO(crbug.com/439964610): The argument type should be
+  // `base::StrictNumeric<size_type>`.
+  void remove_prefix(size_type n) { span_ = span_.subspan(n); }
 
   // Moves the start of the view to |it|, which is in range [begin(), end()).
-  void seek(iterator it) {
-    DCHECK_GE(it, begin());
-    DCHECK_LE(it, end());
-    first_ = it;
+  void seek(pointer it) {
+    CHECK_LE(span_.data(), it);
+    const size_type offset = it - span_.data();
+    span_ = span_.subspan(offset);
   }
 
   // Given |origin| that contains |*this|, minimally increase |first_| (possibly
   // by 0) so that |first_ <= last_|, and |first_ - origin.first_| is a multiple
   // of |alignment|. On success, updates |first_| and returns true. Otherwise
   // returns false.
-  bool AlignOn(BufferViewBase origin, size_type alignment) {
-    DCHECK_GT(alignment, 0U);
-    DCHECK_LE(origin.first_, first_);
-    DCHECK_GE(origin.last_, last_);
-    size_type aligned_size =
-        AlignCeil(static_cast<size_type>(first_ - origin.first_), alignment);
-    if (aligned_size > static_cast<size_type>(last_ - origin.first_))
+  bool AlignOn(const BufferViewBase& origin,
+               base::StrictNumeric<size_type> alignment_arg) {
+    static_assert(sizeof(element_type) == 1u);
+
+    const size_type alignment = static_cast<size_type>(alignment_arg);
+
+    DCHECK_GT(alignment, 0u);
+    CHECK_LE(origin.begin(), begin());
+    CHECK_LE(end(), origin.end());
+
+    const size_type offset =
+        static_cast<size_type>(span_.data() - origin.span_.data());
+    const size_type aligned_size = AlignCeil(offset, alignment);
+    if (aligned_size - offset > span_.size_bytes()) {
       return false;
-    first_ = UNSAFE_TODO(origin.first_ + aligned_size);
+    }
+    span_ = span_.subspan(aligned_size - offset);
     return true;
   }
 
  private:
-  iterator first_ = nullptr;
-  iterator last_ = nullptr;
+  template <typename T>
+  friend class BufferViewBase;
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr BufferViewBase(base::span<element_type> other) noexcept
+      : span_(other) {}
+
+  span_type span_;
 };
 
 }  // namespace internal
