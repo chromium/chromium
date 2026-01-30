@@ -170,11 +170,9 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   // Note that the return value should not contain top-level "description"
   // or "title" fields, as these are automatically added to all objects
   // at the call site.
-  //
-  // TODO(crbug.com/475972617): Or rather, "description" *will* be added,
-  // once we support it.
   virtual std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const;
   virtual void FillWebMCPData(JSONValue& data);
+  String GetWebMCPParameterDescription();
 
  protected:
   HTMLFormControlElement(const QualifiedName& tag_name, Document&);

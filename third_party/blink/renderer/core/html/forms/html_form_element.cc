@@ -290,6 +290,11 @@ String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {
           parameter_schema->SetString("title", title);
         }
 
+        if (String description = form_control->GetWebMCPParameterDescription();
+            !description.empty()) {
+          parameter_schema->SetString("description", description);
+        }
+
         properties->SetObject(name, std::move(parameter_schema));
         if (form_control->IsRequired()) {
           required->PushString(name);
