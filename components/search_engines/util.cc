@@ -46,10 +46,6 @@ constexpr char kContextualInputsParameterKey[] = "cinpts";
 constexpr char kSearchSessionIdParameterKey[] = "gsessionid";
 constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
 constexpr char kVisualRequestIdQueryParameter[] = "vsrid";
-constexpr char kVisualInputTypeQueryParameter[] = "vit";
-constexpr char kVisualInputTypeQueryParameterPdfValue[] = "pdf";
-constexpr char kVisualInputTypeQueryParameterImageValue[] = "img";
-constexpr char kVisualInputTypeQueryParameterWebpageValue[] = "wp";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kAimUdmQueryParameterValue[] = "50";
@@ -86,21 +82,6 @@ WDKeywordsResult::Metadata ComputeMergeEnginesRequirements(
   }
 
   return out_metadata;
-}
-
-std::string GetMimeTypeParamValue(lens::MimeType mime_type) {
-  switch (mime_type) {
-    case lens::MimeType::kPdf:
-      return kVisualInputTypeQueryParameterPdfValue;
-    case lens::MimeType::kImage:
-      return kVisualInputTypeQueryParameterImageValue;
-    case lens::MimeType::kAnnotatedPageContent:
-      return kVisualInputTypeQueryParameterWebpageValue;
-    case lens::MimeType::kUnknown:
-      return kVisualInputTypeQueryParameterImageValue;
-    default:
-      NOTREACHED() << "File type not supported.";
-  }
 }
 
 GURL GetSearchUrlWithUdm(TemplateURLService* turl_service,
@@ -700,7 +681,6 @@ GURL GetUrlForMultimodalSearch(
     const base::Time& query_start_time,
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
-    const lens::MimeType mime_type,
     const std::optional<lens::LensOverlayInvocationSource> invocation_source,
     const std::string& lns_surface,
     const std::u16string& query_text,
@@ -726,9 +706,6 @@ GURL GetUrlForMultimodalSearch(
   }
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kVisualRequestIdQueryParameter, encoded_request_id);
-  result_url = net::AppendOrReplaceQueryParameter(
-      result_url, kVisualInputTypeQueryParameter,
-      GetMimeTypeParamValue(mime_type));
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kSearchSessionIdParameterKey, search_session_id);
   result_url = net::AppendOrReplaceQueryParameter(

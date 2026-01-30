@@ -69,7 +69,6 @@ constexpr char kRegion[] = "US";
 constexpr char kTimeZone[] = "America/Los_Angeles";
 constexpr char kRequestIdParameterKey[] = "vsrid";
 constexpr char kVisualSearchInteractionDataParameterKey[] = "vsint";
-constexpr char kVisualInputTypeParameterKey[] = "vit";
 constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
 constexpr char kTestCellAddress[] = "test_cell_address";
 constexpr char kTestServerAddress[] = "test_server_address";
@@ -1663,12 +1662,6 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_FALSE(vsrid_value.empty());
   EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
             DecodeRequestIdFromVsrid(vsrid_value).media_type());
-
-  // Assert: Visual input type is set to wp for webpage queries.
-  std::string vit_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
-                                         &vit_value));
-  EXPECT_EQ(vit_value, "wp");
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -2136,11 +2129,6 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
                                           &vsrid_value));
 
-  // Assert: Visual input type is NOT added to unimodal text queries.
-  std::string vit_value;
-  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
-                                          &vit_value));
-
   // Assert: Gsession id is NOT added to unimodal text queries.
   std::string gsession_id_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
@@ -2177,11 +2165,6 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   std::string vsrid_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
                                           &vsrid_value));
-
-  // Assert: Visual input type is NOT added to unimodal text queries.
-  std::string vit_value;
-  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
-                                          &vit_value));
 
   // Assert: Gsession id is NOT added to unimodal text queries.
   std::string gsession_id_value;
@@ -2246,12 +2229,6 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   EXPECT_FALSE(vsrid_value.empty());
   EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
             DecodeRequestIdFromVsrid(vsrid_value).media_type());
-
-  // Assert: Visual input type is set to pdf for multimodal pdf queries.
-  std::string vit_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
-                                         &vit_value));
-  EXPECT_EQ(vit_value, "pdf");
 
   // Assert: Gsession id is added to multimodal pdf queries.
   std::string gsession_id_value;
@@ -2442,12 +2419,6 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
             DecodeRequestIdFromVsrid(vsrid_value).media_type());
 
-  // Assert: Visual input type is set to pdf for multimodal pdf queries.
-  std::string vit_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
-      search_url, kVisualInputTypeParameterKey, &vit_value));
-  EXPECT_EQ(vit_value, "pdf");
-
   // Assert: Gsession id is added to multimodal pdf queries.
   std::string gsession_id_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
@@ -2570,13 +2541,6 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
             DecodeRequestIdFromVsrid(vsrid_value).media_type());
 
-  // Assert: Visual input type is set to pdf for multimodal pdf queries.
-  // TODO(crbug.com/472319362): Remove the vit param from all search urls.
-  std::string vit_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
-      search_url, kVisualInputTypeParameterKey, &vit_value));
-  EXPECT_EQ(vit_value, "pdf");
-
   // Assert: Gsession id is added to multimodal pdf queries.
   std::string gsession_id_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
@@ -2649,12 +2613,6 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
   EXPECT_FALSE(vsrid_value.empty());
   EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE,
             DecodeRequestIdFromVsrid(vsrid_value).media_type());
-
-  // Assert: Visual input type is set to img for multimodal image queries.
-  std::string vit_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
-                                         &vit_value));
-  EXPECT_EQ(vit_value, "img");
 
   // Assert: Gsession id is added to multimodal pdf queries.
   std::string gsession_id_value;
@@ -2730,11 +2688,6 @@ TEST_F(ComposeboxQueryControllerTest,
   std::string vsrid_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
                                           &vsrid_value));
-
-  // Assert: Visual input type is NOT added to unimodal text queries.
-  std::string vit_value;
-  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
-                                          &vit_value));
 
   // Assert: Gsession id is NOT added to unimodal text queries.
   std::string gsession_id_value;
@@ -3108,11 +3061,6 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
                                           &vsrid_value));
 
-  // Assert: Visual input type is NOT set for queries using multi-context flow.
-  std::string vit_value;
-  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
-                                          &vit_value));
-
   // Assert: Gsession id is added to multimodal queries.
   std::string gsession_id_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
@@ -3274,6 +3222,9 @@ TEST_F(ComposeboxQueryControllerTest, CreateSuggestInputsWithPageTitleAndUrl) {
   EXPECT_TRUE(suggest_inputs->send_page_title_and_url());
   EXPECT_EQ(suggest_inputs->page_title(), "Page Title");
   EXPECT_EQ(suggest_inputs->page_url(), "https://page.url/");
+
+  // Assert: Visual input type is set for the suggest request.
+  EXPECT_EQ(suggest_inputs->contextual_visual_input_type(), "wp");
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithInvocationSource) {

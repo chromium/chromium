@@ -502,7 +502,9 @@ class ComposeboxQueryController
   // images for multi-context input.
   bool enable_viewport_images_;
 
-  // Whether or not to use separate request ids for viewport image uploads.
+  // Whether or not to send viewport images with separate request ids from
+  // their associated page context.
+  // Does nothing if `enable_viewport_images_` is false.
   bool use_separate_request_ids_for_viewport_images_;
 
   // Whether to offer ZPS for the first document attachment, when multiple

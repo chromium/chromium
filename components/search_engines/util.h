@@ -244,7 +244,6 @@ GURL GetUrlForAim(
 // info.
 // `request_id` (vsrid) is the visual search request id used by lens to obtain
 // the uploaded context.
-// `mime_type` (vit) is the type of the file that has been uploaded.
 // TODO(crbug.com/430070871): Make `lns_surface` a required parameter when
 // the server supports it.
 // TODO(crbug.com/446972028): Remove this method in favor of the one below that
@@ -256,7 +255,6 @@ GURL GetUrlForMultimodalSearch(
     const base::Time& query_start_time,
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
-    const lens::MimeType mime_type,
     const std::optional<lens::LensOverlayInvocationSource> invocation_source =
         std::nullopt,
     const std::string& lns_surface = std::string(),
