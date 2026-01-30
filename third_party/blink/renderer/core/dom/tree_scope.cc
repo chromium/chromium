@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -527,9 +528,19 @@ Element* TreeScope::FindAnchorWithName(const String& name) {
   for (HTMLAnchorElement& anchor :
        Traversal<HTMLAnchorElement>::StartsAfter(RootNode())) {
     if (RootNode().GetDocument().InQuirksMode()) {
-      // Quirks mode, case insensitive comparison of names.
-      if (DeprecatedEqualIgnoringCase(anchor.GetName(), name))
+      // Quirks mode: Try case-sensitive matching first to align with Firefox
+      // and Safari, but fall back to case-insensitive for legacy compat.
+      // Count usage to measure impact before removing fallback.
+      // See https://crbug.com/40829784
+      if (anchor.GetName() == name) {
+        UseCounter::Count(RootNode().GetDocument(),
+                          WebFeature::kAnchorCaseSensitiveMatch);
         return &anchor;
+      } else if (DeprecatedEqualIgnoringCase(anchor.GetName(), name)) {
+        UseCounter::Count(RootNode().GetDocument(),
+                          WebFeature::kAnchorCaseInsensitiveMatch);
+        return &anchor;
+      }
     } else {
       // Strict mode, names need to match exactly.
       if (anchor.GetName() == name)

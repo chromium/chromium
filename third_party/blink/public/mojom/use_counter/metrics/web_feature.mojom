@@ -5097,6 +5097,8 @@ enum WebFeature {
   kAudioContextAsyncTransitionToSuspendedStateRead = 5781,
   kGetComputedStylePseudoElementWithoutColon = 5782,
   kGeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition = 5783,
+  kAnchorCaseSensitiveMatch = 5784,
+  kAnchorCaseInsensitiveMatch = 5785,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -1,0 +1,34 @@
+<html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<a name="TestAnchor"></a>
+<script>
+// Use counter IDs from web_feature.mojom
+const kAnchorCaseSensitiveMatch = 5784;
+const kAnchorCaseInsensitiveMatch = 5785;
+
+test(() => {
+  // This test must be in quirks mode (no DOCTYPE).
+  assert_equals(document.compatMode, 'BackCompat');
+
+  assert_false(internals.isUseCounted(document, kAnchorCaseSensitiveMatch),
+    'kAnchorCaseSensitiveMatch should not be counted before the test');
+  assert_false(internals.isUseCounted(document, kAnchorCaseInsensitiveMatch),
+    'kAnchorCaseInsensitiveMatch should not be counted before the test');
+
+  // Exact case match triggers kAnchorCaseSensitiveMatch.
+  location.hash = '#TestAnchor';
+  assert_true(internals.isUseCounted(document, kAnchorCaseSensitiveMatch),
+    'kAnchorCaseSensitiveMatch should be counted after exact match');
+  assert_false(internals.isUseCounted(document, kAnchorCaseInsensitiveMatch),
+    'kAnchorCaseInsensitiveMatch should NOT be counted after exact match');
+
+  // Case-insensitive match triggers kAnchorCaseInsensitiveMatch.
+  window.scrollTo(0, 0);
+  location.hash = '#testanchor';
+  assert_true(internals.isUseCounted(document, kAnchorCaseInsensitiveMatch),
+    'kAnchorCaseInsensitiveMatch should be counted after case-insensitive match');
+}, 'Anchor name matching in quirks mode counts use counters');
+</script>
