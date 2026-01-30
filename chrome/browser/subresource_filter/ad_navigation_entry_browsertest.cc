@@ -265,11 +265,10 @@ IN_PROC_BROWSER_TEST_F(AdNavigationEntryBrowserTest,
                                      GetURL("replaced_state"),
                                      GetURL("replaced_state")));
 
-  // TODO(crbug.com/375523824): The second entry (replaced_state) should be
-  // skippable. Update the expectation once cross-document subframe navigation
-  // is correctly ad-tagged.
+  // The cross-document, ad subframe navigation should flag the skippable ad
+  // state of the originating history entry.
   EXPECT_THAT(GetSkippableAdState(),
-              ::testing::ElementsAre(false, false, false));
+              ::testing::ElementsAre(false, true, false));
 }
 
 IN_PROC_BROWSER_TEST_F(AdNavigationEntryBrowserTest, ConsecutiveAdPushState) {

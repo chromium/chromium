@@ -16103,14 +16103,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   auto navigation_ukm_builder =
       navigation_request->GetNavigationTimelineUkmBuilder();
 
-  // We are only interested in the `caused_by_ad` status for same-document
-  // scenarios and for cross-document subframe scenarios.
-  //
-  // TODO(crbug.com/375523824): Plumb through the ad status for cross-document
-  // subframe navigation. It might suffice to only check the frame's
-  // pre-navigation ad status instead of the JavaScript stack.
-  bool caused_by_ad =
-      same_document_params ? same_document_params->caused_by_ad : false;
+  bool caused_by_ad = same_document_params ? same_document_params->caused_by_ad
+                                           : navigation_request->StartedByAd();
 
   // TODO(crbug.com/40150370): Do not pass |params| to DidNavigate().
   NavigationRequest* raw_navigation_request = navigation_request.get();
