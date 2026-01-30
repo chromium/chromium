@@ -433,3 +433,44 @@ TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
 
   [delegate_.overlay removeFromSuperview];
 }
+
+class SnapshotGeneratorNilDelegateTest : public PlatformTest {
+ public:
+  SnapshotGeneratorNilDelegateTest() {
+    SnapshotSourceTabHelper::CreateForWebState(&web_state_);
+    generator_ = [[SnapshotGenerator alloc]
+        initWithWebStateInfo:[[WebStateSnapshotInfo alloc]
+                                 initWithWebState:&web_state_]];
+  }
+
+ protected:
+  web::WebTaskEnvironment task_environment_;
+  SnapshotGenerator* generator_ = nil;
+  FakeWebStateWithSnapshot web_state_;
+};
+
+// Tests that generateSnapshot returns a nil snapshot.
+TEST_F(SnapshotGeneratorNilDelegateTest, GenerateSnapshot) {
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
+  __block UIImage* snapshot = nil;
+  [generator_ generateSnapshotWithCompletion:^(UIImage* image) {
+    snapshot = image;
+    run_loop_ptr->Quit();
+  }];
+
+  run_loop.Run();
+
+  EXPECT_FALSE(snapshot);
+}
+
+// Tests that generateUIViewSnapshot returns a nil snapshot.
+TEST_F(SnapshotGeneratorNilDelegateTest, GenerateUIViewSnapshot) {
+  EXPECT_FALSE([generator_ generateUIViewSnapshot]);
+}
+
+// Tests that generateUIViewSnapshotWithOverlays returns a nil snapshot.
+TEST_F(SnapshotGeneratorNilDelegateTest, GenerateUIViewSnapshotWithOverlays) {
+  EXPECT_FALSE([generator_ generateUIViewSnapshotWithOverlays]);
+}
