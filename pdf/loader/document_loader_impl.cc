@@ -145,7 +145,7 @@ bool DocumentLoaderImpl::GetBlock(uint32_t position,
     return false;
   }
   return chunk_stream_.ReadData(
-      gfx::Range(position, addition_result.ValueOrDie()), buf.data());
+      gfx::Range(position, addition_result.ValueOrDie()), buf);
 }
 
 bool DocumentLoaderImpl::IsDataAvailable(uint32_t position,

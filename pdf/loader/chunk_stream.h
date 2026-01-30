@@ -6,7 +6,7 @@
 #define PDF_LOADER_CHUNK_STREAM_H_
 
 #include <stddef.h>
-#include <string.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <array>
@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "pdf/loader/range_set.h"
 
 namespace chrome_pdf {
@@ -25,7 +25,7 @@ template <size_t N>
 class ChunkStream {
  public:
   static constexpr size_t kChunkSize = N;
-  using ChunkData = typename std::array<unsigned char, N>;
+  using ChunkData = typename std::array<uint8_t, N>;
 
   ChunkStream() {}
   ~ChunkStream() {}
@@ -44,21 +44,23 @@ class ChunkStream {
     filled_chunks_.Union(gfx::Range(chunk_index, chunk_index + 1));
   }
 
-  bool ReadData(const gfx::Range& range, void* buffer) const {
-    if (!IsRangeAvailable(range))
+  bool ReadData(const gfx::Range& range, base::span<uint8_t> buffer) const {
+    if (!IsRangeAvailable(range)) {
       return false;
+    }
 
-    unsigned char* data_buffer = static_cast<unsigned char*>(buffer);
+    if (buffer.size() < range.length()) {
+      return false;
+    }
+
     size_t start = range.start();
-    while (start != range.end()) {
-      const size_t chunk_index = GetChunkIndex(start);
+    const size_t end = range.end();
+    while (start != end) {
       const size_t chunk_start = start % kChunkSize;
-      const size_t len =
-          std::min(kChunkSize - chunk_start, range.end() - start);
-      UNSAFE_TODO({
-        memcpy(data_buffer, data_[chunk_index]->data() + chunk_start, len);
-        data_buffer += len;
-      });
+      base::span<const uint8_t> source(*data_[GetChunkIndex(start)]);
+      const size_t len = std::min(source.size() - chunk_start, end - start);
+      buffer.copy_prefix_from(source.subspan(chunk_start, len));
+      buffer = buffer.subspan(len);
       start += len;
     }
     return true;
