@@ -47,6 +47,16 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUIPumpImprovementsWin);
 // Feature to run tasks by batches before pumping out messages.
 BASE_EXPORT BASE_DECLARE_FEATURE(kRunTasksByBatches);
 
+// Feature to adjust how quickly the ThreadPool capacity is increased when
+// a foreground task is blocked in a ScopedBlockingCall.
+BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolForegroundBlockingTimeouts);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    TimeDelta,
+    kThreadPoolForegroundMayBlockThresholdParam);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    TimeDelta,
+    kThreadPoolForegroundBlockedWorkersPollParam);
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_

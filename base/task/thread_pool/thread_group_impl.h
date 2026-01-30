@@ -70,7 +70,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
              WorkerThreadObserver* worker_thread_observer,
              WorkerEnvironment worker_environment,
              bool synchronous_thread_start_for_testing,
-             std::optional<TimeDelta> may_block_threshold) override;
+             std::optional<TimeDelta> may_block_threshold_for_testing) override;
   void Start(size_t max_tasks,
              size_t max_best_effort_tasks,
              TimeDelta suggested_reclaim_time,

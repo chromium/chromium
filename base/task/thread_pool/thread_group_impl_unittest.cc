@@ -101,14 +101,15 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
       size_t max_tasks,
       std::optional<int> max_best_effort_tasks = std::nullopt,
       WorkerThreadObserver* worker_observer = nullptr,
-      std::optional<TimeDelta> may_block_threshold = std::nullopt) {
+      std::optional<TimeDelta> may_block_threshold_for_testing = std::nullopt) {
     ASSERT_TRUE(thread_group_);
     thread_group_->Start(
         max_tasks,
         max_best_effort_tasks ? max_best_effort_tasks.value() : max_tasks,
         suggested_reclaim_time, service_thread_.task_runner(), worker_observer,
         ThreadGroup::WorkerEnvironment::NONE,
-        /* synchronous_thread_start_for_testing=*/false, may_block_threshold);
+        /* synchronous_thread_start_for_testing=*/false,
+        may_block_threshold_for_testing);
   }
 
   void CreateAndStartThreadGroup(
@@ -116,10 +117,10 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
       size_t max_tasks = kMaxTasks,
       std::optional<int> max_best_effort_tasks = std::nullopt,
       WorkerThreadObserver* worker_observer = nullptr,
-      std::optional<TimeDelta> may_block_threshold = std::nullopt) {
+      std::optional<TimeDelta> may_block_threshold_for_testing = std::nullopt) {
     CreateThreadGroup();
     StartThreadGroup(suggested_reclaim_time, max_tasks, max_best_effort_tasks,
-                     worker_observer, may_block_threshold);
+                     worker_observer, may_block_threshold_for_testing);
   }
 
   Thread service_thread_;
@@ -1558,8 +1559,7 @@ class ThreadGroupImplBlockingCallAndMaxBestEffortTasksTest
     thread_group_->Start(kMaxTasks, kMaxBestEffortTasks, base::TimeDelta::Max(),
                          service_thread_.task_runner(), nullptr,
                          ThreadGroup::WorkerEnvironment::NONE,
-                         /*synchronous_thread_start_for_testing=*/false,
-                         /*may_block_threshold=*/{});
+                         /*synchronous_thread_start_for_testing=*/false);
   }
 
   void TearDown() override { ThreadGroupImplImplTestBase::CommonTearDown(); }
@@ -1635,8 +1635,7 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, RacyCleanup) {
                        kReclaimTimeForRacyCleanupTest,
                        service_thread_.task_runner(), nullptr,
                        ThreadGroup::WorkerEnvironment::NONE,
-                       /*synchronous_thread_start_for_testing=*/false,
-                       /*may_block_threshold=*/{});
+                       /*synchronous_thread_start_for_testing=*/false);
 
   scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
       {WithBaseSyncPrimitives()}, &mock_pooled_task_runner_delegate_);

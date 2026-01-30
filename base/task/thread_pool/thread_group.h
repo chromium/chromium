@@ -95,7 +95,7 @@ class BASE_EXPORT ThreadGroup {
       WorkerThreadObserver* worker_thread_observer,
       WorkerEnvironment worker_environment,
       bool synchronous_thread_start_for_testing,
-      std::optional<TimeDelta> may_block_threshold) = 0;
+      std::optional<TimeDelta> may_block_threshold_for_testing) = 0;
 
   // Registers the thread group in TLS.
   void BindToCurrentThread();
@@ -225,8 +225,9 @@ class BASE_EXPORT ThreadGroup {
       scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
       WorkerThreadObserver* worker_thread_observer,
       WorkerEnvironment worker_environment,
-      bool synchronous_thread_start_for_testing = false,
-      std::optional<TimeDelta> may_block_threshold = std::optional<TimeDelta>())
+      TimeDelta may_block_threshold,
+      TimeDelta blocked_workers_poll_period,
+      bool synchronous_thread_start_for_testing = false)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Derived classes must implement a ScopedCommandsExecutor that derives from

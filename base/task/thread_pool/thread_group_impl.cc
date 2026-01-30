@@ -12,6 +12,7 @@
 #include "base/sequence_token.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/checked_lock.h"
+#include "base/task/task_features.h"
 #include "base/task/thread_pool/worker_thread.h"
 #include "base/threading/platform_thread_metrics.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -22,6 +23,33 @@
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base::internal {
+
+namespace {
+
+// In a background thread group:
+// - Blocking calls take more time than in a foreground thread group.
+// - We want to minimize impact on foreground work, not maximize execution
+//   throughput.
+// For these reasons, the timeout to increase the maximum number of concurrent
+// tasks when there is a MAY_BLOCK ScopedBlockingCall is *long*. It is not
+// infinite because execution throughput should not be reduced forever if a task
+// blocks forever.
+//
+// TODO(fdoray): On platforms without background thread groups, blocking in a
+// BEST_EFFORT task should:
+// 1. Increment the maximum number of concurrent tasks after a *short* timeout,
+//    to allow scheduling of USER_VISIBLE/USER_BLOCKING tasks.
+// 2. Increment the maximum number of concurrent BEST_EFFORT tasks after a
+//    *long* timeout, because we only want to allow more BEST_EFFORT tasks to be
+//    be scheduled concurrently when we believe that a BEST_EFFORT task is
+//    blocked forever.
+// Currently, only 1. is true as the configuration is per thread group.
+// TODO(crbug.com/40612168): Fix racy condition when MayBlockThreshold ==
+// BlockedWorkersPoll.
+constexpr TimeDelta kBackgroundMayBlockThreshold = Seconds(10);
+constexpr TimeDelta kBackgroundBlockedWorkersPoll = Seconds(12);
+
+}  // namespace
 
 // Upon destruction, executes actions that control the number of active workers.
 // Useful to satisfy locking requirements of these actions.
@@ -233,11 +261,24 @@ void ThreadGroupImpl::Start(
     WorkerThreadObserver* worker_thread_observer,
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,
-    std::optional<TimeDelta> may_block_threshold) {
+    std::optional<TimeDelta> may_block_threshold_for_testing) {
 #if DCHECK_IS_ON()
   DCHECK(!in_start().start_called);
   in_start().start_called = true;
 #endif
+
+  TimeDelta may_block_threshold =
+      may_block_threshold_for_testing
+          ? may_block_threshold_for_testing.value()
+          : (thread_type_hint_ != ThreadType::kBackground
+                 ? kThreadPoolForegroundMayBlockThresholdParam.Get()
+                 : kBackgroundMayBlockThreshold);
+
+  TimeDelta blocked_workers_poll_period =
+      thread_type_hint_ != ThreadType::kBackground
+          ? kThreadPoolForegroundBlockedWorkersPollParam.Get()
+          : kBackgroundBlockedWorkersPoll;
+
   {
     ScopedCommandsExecutor executor(this);
     CheckedAutoLock auto_lock(lock_);
@@ -245,7 +286,8 @@ void ThreadGroupImpl::Start(
     ThreadGroup::StartImplLockRequired(
         max_tasks, max_best_effort_tasks, suggested_reclaim_time,
         service_thread_task_runner, worker_thread_observer, worker_environment,
-        synchronous_thread_start_for_testing, may_block_threshold);
+        may_block_threshold, blocked_workers_poll_period,
+        synchronous_thread_start_for_testing);
 
     DCHECK(workers_.empty());
     EnsureEnoughWorkersLockRequired(&executor);

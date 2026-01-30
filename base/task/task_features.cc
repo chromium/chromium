@@ -50,4 +50,17 @@ BASE_FEATURE(kRunTasksByBatches,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kThreadPoolForegroundBlockingTimeouts,
+             FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(TimeDelta,
+                   kThreadPoolForegroundMayBlockThresholdParam,
+                   &kThreadPoolForegroundBlockingTimeouts,
+                   "MayBlockThreshold",
+                   Milliseconds(1000));
+BASE_FEATURE_PARAM(TimeDelta,
+                   kThreadPoolForegroundBlockedWorkersPollParam,
+                   &kThreadPoolForegroundBlockingTimeouts,
+                   "BlockedWorkersPoll",
+                   Milliseconds(1200));
 }  // namespace base

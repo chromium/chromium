@@ -25,31 +25,6 @@ namespace base::internal {
 
 namespace {
 
-// In a background thread group:
-// - Blocking calls take more time than in a foreground thread group.
-// - We want to minimize impact on foreground work, not maximize execution
-//   throughput.
-// For these reasons, the timeout to increase the maximum number of concurrent
-// tasks when there is a MAY_BLOCK ScopedBlockingCall is *long*. It is not
-// infinite because execution throughput should not be reduced forever if a task
-// blocks forever.
-//
-// TODO(fdoray): On platforms without background thread groups, blocking in a
-// BEST_EFFORT task should:
-// 1. Increment the maximum number of concurrent tasks after a *short* timeout,
-//    to allow scheduling of USER_VISIBLE/USER_BLOCKING tasks.
-// 2. Increment the maximum number of concurrent BEST_EFFORT tasks after a
-//    *long* timeout, because we only want to allow more BEST_EFFORT tasks to be
-//    be scheduled concurrently when we believe that a BEST_EFFORT task is
-//    blocked forever.
-// Currently, only 1. is true as the configuration is per thread group.
-// TODO(crbug.com/40612168): Fix racy condition when MayBlockThreshold ==
-// BlockedWorkersPoll.
-constexpr TimeDelta kForegroundMayBlockThreshold = Milliseconds(1000);
-constexpr TimeDelta kForegroundBlockedWorkersPoll = Milliseconds(1200);
-constexpr TimeDelta kBackgroundMayBlockThreshold = Seconds(10);
-constexpr TimeDelta kBackgroundBlockedWorkersPoll = Seconds(12);
-
 // ThreadGroup that owns the current thread, if any.
 constinit thread_local const ThreadGroup* current_thread_group = nullptr;
 
@@ -143,8 +118,9 @@ void ThreadGroup::StartImplLockRequired(
     scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer,
     WorkerEnvironment worker_environment,
-    bool synchronous_thread_start_for_testing,
-    std::optional<TimeDelta> may_block_threshold) {
+    TimeDelta may_block_threshold,
+    TimeDelta blocked_workers_poll_period,
+    bool synchronous_thread_start_for_testing) {
   if (synchronous_thread_start_for_testing) {
     worker_started_for_testing_.emplace(WaitableEvent::ResetPolicy::AUTOMATIC);
     // Don't emit a ScopedBlockingCallWithBaseSyncPrimitives from this
@@ -153,15 +129,8 @@ void ThreadGroup::StartImplLockRequired(
     worker_started_for_testing_->declare_only_used_while_idle();
   }
 
-  in_start().may_block_threshold =
-      may_block_threshold ? may_block_threshold.value()
-                          : (thread_type_hint_ != ThreadType::kBackground
-                                 ? kForegroundMayBlockThreshold
-                                 : kBackgroundMayBlockThreshold);
-  in_start().blocked_workers_poll_period =
-      thread_type_hint_ != ThreadType::kBackground
-          ? kForegroundBlockedWorkersPoll
-          : kBackgroundBlockedWorkersPoll;
+  in_start().may_block_threshold = may_block_threshold;
+  in_start().blocked_workers_poll_period = blocked_workers_poll_period;
 
   max_tasks_ = max_tasks;
   baseline_max_tasks_ = max_tasks;
