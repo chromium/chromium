@@ -66,8 +66,13 @@ constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(200);
 // thinner progress line.
 constexpr base::TimeDelta kThicknessAnimationDuration = base::Milliseconds(150);
 
-// Defines how frequently the progress will be updated.
-constexpr base::TimeDelta kProgressUpdateFrequency = base::Milliseconds(100);
+// Defines the interval for updating the progress for a squiggly line.
+constexpr base::TimeDelta kSquigglyProgressUpdateInterval =
+    base::Milliseconds(100);
+
+// Defines the interval for updating the progress for a straight line.
+constexpr base::TimeDelta kStraightProgressUpdateInterval =
+    base::Milliseconds(150);
 
 // Defines how long the progress colors should delay switching when the media
 // playback rate is changing.
@@ -463,8 +468,8 @@ void MediaProgressView::UpdateProgress(
   if (should_animate_waves) {
     // Update the progress wavelength phase offset to create wave animation.
     phase_offset_ +=
-        static_cast<int>(kProgressUpdateFrequency.InMillisecondsF() / 1000 *
-                         kProgressPhaseSpeed);
+        static_cast<int>(kSquigglyProgressUpdateInterval.InMillisecondsF() /
+                         1000 * kProgressPhaseSpeed);
     phase_offset_ %= kProgressWavelength;
   }
 
@@ -472,7 +477,7 @@ void MediaProgressView::UpdateProgress(
   // synchronization.
   if (!is_paused_) {
     update_progress_timer_->Start(
-        FROM_HERE, kProgressUpdateFrequency,
+        FROM_HERE, GetUpdateInterval(),
         base::BindOnce(&MediaProgressView::UpdateProgress,
                        base::Unretained(this), media_position));
   }
@@ -495,6 +500,16 @@ void MediaProgressView::UpdateProgress(
   if (should_animate_waves) {
     OnPropertyChanged(&phase_offset_, views::PropertyEffects::kPaint);
   }
+}
+
+base::TimeDelta MediaProgressView::GetUpdateInterval() const {
+  // Performance optimization: The update interval is chosen to ensure the
+  // squiggly wave animation remains smooth, while the straight progress bar is
+  // updated less frequently to improve performance. The straight line's linear
+  // movement is less visually sensitive to a lower update rate than the wave
+  // animation.
+  return use_squiggly_line_ ? kSquigglyProgressUpdateInterval
+                            : kStraightProgressUpdateInterval;
 }
 
 void MediaProgressView::MaybeNotifyAccessibilityValueChanged() {

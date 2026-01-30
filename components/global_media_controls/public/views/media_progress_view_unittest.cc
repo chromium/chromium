@@ -4,6 +4,7 @@
 
 #include "components/global_media_controls/public/views/media_progress_view.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/test/icu_test_util.h"
 #include "base/timer/mock_timer.h"
@@ -645,6 +646,25 @@ TEST_F(MediaProgressViewTest, UpdateProgressSchedulesPaintOnlyWhenDrawn) {
   test_api.ClearNeedsPaint();
   view()->UpdateProgress(media_position);
   EXPECT_FALSE(test_api.needs_paint());
+}
+
+TEST_F(MediaProgressViewTest, UpdateIntervalsAreCorrectRelatively) {
+  // Use arbitrary values for the constructor since we only care about the
+  // update interval property.
+  ui::ColorId id = ui::kUiColorsStart;
+
+  MediaProgressView squiggly_view(
+      /*use_squiggly_line=*/true, id, id, id, id, id, base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
+
+  MediaProgressView straight_view(
+      /*use_squiggly_line=*/false, id, id, id, id, id, base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
+
+  // Verify that the straight progress bar is updated less frequently than the
+  // squiggly wave animation.
+  EXPECT_GT(straight_view.GetUpdateInterval(),
+            squiggly_view.GetUpdateInterval());
 }
 
 }  // namespace global_media_controls
