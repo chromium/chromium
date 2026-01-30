@@ -363,6 +363,11 @@ public class ReaderModePrefsView extends LinearLayout
         }
     }
 
+    @Override
+    public void onChangeLinksEnabled(boolean enabled) {
+        // TODO(crbug.com/479819048): Implement this.
+    }
+
     private void centerSelectedFontButton() {
         assert mHorizontalScrollView != null;
         MaterialButton selectedFontButton = mFontFamilyButtons.get(mCurrentFontFamily);

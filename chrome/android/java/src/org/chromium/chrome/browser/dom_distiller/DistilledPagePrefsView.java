@@ -235,6 +235,9 @@ public class DistilledPagePrefsView extends LinearLayout
         setFontScaleProgress(scaling);
     }
 
+    @Override
+    public void onChangeLinksEnabled(boolean enabled) {}
+
     // SeekBar.OnSeekBarChangeListener
 
     @Override

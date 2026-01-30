@@ -60,6 +60,14 @@ float DistilledPagePrefsAndroid::GetFontScaling(JNIEnv* env) {
   return distilled_page_prefs_->GetFontScaling();
 }
 
+void DistilledPagePrefsAndroid::SetLinksEnabled(JNIEnv* env, bool enabled) {
+  distilled_page_prefs_->SetLinksEnabled(enabled);
+}
+
+bool DistilledPagePrefsAndroid::GetLinksEnabled(JNIEnv* env) {
+  return distilled_page_prefs_->GetLinksEnabled();
+}
+
 static int64_t JNI_DistilledPagePrefs_Init(JNIEnv* env,
                                            const JavaRef<jobject>& obj,
                                            int64_t distilled_page_prefs_ptr) {
@@ -118,8 +126,9 @@ void DistilledPagePrefsObserverAndroid::OnChangeFontScaling(float scaling) {
 }
 
 void DistilledPagePrefsObserverAndroid::OnChangeLinksEnabled(bool enabled) {
-  // TODO(crbug.com/463918572): Implement enable/disable links behavior for
-  // the Android platform.
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_DistilledPagePrefsObserverWrapper_onChangeLinksEnabled(env, java_ref_,
+                                                              enabled);
 }
 
 static int64_t JNI_DistilledPagePrefs_InitObserverAndroid(

@@ -242,6 +242,18 @@ public class DistilledPagePrefsTest {
         Assert.assertFalse(removeObserver(test));
     }
 
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"DomDistiller"})
+    public void testGetAndSetLinksEnabled() {
+        // Check the default links enabled.
+        Assert.assertTrue(mDistilledPagePrefs.getLinksEnabled());
+        // Check that links enabled can be correctly set.
+        setLinksEnabled(false);
+        Assert.assertFalse(mDistilledPagePrefs.getLinksEnabled());
+    }
+
     private static class TestingObserver implements DistilledPagePrefs.Observer {
         private final AtomicInteger mFontFamily = new AtomicInteger();
         private final Semaphore mFontFamilySemaphore = new Semaphore(0);
@@ -249,6 +261,7 @@ public class DistilledPagePrefsTest {
         private final Semaphore mThemeSemaphore = new Semaphore(0);
         private final AtomicDouble mFontScaling = new AtomicDouble();
         private final Semaphore mFontScalingSemaphore = new Semaphore(0);
+        private final AtomicBoolean mLinksEnabled = new AtomicBoolean(true);
 
         public TestingObserver() {}
 
@@ -304,6 +317,11 @@ public class DistilledPagePrefsTest {
             mFontScaling.set(scaling);
             mFontScalingSemaphore.release();
         }
+
+        @Override
+        public void onChangeLinksEnabled(boolean enabled) {
+            mLinksEnabled.set(enabled);
+        }
     }
 
     private void setFontFamily(final int font) {
@@ -316,6 +334,10 @@ public class DistilledPagePrefsTest {
 
     private void setFontScaling(final float scaling) {
         ThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setFontScaling(scaling));
+    }
+
+    private void setLinksEnabled(final boolean enabled) {
+        ThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setLinksEnabled(enabled));
     }
 
     private boolean removeObserver(TestingObserver testObserver) {

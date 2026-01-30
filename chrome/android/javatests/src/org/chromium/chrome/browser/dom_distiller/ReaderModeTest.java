@@ -364,6 +364,9 @@ public class ReaderModeTest {
                             fontScalingChangedCallback.notifyCalled();
                         }
                     }
+
+                    @Override
+                    public void onChangeLinksEnabled(boolean enabled) {}
                 };
         ThreadUtils.runOnUiThreadBlocking(() -> distilledPagePrefs.addObserver(observer));
 
