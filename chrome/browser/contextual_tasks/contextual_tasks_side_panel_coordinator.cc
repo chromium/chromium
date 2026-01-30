@@ -629,6 +629,13 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
 }
 
 void ContextualTasksSidePanelCoordinator::OnActiveTabChanged() {
+  // crbug.com/477278769: Do not open side panel if glic side panel is already
+  // open on tab changed.
+  if (side_panel_ui_->IsSidePanelEntryShowing(
+          SidePanelEntry::Key(SidePanelEntry::Id::kGlic))) {
+    UpdateOpenState(/*is_open=*/false);
+  }
+
   bool was_side_panel_open = IsSidePanelOpenForContextualTask();
   bool web_contents_changed = UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
