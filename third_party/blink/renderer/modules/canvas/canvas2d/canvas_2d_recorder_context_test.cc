@@ -236,8 +236,7 @@ TEST(Canvas2DRecorderContextCompositingTests, Pattern) {
   auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
-      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
-      /*high_entropy_canvas_op_types=*/HighEntropyCanvasOpType::kNone);
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
 
   context->setFillStyle(scope.GetIsolate(),
                         pattern->ToV8(scope.GetScriptState()),
@@ -919,8 +918,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowPattern) {
   auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
-      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
-      /*high_entropy_canvas_op_types=*/HighEntropyCanvasOpType::kNone);
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -982,8 +980,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowPatternTransform) {
   auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
-      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
-      /*high_entropy_canvas_op_types=*/HighEntropyCanvasOpType::kNone);
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);

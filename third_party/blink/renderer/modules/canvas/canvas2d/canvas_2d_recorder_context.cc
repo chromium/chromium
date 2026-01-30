@@ -2491,8 +2491,7 @@ CanvasPattern* Canvas2DRecorderContext::createPattern(
 
   bool origin_clean = !WouldTaintCanvasOrigin(image_source);
   return MakeGarbageCollected<CanvasPattern>(std::move(image_for_rendering),
-                                             repeat_mode, origin_clean,
-                                             HighEntropyCanvasOpType::kNone);
+                                             repeat_mode, origin_clean);
 }
 
 namespace {

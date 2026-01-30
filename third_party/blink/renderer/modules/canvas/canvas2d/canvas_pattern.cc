@@ -64,15 +64,11 @@ Pattern::RepeatMode CanvasPattern::ParseRepetitionType(
   return Pattern::kRepeatModeNone;
 }
 
-CanvasPattern::CanvasPattern(
-    scoped_refptr<Image> image,
-    Pattern::RepeatMode repeat,
-    bool origin_clean,
-    HighEntropyCanvasOpType high_entropy_canvas_op_types)
+CanvasPattern::CanvasPattern(scoped_refptr<Image> image,
+                             Pattern::RepeatMode repeat,
+                             bool origin_clean)
     : pattern_(Pattern::CreateImagePattern(image, repeat)),
-      origin_clean_(origin_clean),
-      high_entropy_canvas_op_types_(high_entropy_canvas_op_types) {
-}
+      origin_clean_(origin_clean) {}
 
 void CanvasPattern::setTransform(DOMMatrix2DInit* transform,
                                  ExceptionState& exception_state) {

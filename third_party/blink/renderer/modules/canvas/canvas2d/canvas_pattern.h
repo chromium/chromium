@@ -49,22 +49,12 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
   static Pattern::RepeatMode ParseRepetitionType(const String&,
                                                  ExceptionState&);
 
-  CanvasPattern(scoped_refptr<Image>,
-                Pattern::RepeatMode,
-                bool origin_clean,
-                HighEntropyCanvasOpType high_entropy_canvas_op_types);
+  CanvasPattern(scoped_refptr<Image>, Pattern::RepeatMode, bool origin_clean);
 
   Pattern* GetPattern() const { return pattern_.get(); }
   const AffineTransform& GetTransform() const { return pattern_transform_; }
 
   bool OriginClean() const { return origin_clean_; }
-
-  HighEntropyCanvasOpType HighEntropyCanvasOpTypes() const {
-    return high_entropy_canvas_op_types_;
-  }
-  bool HasHighEntropyCanvasOpTypes() const {
-    return high_entropy_canvas_op_types_ != HighEntropyCanvasOpType::kNone;
-  }
 
   void setTransform(DOMMatrix2DInit*, ExceptionState&);
 
@@ -72,7 +62,6 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
   std::unique_ptr<Pattern> pattern_;
   AffineTransform pattern_transform_;
   const bool origin_clean_;
-  const HighEntropyCanvasOpType high_entropy_canvas_op_types_;
 };
 
 }  // namespace blink
