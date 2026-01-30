@@ -23,9 +23,8 @@
   self = [super init];
   if (self) {
     _distilledPagePrefs = distilledPagePrefs;
-    _prefsObserverBridge =
-        std::make_unique<DistilledPagePrefsObserverBridge>(self);
-    _distilledPagePrefs->AddObserver(_prefsObserverBridge.get());
+    _prefsObserverBridge = std::make_unique<DistilledPagePrefsObserverBridge>(
+        self, _distilledPagePrefs);
   }
   return self;
 }
@@ -88,9 +87,6 @@
 #pragma mark - Public
 
 - (void)disconnect {
-  if (_distilledPagePrefs) {
-    _distilledPagePrefs->RemoveObserver(_prefsObserverBridge.get());
-  }
   _prefsObserverBridge.reset();
   _distilledPagePrefs = nullptr;
 }
