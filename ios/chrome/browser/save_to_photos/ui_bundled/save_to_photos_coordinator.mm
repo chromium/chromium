@@ -254,7 +254,7 @@
   [_mediator accountPickerDidSelectIdentity:identity askEveryTime:askEveryTime];
 }
 
-- (void)accountPickerCoordinatorCancel:
+- (void)accountPickerCoordinatorWantsToBeStopped:
     (AccountPickerCoordinator*)accountPickerCoordinator {
   [_mediator accountPickerDidCancel];
 }
