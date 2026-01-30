@@ -1887,6 +1887,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Error - page error"/>
   <int value="7" label="No Response"/>
   <int value="8" label="Could not parse response"/>
+  <int value="9" label="User intervention needed"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/password_manager/password_change/password_change_submission_verifier.h:SubmissionOutcome)-->

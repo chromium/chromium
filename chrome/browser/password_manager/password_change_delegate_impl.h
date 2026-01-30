@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
@@ -31,7 +32,6 @@ namespace password_manager {
 class PasswordFormManager;
 }  // namespace password_manager
 
-class ChangePasswordFormFillingSubmissionHelper;
 class ChangePasswordFormFinder;
 class CrossOriginNavigationObserver;
 enum class LoginCheckResult;
@@ -114,7 +114,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void OnPasswordChangeFormFound(
       password_manager::PasswordFormManager* form_manager);
 
-  void OnChangeFormSubmissionVerified(bool result);
+  void OnChangeFormSubmissionVerified(
+      ChangePasswordFormFillingSubmissionHelper::SubmissionResult result);
 
   bool IsPrivacyNoticeAcknowledged() const;
 

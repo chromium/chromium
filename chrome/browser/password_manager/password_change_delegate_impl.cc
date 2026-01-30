@@ -16,7 +16,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
@@ -63,6 +62,8 @@ namespace {
 using ::password_manager::BrowserSavePasswordProgressLogger;
 using FlowStep = ModelQualityLogsUploader::FlowStep;
 using QualityStatus = ModelQualityLogsUploader::QualityStatus;
+using SubmissionResult =
+    ChangePasswordFormFillingSubmissionHelper::SubmissionResult;
 
 constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
@@ -652,17 +653,20 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
   }
 }
 
-void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
+void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(
+    SubmissionResult result) {
+  // TODO(crbug.com/474035152): Update delegate handling of user intervention.
+  bool is_success = result != SubmissionResult::kFailure;
   if (auto logger = GetLoggerIfAvailable(executor())) {
     logger->LogBoolean(BrowserSavePasswordProgressLogger::
                            STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_VERIFIED,
-                       result);
+                       is_success);
   }
   base::Time time_now = base::Time::Now();
   base::TimeDelta password_change_duration_overall =
       time_now - flow_start_time_;
 
-  if (!result) {
+  if (!is_success) {
     UpdateState(State::kPasswordChangeFailed);
   } else {
     // Password change was successful. Save new password with an original
@@ -715,7 +719,7 @@ void PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected() {
   // Navigation happened when submitting the form. Terminate flow with a failure
   // message.
   if (submission_verifier_) {
-    OnChangeFormSubmissionVerified(false);
+    OnChangeFormSubmissionVerified(SubmissionResult::kFailure);
     return;
   }
 

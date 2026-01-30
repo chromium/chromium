@@ -91,6 +91,7 @@ ModelQualityLogsUploader::QualityStatus GetVerifySubmissionQualityStatus(
 
   PasswordChangeOutcome outcome =
       response.value().outcome_data().submission_outcome();
+  // TODO(crbug.com/474035152): Extend MQLS for handling user intervention.
   if (outcome !=
           PasswordChangeOutcome::
               PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME &&

@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
+#include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -27,7 +28,6 @@ class PasswordManagerDriver;
 class PasswordManagerClient;
 }  // namespace password_manager
 
-class PasswordChangeSubmissionVerifier;
 class ModelQualityLogsUploader;
 class ChangePasswordFormWaiter;
 class FormFillingHelper;
@@ -36,6 +36,8 @@ class FormFillingHelper;
 // Upon completion invokes `result_callback` to notify the result of submission.
 class ChangePasswordFormFillingSubmissionHelper {
  public:
+  using SubmissionResult = PasswordChangeSubmissionVerifier::SubmissionResult;
+
   static constexpr base::TimeDelta kSubmissionWaitingTimeout =
       base::Seconds(10);
 
@@ -43,7 +45,7 @@ class ChangePasswordFormFillingSubmissionHelper {
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
-      base::OnceCallback<void(bool)> result_callback);
+      base::OnceCallback<void(SubmissionResult)> result_callback);
 
   // Test constructor (allows to mock `capture_annotated_page_content`).
   ChangePasswordFormFillingSubmissionHelper(
@@ -53,7 +55,7 @@ class ChangePasswordFormFillingSubmissionHelper {
       ModelQualityLogsUploader* logs_uploader,
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
           capture_annotated_page_content,
-      base::OnceCallback<void(bool)> result_callback);
+      base::OnceCallback<void(SubmissionResult)> result_callback);
   ~ChangePasswordFormFillingSubmissionHelper();
 
   // Starts chain of actions:
@@ -121,7 +123,7 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   void OnSubmissionDetectedOrTimeout();
 
-  void OnSubmissionOutcomeChecked(bool success);
+  void OnSubmissionOutcomeChecked(SubmissionResult result);
 
   void OnChangePasswordFormFound(
       password_manager::PasswordFormManager* form_manager);
@@ -133,7 +135,7 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
 
-  base::OnceCallback<void(bool)> callback_;
+  base::OnceCallback<void(SubmissionResult)> callback_;
 
   // PasswordFormManager associated with current change password form.
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;

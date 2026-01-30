@@ -31,6 +31,8 @@
 namespace {
 
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
+using SubmissionResult =
+    ChangePasswordFormFillingSubmissionHelper::SubmissionResult;
 
 constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kSubmitFormFlowStep = optimization_guide::proto::PasswordChangeRequest::
@@ -95,7 +97,7 @@ ChangePasswordFormFillingSubmissionHelper::
         content::WebContents* web_contents,
         password_manager::PasswordManagerClient* client,
         ModelQualityLogsUploader* logs_uploader,
-        base::OnceCallback<void(bool)> callback)
+        base::OnceCallback<void(SubmissionResult)> callback)
     : creation_time_(base::Time::Now()),
       web_contents_(web_contents),
       client_(client),
@@ -115,7 +117,7 @@ ChangePasswordFormFillingSubmissionHelper::
         ModelQualityLogsUploader* logs_uploader,
         base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
             capture_annotated_page_content,
-        base::OnceCallback<void(bool)> result_callback)
+        base::OnceCallback<void(SubmissionResult)> result_callback)
     : ChangePasswordFormFillingSubmissionHelper(web_contents,
                                                 client,
                                                 logs_uploader,
@@ -215,7 +217,7 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
   CHECK(form_manager_);
   if (!driver) {
     // Fail immediately as something went terribly wrong (e.g. page crashed).
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SubmissionResult::kFailure);
     return;
   }
 
@@ -299,10 +301,10 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
             base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
                                OnChangePasswordFormFound,
                            weak_ptr_factory_.GetWeakPtr()))
-            .SetTimeoutCallback(
-                base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
-                                   OnSubmissionOutcomeChecked,
-                               weak_ptr_factory_.GetWeakPtr(), false))
+            .SetTimeoutCallback(base::BindOnce(
+                &ChangePasswordFormFillingSubmissionHelper::
+                    OnSubmissionOutcomeChecked,
+                weak_ptr_factory_.GetWeakPtr(), SubmissionResult::kFailure))
             .SetFieldsToIgnore(observed_fields_)
             .Build();
     return;
@@ -331,7 +333,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
   if (!content.has_value()) {
     LogPageContentCaptureFailure(password_manager::metrics_util::
                                      PasswordChangeFlowStep::kSubmitFormStep);
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SubmissionResult::kFailure);
     return;
   }
   optimization_guide::proto::PasswordChangeRequest request;
@@ -369,7 +371,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
   logs_uploader_->SetSubmitFormQuality(response, std::move(logging_data));
 
   if (!response) {
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SubmissionResult::kFailure);
     return;
   }
 
@@ -377,7 +379,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
 
   if (!dom_node_id) {
     // Fail immediately as model didn't provide a submit element to click.
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SubmissionResult::kFailure);
     return;
   }
 
@@ -408,7 +410,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(
   if (result != actor::mojom::ActionResultCode::kOk && !submission_detected_) {
     // Fail immediately as click failed and no form submission was detected.
     logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SubmissionResult::kFailure);
     return;
   }
 }
@@ -422,7 +424,7 @@ void ChangePasswordFormFillingSubmissionHelper::
   }
   if (!submission_verifier_) {
     CHECK(callback_);
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SubmissionResult::kFailure);
     return;
   }
 
@@ -436,9 +438,9 @@ void ChangePasswordFormFillingSubmissionHelper::
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnSubmissionOutcomeChecked(
-    bool success) {
+    SubmissionResult result) {
   CHECK(callback_);
-  std::move(callback_).Run(success);
+  std::move(callback_).Run(result);
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnChangePasswordFormFound(

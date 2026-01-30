@@ -46,11 +46,21 @@ class PasswordChangeSubmissionVerifier {
     kPageError = 6,
     kNoResponse = 7,
     kCouldNotParse = 8,
-    kMaxValue = kCouldNotParse,
+    kUserInterventionNeeded = 9,
+    kMaxValue = kUserInterventionNeeded,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:SubmissionOutcome)
 
-  using FormSubmissionResultCallback = base::OnceCallback<void(bool)>;
+  // Represents the final result of the verification process passed to the
+  // callback.
+  enum class SubmissionResult {
+    kSuccess,
+    kFailure,
+    kUserInterventionNeeded,
+  };
+
+  using FormSubmissionResultCallback =
+      base::OnceCallback<void(SubmissionResult)>;
 
   PasswordChangeSubmissionVerifier(content::WebContents* web_contents,
                                    ModelQualityLogsUploader* logs_uploader);

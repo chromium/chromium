@@ -19,6 +19,7 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -34,6 +35,7 @@ using PasswordChangeOutcome = optimization_guide::proto ::
 using PasswordChangeErrorCase = optimization_guide::proto ::
     PasswordChangeSubmissionData_PasswordChangeErrorCase;
 using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
+using SubmissionResult = PasswordChangeSubmissionVerifier::SubmissionResult;
 
 constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kSubmitVerification = optimization_guide::proto::PasswordChangeRequest::
@@ -49,45 +51,55 @@ void LogSubmissionOutcome(SubmissionOutcome outcome, ukm::SourceId ukm_id) {
 }
 
 void RecordOutcomeMetrics(
-    optimization_guide::proto ::PasswordChangeSubmissionData submission_data,
+    optimization_guide::proto::PasswordChangeSubmissionData submission_data,
     ukm::SourceId ukm_id) {
-  PasswordChangeOutcome outcome = submission_data.submission_outcome();
-  if (outcome ==
-      PasswordChangeOutcome::
-          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME) {
-    LogSubmissionOutcome(SubmissionOutcome::kSuccess, ukm_id);
-    return;
+  switch (submission_data.submission_outcome()) {
+    case PasswordChangeOutcome::
+        PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME:
+      LogSubmissionOutcome(SubmissionOutcome::kSuccess, ukm_id);
+      return;
+
+    case PasswordChangeOutcome::
+        PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME:
+      LogSubmissionOutcome(SubmissionOutcome::kUnknown, ukm_id);
+      return;
+
+    case PasswordChangeOutcome::
+        PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED:
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kUserInterventionForPasswordChange)) {
+        LogSubmissionOutcome(SubmissionOutcome::kUserInterventionNeeded,
+                             ukm_id);
+      } else {
+        LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError, ukm_id);
+      }
+      return;
+    default:
+      break;
   }
-  if (outcome ==
-      PasswordChangeOutcome::
-          PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
-    LogSubmissionOutcome(SubmissionOutcome::kUnknown, ukm_id);
-    return;
-  }
+
   for (auto error_case_enum : submission_data.error_case()) {
-    PasswordChangeErrorCase error_case = optimization_guide::proto ::
-        PasswordChangeSubmissionData_PasswordChangeErrorCase(error_case_enum);
-    switch (error_case) {
-      case optimization_guide::proto::
+    switch (static_cast<PasswordChangeErrorCase>(error_case_enum)) {
+      case PasswordChangeErrorCase::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_OLD_PASSWORD_INCORRECT:
         LogSubmissionOutcome(SubmissionOutcome::kErrorOldPasswordIncorrect,
                              ukm_id);
         break;
-      case optimization_guide::proto::
+      case PasswordChangeErrorCase::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_PASSWORDS_DO_NOT_MATCH:
         LogSubmissionOutcome(SubmissionOutcome::kErrorOldPasswordDoNotMatch,
                              ukm_id);
         break;
-      case optimization_guide::proto::
+      case PasswordChangeErrorCase::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_NEW_PASSWORD_INCORRECT:
         LogSubmissionOutcome(SubmissionOutcome::kErrorNewPasswordIncorrect,
                              ukm_id);
         break;
-      case optimization_guide::proto::
+      case PasswordChangeErrorCase::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_PAGE_ERROR:
         LogSubmissionOutcome(SubmissionOutcome::kPageError, ukm_id);
         break;
-      case optimization_guide::proto::
+      case PasswordChangeErrorCase::
           PasswordChangeSubmissionData_PasswordChangeErrorCase_UNKNOWN_CASE:
       default:
         LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError, ukm_id);
@@ -95,7 +107,7 @@ void RecordOutcomeMetrics(
     }
   }
 
-  if (!submission_data.error_case_size()) {
+  if (submission_data.error_case_size() == 0) {
     LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError, ukm_id);
   }
 }
@@ -155,7 +167,7 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
     LogPageContentCaptureFailure(
         password_manager::metrics_util::PasswordChangeFlowStep::
             kVerifySubmissionStep);
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SubmissionResult::kFailure);
     return;
   }
 
@@ -207,23 +219,32 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
   if (!response) {
     // Password change failed as the response was empty or
     // unable to be parsed.
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SubmissionResult::kFailure);
     return;
   }
 
   RecordOutcomeMetrics(response.value().outcome_data(), source_id);
   PasswordChangeOutcome outcome =
       response.value().outcome_data().submission_outcome();
-  if (outcome !=
+
+  if (outcome ==
           PasswordChangeOutcome::
-              PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME &&
-      outcome !=
-          PasswordChangeOutcome::
-              PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
-    // Password change was unsuccessful.
-    std::move(callback_).Run(false);
+              PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUserInterventionForPasswordChange)) {
+    std::move(callback_).Run(SubmissionResult::kUserInterventionNeeded);
     return;
   }
-  // Password change was successfully completed.
-  std::move(callback_).Run(true);
+
+  if (outcome ==
+          PasswordChangeOutcome::
+              PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME ||
+      outcome ==
+          PasswordChangeOutcome::
+              PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
+    std::move(callback_).Run(SubmissionResult::kSuccess);
+    return;
+  }
+
+  std::move(callback_).Run(SubmissionResult::kFailure);
 }
