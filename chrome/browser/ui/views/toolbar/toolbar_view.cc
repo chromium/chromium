@@ -123,6 +123,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/cascading_property.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -621,6 +622,26 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
                                  bookmark_star_icon, browser_, url,
                                  already_bookmarked);
+}
+
+bool ToolbarView::IsPositionInWindowCaption(
+    const gfx::Point& test_point) const {
+  // Only points above the centerline are considered candidates for the caption
+  // area.
+  if (test_point.y() > GetLocalBounds().CenterPoint().y()) {
+    return false;
+  }
+
+  // Check each visible child to see if the point is in the child.
+  for (auto& child : children()) {
+    if (child->GetVisible() && !views::IsViewClass<views::Separator>(child) &&
+        child->bounds().Contains(test_point)) {
+      return false;
+    }
+  }
+
+  // If it's not in a child, the point is in the caption area.
+  return true;
 }
 
 views::Button* ToolbarView::GetChromeLabsButton() const {

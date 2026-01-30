@@ -136,6 +136,12 @@ class ToolbarView : public views::AccessiblePaneView,
   // Shows a bookmark bubble and anchors it appropriately.
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked);
 
+  // Used to test whether `test_point` should be treated as part of the caption
+  // bar, which means it can be used to drag the window or open the window
+  // context menu. Should only be called when the toolbar is in the caption
+  // area.
+  bool IsPositionInWindowCaption(const gfx::Point& test_point) const;
+
   // Accessors.
   Browser* browser() const { return browser_; }
   views::Button* GetChromeLabsButton() const;
