@@ -111,8 +111,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   /// animation of focusing/defocusing the omnibox changes depending on this
   /// position.
   ToolbarType _steadyStateOmniboxPosition;
-  /// Whether the omnibox focusing should happen with animation.
-  BOOL _enableAnimationsForOmniboxFocus;
   //// Indicates whether the focus came from a tap on the NTP's fakebox.
   BOOL _focusedFromFakebox;
   /// Indicates whether the fakebox was pinned on last signal to focus from
@@ -159,7 +157,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   if (self.started) {
     return;
   }
-  _enableAnimationsForOmniboxFocus = YES;
   // Set a default position, overriden by `setInitialOmniboxPosition` below.
   _omniboxPosition = ToolbarType::kPrimary;
 
@@ -243,13 +240,15 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
       self.toolbarHeightDelegate;
   [self.secondaryToolbarCoordinator start];
 
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    self.orchestrator = [[OmniboxFocusOrchestratorParity alloc] init];
-  } else {
-    self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
-  }
+  if (!IsChromeNextIaEnabled()) {
+    if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
+      self.orchestrator = [[OmniboxFocusOrchestratorParity alloc] init];
+    } else {
+      self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
+    }
 
-  [self updateOrchestratorAnimatee];
+    [self updateOrchestratorAnimatee];
+  }
 
   if (IsBottomOmniboxAvailable()) {
     [self.legacyToolbarMediator setInitialOmniboxPosition];
@@ -373,13 +372,21 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   BOOL isOffTheRecord = self.isOffTheRecord;
   BOOL canShowTabStrip = CanShowTabStrip(self.traitEnvironment);
 
-  // Hide the toolbar when displaying content suggestions without the tab
-  // strip, without the focused omnibox, only when in split toolbar mode.
-  BOOL hideToolbar = isNTP && !isOffTheRecord && ![self inEditState] &&
-                     !canShowTabStrip &&
-                     IsSplitToolbarMode(self.traitEnvironment);
+  if (IsChromeNextIaEnabled()) {
+    // Hide the toolbar when on regular NTP on iPhone landscape.
+    BOOL hideToolbar = isNTP && !isOffTheRecord && !canShowTabStrip &&
+                       IsSplitToolbarMode(self.traitEnvironment);
 
-  self.primaryToolbarViewController.view.hidden = hideToolbar;
+    self.primaryToolbarViewController.view.hidden = hideToolbar;
+  } else {
+    // Hide the toolbar when displaying content suggestions without the tab
+    // strip, without the focused omnibox, only when in split toolbar mode.
+    BOOL hideToolbar = isNTP && !isOffTheRecord && ![self inEditState] &&
+                       !canShowTabStrip &&
+                       IsSplitToolbarMode(self.traitEnvironment);
+
+    self.primaryToolbarViewController.view.hidden = hideToolbar;
+  }
 }
 
 - (BOOL)isLoadingPrerenderer {
@@ -402,6 +409,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)transitionToLocationBarFocusedState:(BOOL)focused
                                  completion:(ProceduralBlock)completion {
+  CHECK(!IsChromeNextIaEnabled());
   // Disable infobarBanner overlays when focusing the omnibox as they overlap
   // with primary toolbar.
   OverlayPresentationContext* infobarBannerContext =
@@ -431,10 +439,8 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
     editStatePosition = ToolbarType::kPrimary;
   }
 
-  BOOL animateTransition = _enableAnimationsForOmniboxFocus &&
-                           (editStatePosition == _steadyStateOmniboxPosition);
+  BOOL animateTransition = (editStatePosition == _steadyStateOmniboxPosition);
 
-  __weak __typeof(self) weakSelf = self;
   BOOL toolbarExpanded = focused && !CanShowTabStrip(self.traitEnvironment);
   if (base::FeatureList::IsEnabled(kOmniboxDRSPrototype) && focused) {
     [self.baseViewController presentViewController:self.drsViewController
@@ -449,10 +455,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
                         toolbarExpanded:toolbarExpanded
                                 trigger:[self omniboxFocusTrigger]
                                animated:animateTransition
-                             completion:^{
-                               [weakSelf focusTransitionDidComplete:focused
-                                                         completion:completion];
-                             }];
+                             completion:completion];
   }
 
   [self.primaryToolbarCoordinator.viewController setLocationBarFocused:focused];
@@ -463,14 +466,17 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (BOOL)isOmniboxFirstResponder {
+  CHECK(!IsChromeNextIaEnabled());
   return [self.locationBarCoordinator isOmniboxFirstResponder];
 }
 
 - (BOOL)showingOmniboxPopup {
+  CHECK(!IsChromeNextIaEnabled());
   return [self.locationBarCoordinator showingOmniboxPopup];
 }
 
 - (BOOL)inEditState {
+  CHECK(!IsChromeNextIaEnabled());
   return [self isOmniboxFirstResponder] || [self showingOmniboxPopup];
 }
 
@@ -555,6 +561,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (CGFloat)locationBarCompactDisplayHeight {
+  CHECK(!IsChromeNextIaEnabled());
   return self.locationBarCoordinator.locationBarViewController.view.frame.size
              .height +
          kLocationBarCompactBottomPadding;
@@ -562,23 +569,11 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 #pragma mark - FakeboxFocuser
 
-- (void)focusOmniboxNoAnimation {
-  _enableAnimationsForOmniboxFocus = NO;
-  [self.locationBarCoordinator focusOmniboxFromFakebox];
-  _enableAnimationsForOmniboxFocus = YES;
-  // If the pasteboard is containing a URL, the omnibox popup suggestions are
-  // displayed as soon as the omnibox is focused.
-  // If the fake omnibox animation is triggered at the same time, it is possible
-  // to see the NTP going up where the real omnibox should be displayed.
-  if ([self.locationBarCoordinator omniboxPopupHasAutocompleteResults]) {
-    [self onFakeboxAnimationComplete];
-  }
-}
-
 - (void)focusOmniboxFromFakebox:(BOOL)fromFakebox
                             pinned:(BOOL)pinned
     fakeboxButtonsSnapshotProvider:
         (id<FakeboxButtonsSnapshotProvider>)provider {
+  CHECK(!IsChromeNextIaEnabled());
   _focusedFromFakebox = fromFakebox;
   _fakeboxPinned = pinned;
   [self.locationBarCoordinator setFakeboxButtonsSnapshotProvider:provider];
@@ -586,6 +581,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (void)onFakeboxBlur {
+  CHECK(!IsChromeNextIaEnabled());
   // Hide the toolbar if the NTP is currently displayed.
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
@@ -597,6 +593,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (void)onFakeboxAnimationComplete {
+  CHECK(!IsChromeNextIaEnabled());
   self.primaryToolbarViewController.view.hidden = NO;
 }
 
@@ -619,24 +616,34 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 #pragma mark - OmniboxStateProvider
 
 - (BOOL)isOmniboxFocused {
+  CHECK(!IsChromeNextIaEnabled());
   return [self.locationBarCoordinator isOmniboxFocused];
 }
 
 #pragma mark - PopupMenuUIUpdating
 
 - (void)updateUIForOverflowMenuIPHDisplayed {
+  if (IsChromeNextIaEnabled()) {
+    // TODO(crbug.com/472279443): implement this.
+  }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater updateUIForOverflowMenuIPHDisplayed];
   }
 }
 
 - (void)updateUIForIPHDismissed {
+  if (IsChromeNextIaEnabled()) {
+    // TODO(crbug.com/472279443): implement this.
+  }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater updateUIForIPHDismissed];
   }
 }
 
 - (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
+  if (IsChromeNextIaEnabled()) {
+    // TODO(crbug.com/472279443): implement this.
+  }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater setOverflowMenuBlueDot:hasBlueDot];
   }
@@ -646,6 +653,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)viewControllerTraitCollectionDidChange:
     (UITraitCollection*)previousTraitCollection {
+  CHECK(!IsChromeNextIaEnabled());
   if (!_started) {
     return;
   }
@@ -653,6 +661,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (void)close {
+  CHECK(!IsChromeNextIaEnabled());
   if (self.locationBarFocused) {
     id<SceneCommands> sceneHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
@@ -662,19 +671,23 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)locationBarExpandedInViewController:
     (PrimaryToolbarViewController*)viewController {
+  CHECK(!IsChromeNextIaEnabled());
   // Do nothing.
 }
 - (void)locationBarContractedInViewController:
     (PrimaryToolbarViewController*)viewController {
+  CHECK(!IsChromeNextIaEnabled());
   // Do nothing.
 }
 
 - (void)viewController:(PrimaryToolbarViewController*)viewController
     tabGroupIndicatorVisibilityUpdated:(BOOL)visible {
+  CHECK(!IsChromeNextIaEnabled());
   // Do nothing.
 }
 
 - (ToolbarCancelButtonStyle)styleForCancelButtonInToolbar {
+  CHECK(!IsChromeNextIaEnabled());
   BOOL userPreferenceBottom = _legacyToolbarMediator.preferredOmniboxPosition ==
                               ToolbarType::kSecondary;
   BOOL followSteadyState =
@@ -791,12 +804,20 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 #pragma mark - GuidedTourCommands
 
 - (void)highlightViewInStep:(GuidedTourStep)step {
+  if (IsChromeNextIaEnabled()) {
+    // TODO(crbug.com/472279443): implement this.
+    NOTREACHED() << "Not implemented yet";
+  }
   for (id<GuidedTourCommands> coordinator in self.coordinators) {
     [coordinator highlightViewInStep:step];
   }
 }
 
 - (void)stepCompleted:(GuidedTourStep)step {
+  if (IsChromeNextIaEnabled()) {
+    // TODO(crbug.com/472279443): implement this.
+    NOTREACHED() << "Not implemented yet";
+  }
   for (id<GuidedTourCommands> coordinator in self.coordinators) {
     [coordinator stepCompleted:step];
   }
@@ -995,7 +1016,9 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
   _omniboxPosition = toolbarType;
 
-  [self updateOrchestratorAnimatee];
+  if (!IsChromeNextIaEnabled()) {
+    [self updateOrchestratorAnimatee];
+  }
 
   OmniboxPositionBrowserAgent* positionBrowserAgent =
       OmniboxPositionBrowserAgent::FromBrowser(self.browser);
@@ -1123,15 +1146,8 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   }
 }
 
-- (void)focusTransitionDidComplete:(BOOL)focused
-                        completion:(ProceduralBlock)completion {
-  if (completion) {
-    completion();
-    completion = nil;
-  }
-}
-
 - (void)updateOrchestratorAnimatee {
+  CHECK(!IsChromeNextIaEnabled());
   id<ToolbarAnimatee> updatedToolbarAnimatee =
       _omniboxPosition == ToolbarType::kPrimary
           ? self.primaryToolbarCoordinator.toolbarAnimatee
@@ -1222,6 +1238,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 // Returns true if the omnibox is in the bottom position.
 - (BOOL)isOmniboxInBottomPosition {
+  CHECK(IsChromeNextIaEnabled());
   return IsBottomOmniboxAvailable() &&
          GetApplicationContext()->GetLocalState()->GetBoolean(
              omnibox::kIsOmniboxInBottomPosition);

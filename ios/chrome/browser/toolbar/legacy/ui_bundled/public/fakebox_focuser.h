@@ -12,8 +12,6 @@
 // This protocol provides callbacks for focusing and blurring the fake omnibox
 // on NTP.
 @protocol FakeboxFocuser
-// Focuses the omnibox without animations.
-- (void)focusOmniboxNoAnimation;
 // Give focus to the omnibox, but indicate that the focus event was initiated
 // from the fakebox on the Google landing page.
 - (void)focusOmniboxFromFakebox:(BOOL)fromFakebox
