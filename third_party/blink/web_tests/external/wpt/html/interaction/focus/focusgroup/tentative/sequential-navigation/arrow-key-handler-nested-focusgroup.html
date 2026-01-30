@@ -9,6 +9,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/shadow-dom/focus-navigation/resources/focus-utils.js"></script>
 <script src="../resources/focusgroup-utils.js"></script>
 
 <div id="outer" focusgroup="toolbar">
@@ -46,7 +47,7 @@
     assert_equals(document.activeElement, search);
 
     // Test Tab navigation with search focused.
-    await assert_focus_navigation_forward([btn1, search, btn4]);
+    await assert_focusgroup_tab_navigation([btn1, search, btn4]);
   }, "Tab navigation with native arrow key handler in nested focusgroup");
 
 </script>

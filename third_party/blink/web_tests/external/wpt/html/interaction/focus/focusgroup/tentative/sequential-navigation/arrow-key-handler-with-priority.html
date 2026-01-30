@@ -9,6 +9,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/shadow-dom/focus-navigation/resources/focus-utils.js"></script>
 <script src="../resources/focusgroup-utils.js"></script>
 
 <button id="before">Before</button>
@@ -37,14 +38,14 @@
     const after = document.getElementById("after");
 
     // Focused native arrow key handler exits focusgroup on Tab.
-    await assert_focus_navigation_forward([search, after]);
+    await assert_focusgroup_tab_navigation([search, after]);
 
     // Shift+Tab returns to focused native arrow key handler.
     await navigateFocusBackward();
     assert_equals(document.activeElement, search);
 
     // Entry from before also goes to focused element (memory).
-    await assert_focus_navigation_forward([before, search]);
+    await assert_focusgroup_tab_navigation([before, search]);
   }, "Focused native arrow key handler behaves as opted-out but memory restores to it");
 
   promise_test(async t => {
@@ -56,10 +57,10 @@
     // Establish memory at btn2, then focus search and verify it takes precedence.
     btn2.focus();
     after.focus();
-    await assert_focus_navigation_forward([before, btn2]);
+    await assert_focusgroup_tab_navigation([before, btn2]);
 
     search.focus();
-    await assert_focus_navigation_forward([before, search]);
+    await assert_focusgroup_tab_navigation([before, search]);
   }, "Focused native arrow key handler takes precedence over memory");
 
 </script>

@@ -9,6 +9,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/shadow-dom/focus-navigation/resources/focus-utils.js"></script>
 <script src="../resources/focusgroup-utils.js"></script>
 
 <button id="before">Before</button>
@@ -49,7 +50,7 @@
 
     // Explicit opt-out means element is in normal Tab order regardless of focus state.
     // This is different from native arrow key handler behavior which only opts-out when focused.
-    await assert_focus_navigation_forward([before, btn1, search, btn2, after]);
+    await assert_focusgroup_tab_navigation([before, btn1, search, btn2, after]);
   }, "Explicit focusgroup=none includes element in Tab order even when not focused");
 
 </script>
