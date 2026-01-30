@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/strings/grit/ax_strings.h"
@@ -65,6 +66,15 @@ StepRange DateInputType::CreateStepRange(
       any_step_handling, kDateDefaultStepBase,
       Decimal::FromDouble(DateComponents::MinimumDate()),
       Decimal::FromDouble(DateComponents::MaximumDate()), step_description);
+}
+
+std::unique_ptr<JSONObject> DateInputType::GetWebMCPParameterSchema() const {
+  auto schema = std::make_unique<JSONObject>();
+  schema->SetString("type", "string");
+  schema->SetString("format", "date");
+  // Note that the "minimum" and "maximum" fields must contains numbers;
+  // they cannot be used for dates.
+  return schema;
 }
 
 bool DateInputType::ParseToDateComponentsInternal(const String& string,
