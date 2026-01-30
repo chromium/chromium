@@ -29,7 +29,7 @@ import {TextSegmenter} from '../read_aloud/text_segmenter.js';
 import {VoiceLanguageController} from '../read_aloud/voice_language_controller.js';
 import type {VoiceLanguageListener} from '../read_aloud/voice_language_controller.js';
 import {VoiceNotificationManager} from '../read_aloud/voice_notification_manager.js';
-import {getWordCount, minOverflowLengthToScroll} from '../shared/common.js';
+import {getWordCount, isDistilledByReadability, minOverflowLengthToScroll} from '../shared/common.js';
 import {isForwardArrow, isLineFocusShortcut, isVerticalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingLogger, TimeFrom} from '../shared/read_anything_logger.js';
 
@@ -390,7 +390,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.$.container.appendChild(newRoot);
     }
     const wordCountContainer =
-        chrome.readingMode.isReadabilityEnabled ? this.$.container : newRoot;
+        isDistilledByReadability() ? this.$.container : newRoot;
     if (!this.willDrawAgainSoon_) {
       const wordCount = (wordCountContainer && wordCountContainer.textContent) ?
           getWordCount(wordCountContainer.textContent) :

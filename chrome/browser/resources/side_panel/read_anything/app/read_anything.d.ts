@@ -147,6 +147,19 @@ declare namespace chrome {
     // Distiled html content from DOM distiller distillation.
     let htmlContent: string;
 
+    // The active distillation method currently showing in page content.
+    // Possible values are distillationTypeScreen2x or
+    // distillationTypeReadability.
+    let activeDistillationMethod: number;
+
+    // The constant value representing the Screen2x (AXTree) distillation
+    // method.
+    let distillationTypeScreen2x: number;
+
+    // The constant value representing the Readability (HTML string)
+    // distillation method.
+    let distillationTypeReadability: number;
+
     // Returns whether the reading highlight is currently on.
     function isHighlightOn(): boolean;
 

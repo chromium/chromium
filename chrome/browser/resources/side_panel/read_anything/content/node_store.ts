@@ -5,7 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 
 import type {AncestorNode, ReadAloudNode} from '../read_aloud/read_aloud_types.js';
-import {getWordCount, isRectMostlyVisible} from '../shared/common.js';
+import {getWordCount, isDistilledByReadability, isRectMostlyVisible} from '../shared/common.js';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -220,7 +220,7 @@ export class NodeStore {
     // bugs, while ignoring the requirement for Readability.js in order for
     // highlighting to work with Readability and with the TS text segmentation
     // model.
-    if (!chrome.readingMode.isReadabilityEnabled &&
+    if (!isDistilledByReadability() &&
         !chrome.readingMode.isTsTextSegmentationEnabled) {
       assert(
           nodeId !== undefined,

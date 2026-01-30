@@ -54,6 +54,14 @@ class ReadAnythingAppModel {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingEmptyState)
 
+  // Enum for keeping track of the current distillation method being used by the
+  // ReadAnythingAppController.
+  enum class DistillationMethod {
+    kScreen2x = 0,
+    kReadability = 1,
+    kMaxValue = kReadability,
+  };
+
   struct AXTreeInfo {
     explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> manager);
     AXTreeInfo(const AXTreeInfo&) = delete;
@@ -202,6 +210,29 @@ class ReadAnythingAppModel {
   bool images_enabled() const { return images_enabled_; }
   void set_images_enabled(bool images_enabled) {
     images_enabled_ = images_enabled;
+  }
+
+  // Returns the distillation method that produced the content currently
+  // visible in the UI. This is used by the WebUI to correctly interpret
+  // and render the current model data.
+  DistillationMethod current_content_distillation_method() const {
+    return current_content_distillation_method_;
+  }
+  void set_current_content_distillation_method(DistillationMethod method) {
+    current_content_distillation_method_ = method;
+  }
+
+  // Returns the distillation method that will be used for the next content
+  // update. Note: For Readability, distillation occurs in the browser process,
+  // so this represents the source of the next content update we will receive.
+  DistillationMethod next_distillation_method() const {
+    return next_distillation_method_;
+  }
+  void set_next_distillation_method(DistillationMethod method) {
+    next_distillation_method_ = method;
+  }
+  bool is_readability_next_distillation_method() const {
+    return next_distillation_method() == DistillationMethod::kReadability;
   }
 
   read_anything::mojom::LetterSpacing letter_spacing() const {
@@ -383,6 +414,7 @@ class ReadAnythingAppModel {
 
   void AdjustTextSize(int increment);
   void ResetTextSize();
+  void SetDefaultDistillationMethod();
 
   // PDF handling.
   bool is_pdf() const { return is_pdf_; }
@@ -594,6 +626,13 @@ class ReadAnythingAppModel {
   bool requires_tree_lang_ = false;
 
   bool will_hide_ = false;
+
+  // The distillation method that will be used for the next content update.
+  DistillationMethod next_distillation_method_;
+
+  // The distillation method that produced the content currently visible in the
+  // UI.
+  DistillationMethod current_content_distillation_method_;
 
   std::map<ui::AXTreeID, ukm::SourceId> pending_ukm_sources_;
 

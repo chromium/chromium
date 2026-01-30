@@ -4904,3 +4904,89 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
 
   Mock::VerifyAndClearExpectations(distiller_);
 }
+
+class ReadAnythingAppControllerReadabilityTest
+    : public ReadAnythingAppControllerTest {
+ public:
+  ReadAnythingAppControllerReadabilityTest() = default;
+  ~ReadAnythingAppControllerReadabilityTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud,
+         features::kReadAnythingWithReadability,
+         features::kReadAnythingReadAloudTSTextSegmentation},
+        {});
+
+    ChromeRenderViewTest::SetUp();
+    content::RenderFrame* render_frame =
+        content::RenderFrame::FromWebFrame(GetMainFrame());
+    controller_ = ReadAnythingAppController::Install(render_frame);
+
+    // Set the page handler for testing.
+    controller_->page_handler_.reset();
+    controller_->page_handler_.Bind(page_handler_.BindNewPipeAndPassRemote());
+
+    // Set distiller for testing.
+    auto distiller = std::make_unique<MockAXTreeDistiller>(render_frame);
+    distiller_ = distiller.get();
+    controller_->distiller_ = std::move(distiller);
+
+    // Create a tree id and tell the controller it's the active one.
+    tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
+    ui::AXTreeUpdate snapshot;
+    ui::AXNodeData root;
+    root.id = 1;
+    snapshot.root_id = root.id;
+    snapshot.nodes = {std::move(root)};
+    test::SetUpdateTreeID(&snapshot, tree_id_);
+    AccessibilityEventReceived({std::move(snapshot)});
+    controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                         false);
+  }
+};
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_WithContent_ReadabilityUsed) {
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+
+  controller().UpdateContent("Title", "Some valid content");
+
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+  EXPECT_EQ(model().next_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_EmptyContent_Screen2xUsed) {
+  Mock::VerifyAndClearExpectations(distiller_);
+  Mock::VerifyAndClearExpectations(&page_handler_);
+
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+
+  controller().UpdateContent("Title", "");
+
+  EXPECT_EQ(model().next_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       OnActiveAXTreeIDChanged_ResetsDistillationMethod) {
+  // Simulate a failure on the first page switching to Screen2x.
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
+  // Navigate to a new tree.
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       false);
+
+  // Every new navigation should start with the preferred method (Readability in
+  // this test suite).
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+}

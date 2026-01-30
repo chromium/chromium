@@ -93,3 +93,9 @@ function isPointVisible(point: number) {
       ((point <= window.innerHeight) ||
        (point <= document.documentElement.clientHeight)));
 }
+
+// Returns true if the active distillation method is readability.
+export function isDistilledByReadability(): boolean {
+  return chrome.readingMode.activeDistillationMethod ===
+      chrome.readingMode.distillationTypeReadability;
+}

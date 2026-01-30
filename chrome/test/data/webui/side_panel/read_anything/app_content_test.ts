@@ -195,7 +195,8 @@ suite('AppContent', () => {
   test(
       'read aloud state resets on new content (Readability enabled)',
       async () => {
-        chrome.readingMode.isReadabilityEnabled = true;
+        chrome.readingMode.activeDistillationMethod =
+            chrome.readingMode.distillationTypeReadability;
         chrome.readingMode.isTsTextSegmentationEnabled = true;
 
         let resetCallCount = 0;
@@ -329,6 +330,48 @@ suite('AppContent', () => {
 
       assertEquals(0, sentWordCount);
     });
+
+    test(
+        'calls updateContentForScreen2x if readability enabled and has failed',
+        async () => {
+          chrome.readingMode.activeDistillationMethod =
+              chrome.readingMode.distillationTypeScreen2x;
+
+          let callCount = 0;
+          contentController.updateContentForScreen2x =
+              (_shadowRoot?: ShadowRoot) => {
+                callCount++;
+                return null;
+              };
+
+          app.updateContent();
+          await microtasksFinished();
+
+          assertEquals(
+              1, callCount,
+              'updateContentForScreen2x() should have been called');
+        });
+
+    test(
+        'calls updateContentForReadability if readability enabled and success',
+        async () => {
+          chrome.readingMode.activeDistillationMethod =
+              chrome.readingMode.distillationTypeReadability;
+
+          let callCount = 0;
+          contentController.updateContentForReadability =
+              (_shadowRoot?: ShadowRoot) => {
+                callCount++;
+                return null;
+              };
+
+          app.updateContent();
+          await microtasksFinished();
+
+          assertEquals(
+              1, callCount,
+              'updateContentForReadability() should have been called');
+        });
   });
 
   suite('on links toggle', () => {
@@ -609,7 +652,8 @@ suite('AppContent', () => {
   suite('on image toggle with readability', () => {
     setup(() => {
       contentController.configureTrustedTypes();
-      chrome.readingMode.isReadabilityEnabled = true;
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
     });
 
     test('shows and hides images when toggled', async () => {
@@ -747,7 +791,8 @@ suite('AppContent', () => {
     test('toggles links with Readability', async () => {
       const url = 'https://www.google.com/';
       const text = 'the best link ever';
-      chrome.readingMode.isReadabilityEnabled = true;
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
       contentController.configureTrustedTypes();
       readingMode.htmlContent = `<a href="${url}">${text}</a>`;
       app.updateContent();

@@ -9,7 +9,7 @@ import {previousReadHighlightClass} from '../read_aloud/movement.js';
 import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {ReadAloudNode} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
-import {LOG_EMPTY_DELAY_MS} from '../shared/common.js';
+import {isDistilledByReadability, LOG_EMPTY_DELAY_MS} from '../shared/common.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {NodeStore} from './node_store.js';
@@ -220,20 +220,18 @@ export class ContentController {
 
     this.nodeStore_.clearDomNodes();
 
-    if (chrome.readingMode.isReadabilityEnabled) {
+    if (isDistilledByReadability()) {
       return this.updateContentForReadability();
     }
     return this.updateContentForScreen2x(shadowRoot);
   }
 
   updateContentForReadability(): Node|null {
-    if (chrome.readingMode.isReadabilityEnabled) {
+    if (isDistilledByReadability()) {
       // Readability Path: Build DOM from the HTML string.
       const title = chrome.readingMode.htmlTitle;
       const contentHtml = chrome.readingMode.htmlContent;
 
-      // TODO: crbug.com/459156155 - Default to screen2X distillation if no
-      // distilled content from Readability.
       if (!contentHtml) {
         this.setEmpty();
         return null;
@@ -463,9 +461,9 @@ export class ContentController {
   private transformLinkContainer_(
       elemToReplace: HTMLElement, showLinks: boolean) {
     const nodeId = this.nodeStore_.getAxId(elemToReplace);
-    // If the Readability flag is enabled, we don't expect there to be an
+    // If using Readability distillation, we don't expect there to be an
     // AX id for the node, so don't assert that it exists.
-    if (!chrome.readingMode.isReadabilityEnabled) {
+    if (!isDistilledByReadability()) {
       assert(nodeId !== undefined, 'link node id is undefined');
     }
     const newTag = showLinks ? LINKS_ON_TAG : LINKS_OFF_TAG;
@@ -564,7 +562,7 @@ export class ContentController {
       return;
     }
 
-    if (chrome.readingMode.isReadabilityEnabled) {
+    if (isDistilledByReadability()) {
       this.updateImagesForReadability(root);
     } else {
       this.updateImagesForAxTree(root);
@@ -598,7 +596,7 @@ export class ContentController {
   }
 
   updateImagesForReadability(container: ParentNode) {
-    if (!chrome.readingMode.isReadabilityEnabled) {
+    if (!isDistilledByReadability()) {
       return;
     }
 
@@ -644,8 +642,7 @@ export class ContentController {
   }
 
   private getTrustedHtml(html: string): TrustedHTML {
-    if (!ContentController.trustedUpdatePolicy ||
-        !chrome.readingMode.isReadabilityEnabled) {
+    if (!ContentController.trustedUpdatePolicy || !isDistilledByReadability()) {
       return window.trustedTypes!.emptyHTML;
     }
     return ContentController.trustedUpdatePolicy.createHTML(html);

@@ -81,6 +81,13 @@ export class FakeReadingMode {
   htmlContent: string = '';
   title: string = '';
 
+  // The constant value representing the Screen2x (AXTree) distillation method.
+  distillationTypeScreen2x: number = 0;
+
+  // The constant value representing the Readability (HTML string) distillation
+  // method.
+  distillationTypeReadability: number = 1;
+
   // Whether the Read Aloud feature flag is enabled.
   isReadAloudEnabled: boolean = true;
   imagesFeatureEnabled: boolean = false;
@@ -116,6 +123,9 @@ export class FakeReadingMode {
 
   // If the speech tree has been initialized.
   isSpeechTreeInitialized: boolean = false;
+
+  // Defines the distillation method used (screen2x maps to 0).
+  distillationMethod: number = 0;
 
   requiresDistillation: boolean = false;
 

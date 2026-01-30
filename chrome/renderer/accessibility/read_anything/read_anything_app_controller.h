@@ -50,6 +50,7 @@ class AXTreeDistiller;
 class DependencyParserModel;
 class ReadAnythingAppControllerTest;
 class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
+class ReadAnythingAppControllerReadabilityTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingAppController
@@ -252,6 +253,8 @@ class ReadAnythingAppController
   int MaxLineWidth() const;
   int InSidePanelPresentationState() const;
   int InImmersiveOverlayPresentationState() const;
+  int DistillationTypeScreen2x() const;
+  int DistillationTypeReadability() const;
   std::string GetStoredVoice() const;
   std::vector<std::string> GetLanguagesEnabledInPref() const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
@@ -328,6 +331,9 @@ class ReadAnythingAppController
   void TogglePresentation();
   void TogglePinState();
   void OnPinStatusReceived(bool pin_state) override;
+
+  // Returns the current active distillation method state as an integer.
+  int GetDistillationMethod() const;
 
   // The language code that should be used to determine which voices are
   // supported for speech.
@@ -408,6 +414,7 @@ class ReadAnythingAppController
  private:
   friend ReadAnythingAppControllerTest;
   friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
+  friend ReadAnythingAppControllerReadabilityTest;
   // The fallback language code if GetLanguageCodeForSpeech has an error.
   // However, this may be the same value as GetLanguageCodeForSpeech.
   const std::string& GetDefaultLanguageCodeForSpeech() const;
@@ -415,6 +422,13 @@ class ReadAnythingAppController
   void Distill(bool for_training_data = false);
   void DrawSelection();
   void DrawEmptyState();
+
+  // Helper function that restarts the distillation logging timer and triggers a
+  // new distillation if the tree is ready.
+  void DistillNewTree();
+
+  // Returns the default distillation method state based on feature flags.
+  ReadAnythingAppModel::DistillationMethod GetDefaultDistillationMethod() const;
 
   void ExecuteJavaScript(const std::string& script);
 

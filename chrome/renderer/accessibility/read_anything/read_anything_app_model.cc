@@ -98,6 +98,7 @@ ReadAnythingAppModel::SelectionEndpoint::SelectionEndpoint(
 
 ReadAnythingAppModel::ReadAnythingAppModel() {
   ResetTextSize();
+  SetDefaultDistillationMethod();
 }
 
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
@@ -782,6 +783,16 @@ void ReadAnythingAppModel::AdjustTextSize(int increment) {
 
 void ReadAnythingAppModel::ResetTextSize() {
   SetFontSize(2.0f);
+}
+
+void ReadAnythingAppModel::SetDefaultDistillationMethod() {
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
+    next_distillation_method_ = DistillationMethod::kReadability;
+    current_content_distillation_method_ = DistillationMethod::kReadability;
+  } else {
+    next_distillation_method_ = DistillationMethod::kScreen2x;
+    current_content_distillation_method_ = DistillationMethod::kScreen2x;
+  }
 }
 
 void ReadAnythingAppModel::OnScroll(bool on_selection,

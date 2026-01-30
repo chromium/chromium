@@ -441,7 +441,8 @@ suite('ContentController', () => {
 
     test('link visibility toggled toggles links with Readability', async () => {
       const url = 'https://www.relsilicon.com/';
-      chrome.readingMode.isReadabilityEnabled = true;
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
       contentController.configureTrustedTypes();
       const text = 'a link';
       readingMode.htmlContent = `<a href="${url}">${text}</a>`;
