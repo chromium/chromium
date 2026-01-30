@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 
+#import <optional>
 #import <variant>
 
 #import "base/memory/weak_ptr.h"
@@ -92,6 +93,12 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Sets the passkey command handler.
   void SetIOSPasskeyClientCommandsHandler(id<IOSPasskeyClientCommands> handler);
+
+  // Returns whether user verification should be performed for `request_id`.
+  // It returns std::nullopt if the request is unknown.
+  std::optional<bool> ShouldPerformUserVerification(
+      const std::string& request_id,
+      bool is_biometric_authentication_enabled) const;
 
   // Returns whether there is a pending remote validation for testing.
   bool HasPendingValidationForTesting() const;

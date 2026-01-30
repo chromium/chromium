@@ -5,7 +5,7 @@
 #import "components/webauthn/ios/passkey_tab_helper.h"
 
 #import "base/rand_util.h"
-#import "base/strings/to_string.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
@@ -72,34 +72,45 @@ sync_pb::WebauthnCredentialSpecifics GetTestPasskey(
 }
 
 // Builds PasskeyRequestParams using the default rp id.
-PasskeyRequestParams BuildPasskeyRequestParams() {
-  IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
-                                             kFakeRequestId);
+PasskeyRequestParams BuildPasskeyRequestParams(
+    device::UserVerificationRequirement user_verification,
+    std::string request_id = kFakeRequestId,
+    std::string frame_id = web::kMainFakeFrameId) {
+  IOSPasskeyClient::RequestInfo request_info(frame_id, request_id);
   device::PublicKeyCredentialRpEntity rp_entity(kRpId);
   std::vector<uint8_t> challenge;
   PasskeyRequestParams::RequestType request_type =
       PasskeyRequestParams::RequestType::kModal;
   PasskeyExtensionData extension_data;
   return PasskeyRequestParams(std::move(request_info), std::move(rp_entity),
-                              std::move(challenge),
-                              device::UserVerificationRequirement::kPreferred,
+                              std::move(challenge), user_verification,
                               request_type, std::move(extension_data));
 }
 
 // Builds RegistrationRequestParams from an exclude credentials list.
 RegistrationRequestParams BuildRegistrationRequestParams(
     const std::vector<device::PublicKeyCredentialDescriptor>&
-        exclude_credentials) {
+        exclude_credentials,
+    device::UserVerificationRequirement user_verification =
+        device::UserVerificationRequirement::kPreferred,
+    std::string request_id = kFakeRequestId,
+    std::string frame_id = web::kMainFakeFrameId) {
   device::PublicKeyCredentialUserEntity user_entity;
-  return RegistrationRequestParams(BuildPasskeyRequestParams(),
-                                   std::move(user_entity), exclude_credentials);
+  return RegistrationRequestParams(
+      BuildPasskeyRequestParams(user_verification, request_id, frame_id),
+      std::move(user_entity), exclude_credentials);
 }
 
 // Builds AssertionRequestParams from an allow credentials list.
 AssertionRequestParams BuildAssertionRequestParams(
-    const std::vector<device::PublicKeyCredentialDescriptor>&
-        allow_credentials) {
-  return AssertionRequestParams(BuildPasskeyRequestParams(), allow_credentials);
+    const std::vector<device::PublicKeyCredentialDescriptor>& allow_credentials,
+    device::UserVerificationRequirement user_verification =
+        device::UserVerificationRequirement::kPreferred,
+    std::string request_id = kFakeRequestId,
+    std::string frame_id = web::kMainFakeFrameId) {
+  return AssertionRequestParams(
+      BuildPasskeyRequestParams(user_verification, request_id, frame_id),
+      allow_credentials);
 }
 
 }  // namespace
@@ -222,6 +233,25 @@ class PasskeyTabHelperTest : public PlatformTest {
     test_url_loader_factory_.AddResponse(
         GURL(kWellKnownURL), std::move(head), body,
         network::URLLoaderCompletionStatus(net_error));
+  }
+
+  // Returns a random request ID of the same charset as the fake request ID.
+  std::string GetUniqueRequestId() {
+    return base::HexEncodeLower(base::RandBytesAsVector(16));
+  }
+
+  // Verifies that ShouldPerformUserVerification returns the expected results
+  // with and without biometric authentication enabled.
+  void VerifyShouldPerformUserVerification(const std::string& request_id,
+                                           bool expected_with_biometrics,
+                                           bool expected_without_biometrics) {
+    SCOPED_TRACE(testing::Message() << "ID: " << request_id);
+    EXPECT_EQ(passkey_tab_helper()->ShouldPerformUserVerification(
+                  request_id, /*is_biometric_authentication_enabled=*/true),
+              std::optional<bool>(expected_with_biometrics));
+    EXPECT_EQ(passkey_tab_helper()->ShouldPerformUserVerification(
+                  request_id, /*is_biometric_authentication_enabled=*/false),
+              std::optional<bool>(expected_without_biometrics));
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -453,6 +483,56 @@ TEST_F(PasskeyTabHelperTest, CreatePasskeyFromRelatedOriginFailure) {
   }));
 
   EXPECT_FALSE(client_->DidShowCreationBottomSheet());
+}
+
+// Tests that ShouldPerformUserVerification returns the correct value for
+// assertion and registration requests.
+TEST_F(PasskeyTabHelperTest, ShouldPerformUserVerification) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  // Test with non-existent request ID.
+  EXPECT_EQ(
+      passkey_tab_helper()->ShouldPerformUserVerification("non-existent", true),
+      std::nullopt);
+
+  // An array of user verification requirements, and their expected values.
+  struct UserVerificationRequirementTest {
+    device::UserVerificationRequirement requirement;
+    bool expected_with_biometrics;
+    bool expected_without_biometrics;
+  };
+
+  std::vector<UserVerificationRequirementTest> user_verification_requirements =
+      {{device::UserVerificationRequirement::kPreferred,
+        /*expected_with_biometrics=*/true,
+        /*expected_without_biometrics=*/false},
+       {device::UserVerificationRequirement::kRequired,
+        /*expected_with_biometrics=*/true,
+        /*expected_without_biometrics=*/true},
+       {device::UserVerificationRequirement::kDiscouraged,
+        /*expected_with_biometrics=*/false,
+        /*expected_without_biometrics=*/false}};
+
+  // Tests assertion requests.
+  for (const auto& test : user_verification_requirements) {
+    std::string request_id = GetUniqueRequestId();
+    passkey_tab_helper()->HandleGetRequestedEvent(
+        BuildAssertionRequestParams({}, test.requirement, request_id));
+    VerifyShouldPerformUserVerification(request_id,
+                                        test.expected_with_biometrics,
+                                        test.expected_without_biometrics);
+  }
+
+  // Tests registration requests.
+  for (const auto& test : user_verification_requirements) {
+    std::string request_id = GetUniqueRequestId();
+    passkey_tab_helper()->HandleCreateRequestedEvent(
+        BuildRegistrationRequestParams({}, test.requirement, request_id));
+    VerifyShouldPerformUserVerification(request_id,
+                                        test.expected_with_biometrics,
+                                        test.expected_without_biometrics);
+  }
 }
 
 }  // namespace webauthn
