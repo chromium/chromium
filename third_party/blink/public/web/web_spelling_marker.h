@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class DocumentMarker;
+
 // Represents markers for spelling or grammatical errors in a WebString text.
 // Along with the text to be spellchecked, the marker information is necessary
 // by the spell check service. Each marker is denoted as a range. `start`
@@ -21,6 +23,10 @@ struct WebSpellingMarker {
   uint32_t start;
   uint32_t end;
   SpellingMarkerType marker_type;
+
+#ifdef INSIDE_BLINK
+  explicit WebSpellingMarker(const DocumentMarker& marker);
+#endif  // INSIDE_BLINK
 };
 
 }  // namespace blink

@@ -49,6 +49,10 @@ bool SuggestionMarker::IsMisspelling() const {
   return suggestion_type_ == SuggestionType::kMisspelling;
 }
 
+bool SuggestionMarker::IsGrammarError() const {
+  return suggestion_type_ == SuggestionType::kGrammar;
+}
+
 bool SuggestionMarker::NeedsRemovalOnFinishComposing() const {
   return remove_on_finish_composing_ == RemoveOnFinishComposing::kRemove;
 }

@@ -74,6 +74,7 @@ blink_core_sources_exported = [
   "web_view_impl.cc",
   "web_view_impl.h",
   "web_view_observer.cc",
+  "web_spelling_marker.cc",
 ]
 
 blink_core_tests_exported = [

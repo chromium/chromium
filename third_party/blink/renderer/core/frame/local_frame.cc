@@ -121,6 +121,8 @@
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/grammar_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/spelling_marker.h"
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
@@ -273,6 +275,14 @@ blink::DocumentMarkerVector ExtractSpellingMarkersFromDocumentMarkerVector(
     if (marker->GetType() == DocumentMarker::MarkerType::kSpelling ||
         marker->GetType() == DocumentMarker::MarkerType::kGrammar) {
       spelling_markers.push_back(marker);
+    }
+
+    if (const auto* suggestion_marker =
+            DynamicTo<SuggestionMarker>(marker.Get())) {
+      if (suggestion_marker->IsMisspelling() ||
+          suggestion_marker->IsGrammarError()) {
+        spelling_markers.push_back(marker);
+      }
     }
   }
   return spelling_markers;

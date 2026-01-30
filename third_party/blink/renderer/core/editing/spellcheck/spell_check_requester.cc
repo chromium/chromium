@@ -59,15 +59,14 @@ std::vector<WebSpellingMarker> MapToWebSpellingMarkers(
     const blink::DocumentMarkerVector& spelling_markers) {
   std::vector<WebSpellingMarker> web_spelling_markers;
   for (const auto& marker : spelling_markers) {
-    if (marker->GetType() != DocumentMarker::kSpelling &&
-        marker->GetType() != DocumentMarker::kGrammar) {
-      continue;
+    if (marker->GetType() == DocumentMarker::kSpelling ||
+        marker->GetType() == DocumentMarker::kGrammar ||
+        // TODO(crbug.com/479924245): improve cast logic for SuggestionMarker
+        (IsA<SuggestionMarker>(marker.Get()) &&
+         (To<SuggestionMarker>(marker.Get())->IsGrammarError() ||
+          To<SuggestionMarker>(marker.Get())->IsMisspelling()))) {
+      web_spelling_markers.emplace_back(*marker);
     }
-    web_spelling_markers.emplace_back(
-        marker->StartOffset(), marker->EndOffset(),
-        marker->GetType() == DocumentMarker::kGrammar
-            ? WebSpellingMarker::SpellingMarkerType::kGrammar
-            : WebSpellingMarker::SpellingMarkerType::kSpelling);
   }
   return web_spelling_markers;
 }

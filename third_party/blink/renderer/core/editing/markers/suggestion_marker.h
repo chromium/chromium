@@ -45,6 +45,7 @@ class CORE_EXPORT SuggestionMarker final : public StyleableMarker {
   SuggestionType GetSuggestionType() const;
   const Vector<String>& Suggestions() const;
   bool IsMisspelling() const;
+  bool IsGrammarError() const;
   bool NeedsRemovalOnFinishComposing() const;
   Color SuggestionHighlightColor() const;
   bool ShouldHideSuggestionMenu() const;
