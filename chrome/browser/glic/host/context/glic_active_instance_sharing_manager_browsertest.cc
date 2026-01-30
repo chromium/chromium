@@ -42,7 +42,8 @@ class GlicActiveInstanceSharingManagerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+// (crbug.com/479963426): Test is highly flakey on win-rel cq builder.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
                        DelegatesToActiveInstance) {
   browser_activator().SetMode(BrowserActivator::Mode::kManual);
