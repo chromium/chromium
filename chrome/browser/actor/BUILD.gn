@@ -410,7 +410,7 @@ source_set("browser_tests") {
     deps += [ "//chrome/test:test_support_ui" ]
   }
 
-  if (!skip_android_unmigrated_actor_files) {
+  if (!skip_android_unmigrated_actor_files && enable_glic) {
     sources += [
       "actor_functional_browsertest.cc",
       "actor_policy_checker_browsertest.cc",
