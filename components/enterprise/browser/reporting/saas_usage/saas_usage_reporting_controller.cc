@@ -32,8 +32,9 @@ SaasUsageReportingController::SaasUsageReportingController(
 SaasUsageReportingController::~SaasUsageReportingController() = default;
 
 void SaasUsageReportingController::RecordNavigation(
-    const GURL& url,
-    const std::string_view encryption_protocol) const {
+    const NavigationDataDelegate& delegate) const {
+  GURL url = delegate.GetUrl();
+  std::string encryption_protocol = delegate.GetEncryptionProtocol();
   std::optional<std::string> profile_matched_domain =
       profile_matcher_->GetMatchedURL(url);
   if (profile_matched_domain) {

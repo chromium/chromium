@@ -6807,6 +6807,13 @@ test("unit_tests") {
     "../renderer/v8_unwinder_unittest.cc",
   ]
 
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "../browser/enterprise/reporting/saas_usage/navigation_handle_data_delegate_unittest.cc",
+      "../browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer_unittest.cc",
+    ]
+  }
+
   if (build_with_tflite_lib) {
     sources += [
       "../browser/navigation_predictor/preloading_model_executor_unittest.cc",

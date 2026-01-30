@@ -18,6 +18,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/enterprise/reporting/reporting_features.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
@@ -520,6 +522,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<skills::SkillsUpdateObserver>(tab);
   }
 #endif  // BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {
+    saas_usage_navigation_observer_ =
+        std::make_unique<enterprise_reporting::SaasUsageNavigationObserver>(
+            tab.GetContents());
+  }
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(

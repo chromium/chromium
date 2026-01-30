@@ -71,6 +71,10 @@ namespace enterprise_data_protection {
 class DataProtectionNavigationController;
 }  // namespace enterprise_data_protection
 
+namespace enterprise_reporting {
+class SaasUsageNavigationObserver;
+}  // namespace enterprise_reporting
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -540,6 +544,11 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<skills::SkillsUpdateObserver> skills_update_observer_;
 #endif  // BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  std::unique_ptr<enterprise_reporting::SaasUsageNavigationObserver>
+      saas_usage_navigation_observer_;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

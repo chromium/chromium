@@ -18,6 +18,14 @@ namespace enterprise_reporting {
 
 class SaasUsageReportingController : public KeyedService {
  public:
+  // Delegate class that is used to collect navigation information.
+  class NavigationDataDelegate {
+   public:
+    virtual ~NavigationDataDelegate() = default;
+    virtual GURL GetUrl() const = 0;
+    virtual std::string GetEncryptionProtocol() const = 0;
+  };
+
   SaasUsageReportingController(
       PrefService* local_state_pref_service,
       PrefService* profile_pref_service,
@@ -25,8 +33,7 @@ class SaasUsageReportingController : public KeyedService {
       std::unique_ptr<PrefURLListMatcher> profile_matcher);
   ~SaasUsageReportingController() override;
 
-  void RecordNavigation(const GURL& url,
-                        const std::string_view encryption_protocol) const;
+  virtual void RecordNavigation(const NavigationDataDelegate& delegate) const;
 
  private:
   const raw_ref<PrefService> local_state_pref_service_;
