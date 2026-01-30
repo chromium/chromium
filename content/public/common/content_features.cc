@@ -1264,6 +1264,14 @@ BASE_FEATURE(kAccessibilityImproveLiveRegionAnnounce,
 BASE_FEATURE(kAccessibilityRequestLayoutBasedActions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, the accessibility tree will be requested to
+// signal content changed events next to a boolean value that will determine if
+// this event should cause a nodes's children to be rerendered if there've been
+// structural changes.
+BASE_FEATURE(kAccessibilityRequestScopedContentChangedEvents,
+             "AccessibilityRequestScopedContentChangedEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, supports atomic announcements, meaning that when
 // aria-atomic=true, the entire live region will be announced not just the node
 // that changed.

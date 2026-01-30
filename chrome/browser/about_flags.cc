@@ -6509,6 +6509,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          features::kAccessibilityPopulateSupplementalDescriptionApi)},
+    {"enable-accessibility-request-scoped-content-changed-events",
+     flag_descriptions::kAccessibilityRequestScopedContentChangedEventsName,
+     flag_descriptions::
+         kAccessibilityRequestScopedContentChangedEventsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         features::kAccessibilityRequestScopedContentChangedEvents)},
     {"enable-accessibility-sequential-focus",
      flag_descriptions::kAccessibilitySequentialFocusName,
      flag_descriptions::kAccessibilitySequentialFocusDescription, kOsAndroid,

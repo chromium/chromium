@@ -13210,6 +13210,8 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>
   <int value="-389601101" label="HelpAppAutoTriggerInstallDialog:enabled"/>
   <int value="-389283574" label="IPH_PasswordsAccountStorage:disabled"/>
+  <int value="-388869173"
+      label="AccessibilityRequestScopedContentChangedEvents:enabled"/>
   <int value="-387606010" label="ArcBootCompletedBroadcast:enabled"/>
   <int value="-387341308" label="ParentAccessJelly:disabled"/>
   <int value="-387217874" label="LinkCapturingInfoBar:enabled"/>
@@ -17388,6 +17390,8 @@ from previous Chrome versions.
   <int value="1057337924" label="RestartToGainAccessToKeychain:disabled"/>
   <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
+  <int value="1058089810"
+      label="AccessibilityRequestScopedContentChangedEvents:disabled"/>
   <int value="1059007599" label="enable-gpu-appcontainer"/>
   <int value="1059595064" label="GlicPanelResetOnStart:enabled"/>
   <int value="1059698271" label="EnableZeroStateSuggestions:disabled"/>

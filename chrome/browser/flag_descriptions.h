@@ -4709,6 +4709,15 @@ inline constexpr char kAccessibilityAtomicLiveRegionsDescription[] =
     "aria-atomic=true, the entire live region will be announced not just the "
     "node that changed.";
 
+inline constexpr char kAccessibilityRequestScopedContentChangedEventsName[] =
+    "Accessibility Request Scoped Content Changed Events";
+inline constexpr char
+    kAccessibilityRequestScopedContentChangedEventsDescription[] =
+        "When this feature is enabled, the accessibility tree will be requested"
+        "to signal content changed events next to a boolean value that will "
+        "determine if this event should cause a nodes's children to be "
+        "rerendered if there've been structural changes.";
+
 inline constexpr char kAccessibilitySetSelectableOnAllNodesWithTextName[] =
     "AccessibilitySetSelectableOnAllNodesWithTextName";
 inline constexpr char

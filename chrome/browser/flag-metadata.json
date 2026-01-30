@@ -2632,7 +2632,12 @@
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142
   },
-    {
+  {
+    "name": "enable-accessibility-request-scoped-content-changed-events",
+    "owners": ["gmarcoesau@chromium.org", "//ui/accessibility/OWNERS"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-accessibility-sequential-focus",
     "owners": [ "jocelyntran@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 155
