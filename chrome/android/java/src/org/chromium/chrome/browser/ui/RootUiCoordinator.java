@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -1613,8 +1614,22 @@ public class RootUiCoordinator
                     return result != null && result;
                 }
             }
-        }
+        } else if (id == R.id.glic_menu_id) {
+            long browserWindowPtr =
+                    assumeNonNull(mChromeAndroidTaskSupplier.get())
+                            .getOrCreateNativeBrowserWindowPtr();
+            GlicKeyedService service = new GlicKeyedService();
+            if (service == null) {
+                return false;
+            }
 
+            // TODO(crbug.com/479863299): Create and pass in enum for invocationSource.
+            service.toggleUI(
+                    browserWindowPtr,
+                    assumeNonNull(mProfileSupplier.get()),
+                    /* invocationSource= */ 7);
+            return true;
+        }
         return false;
     }
 

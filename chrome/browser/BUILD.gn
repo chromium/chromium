@@ -3352,6 +3352,8 @@ static_library("browser") {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/flags:flags_android_impl",
       "//chrome/browser/gesturenav/android:jni_headers",
+      "//chrome/browser/glic/android",
+      "//chrome/browser/glic/android:jni_headers",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/language/android:jni_headers",
       "//chrome/browser/lifetime/android:jni_headers",
