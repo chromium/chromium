@@ -106,8 +106,10 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
                           {});
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_bounds));
     bounds.set_x(x);
-    bounds.set_y(
-        GetOriginForDraggedTabBounds(*child).value_or({0, height}).y());
+
+    auto drag_data = GetVisualDataForDraggedView(*child);
+    CHECK(!drag_data || !drag_data->should_hide);
+    bounds.set_y(drag_data ? drag_data->offset.y() : height);
 
     // If width is bounded, child views should respect the width constraints and
     // take up the available width excluding trailing horizontal padding.

@@ -64,11 +64,14 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   void OnViewBoundsChanged(views::View* observed_view) override;
 
  protected:
-  // Returns the expected coordinates for a dragged tab view's bounds, or
-  // null if the view isn't being dragged in this.
-  // A value of 0 is used by default for the X-coordinate if dragging along the
-  // x-axis is not supported.
-  std::optional<gfx::Point> GetOriginForDraggedTabBounds(
+  struct DraggedViewVisualData {
+    gfx::Vector2d offset;
+    bool should_hide = false;
+  };
+
+  // Returns the expected visual data, relative to the host view, for a dragged
+  // view. Returns std::nullopt if the view is not being dragged.
+  std::optional<DraggedViewVisualData> GetVisualDataForDraggedView(
       const views::View& view) const;
 
   // Helper for getting the view at a given point, excluding dragged views.
@@ -129,9 +132,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // The bounding box of all the dragged views, relative to the drag point.
   gfx::Rect dragging_views_bounds_;
 
-  // Child views that are being dragged, mapped to their offset within
-  // `dragging_views_bounds_`.
-  base::flat_map<raw_ptr<views::View>, gfx::Vector2d> dragging_views_;
+  // Child views that are being dragged, mapped to their DraggedViewVisualData,
+  // whose offset is relative within `dragging_views_bounds_`.
+  base::flat_map<raw_ptr<views::View>, DraggedViewVisualData> dragging_views_;
 
   const DragAxes drag_axes_;
   const DragLayout drag_layout_;

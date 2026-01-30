@@ -103,20 +103,31 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     gfx::Rect bounds =
         gfx::Rect(child->GetPreferredSize(views::SizeBounds(child_width, {})));
     bounds.set_width(child_width);
-    if (row_index != 0) {
-      x += kTabPadding;
+
+    auto drag_data = GetVisualDataForDraggedView(*child);
+    bounds.set_y(drag_data ? drag_data->offset.y() : y);
+    bounds.set_x(drag_data ? drag_data->offset.x() : x);
+
+    const bool should_show_child =
+        drag_data.has_value() ? !drag_data->should_hide : true;
+    if (should_show_child) {
+      if (row_index != 0) {
+        x += kTabPadding;
+        bounds.set_x(bounds.x() + kTabPadding);
+      }
+      x += bounds.width();
+      total_width = std::max(total_width, x);
+      total_height = std::max(total_height, (y + bounds.height()));
+
+      row_index++;
+      if (row_index >= children_on_row) {
+        y = total_height + kTabPadding;
+        row_index = 0;
+        x = 0;
+      }
     }
-    bounds.set_origin(GetOriginForDraggedTabBounds(*child).value_or({x, y}));
-    x += bounds.width();
-    total_width = std::max(total_width, x);
-    total_height = std::max(total_height, (y + bounds.height()));
-    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
-    row_index++;
-    if (row_index >= children_on_row) {
-      y = total_height + kTabPadding;
-      row_index = 0;
-      x = 0;
-    }
+
+    layouts.child_layouts.emplace_back(child, should_show_child, bounds);
   }
   layouts.host_size = gfx::Size(total_width, total_height);
   return layouts;

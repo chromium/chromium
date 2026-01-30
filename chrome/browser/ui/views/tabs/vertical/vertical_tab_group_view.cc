@@ -155,8 +155,11 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   // fill available width.
   for (auto* child : children) {
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
-    bounds.set_y(
-        GetOriginForDraggedTabBounds(*child).value_or({0, height}).y());
+
+    auto drag_data = GetVisualDataForDraggedView(*child);
+    CHECK(!drag_data || !drag_data->should_hide);
+    bounds.set_y(drag_data ? drag_data->offset.y() : height);
+
     // If the tab strip is not collapsed then the groups tabs should be inset.
     bounds.set_x(is_tab_strip_collapsed
                      ? GetLayoutConstant(

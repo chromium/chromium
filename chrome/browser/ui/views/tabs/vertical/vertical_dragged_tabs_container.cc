@@ -210,7 +210,8 @@ void VerticalDraggedTabsContainer::AddViewToVerticalDragLayout(
     bool is_source_dragged_view) {
   gfx::Rect bounds = gfx::Rect(dragging_view->GetPreferredSize({}));
   bounds.set_y(dragging_views_bounds_.height());
-  dragging_views_.insert({dragging_view, bounds.OffsetFromOrigin()});
+  dragging_views_.insert(
+      {dragging_view, {.offset = bounds.OffsetFromOrigin()}});
 
   static constexpr int kDraggedViewVerticalPadding = 2;
   dragging_views_bounds_.set_height(dragging_views_bounds_.height() +
@@ -225,17 +226,24 @@ void VerticalDraggedTabsContainer::AddViewToVerticalDragLayout(
 void VerticalDraggedTabsContainer::AddViewToSquashedDragLayout(
     views::View* dragging_view,
     bool is_source_dragged_view) {
-  dragging_views_.insert({dragging_view, {0, 0}});
   if (is_source_dragged_view) {
     dragging_views_bounds_.set_size(dragging_view->bounds().size());
-  } else {
-    dragging_view->layer()->SetVisible(false);
   }
+  dragging_views_.insert(
+      {dragging_view,
+       {.offset = gfx::Vector2d(), .should_hide = !is_source_dragged_view}});
 }
 
 void VerticalDraggedTabsContainer::ResetDragState() {
-  for (auto& [view, _] : dragging_views_) {
+  // Don't immediately clear `dragging_views_` so that the host view has a
+  // chance to lay the dragged views out at their expected positions rather
+  // than relying on `VerticalDraggedTabsContainer` to lay them out with
+  // transforms.
+  for (auto& [view, visual_data] : dragging_views_) {
     view->SetTransform(gfx::Transform());
+
+    // The next layout update should allow the view to be shown by the host.
+    visual_data.should_hide = false;
   }
   UpdateLayoutForDrag();
   dragging_views_.clear();
@@ -249,15 +257,19 @@ void VerticalDraggedTabsContainer::UpdateDraggingViewTransforms(
     const gfx::Point& point_in_container) {
   const gfx::Rect bounding_box_for_point =
       GetDraggingViewsBoundsAtPoint(point_in_container);
-  for (auto& [dragged_view, offset] : dragging_views_) {
+  for (auto& [dragged_view, visual_data] : dragging_views_) {
+    if (visual_data.should_hide) {
+      continue;
+    }
     // Use a transformation to render the dragged views, offset from the
     // container's origin.
     gfx::Transform transform;
-    transform.Translate(IsHorizontalDragSupported()
-                            ? bounding_box_for_point.x() + offset.x()
+    transform.Translate(
+        IsHorizontalDragSupported()
+            ? bounding_box_for_point.x() + visual_data.offset.x()
 
-                            : 0,
-                        bounding_box_for_point.y() + offset.y());
+            : 0,
+        bounding_box_for_point.y() + visual_data.offset.y());
     dragged_view->SetTransform(transform);
   }
 }
@@ -276,8 +288,8 @@ gfx::Rect VerticalDraggedTabsContainer::GetDraggingViewsBoundsAtPoint(
   return bounding_box_for_point;
 }
 
-std::optional<gfx::Point>
-VerticalDraggedTabsContainer::GetOriginForDraggedTabBounds(
+std::optional<VerticalDraggedTabsContainer::DraggedViewVisualData>
+VerticalDraggedTabsContainer::GetVisualDataForDraggedView(
     const views::View& view) const {
   auto it = dragging_views_.find(&view);
   if (it == dragging_views_.end()) {
@@ -291,14 +303,19 @@ VerticalDraggedTabsContainer::GetOriginForDraggedTabBounds(
         base::to_address(host_view_), last_drag_point_in_screen_);
     const gfx::Rect bounding_box_for_point =
         GetDraggingViewsBoundsAtPoint(point_in_container);
-    return gfx::Point(IsHorizontalDragSupported()
-                          ? bounding_box_for_point.x() + it->second.x()
-                          : 0,
-                      bounding_box_for_point.y() + it->second.y());
+    return std::make_optional(DraggedViewVisualData{
+        .offset = gfx::Vector2d(
+            IsHorizontalDragSupported()
+                ? bounding_box_for_point.x() + it->second.offset.x()
+                : 0,
+            bounding_box_for_point.y() + it->second.offset.y()),
+        .should_hide = it->second.should_hide,
+    });
   }
   // If the tab is being dragged, then it is rendered using
   // transformations, offset from the container's origin.
-  return gfx::Point();
+  return DraggedViewVisualData{.offset = gfx::Vector2d(),
+                               .should_hide = it->second.should_hide};
 }
 
 views::View* VerticalDraggedTabsContainer::GetViewAtPoint(
