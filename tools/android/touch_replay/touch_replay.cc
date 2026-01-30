@@ -16,13 +16,13 @@
 #include <string>
 #include <type_traits>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 
 // Records and replays touch events on Android device.
@@ -238,8 +238,8 @@ constexpr int kLogFileHeaderSize = static_cast<int>(sizeof(kLogFileHeader));
 
 bool IsValidFileHeader(base::File& dump_file) {
   char magic_buf[kLogFileHeaderSize];
-  int bytes_read = dump_file.ReadAtCurrentPos(magic_buf, kLogFileHeaderSize);
-  if (bytes_read < kLogFileHeaderSize) {
+  if (!dump_file.ReadAtCurrentPosAndCheck(
+          base::as_writable_byte_span(magic_buf))) {
     PLOG(ERROR) << "read magic";
     return false;
   }
@@ -259,7 +259,7 @@ bool ReadNullTerminatedString(base::File& f,
   char cur;
   int64_t name_bytes_read = 0;
   do {
-    if (!f.Read(offset, base::byte_span_from_ref(cur))) {
+    if (!f.ReadAndCheck(offset, base::byte_span_from_ref(cur))) {
       PLOG(ERROR) << "read device name";
       return false;
     }
@@ -325,9 +325,9 @@ bool RecordForever(const base::FilePath& file_path) {
   }
 
   // Write the device file name to the dump (inc. terminating NUL).
-  std::string s = device->path().MaybeAsASCII();
   if (!dump_file.WriteAtCurrentPosAndCheck(
-          base::as_bytes(UNSAFE_TODO(base::span(s.c_str(), s.size() + 1))))) {
+          base::byte_span_with_nul_from_cstring_view(
+              base::cstring_view(device->path().MaybeAsASCII())))) {
     LOG(ERROR) << "Could not write device name";
     return false;
   }
@@ -403,10 +403,8 @@ bool Replay(const base::FilePath& file_path, int offset_x, int offset_y) {
     LOG(ERROR) << "No events to send";
     return false;
   }
-  const int64_t bytes_to_read = num_records * sizeof(TouchInputEventRecord);
   std::vector<TouchInputEventRecord> records(num_records);
-  if (dump_file.Read(offset, base::as_writable_byte_span(records)) <
-      base::checked_cast<size_t>(bytes_to_read)) {
+  if (!dump_file.ReadAndCheck(offset, base::as_writable_byte_span(records))) {
     PLOG(ERROR) << "Could not read records";
     return false;
   }
