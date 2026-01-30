@@ -21,9 +21,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Insets;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -330,6 +333,16 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockActivityManager = mock(ActivityManager.class);
         var mockDisplay = mock(DisplayAndroid.class);
         var mockInsetObserver = mock(InsetObserver.class);
+        // ViewTreeObserver is a final class in Android so it can't be mocked in
+        // tests using the real Android framework.
+        View testRootView;
+        if (Build.FINGERPRINT == null || "robolectric".equals(Build.FINGERPRINT)) {
+            testRootView = mock(View.class);
+            var observer = mock(ViewTreeObserver.class);
+            when(testRootView.getViewTreeObserver()).thenReturn(observer);
+        } else {
+            testRootView = new View(ContextUtils.getApplicationContext());
+        }
 
         when(mockActivity.getTaskId()).thenReturn(taskId);
         when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
@@ -337,6 +350,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 .thenReturn(mockActivityManager);
         when(((ActivityLifecycleDispatcherProvider) mockActivity).getLifecycleDispatcher())
                 .thenReturn(mockActivityLifecycleDispatcher);
+        when(mockActivity.findViewById(android.R.id.content)).thenReturn(testRootView);
 
         when(mockDisplay.getDipScale()).thenReturn(1.0f);
 

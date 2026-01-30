@@ -41,6 +41,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Process;
 import android.util.Pair;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowMetrics;
 
 import org.junit.Assert;
@@ -200,6 +201,10 @@ public class ChromeAndroidTaskImplUnitTest {
                     .register(isA(TopResumedActivityChangedWithNativeObserver.class));
             verify(activityLifecycleDispatcher, times(expectedNumberOfInvocations))
                     .register(isA(ConfigurationChangedObserver.class));
+            verify(
+                            activity.findViewById(android.R.id.content).getViewTreeObserver(),
+                            times(expectedNumberOfInvocations))
+                    .addOnGlobalLayoutListener(isA(OnGlobalLayoutListener.class));
 
             if (tabModelObserver != null) {
                 assertNotEquals(
@@ -215,6 +220,10 @@ public class ChromeAndroidTaskImplUnitTest {
                     .unregister(isA(TopResumedActivityChangedWithNativeObserver.class));
             verify(activityLifecycleDispatcher, times(expectedNumberOfInvocations))
                     .unregister(isA(ConfigurationChangedObserver.class));
+            verify(
+                            activity.findViewById(android.R.id.content).getViewTreeObserver(),
+                            times(expectedNumberOfInvocations))
+                    .removeOnGlobalLayoutListener(isA(OnGlobalLayoutListener.class));
 
             if (tabModelObserver != null) {
                 assertNotEquals(
