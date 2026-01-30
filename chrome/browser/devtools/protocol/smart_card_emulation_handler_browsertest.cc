@@ -106,16 +106,13 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
       std::optional<std::string> error_code = std::nullopt) {
     auto params = WaitForNotificationParams(
         "SmartCardEmulation.establishContextRequested");
-    base::DictValue response;
     if (error_code.has_value()) {
-      response.Set("resultCode", *error_code);
       SendResponse("SmartCardEmulation.reportError", params,
-                   std::move(response));
+                   base::DictValue().Set("resultCode", *error_code));
       return;
     }
-    response.Set("contextId", context_id);
     SendResponse("SmartCardEmulation.reportEstablishContextResult", params,
-                 std::move(response));
+                 base::DictValue().Set("contextId", context_id));
   }
 
   // Helper: Waits for listReaders and reports either success or error.
@@ -126,21 +123,17 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
         WaitForNotificationParams("SmartCardEmulation.listReadersRequested");
     EXPECT_EQ(params.FindInt("contextId"), context_id);
 
-    base::DictValue response;
     if (error_code.has_value()) {
-      response.Set("resultCode", *error_code);
       SendResponse("SmartCardEmulation.reportError", params,
-                   std::move(response));
+                   base::DictValue().Set("resultCode", *error_code));
       return;
     }
     base::ListValue readers_list;
     for (const auto& reader : readers) {
       readers_list.Append(reader);
     }
-    response.Set("readers", std::move(readers_list));
-
     SendResponse("SmartCardEmulation.reportListReadersResult", params,
-                 std::move(response));
+                 base::DictValue().Set("readers", std::move(readers_list)));
   }
 
   // Helper: Waits for connect and reports either success or error.
@@ -156,13 +149,12 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
     ASSERT_THAT(reader, testing::Pointee(testing::StrEq(expected_reader)))
         << "Connect request was for the wrong reader!";
 
-    base::DictValue response;
     if (error_code.has_value()) {
-      response.Set("resultCode", *error_code);
       SendResponse("SmartCardEmulation.reportError", params,
-                   std::move(response));
+                   base::DictValue().Set("resultCode", *error_code));
       return;
     }
+    base::DictValue response;
     response.Set("handle", handle);
     if (active_protocol.has_value()) {
       response.Set("activeProtocol", *active_protocol);
@@ -181,15 +173,12 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
 
     EXPECT_EQ(params.FindInt("contextId"), context_id);
 
-    base::DictValue response;
     if (error_code.has_value()) {
-      response.Set("resultCode", *error_code);
       SendResponse("SmartCardEmulation.reportError", params,
-                   std::move(response));
+                   base::DictValue().Set("resultCode", *error_code));
       return;
     }
     base::ListValue response_list;
-
     for (const auto& state : states) {
       base::DictValue dict;
 
@@ -206,9 +195,9 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
       response_list.Append(std::move(dict));
     }
 
-    response.Set("readerStates", std::move(response_list));
-    SendResponse("SmartCardEmulation.reportGetStatusChangeResult", params,
-                 std::move(response));
+    SendResponse(
+        "SmartCardEmulation.reportGetStatusChangeResult", params,
+        base::DictValue().Set("readerStates", std::move(response_list)));
   }
 
   // Helper: Waits for statusRequested and sends a response.
@@ -223,13 +212,12 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
 
     EXPECT_EQ(params.FindInt("handle"), handle);
 
-    base::DictValue response;
     if (error_code.has_value()) {
-      response.Set("resultCode", *error_code);
       SendResponse("SmartCardEmulation.reportError", params,
-                   std::move(response));
+                   base::DictValue().Set("resultCode", *error_code));
       return;
     }
+    base::DictValue response;
     response.Set("readerName", reader_name);
     response.Set("state", state);
     response.Set("atr", base::Base64Encode(atr));
@@ -259,16 +247,13 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
     EXPECT_EQ(actual_command, expected_command)
         << "JS sent wrong command bytes";
 
-    base::DictValue response;
-
     if (result.has_value()) {
-      response.Set("data", base::Base64Encode(result.value()));
-      SendResponse("SmartCardEmulation.reportDataResult", params,
-                   std::move(response));
+      SendResponse(
+          "SmartCardEmulation.reportDataResult", params,
+          base::DictValue().Set("data", base::Base64Encode(result.value())));
     } else {
-      response.Set("resultCode", result.error());
       SendResponse("SmartCardEmulation.reportError", params,
-                   std::move(response));
+                   base::DictValue().Set("resultCode", result.error()));
     }
   }
 
@@ -292,15 +277,13 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
     std::vector<uint8_t> actual_data(data_str.begin(), data_str.end());
     EXPECT_EQ(actual_data, expected_data) << "JS sent wrong control data bytes";
 
-    base::DictValue response;
     if (result.has_value()) {
-      response.Set("data", base::Base64Encode(result.value()));
-      SendResponse("SmartCardEmulation.reportDataResult", params,
-                   std::move(response));
+      SendResponse(
+          "SmartCardEmulation.reportDataResult", params,
+          base::DictValue().Set("data", base::Base64Encode(result.value())));
     } else {
-      response.Set("resultCode", result.error());
       SendResponse("SmartCardEmulation.reportError", params,
-                   std::move(response));
+                   base::DictValue().Set("resultCode", result.error()));
     }
   }
 
@@ -315,15 +298,109 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
     EXPECT_EQ(params.FindInt("handle"), handle);
     EXPECT_EQ(params.FindInt("attribId"), attrib_id);
 
-    base::DictValue response;
     if (result.has_value()) {
-      response.Set("data", base::Base64Encode(result.value()));
-      SendResponse("SmartCardEmulation.reportDataResult", params,
-                   std::move(response));
+      SendResponse(
+          "SmartCardEmulation.reportDataResult", params,
+          base::DictValue().Set("data", base::Base64Encode(result.value())));
     } else {
-      response.Set("resultCode", result.error());
       SendResponse("SmartCardEmulation.reportError", params,
-                   std::move(response));
+                   base::DictValue().Set("resultCode", result.error()));
+    }
+  }
+
+  // Helper: Waits for disconnectRequested and sends a response.
+  void HandleDisconnect(const std::string& expected_disposition = "leave-card",
+                        int handle = 123,
+                        std::optional<std::string> error_code = std::nullopt) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.disconnectRequested");
+
+    EXPECT_EQ(params.FindInt("handle"), handle);
+    EXPECT_EQ(*params.FindString("disposition"), expected_disposition);
+
+    if (error_code.has_value()) {
+      SendResponse("SmartCardEmulation.reportError", params,
+                   base::DictValue().Set("resultCode", *error_code));
+    } else {
+      SendResponse("SmartCardEmulation.reportPlainResult", params, {});
+    }
+  }
+
+  // Helper: Waits for beginTransactionRequested and sends a response.
+  void HandleBeginTransaction(
+      int handle = 123,
+      std::optional<std::string> error_code = std::nullopt) {
+    auto params = WaitForNotificationParams(
+        "SmartCardEmulation.beginTransactionRequested");
+    EXPECT_EQ(params.FindInt("handle"), handle);
+
+    if (error_code.has_value()) {
+      SendResponse("SmartCardEmulation.reportError", params,
+                   base::DictValue().Set("resultCode", *error_code));
+    } else {
+      SendResponse("SmartCardEmulation.reportBeginTransactionResult", params,
+                   base::DictValue().Set("handle", handle));
+    }
+  }
+
+  // Helper: Waits for endTransactionRequested and sends a response.
+  void HandleEndTransaction(
+      const std::string& expected_disposition = "leave-card",
+      int handle = 123,
+      std::optional<std::string> error_code = std::nullopt) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.endTransactionRequested");
+
+    EXPECT_EQ(params.FindInt("handle"), handle);
+    EXPECT_EQ(*params.FindString("disposition"), expected_disposition);
+
+    if (error_code.has_value()) {
+      SendResponse("SmartCardEmulation.reportError", params,
+                   base::DictValue().Set("resultCode", *error_code));
+    } else {
+      SendResponse("SmartCardEmulation.reportPlainResult", params, {});
+    }
+  }
+
+  // Helper: Waits for cancelRequested and sends a response.
+  void HandleCancel(int context_id = 123,
+                    std::optional<std::string> error_code = std::nullopt) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.cancelRequested");
+    EXPECT_EQ(params.FindInt("contextId"), context_id);
+
+    if (error_code.has_value()) {
+      SendResponse("SmartCardEmulation.reportError", params,
+                   base::DictValue().Set("resultCode", *error_code));
+    } else {
+      SendResponse("SmartCardEmulation.reportPlainResult", params, {});
+    }
+  }
+
+  // Helper: Waits for setAttribRequested (SCardSetAttrib)
+  void HandleSetAttribute(
+      int attrib_id,
+      const std::vector<uint8_t>& expected_data,
+      int handle = 123,
+      std::optional<std::string> error_code = std::nullopt) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.setAttribRequested");
+    EXPECT_EQ(params.FindInt("handle"), handle);
+    EXPECT_EQ(params.FindInt("attribId"), attrib_id);
+
+    const std::string* data_b64 = params.FindString("data");
+    ASSERT_TRUE(data_b64) << "Event is missing the 'data' field";
+
+    std::string data_str;
+    base::Base64Decode(*data_b64, &data_str);
+    std::vector<uint8_t> actual_data(data_str.begin(), data_str.end());
+    EXPECT_EQ(actual_data, expected_data);
+
+    if (error_code.has_value()) {
+      SendResponse("SmartCardEmulation.reportError", params,
+                   base::DictValue().Set("resultCode", *error_code));
+    } else {
+      SendResponse("SmartCardEmulation.reportPlainResult", params, {});
     }
   }
 
@@ -974,6 +1051,327 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, DataOperationsErrors) {
   HandleTransmit({0x00, 0x00}, base::unexpected("sharing-violation"));
   HandleControl(42, {1}, base::unexpected("unsupported-feature"));
   HandleGetAttribute(1234, base::unexpected("reader-unavailable"));
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, TransactionSuccess) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(readers[0], "shared",
+            {preferredProtocols: ["t1"]});
+        const connection = connectResult.connection;
+
+        await connection.startTransaction(async function() {
+            return "leave";
+        });
+        await connection.disconnect();
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect("Reader A", 123, "t1");
+  HandleBeginTransaction();
+  HandleEndTransaction();
+  HandleDisconnect();
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, BeginTransactionFailure) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(readers[0], "shared",
+            {preferredProtocols: ["t1"]});
+        const connection = connectResult.connection;
+
+        try {
+            // Attempt to start a transaction - this should fail immediately.
+            await connection.startTransaction(async function() {
+                throw new Error(
+                  "Transaction callback should not run on failure!");
+            });
+            throw new Error("Transaction succeeded but was expected to fail.");
+        } catch (txError) {
+            if (txError.name === "SmartCardError") {
+                window.domAutomationController.send("Success");
+            } else {
+                throw new Error("Caught unexpected error type: " +
+                  txError.name + " - " + txError.message);
+            }
+        }
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect("Reader A", 123, "t1");
+
+  HandleBeginTransaction(123, "sharing-violation");
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, EndTransactionFailure) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(readers[0], "shared",
+            {preferredProtocols: ["t1"]});
+        const connection = connectResult.connection;
+
+        try {
+            await connection.startTransaction(async function() {
+                return "leave";
+            });
+            throw new Error("Transaction succeeded but was expected to fail.");
+        } catch (e) {
+             if (e.message.includes("communications error")) {
+                 window.domAutomationController.send("Success");
+             } else {
+                 throw new Error("Unexpected error: " +
+                  e.name + " - " + e.message);
+             }
+        }
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect("Reader A", 123, "t1");
+
+  HandleBeginTransaction();
+  HandleEndTransaction("leave-card", 123, "comm-error");
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, SetAttributeSuccess) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(readers[0],
+          "shared", {preferredProtocols: ["t1"]});
+        const connection = connectResult.connection;
+        await connection.setAttribute(1234, new Uint8Array([0x96, 0x00]));
+
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect("Reader A", 123, "t1");
+
+  HandleSetAttribute(1234, {0x96, 0x00});
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, SetAttributeFailure) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(readers[0],
+          "shared", {preferredProtocols: ["t1"]});
+        const connection = connectResult.connection;
+
+        try {
+          await connection.setAttribute(1234, new Uint8Array([0x96, 0x00]));
+          throw new Error("setAttribute succeeded but was expected to fail.");
+        } catch (e) {
+           if (e.name === "SmartCardError" ) {
+             window.domAutomationController.send("Success");
+           } else {
+             throw new Error(
+              "Caught unexpected error: " + e.name + " - " + e.message);
+           }
+        }
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect("Reader A", 123, "t1");
+
+  HandleSetAttribute(1234, {0x96, 0x00}, 123, "sharing-violation");
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, CancelGetStatusChange) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const controller = new AbortController();
+        const signal = controller.signal;
+        const statusPromise = context.getStatusChange(
+            [{
+               readerName: "Simulated Reader",
+               currentState: { empty: true }
+            }],
+            {signal: signal}
+        );
+        controller.abort();
+
+        try {
+            await statusPromise;
+            throw new Error(
+              "GetStatusChange should have been aborted but succeeded.");
+        } catch (e) {
+            if (e.name === 'AbortError') {
+                 window.domAutomationController.send("Success");
+            } else {
+                 throw e;
+            }
+        }
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+
+  // Intercept GetStatusChange but do not answer yet.
+  auto status_params =
+      WaitForNotificationParams("SmartCardEmulation.getStatusChangeRequested");
+
+  HandleCancel();
+
+  base::DictValue response;
+  response.Set("resultCode", "cancelled");
+  SendResponse("SmartCardEmulation.reportError", status_params,
+               std::move(response));
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       CancelFailureOperationContinues) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const controller = new AbortController();
+
+        const statusPromise = context.getStatusChange(
+            [{readerName: "Simulated Reader", currentState: {empty: true}}],
+            {signal: controller.signal}
+        );
+
+        controller.abort();
+        const result = await statusPromise;
+        console.log(result);
+        if (result.length === 1 && result[0].readerName ===  "Reader A") {
+            window.domAutomationController.send("Success");
+        } else {
+            throw new Error("Operation finished but returned wrong data.");
+        }
+      } catch (e) {
+        window.domAutomationController.send(
+          "Error: " + e.name + " - " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+
+  auto status_params =
+      WaitForNotificationParams("SmartCardEmulation.getStatusChangeRequested");
+
+  HandleCancel(123, "comm-error");
+
+  base::DictValue response;
+  base::DictValue state;
+  base::ListValue response_list;
+
+  state.Set("reader", "Reader A");
+  state.Set("eventCount", 1);
+  state.Set("atr", base::Base64Encode({0x3B, 0x11}));
+
+  base::DictValue flags;
+  flags.Set("changed", true);
+
+  state.Set("eventState", std::move(flags));
+
+  response_list.Append(std::move(state));
+
+  response.Set("readerStates", std::move(response_list));
+  SendResponse("SmartCardEmulation.reportGetStatusChangeResult", status_params,
+               std::move(response));
 
   std::string message;
   ASSERT_TRUE(message_queue.WaitForMessage(&message));

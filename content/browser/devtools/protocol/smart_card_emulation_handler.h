@@ -131,8 +131,13 @@ class CONTENT_EXPORT SmartCardEmulationHandler
           protocol::Array<protocol::SmartCardEmulation::ReaderStateOut>>
           in_readerStates) override;
 
+  DispatchResponse ReportBeginTransactionResult(const String& in_requestId,
+                                                const int in_handle) override;
+
   DispatchResponse ReportDataResult(const String& in_requestId,
                                     const Binary& in_data) override;
+
+  DispatchResponse ReportPlainResult(const String& in_requestId) override;
 
   DispatchResponse ReportStatusResult(
       const String& in_requestId,
@@ -250,6 +255,13 @@ class CONTENT_EXPORT SmartCardEmulationHandler
   base::expected<void, std::string> CompleteDataResult(
       const std::string& request_id,
       std::vector<uint8_t> response);
+
+  base::expected<void, std::string> CompleteBeginTransaction(
+      const std::string& request_id,
+      uint32_t handle);
+
+  base::expected<void, std::string> CompletePlainResult(
+      const std::string& request_id);
 
   base::expected<void, std::string> FailRequest(
       const std::string& request_id,

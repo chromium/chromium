@@ -245,9 +245,7 @@
             {
                 "domain": "SmartCardEmulation",
                 "exclude": [
-                    "reportReleaseContextResult",
-                    "reportPlainResult",
-                    "reportBeginTransactionResult"
+                    "reportReleaseContextResult"
                 ]
             }
         ]

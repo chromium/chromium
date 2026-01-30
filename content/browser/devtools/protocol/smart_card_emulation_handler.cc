@@ -12,11 +12,13 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/smart_card/emulation/emulated_smart_card_connection.h"
 #include "content/browser/smart_card/emulation/emulated_smart_card_context.h"
+#include "content/browser/smart_card/emulation/emulated_smart_card_transaction.h"
 #include "content/browser/smart_card/smart_card_service.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/smart_card_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "services/device/public/mojom/smart_card.mojom.h"
 
 namespace content::protocol {
 
@@ -545,6 +547,39 @@ base::expected<void, std::string> SmartCardEmulationHandler::CompleteDataResult(
   return base::ok();
 }
 
+base::expected<void, std::string>
+SmartCardEmulationHandler::CompleteBeginTransaction(
+    const std::string& request_id,
+    uint32_t handle) {
+  ASSIGN_OR_RETURN(auto req,
+                   TakePendingRequest<PendingBeginTransaction>(request_id));
+
+  mojo::PendingAssociatedRemote<device::mojom::SmartCardTransaction>
+      transaction_remote;
+
+  auto transaction_impl = std::make_unique<EmulatedSmartCardTransaction>(
+      weak_ptr_factory_.GetWeakPtr(), handle);
+
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::move(transaction_impl),
+      transaction_remote.InitWithNewEndpointAndPassReceiver());
+
+  std::move(req.callback())
+      .Run(device::mojom::SmartCardTransactionResult::NewTransaction(
+          std::move(transaction_remote)));
+  return base::ok();
+}
+
+base::expected<void, std::string>
+SmartCardEmulationHandler::CompletePlainResult(const std::string& request_id) {
+  ASSIGN_OR_RETURN(auto req,
+                   TakePendingRequest<PendingPlainResult>(request_id));
+  std::move(req.callback())
+      .Run(device::mojom::SmartCardResult::NewSuccess(
+          device::mojom::SmartCardSuccess::kOk));
+  return base::ok();
+}
+
 base::expected<void, std::string> SmartCardEmulationHandler::FailRequest(
     const std::string& request_id,
     device::mojom::SmartCardError error) {
@@ -611,6 +646,17 @@ DispatchResponse SmartCardEmulationHandler::ReportGetStatusChangeResult(
   return DispatchResponse::Success();
 }
 
+DispatchResponse SmartCardEmulationHandler::ReportBeginTransactionResult(
+    const String& in_requestId,
+    const int in_handle) {
+  RETURN_IF_ERROR(CompleteBeginTransaction(in_requestId, in_handle),
+                  [](const std::string& error) {
+                    return DispatchResponse::ServerError(error);
+                  });
+
+  return DispatchResponse::Success();
+}
+
 DispatchResponse SmartCardEmulationHandler::ReportDataResult(
     const String& in_requestId,
     const Binary& in_data) {
@@ -620,6 +666,16 @@ DispatchResponse SmartCardEmulationHandler::ReportDataResult(
       [](const std::string& error) {
         return DispatchResponse::ServerError(error);
       });
+
+  return DispatchResponse::Success();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportPlainResult(
+    const String& in_requestId) {
+  RETURN_IF_ERROR(CompletePlainResult(in_requestId),
+                  [](const std::string& error) {
+                    return DispatchResponse::ServerError(error);
+                  });
 
   return DispatchResponse::Success();
 }
