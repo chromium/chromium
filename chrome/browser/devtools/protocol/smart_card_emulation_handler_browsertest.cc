@@ -211,6 +211,35 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
                  std::move(response));
   }
 
+  // Helper: Waits for statusRequested and sends a response.
+  void HandleStatus(const std::string& reader_name,
+                    const std::string& state,
+                    const std::string& protocol,
+                    const std::vector<uint8_t>& atr,
+                    int handle = 123,
+                    std::optional<std::string> error_code = std::nullopt) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.statusRequested");
+
+    EXPECT_EQ(params.FindInt("handle"), handle);
+
+    base::DictValue response;
+    if (error_code.has_value()) {
+      response.Set("resultCode", *error_code);
+      SendResponse("SmartCardEmulation.reportError", params,
+                   std::move(response));
+      return;
+    }
+    response.Set("readerName", reader_name);
+    response.Set("state", state);
+    response.Set("atr", base::Base64Encode(atr));
+    if (!protocol.empty()) {
+      response.Set("protocol", protocol);
+    }
+    SendResponse("SmartCardEmulation.reportStatusResult", params,
+                 std::move(response));
+  }
+
   void ReloadPage() {
     content::TestNavigationObserver observer(web_contents_);
     web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
@@ -645,6 +674,92 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
                           .atr = {},
                           .changed = false,
                           .empty = true}});
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ConnectionStatus) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(readers[0], "shared",
+            {preferredProtocols: ["t1"]});
+
+        const status = await connectResult.connection.status();
+
+        if (status.readerName !== "Reader A") {
+            throw new Error("Wrong readerName: " + status.readerName);
+        }
+
+        if (status.state !== "t1") {
+            throw new Error("Wrong state: " + status.state);
+        }
+
+        const atrBytes = new Uint8Array(status.answerToReset);
+        if (atrBytes.length !== 4 || atrBytes[0] !== 0x3B) {
+            throw new Error("Wrong ATR bytes: " + atrBytes);
+        }
+
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send("Error: " +
+          e.name + " - " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect();
+
+  HandleStatus("Reader A", "specific", "t1", {0x3B, 0x01, 0x02, 0x03});
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ConnectionStatusError) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        const readers = await context.listReaders();
+        const connectResult = await context.connect(readers[0], "shared",
+            {preferredProtocols: ["t1"]});
+            await connectResult.connection.status();
+
+            window.domAutomationController.send(
+              "Failure: Promise resolved but should have rejected.");
+        } catch (e) {
+            if (e.name === "SmartCardError") {
+                 window.domAutomationController.send("Success");
+            } else {
+                 window.domAutomationController.send(
+                  "Failure: Wrong error type. Got: " +
+                    e.name + ", " + e.message);
+            }
+        }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders();
+  HandleConnect();
+
+  HandleStatus("", "", "", {}, 123, "reader-unavailable");
 
   std::string message;
   ASSERT_TRUE(message_queue.WaitForMessage(&message));

@@ -248,7 +248,6 @@
                     "reportReleaseContextResult",
                     "reportPlainResult",
                     "reportDataResult",
-                    "reportStatusResult",
                     "reportBeginTransactionResult"
                 ]
             }

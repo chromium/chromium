@@ -131,6 +131,13 @@ class CONTENT_EXPORT SmartCardEmulationHandler
           protocol::Array<protocol::SmartCardEmulation::ReaderStateOut>>
           in_readerStates) override;
 
+  DispatchResponse ReportStatusResult(
+      const String& in_requestId,
+      const String& in_readerName,
+      const String& in_state,
+      const Binary& in_atr,
+      std::optional<String> in_protocol) override;
+
   DispatchResponse ReportError(const String& in_requestId,
                                const String& in_resultCode) override;
 
@@ -232,6 +239,10 @@ class CONTENT_EXPORT SmartCardEmulationHandler
   base::expected<void, std::string> CompleteGetStatusChange(
       const std::string& in_requestId,
       std::vector<device::mojom::SmartCardReaderStateOutPtr> reader_states);
+
+  base::expected<void, std::string> CompleteStatus(
+      const std::string& request_id,
+      device::mojom::SmartCardStatusPtr status_data);
 
   base::expected<void, std::string> FailRequest(
       const std::string& request_id,

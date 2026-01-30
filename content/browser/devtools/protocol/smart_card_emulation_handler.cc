@@ -305,6 +305,33 @@ std::vector<device::mojom::SmartCardReaderStateOutPtr> ToMojoReaderStates(
   return out_states;
 }
 
+// Convert Protocol ConnectionState to Mojo SmartCardConnectionState.
+device::mojom::SmartCardConnectionState ToMojoSmartCardConnectionState(
+    const protocol::SmartCardEmulation::ConnectionState state) {
+  namespace Protocol = protocol::SmartCardEmulation::ConnectionStateEnum;
+  using MojomState = device::mojom::SmartCardConnectionState;
+
+  static const base::NoDestructor<base::flat_map<std::string, MojomState>>
+      kStateMap({
+          {Protocol::Specific, MojomState::kSpecific},
+          {Protocol::Negotiable, MojomState::kNegotiable},
+          {Protocol::Powered, MojomState::kPowered},
+          {Protocol::Swallowed, MojomState::kSwallowed},
+          {Protocol::Present, MojomState::kPresent},
+          {Protocol::Absent, MojomState::kAbsent},
+      });
+
+  auto it = kStateMap->find(state);
+  if (it != kStateMap->end()) {
+    return it->second;
+  }
+
+  // The DevTools dispatcher guarantees that 'state' matches one of the
+  // string literals defined in the PDL (ConnectionStateEnum), so this branch
+  // is unreachable unless the PDL and this map are out of sync.
+  NOTREACHED();
+}
+
 }  // namespace
 
 SmartCardEmulationHandler::SmartCardEmulationHandler(
@@ -499,6 +526,16 @@ SmartCardEmulationHandler::CompleteGetStatusChange(
   return base::ok();
 }
 
+base::expected<void, std::string> SmartCardEmulationHandler::CompleteStatus(
+    const std::string& request_id,
+    device::mojom::SmartCardStatusPtr status_data) {
+  ASSIGN_OR_RETURN(auto req, TakePendingRequest<PendingStatus>(request_id));
+  std::move(req.callback())
+      .Run(device::mojom::SmartCardStatusResult::NewStatus(
+          std::move(status_data)));
+  return base::ok();
+}
+
 base::expected<void, std::string> SmartCardEmulationHandler::FailRequest(
     const std::string& request_id,
     device::mojom::SmartCardError error) {
@@ -558,6 +595,27 @@ DispatchResponse SmartCardEmulationHandler::ReportGetStatusChangeResult(
   RETURN_IF_ERROR(
       CompleteGetStatusChange(in_requestId,
                               ToMojoReaderStates(std::move(in_readerStates))),
+      [](const std::string& error) {
+        return DispatchResponse::ServerError(error);
+      });
+
+  return DispatchResponse::Success();
+}
+
+DispatchResponse SmartCardEmulationHandler::ReportStatusResult(
+    const String& in_requestId,
+    const String& in_readerName,
+    const String& in_state,
+    const Binary& in_atr,
+    std::optional<String> in_protocol) {
+  std::vector<uint8_t> atr(in_atr.begin(), in_atr.end());
+
+  RETURN_IF_ERROR(
+      CompleteStatus(
+          in_requestId,
+          device::mojom::SmartCardStatus::New(
+              in_readerName, ToMojoSmartCardConnectionState(in_state),
+              ToMojoSmartCardProtocol(in_protocol), std::move(atr))),
       [](const std::string& error) {
         return DispatchResponse::ServerError(error);
       });
