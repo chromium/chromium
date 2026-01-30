@@ -1851,3 +1851,11 @@ external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip
 crbug.com/40550039 svg/css/use-replicates-changes-class.html [ Skip ]
 crbug.com/40550039 svg/css/use-replicates-changes-pseudo.html [ Skip ]
 crbug.com/40550039 svg/W3C-SVG-1.1-SE/struct-use-11-f.svg [ Skip ]
+
+# SwiftShader cannot be used on ARM and is required by these tests
+# See crbug.com/40061476 for more information.
+[ Mac15-arm64 ] external/wpt/webxr/* [ Skip ]
+[ Mac14-arm64 ] external/wpt/webxr/* [ Skip ]
+[ Mac13-arm64 ] external/wpt/webxr/* [ Skip ]
+[ Mac12-arm64 ] external/wpt/webxr/* [ Skip ]
+[ Win11-arm64 ] external/wpt/webxr/* [ Skip ]
