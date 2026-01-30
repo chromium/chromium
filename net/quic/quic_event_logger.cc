@@ -777,7 +777,7 @@ void QuicEventLogger::OnCertificateVerified(
   if (result.cert_status == CERT_STATUS_INVALID) {
     net_log_.AddEvent(
         NetLogEventType::QUIC_SESSION_CERTIFICATE_VERIFY_FAILED, [&] {
-          auto result = base::Value::Dict();
+          auto result = base::DictValue();
           if (!server_tais.empty()) {
             result.Set("server_available_trust_anchor_ids",
                        x509_util::TrustAnchorIDsToString(server_tais));

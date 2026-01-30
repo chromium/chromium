@@ -228,7 +228,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
 
   TRACE_EVENT_BEGIN("net.stream", "TlsConnect", track());
   net_log().BeginEvent(NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT, [&] {
-    base::Value::Dict results;
+    base::DictValue results;
     if (retried_for_trust_anchor_ids_) {
       results.Set(
           "selected_trust_anchor_ids_for_retry",
@@ -258,7 +258,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
 int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   MaybeRecordTlsHandshakeEnd(rv);
   net_log().EndEvent(NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT, [&] {
-    base::Value::Dict results;
+    base::DictValue results;
     if (rv < 0) {
       results.Set("net_error", rv);
     }

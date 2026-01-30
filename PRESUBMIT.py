@@ -2305,18 +2305,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'^content/browser/fenced_frame/fenced_frame_browsertest\.cc',
         ],
     ),
-    BanRule(
-        pattern='Value::Dict',
-        explanation=
-        ('Use base::DictValue instead.'),
-        treat_as_error=True,
-    ),
-    BanRule(
-        pattern='Value::List',
-        explanation=
-        ('Use base::ListValue instead.'),
-        treat_as_error=True,
-    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (

@@ -687,11 +687,6 @@ class BASE_EXPORT GSL_OWNER Value {
  public:
   using BlobStorage = BlobStorage;
 
-  // These aliases exist for migration; do not use them.
-  // TODO(https://crbug.com/478100525): Remove.
-  using Dict = DictValue;
-  using List = ListValue;
-
   enum class Type : unsigned char {
     NONE = 0,
     BOOLEAN,
