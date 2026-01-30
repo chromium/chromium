@@ -66,6 +66,10 @@ bool HasElapsedCadenceInterval(
 namespace viz {
 namespace {
 
+// The maximum amount of time to wait for a new interactive frame before
+// assuming that interaction has ended.
+constexpr base::TimeDelta kInteractionTimeout = base::Milliseconds(250);
+
 bool RecordShouldSendBeginFrame(const std::string& reason, bool should_send) {
   TRACE_EVENT2("viz", "SendBeginFrameDecision", "reason", reason, "should_send",
                should_send);
@@ -274,6 +278,17 @@ void CompositorFrameSinkSupport::SetThrottleInterval(base::TimeDelta interval) {
 
 void CompositorFrameSinkSupport::SetAllowThrottling(bool allowed) {
   throttler_.SetAllowThrottling(allowed);
+}
+
+void CompositorFrameSinkSupport::SetIsHandlingInteraction(
+    bool is_handling_interaction) {
+  if (is_handling_interaction_ != is_handling_interaction) {
+    is_handling_interaction_ = is_handling_interaction;
+  }
+
+  if (is_handling_interaction_) {
+    last_interaction_time_ = base::TimeTicks::Now();
+  }
 }
 
 void CompositorFrameSinkSupport::OnSurfaceCommitted(Surface* surface) {
@@ -577,6 +592,7 @@ void CompositorFrameSinkSupport::EvictLastActiveSurface() {
 
 void CompositorFrameSinkSupport::SetNeedsBeginFrame(bool needs_begin_frame) {
   client_needs_begin_frame_ = needs_begin_frame;
+  SetIsHandlingInteraction(false);
   UpdateNeedsBeginFramesInternal();
 }
 
@@ -656,6 +672,13 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
   // Override the has_damage flag (ignoring invalid data from clients).
   BeginFrameAck modified_ack(ack);
   modified_ack.has_damage = false;
+
+  // We only check for a timeout if we are currently handling an interaction.
+  if (is_handling_interaction_ &&
+      (last_interaction_time_ - last_begin_frame_args_.frame_time) >=
+          kInteractionTimeout) {
+    SetIsHandlingInteraction(false);
+  }
 
   // If the client doesn't produce a frame, we assume it's no longer interactive
   // for scheduling.
@@ -968,6 +991,11 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   // called before that.
   frame_sink_manager()->SubmitHitTestRegionList(
       last_created_surface_id_, frame_index, std::move(hit_test_region_list));
+  // Update the interaction state at the end of this method to ensure it only
+  // reflects valid frames that were successfully accepted. This prevents
+  // invalid frames (e.g. those with a size mismatch) from affecting the global
+  // interaction state.
+  SetIsHandlingInteraction(frame.metadata.is_handling_interaction);
 
   Surface::QueueFrameResult result = current_surface->QueueFrame(
       std::move(frame), frame_index, std::move(frame_rejected_callback));
