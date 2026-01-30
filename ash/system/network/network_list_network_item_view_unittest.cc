@@ -92,6 +92,7 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    network_list_network_item_view_ = nullptr;
     widget_.reset();
 
     AshTestBase::TearDown();
@@ -171,8 +172,7 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
   std::unique_ptr<FakeNetworkDetailedNetworkView>
       fake_network_detailed_network_view_;
   CrosNetworkConfigTestHelper network_config_helper_;
-  raw_ptr<NetworkListNetworkItemView, DanglingUntriaged>
-      network_list_network_item_view_;
+  raw_ptr<NetworkListNetworkItemView> network_list_network_item_view_;
 };
 
 TEST_F(NetworkListNetworkItemViewTest, HasCorrectLabel) {
