@@ -1640,37 +1640,67 @@ void PrefetchContainer::MakeResourceRequest() {
     resource_request->load_flags |= net::LOAD_DISABLE_CACHE;
   }
 
+  // ------------------------------------------------------------------------
+  // Request headers. Headers should be applied in the following order, and the
+  // latter (if any) should override the former.
+  // [1] `request().additional_headers()`
+  // [2] Chromium's default headers
+  // [3] WebContents overrides (`MaybeApplyOverrideForUserAgentHeader()`)
+  // [4] DevTools overrides (implemented in `AddClientHintsHeaders()`)
+
+  // ------------------------------------------------------------------------
+  // [1] Additional headers:
   AddAwAdditionalHeaders(resource_request->headers,
                          request().additional_headers());
 
+  // ------------------------------------------------------------------------
+  // [2] `Accept`, `Upgrade-Insecure-Requests` and `Purpose`:
   CHECK(request().browser_context());
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAccept,
       FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
                              request().browser_context()));
+
+  resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
+
   if (!base::FeatureList::IsEnabled(
           blink::features::kRemovePurposeHeaderForPrefetch)) {
     resource_request->headers.SetHeader(blink::kPurposeHeaderName,
                                         blink::kSecPurposePrefetchHeaderValue);
   }
+
+  // ------------------------------------------------------------------------
+  // [2] `Sec-Purpose`:
   resource_request->headers.SetHeader(blink::kSecPurposeHeaderName,
                                       GetSecPurposeHeaderValue(url));
-  resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
 
+  // ------------------------------------------------------------------------
+  // [2] `Sec-Speculation-Tags`:
   AddSpeculationTagsHeader(url, resource_request->headers);
 
+  // ------------------------------------------------------------------------
+  // [2] `X-Client-Data`:
+  if (request().should_append_variations_header()) {
+    AddXClientDataHeader(*resource_request.get());
+  }
+
+  // TODO(crbug.com/444065296): The following headers are an initial guess.
+  // Validate them against the actual navigation's header.
+
+  // ------------------------------------------------------------------------
+  // [3] `User-Agent` override:
+  MaybeApplyOverrideForUserAgentHeader(*resource_request);
+
+  // ------------------------------------------------------------------------
+  // [2] Client Hints:
+  // [4] DevTools overrides (Client Hints, `User-Agent`, `Accept`):
+  AddClientHintsHeaders(origin, &resource_request->headers);
+
+  // ------------------------------------------------------------------------
   // There are sometimes other headers that are set during navigation.  These
   // aren't yet supported for prefetch, including browsing topics.
 
   resource_request->devtools_request_id = RequestId();
-
-  // TODO(crbug.com/444065296): These are an initial guess. Validate them
-  // against the actual navigation's header.
-  MaybeApplyOverrideForUserAgentHeader(*resource_request);
-  AddClientHintsHeaders(origin, &resource_request->headers);
-  if (request().should_append_variations_header()) {
-    AddXClientDataHeader(*resource_request.get());
-  }
 
   // `URLLoaderNetworkServiceObserver`
   // (`resource_request->trusted_params->url_loader_network_observer`) is NOT
