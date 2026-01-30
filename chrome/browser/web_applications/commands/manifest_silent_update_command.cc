@@ -593,12 +593,12 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
         base::BindOnce(
             [](const webapps::AppId& expected_app_id,
                const webapps::AppId& app_id, webapps::InstallResultCode code) {
-              CHECK_EQ(expected_app_id, app_id);
               // Transform the install result code to the command result.
               if (!IsSuccess(code)) {
                 return ManifestSilentUpdateCheckResult::
                     kAppUpdateFailedDuringInstall;
               }
+              CHECK_EQ(expected_app_id, app_id);
               return ManifestSilentUpdateCheckResult::kAppSilentlyUpdated;
             },
             app_id_)
