@@ -180,10 +180,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
     }
   }
   void SetStrokePattern(CanvasPattern* pattern) {
-    if (pattern->HasHighEntropyCanvasOpTypes()) {
-      AddHighEntropyCanvasOpTypes(pattern->HighEntropyCanvasOpTypes() |
-                                  HighEntropyCanvasOpType::kCopyFromCanvas);
-    }
     stroke_style_.SetPattern(pattern);
   }
   void SetStrokeGradient(CanvasGradient* gradient) {
@@ -197,10 +193,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
     }
   }
   void SetFillPattern(CanvasPattern* pattern) {
-    if (pattern->HasHighEntropyCanvasOpTypes()) {
-      AddHighEntropyCanvasOpTypes(pattern->HighEntropyCanvasOpTypes() |
-                                  HighEntropyCanvasOpType::kCopyFromCanvas);
-    }
     fill_style_.SetPattern(pattern);
   }
   void SetFillGradient(CanvasGradient* gradient) {
@@ -372,14 +364,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
-  void AddHighEntropyCanvasOpTypes(HighEntropyCanvasOpType types) {
-    high_entropy_canvas_op_types_ |= types;
-  }
-
-  HighEntropyCanvasOpType HighEntropyCanvasOpTypes() const {
-    return high_entropy_canvas_op_types_;
-  }
-
  private:
   void UpdateLineDash() const;
   void UpdateFilterQuality() const;
@@ -470,8 +454,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   ClipList clip_list_;
 
   const SaveType save_type_ = SaveType::kInitial;
-
-  HighEntropyCanvasOpType high_entropy_canvas_op_types_;
 };
 
 ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {

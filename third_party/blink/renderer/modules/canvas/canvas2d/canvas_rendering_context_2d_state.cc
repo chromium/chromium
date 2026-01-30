@@ -725,15 +725,11 @@ void CanvasRenderingContext2DState::SetShadowOffsetY(double y) {
 void CanvasRenderingContext2DState::SetShadowBlur(double shadow_blur) {
   shadow_blur_ = ClampTo<float>(shadow_blur);
   ShadowParameterChanged();
-  if (shadow_blur_ > 0) {
-    AddHighEntropyCanvasOpTypes(HighEntropyCanvasOpType::kSetShadowBlur);
-  }
 }
 
 void CanvasRenderingContext2DState::SetShadowColor(Color shadow_color) {
   shadow_color_ = shadow_color;
   ShadowParameterChanged();
-  AddHighEntropyCanvasOpTypes(HighEntropyCanvasOpType::kSetShadowColor);
 }
 
 void CanvasRenderingContext2DState::SetCSSFilter(const CSSValue* filter_value) {
@@ -753,10 +749,6 @@ void CanvasRenderingContext2DState::SetGlobalComposite(SkBlendMode mode) {
   stroke_flags_.setBlendMode(mode);
   fill_flags_.setBlendMode(mode);
   image_flags_.setBlendMode(mode);
-  if (mode != SkBlendMode::kSrcOver) {
-    AddHighEntropyCanvasOpTypes(
-        HighEntropyCanvasOpType::kGlobalCompositionOperation);
-  }
 }
 
 SkBlendMode CanvasRenderingContext2DState::GlobalComposite() const {
