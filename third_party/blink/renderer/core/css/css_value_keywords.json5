@@ -1307,13 +1307,13 @@
     // auto
     // none
     "intersection",
-    "spanning-item",
+    // normal
 
     // row-rule-break
     // auto
     // none
     // intersection
-    // spanning-item
+    // normal
 
     // column-rule-visibility-items
     // all

@@ -196,7 +196,7 @@ RuleBreak CSSGapDecorationUtils::ResolveRuleBreakValue(
   // https://drafts.csswg.org/css-gaps-1/#break
   switch (container_type) {
     case GapGeometry::ContainerType::kGrid:
-      return RuleBreak::kSpanningItem;
+      return RuleBreak::kNormal;
     case GapGeometry::ContainerType::kFlex:
     case GapGeometry::ContainerType::kMultiColumn:
       return RuleBreak::kNone;

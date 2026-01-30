@@ -99,12 +99,12 @@ bool ShouldMoveIntersectionEndForward(
       gap_geometry.GetIntersectionBlockedStatus(track_direction, gap_index,
                                                 end_index, intersections);
 
-  // For `kSpanningItem` rule break, decorations break only at "T"
+  // For `kNormal` rule break, decorations break only at "T"
   // intersections, so we simply check that the intersection isn't blocked
   // after.
   //
   // https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
-  if (rule_break == RuleBreak::kSpanningItem) {
+  if (rule_break == RuleBreak::kNormal) {
     // Move forward only if the intersection is NOT blocked after.
     return !blocked_status.HasBlockedStatus(BlockedStatus::kBlockedAfter);
   }

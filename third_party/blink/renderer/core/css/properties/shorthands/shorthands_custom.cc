@@ -1225,7 +1225,7 @@ bool RuleBreak::ParseShorthand(
   CSSValue* rule_break =
       css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone,
                                       CSSValueID::kIntersection,
-                                      CSSValueID::kSpanningItem>(stream);
+                                      CSSValueID::kNormal>(stream);
 
   if (!rule_break) {
     return false;

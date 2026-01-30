@@ -1212,7 +1212,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kColumnRuleBreak:
     case CSSPropertyID::kRowRuleBreak:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kSpanningItem ||
+             value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kIntersection;
     case CSSPropertyID::kColumnRuleVisibilityItems:
     case CSSPropertyID::kRowRuleVisibilityItems:
