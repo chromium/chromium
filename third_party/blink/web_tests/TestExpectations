@@ -9959,3 +9959,6 @@ crbug.com/464220937 [ Mac ] http/tests/devtools/elements/inspect-pseudo-element.
 # Gardener 2025-11-28
 crbug.com/464388023 [ Mac ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure Pass ]
 crbug.com/464400408 wpt_internal/code-cache/code-cache-after-304.window.html [ Failure Pass ]
+
+# Gardener 2025-12-23
+crbug.com/448800278 [ Mac ] external/wpt/notifications/registration-association.https.window.html [ Pass Failure ]

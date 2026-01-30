@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] An unregistered SW registration gets no previous notification
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No active registration available on the ServiceWorkerRegistration."
-Harness: the test ran to completion.
-
