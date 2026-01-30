@@ -1091,6 +1091,10 @@ const Profile* Browser::GetProfile() const {
   return profile();
 }
 
+bool Browser::IsDeleteScheduled() const {
+  return is_delete_scheduled_;
+}
+
 void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
   OpenURL(content::OpenURLParams(gurl, content::Referrer(), disposition,
                                  ui::PAGE_TRANSITION_LINK,

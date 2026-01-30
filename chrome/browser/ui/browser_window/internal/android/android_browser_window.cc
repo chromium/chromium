@@ -100,6 +100,12 @@ const SessionID& AndroidBrowserWindow::GetSessionID() const {
   return session_id_;
 }
 
+bool AndroidBrowserWindow::IsDeleteScheduled() const {
+  // TODO(https://crbug.com/479892742): Implement this for android.
+  NOTIMPLEMENTED();
+  return false;
+}
+
 BrowserWindowInterface::Type AndroidBrowserWindow::GetType() const {
   return type_;
 }

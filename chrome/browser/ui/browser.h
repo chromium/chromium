@@ -779,6 +779,7 @@ class Browser : public TabStripModelObserver,
   // BrowserWindowInterface overrides:
   Profile* GetProfile() override;
   const Profile* GetProfile() const override;
+  bool IsDeleteScheduled() const override;
   void OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) override;
   content::WebContents* OpenURL(
       const content::OpenURLParams& params,

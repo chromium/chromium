@@ -111,6 +111,12 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns a session-unique ID.
   virtual const SessionID& GetSessionID() const = 0;
 
+  // Returns true if the browser window is currently scheduled for deletion. At
+  // this stage, the browser window will definitely be closed, and it cannot be
+  // stopped. This is true after all the various tab unload handlers and similar
+  // have ran.
+  virtual bool IsDeleteScheduled() const = 0;
+
   // SessionService::WindowType mirrors these values.  If you add to this
   // enum, look at SessionService::WindowType to see if it needs to be
   // updated.

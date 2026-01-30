@@ -38,6 +38,7 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
   Profile* GetProfile() override;
   const Profile* GetProfile() const override;
   const SessionID& GetSessionID() const override;
+  bool IsDeleteScheduled() const override;
   Type GetType() const override;
 
   // Implements |content::PageNavigator|, which is inherited by

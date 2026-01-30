@@ -17,6 +17,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
   MOCK_METHOD(Profile*, GetProfile, (), (override));
   MOCK_METHOD(const Profile*, GetProfile, (), (const override));
   MOCK_METHOD(const SessionID&, GetSessionID, (), (const override));
+  MOCK_METHOD(bool, IsDeleteScheduled, (), (const override));
   // The non-const version should never return something different from the
   // const version, so implement one in terms of th other.
   ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
