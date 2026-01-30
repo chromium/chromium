@@ -175,13 +175,18 @@ BwgBrowserAgent::~BwgBrowserAgent() {
 }
 
 void BwgBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
+  CHECK(IsGeminiCopresenceEnabled());
   is_keyboard_visible_ = is_visible;
-  if (fullscreen_controller_) {
-    // Re-trigger the update with the current progress to apply opacity override
-    // if needed.
-    FullscreenProgressUpdated(fullscreen_controller_,
-                              fullscreen_controller_->GetProgress());
+  if (!fullscreen_controller_ || !is_floaty_invoked_) {
+    return;
   }
+
+  // Re-trigger the update with the current progress to apply opacity override
+  // if needed.
+  CGFloat offset =
+      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
+  ios::provider::UpdateOverlayOffsetWithOpacity(
+      offset, fullscreen_controller_->GetProgress());
 }
 
 void BwgBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
