@@ -6,6 +6,9 @@
 
 #include <sys/prctl.h>
 
+#include <cassert>
+#include <type_traits>
+
 #include "third_party/jni_zero/generate_jni/JniInit_jni.h"
 #include "third_party/jni_zero/jni_methods.h"
 #include "third_party/jni_zero/jni_zero_internal.h"
@@ -20,6 +23,19 @@
 extern const int64_t kJniZeroHashWhole;
 extern const int64_t kJniZeroHashPriority;
 #endif
+
+// Ensure the types we're using (bool, int32_t, etc) are compatible with the
+// types used by jni (jboolean, jint, etc).
+static_assert(sizeof(jboolean) == sizeof(bool));
+static_assert(alignof(jboolean) <= alignof(bool));
+static_assert(std::is_same<jbyte, int8_t>::value);
+static_assert(std::is_same<jchar, uint16_t>::value);
+static_assert(std::is_same<jshort, int16_t>::value);
+static_assert(std::is_same<jint, int32_t>::value);
+static_assert(std::is_same<jlong, int64_t>::value);
+static_assert(std::is_same<jfloat, float>::value);
+static_assert(std::is_same<jdouble, double>::value);
+
 namespace jni_zero {
 namespace {
 // Until we fully migrate base's jni_android, we will maintain a copy of this
