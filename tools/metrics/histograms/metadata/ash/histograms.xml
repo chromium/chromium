@@ -7569,7 +7569,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Api.Thumbnails.Count" units="count"
-    expires_after="2026-02-01">
+    expires_after="2026-07-05">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7580,7 +7580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Api.Thumbnails.Count2" units="count"
-    expires_after="2026-02-01">
+    expires_after="2026-07-05">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7591,7 +7591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Api.Wallpaper.HasImage" enum="Boolean"
-    expires_after="2026-02-01">
+    expires_after="2026-07-05">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7602,7 +7602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Api.{Type}.Latency" units="ms"
-    expires_after="2026-02-02">
+    expires_after="2026-07-05">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7613,7 +7613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Api.{Type}.MantaStatusCode" enum="MantaStatusCode"
-    expires_after="2026-02-01">
+    expires_after="2026-07-05">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7624,7 +7624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Api.{Type}.Timeout" enum="Boolean"
-    expires_after="2026-02-01">
+    expires_after="2026-07-05">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>Records if the request hits the enforced timeout.</summary>
@@ -7632,7 +7632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.CreateButton" enum="SeaPenTemplateId"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>ericamlee@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7642,7 +7642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.Api.Thumbnails.Count" units="count"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7652,7 +7652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.Api.Wallpaper.HasImage" enum="Boolean"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7662,7 +7662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.Api.{Type}.Latency" units="ms"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7674,7 +7674,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.Api.{Type}.MantaStatusCode"
-    enum="MantaStatusCode" expires_after="2026-06-07">
+    enum="MantaStatusCode" expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7686,7 +7686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.Api.{Type}.Timeout" enum="Boolean"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7696,7 +7696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.SamplePrompt.SampleClicked"
-    enum="SeaPenSamplePromptId" expires_after="2026-06-07">
+    enum="SeaPenSamplePromptId" expires_after="2026-07-05">
   <owner>ericamlee@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7705,7 +7705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.SamplePrompt.Shuffle.Clicked"
-    enum="BooleanClicked" expires_after="2026-06-07">
+    enum="BooleanClicked" expires_after="2026-07-05">
   <owner>ericamlee@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7714,7 +7714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.Suggestion.Clicked" enum="BooleanClicked"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>ericamlee@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7723,7 +7723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.Suggestion.Shuffle.Clicked"
-    enum="BooleanClicked" expires_after="2026-06-07">
+    enum="BooleanClicked" expires_after="2026-07-05">
   <owner>ericamlee@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7732,14 +7732,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.Tab.Clicked" enum="SeaPenFreeformTab"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>ericamlee@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>Emitted when the user clicks on a freeform tab.</summary>
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.{AppName}.RecentImage.ActionMenu"
-    enum="SeaPenActionMenuItem" expires_after="2026-06-21">
+    enum="SeaPenActionMenuItem" expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7750,7 +7750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.{AppName}.Visited" enum="BooleanHit"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>ericamlee@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7761,7 +7761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Freeform.{AppName}.{Source}.ImageSet"
-    enum="BooleanHit" expires_after="2026-06-07">
+    enum="BooleanHit" expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7773,7 +7773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Template" enum="SeaPenTemplateId"
-    expires_after="2026-02-01">
+    expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7783,7 +7783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.ThumbnailClicked" enum="SeaPenTemplateId"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>pzliu@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7792,7 +7792,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.SeaPen.WordCount" units="int" expires_after="2026-02-01">
+<histogram name="Ash.SeaPen.WordCount" units="int" expires_after="2026-07-05">
   <owner>pzliu@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7802,7 +7802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.{AppName}.RecentImage.ActionMenu"
-    enum="SeaPenActionMenuItem" expires_after="2026-02-01">
+    enum="SeaPenActionMenuItem" expires_after="2026-07-05">
   <owner>thuongphan@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7814,7 +7814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.{AppName}.Visited" enum="BooleanHit"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>pzliu@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7826,7 +7826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.{AppName}.{Source}.ImageSet" enum="BooleanHit"
-    expires_after="2026-02-01">
+    expires_after="2026-07-05">
   <owner>pzliu@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7837,7 +7837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"
-    expires_after="2026-06-07">
+    expires_after="2026-07-05">
   <owner>pzliu@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
