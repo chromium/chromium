@@ -257,6 +257,9 @@ public class NtpSingleThemeCollectionCoordinator {
         mDailyRefreshThemeCollectionHash = mThemeCollectionHash;
         if (isChecked) {
             mNtpThemeCollectionManager.setThemeCollectionDailyRefreshed(mThemeCollectionId);
+            if (mNtpThemeCollectionsAdapter != null) {
+                mNtpThemeCollectionsAdapter.cancelLoadingState();
+            }
         } else {
             // If unchecked, resets to the default background by invoking the callback.
             mOnDailyRefreshCancelledCallback.run();

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridgeJni;
@@ -147,9 +148,12 @@ public class NtpThemeCoordinatorUnitTest {
     public void testOnThemeImageSelectedCallback() {
         NtpThemeCollectionManager ntpThemeCollectionManager =
                 mCoordinator.getNtpThemeManagerForTesting();
+        GURL url = new GURL("http://test.com");
+        CollectionImage image = new CollectionImage("collection", url, url, new ArrayList<>(), url);
+        ntpThemeCollectionManager.setThemeCollectionImage(image);
 
         ntpThemeCollectionManager.onCustomBackgroundImageUpdated(
-                new CustomBackgroundInfo(new GURL("http://test.com"), "collection", false, false));
+                new CustomBackgroundInfo(url, "collection", false, false));
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         mBitmapCallbackCaptor.getValue().onResult(bitmap);

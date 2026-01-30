@@ -93,7 +93,11 @@ public class NtpThemeCollectionManagerUnitTest {
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
         GURL backgroundUrl = JUnitTestGURLs.URL_1;
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(backgroundUrl, "collectionId", false, true);
+                new CustomBackgroundInfo(
+                        backgroundUrl,
+                        "collectionId",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
@@ -164,7 +168,11 @@ public class NtpThemeCollectionManagerUnitTest {
     @Test
     public void testConstructorWithCustomBackground() {
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "collection_id", false, true);
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        "collection_id",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
         when(mNtpCustomizationConfigManager.getBackgroundImageType())
                 .thenReturn(NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION);
         when(mNtpCustomizationConfigManager.getCustomBackgroundInfo()).thenReturn(info);
@@ -267,7 +275,11 @@ public class NtpThemeCollectionManagerUnitTest {
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
         GURL backgroundUrl = JUnitTestGURLs.URL_1;
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(backgroundUrl, "collectionId", false, true);
+                new CustomBackgroundInfo(
+                        backgroundUrl,
+                        "collectionId",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
@@ -278,5 +290,84 @@ public class NtpThemeCollectionManagerUnitTest {
         verify(mOnThemeImageSelectedCallback, never()).onResult(any());
         verify(mNtpCustomizationConfigManager, never())
                 .onThemeCollectionImageSelected(any(), any(), any());
+    }
+
+    @Test
+    public void testOnCustomBackgroundImageUpdated_matchesSelection() {
+        GURL backgroundUrl = JUnitTestGURLs.URL_1;
+        CollectionImage image =
+                new CollectionImage(
+                        "collectionId",
+                        backgroundUrl,
+                        JUnitTestGURLs.URL_2,
+                        List.of("attr1"),
+                        JUnitTestGURLs.URL_3);
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        backgroundUrl,
+                        "collectionId",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        verifyOnCustomBackgroundImageUpdated(image, info, /* shouldUpdateTheme= */ true);
+    }
+
+    @Test
+    public void testOnCustomBackgroundImageUpdated_mismatchesSelection() {
+        GURL backgroundUrl1 = JUnitTestGURLs.URL_1;
+        GURL backgroundUrl2 = JUnitTestGURLs.URL_2;
+        CollectionImage image =
+                new CollectionImage(
+                        "collectionId",
+                        backgroundUrl1,
+                        JUnitTestGURLs.URL_2,
+                        List.of("attr1"),
+                        JUnitTestGURLs.URL_3);
+        // Info corresponds to a different image (URL_2)
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        backgroundUrl2,
+                        "collectionId",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        verifyOnCustomBackgroundImageUpdated(image, info, /* shouldUpdateTheme= */ false);
+    }
+
+    @Test
+    public void testOnCustomBackgroundImageUpdated_noSelection_notDailyRefresh() {
+        GURL backgroundUrl = JUnitTestGURLs.URL_1;
+        // Not daily refresh enabled.
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        backgroundUrl,
+                        "collectionId",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        verifyOnCustomBackgroundImageUpdated(
+                /* pendingImage= */ null, info, /* shouldUpdateTheme= */ false);
+    }
+
+    private void verifyOnCustomBackgroundImageUpdated(
+            CollectionImage pendingImage,
+            CustomBackgroundInfo updateInfo,
+            boolean shouldUpdateTheme) {
+        mNtpThemeCollectionManager =
+                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
+        if (pendingImage != null) {
+            mNtpThemeCollectionManager.setThemeCollectionImage(pendingImage);
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+
+        mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(updateInfo);
+
+        verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
+        mBitmapCallbackCaptor.getValue().onResult(bitmap);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
+        if (shouldUpdateTheme) {
+            verify(mOnThemeImageSelectedCallback).onResult(eq(bitmap));
+        } else {
+            verify(mOnThemeImageSelectedCallback, never()).onResult(any());
+        }
     }
 }

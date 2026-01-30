@@ -453,8 +453,42 @@ public class NtpThemeCollectionsAdapterUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         mCallbackCaptor.getValue().onResult(bitmap);
 
+        // The spinner should still be visible until the item is selected.
+        assertEquals(View.VISIBLE, viewHolder.mSpinner.getVisibility());
+        assertEquals(0.5f, viewHolder.mImage.getAlpha(), 0.0f);
+        assertFalse(viewHolder.mView.isClickable());
+
+        // Select the item.
+        adapter.setSelection(mImageItems.get(0).collectionId, mImageItems.get(0).imageUrl);
+        adapter.onBindViewHolder(viewHolder, 0);
+
         assertEquals(View.GONE, viewHolder.mSpinner.getVisibility());
         assertEquals(1.0f, viewHolder.mImage.getAlpha(), 0.0f);
+        assertTrue(viewHolder.mView.isClickable());
+    }
+
+    @Test
+    public void testCancelLoadingState() throws Exception {
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mImageItems, SINGLE_THEME_COLLECTION_ITEM, mOnClickListener, mImageFetcher);
+        ThemeCollectionViewHolder viewHolder =
+                (ThemeCollectionViewHolder)
+                        adapter.onCreateViewHolder(mParent, SINGLE_THEME_COLLECTION_ITEM);
+        Field itemViewTypeField = RecyclerView.ViewHolder.class.getDeclaredField("mItemViewType");
+        itemViewTypeField.setAccessible(true);
+        itemViewTypeField.set(viewHolder, SINGLE_THEME_COLLECTION_ITEM);
+        adapter.onBindViewHolder(viewHolder, 0);
+
+        // Clicks the view.
+        viewHolder.mView.performClick();
+        assertEquals(View.VISIBLE, viewHolder.mSpinner.getVisibility());
+
+        // Cancels loading state.
+        adapter.cancelLoadingState();
+        adapter.onBindViewHolder(viewHolder, 0);
+
+        assertEquals(View.GONE, viewHolder.mSpinner.getVisibility());
         assertTrue(viewHolder.mView.isClickable());
     }
 

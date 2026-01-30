@@ -324,6 +324,10 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
     @Test
     public void testHandleDailyRefreshClick() {
+        NtpThemeCollectionsAdapter adapter = mCoordinator.getNtpThemeCollectionsAdapterForTesting();
+        NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
+        mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
+
         MaterialSwitchWithText dailyUpdateSwitch =
                 mBottomSheetView.findViewById(R.id.daily_update_switch_button);
 
@@ -331,6 +335,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         dailyUpdateSwitch.setChecked(true);
         verify(mNtpThemeCollectionManager).setThemeCollectionDailyRefreshed(TEST_COLLECTION_ID);
         verify(mOnDailyUpdateCancelledCallback, never()).run();
+        verify(adapterSpy).cancelLoadingState();
 
         // Case 2: Toggle OFF.
         dailyUpdateSwitch.setChecked(false);

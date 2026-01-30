@@ -39,6 +39,7 @@ public class NtpThemeCollectionManager {
     private final @Nullable ImageFetcher mImageFetcher;
     private boolean mIsDestroyed;
     private @Nullable Runnable mFetchNextImageRunnable;
+    private @Nullable CollectionImage mSelectingThemeCollectionImage;
 
     /**
      * Constructs a new NtpThemeCollectionManager.
@@ -116,19 +117,20 @@ public class NtpThemeCollectionManager {
      * @param image The {@link CollectionImage} selected by the user.
      */
     public void setThemeCollectionImage(CollectionImage image) {
-        mFetchNextImageRunnable = null;
+        resetSelectionState();
+        mSelectingThemeCollectionImage = image;
         mNtpThemeCollectionBridge.setThemeCollectionImage(image);
     }
 
     /** Sets the user-uploaded background image. */
     public void selectLocalBackgroundImage() {
-        mFetchNextImageRunnable = null;
+        resetSelectionState();
         mNtpThemeCollectionBridge.selectLocalBackgroundImage();
     }
 
     /** Resets the custom background. */
     public void resetCustomBackground() {
-        mFetchNextImageRunnable = null;
+        resetSelectionState();
         mNtpThemeCollectionBridge.resetCustomBackground();
     }
 
@@ -173,6 +175,10 @@ public class NtpThemeCollectionManager {
                         return;
                     }
 
+                    if (!shouldProcessThemeUpdate(info)) {
+                        return;
+                    }
+
                     mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
                             bitmap, info, backgroundImageInfo);
                     mOnThemeImageSelectedCallback.onResult(bitmap);
@@ -192,6 +198,7 @@ public class NtpThemeCollectionManager {
      * @param themeCollectionId The id of the theme collection
      */
     public void setThemeCollectionDailyRefreshed(String themeCollectionId) {
+        resetSelectionState();
         mFetchNextImageRunnable = this::fetchNextThemeCollectionImage;
         mNtpThemeCollectionBridge.setThemeCollectionDailyRefreshed(themeCollectionId);
     }
@@ -222,5 +229,24 @@ public class NtpThemeCollectionManager {
         return currentInfo.isDailyRefreshEnabled
                 && info.isDailyRefreshEnabled
                 && currentInfo.collectionId.equals(info.collectionId);
+    }
+
+    /** Clears the state related to pending theme selections. */
+    private void resetSelectionState() {
+        mFetchNextImageRunnable = null;
+        mSelectingThemeCollectionImage = null;
+    }
+
+    /**
+     * Determines whether the received theme update should be processed.
+     *
+     * @param info The {@link CustomBackgroundInfo} of the update.
+     */
+    private boolean shouldProcessThemeUpdate(CustomBackgroundInfo info) {
+        if (mSelectingThemeCollectionImage != null) {
+            return mSelectingThemeCollectionImage.imageUrl.equals(info.backgroundUrl);
+        }
+
+        return info.isDailyRefreshEnabled;
     }
 }

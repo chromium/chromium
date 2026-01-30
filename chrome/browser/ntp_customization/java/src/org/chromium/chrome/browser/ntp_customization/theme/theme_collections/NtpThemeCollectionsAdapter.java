@@ -46,6 +46,9 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
     private @Nullable String mSelectedThemeCollectionId;
     private @Nullable GURL mSelectedThemeCollectionImageUrl;
     private int mSelectedPosition;
+    private @Nullable String mHandlingClickCollectionId;
+    private @Nullable GURL mHandlingClickImageUrl;
+    private int mHandlingClickPosition;
 
     @IntDef({
         ThemeCollectionsItemType.THEME_COLLECTIONS_ITEM,
@@ -78,6 +81,7 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         mOnClickListener = onClickListener;
         mImageFetcher = imageFetcher;
         mSelectedPosition = RecyclerView.NO_POSITION;
+        mHandlingClickPosition = RecyclerView.NO_POSITION;
     }
 
     @Override
@@ -124,13 +128,15 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ThemeCollectionViewHolder viewHolder = (ThemeCollectionViewHolder) holder;
         Object item = mItems.get(position);
+
         viewHolder.bind(
                 item,
                 mThemeCollectionsItemType,
                 mSelectedThemeCollectionId,
                 mSelectedThemeCollectionImageUrl,
                 mImageFetcher,
-                mOnClickListener);
+                createOnClickListener(holder, item),
+                isItemHandlingClick(item));
     }
 
     @Override
@@ -151,8 +157,8 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         notifyItemRangeInserted(0, newItems.size());
 
         // Re-calculate mSelectedPosition based on the new list and the current selection ID/URL
-        mSelectedPosition =
-                findSelectionIndex(mSelectedThemeCollectionId, mSelectedThemeCollectionImageUrl);
+        mSelectedPosition = findIndex(mSelectedThemeCollectionId, mSelectedThemeCollectionImageUrl);
+        mHandlingClickPosition = findIndex(mHandlingClickCollectionId, mHandlingClickImageUrl);
     }
 
     /** Clears the OnClickListener from all items in the RecyclerView. */
@@ -168,6 +174,17 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
+    /** Cancels the loading state of any item that is currently showing a spinner. */
+    public void cancelLoadingState() {
+        int oldHandlingClickPosition = mHandlingClickPosition;
+        mHandlingClickCollectionId = null;
+        mHandlingClickImageUrl = null;
+        mHandlingClickPosition = RecyclerView.NO_POSITION;
+        if (oldHandlingClickPosition != RecyclerView.NO_POSITION) {
+            notifyItemChanged(oldHandlingClickPosition);
+        }
+    }
+
     /**
      * Updates the currently selected theme collections item and refreshes the views.
      *
@@ -178,9 +195,25 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         mSelectedThemeCollectionId = collectionId;
         mSelectedThemeCollectionImageUrl = imageUrl;
         int newSelectedPosition =
-                findSelectionIndex(mSelectedThemeCollectionId, mSelectedThemeCollectionImageUrl);
+                findIndex(mSelectedThemeCollectionId, mSelectedThemeCollectionImageUrl);
+
+        // Checks if the new selection matches the pending loading item.
+        boolean isSelectingHandlingItem =
+                mHandlingClickCollectionId != null
+                        && mHandlingClickCollectionId.equals(mSelectedThemeCollectionId)
+                        && (mHandlingClickImageUrl == null
+                                || mHandlingClickImageUrl.equals(mSelectedThemeCollectionImageUrl));
+        int oldHandlingClickPosition = mHandlingClickPosition;
+        if (isSelectingHandlingItem) {
+            mHandlingClickCollectionId = null;
+            mHandlingClickImageUrl = null;
+            mHandlingClickPosition = RecyclerView.NO_POSITION;
+        }
 
         if (mSelectedPosition == newSelectedPosition) {
+            if (oldHandlingClickPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(oldHandlingClickPosition);
+            }
             return;
         }
 
@@ -196,9 +229,54 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         if (newSelectedPosition != RecyclerView.NO_POSITION) {
             notifyItemChanged(newSelectedPosition);
         }
+
+        // If the item that was handling the click (showing the spinner) is different from both the
+        // old and new selected items, we need to refresh it to hide the spinner.
+        if (oldHandlingClickPosition != RecyclerView.NO_POSITION
+                && oldHandlingClickPosition != oldSelectedPosition
+                && oldHandlingClickPosition != newSelectedPosition) {
+            notifyItemChanged(oldHandlingClickPosition);
+        }
     }
 
-    private int findSelectionIndex(@Nullable String collectionId, @Nullable GURL imageUrl) {
+    /** Checks if the given item is currently in a loading state (handling a click). */
+    private boolean isItemHandlingClick(Object item) {
+        if (mThemeCollectionsItemType != SINGLE_THEME_COLLECTION_ITEM) {
+            return false;
+        }
+
+        CollectionImage imageItem = (CollectionImage) item;
+        return imageItem.collectionId.equals(mHandlingClickCollectionId)
+                && imageItem.imageUrl.equals(mHandlingClickImageUrl);
+    }
+
+    /**
+     * Creates an OnClickListener for the item view that handles selection and updates the loading
+     * state.
+     */
+    private View.OnClickListener createOnClickListener(
+            RecyclerView.ViewHolder holder, Object item) {
+        return v -> {
+            if (mThemeCollectionsItemType == SINGLE_THEME_COLLECTION_ITEM
+                    && item instanceof CollectionImage) {
+                int previousHandlingPosition = mHandlingClickPosition;
+                CollectionImage imageItem = (CollectionImage) item;
+                mHandlingClickCollectionId = imageItem.collectionId;
+                mHandlingClickImageUrl = imageItem.imageUrl;
+                mHandlingClickPosition = holder.getBindingAdapterPosition();
+
+                if (previousHandlingPosition != RecyclerView.NO_POSITION
+                        && previousHandlingPosition != mHandlingClickPosition) {
+                    notifyItemChanged(previousHandlingPosition);
+                }
+            }
+            if (mOnClickListener != null) {
+                mOnClickListener.onClick(v);
+            }
+        };
+    }
+
+    private int findIndex(@Nullable String collectionId, @Nullable GURL imageUrl) {
         if (collectionId == null) {
             return RecyclerView.NO_POSITION;
         }
@@ -245,7 +323,8 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
                 @Nullable String selectedCollectionId,
                 @Nullable GURL selectedImageUrl,
                 ImageFetcher imageFetcher,
-                View.@Nullable OnClickListener onClickListener) {
+                View.@Nullable OnClickListener onClickListener,
+                boolean isHandlingClick) {
             switch (itemType) {
                 case THEME_COLLECTIONS_ITEM:
                     BackgroundCollection collectionItem = (BackgroundCollection) item;
@@ -271,6 +350,10 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
                     itemView.setSelected(isSingleThemeCollectionSelected);
                     mTitle.setVisibility(View.GONE);
                     fetchImageWithPlaceholder(imageFetcher, imageItem.previewImageUrl);
+
+                    mIsHandlingClick = isHandlingClick;
+                    updateLoadingView();
+
                     View.OnClickListener clickListener =
                             view -> {
                                 // If the item view is the current selected item, early exits now.
@@ -278,13 +361,7 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
                                 if (itemView.isActivated()) return;
 
                                 mIsHandlingClick = true;
-                                // When the image is selected by the user and waiting for the
-                                // results from native service, shows the spinner and reduces
-                                // opacity of image to highlight the spinner.
-                                mSpinner.setVisibility(View.VISIBLE);
-                                mImage.setAlpha(0.5f);
-                                // Disables the image click so they can't be clicked while loading.
-                                mView.setClickable(false);
+                                updateLoadingView();
                                 if (onClickListener != null) {
                                     onClickListener.onClick(view);
                                 }
@@ -294,6 +371,25 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
 
                 default:
                     assert false : "Theme collections item type not supported!";
+            }
+        }
+
+        /**
+         * Updates the visual state of the view holder (spinner visibility, image alpha, and
+         * clickability) based on whether it is currently handling a click.
+         */
+        private void updateLoadingView() {
+            if (mIsHandlingClick) {
+                // When the image is selected by the user and waiting for the results from native
+                // service, shows the spinner and reduces opacity of image to highlight the spinner.
+                mSpinner.setVisibility(View.VISIBLE);
+                mImage.setAlpha(0.5f);
+                // Disables the image click so they can't be clicked while loading.
+                mView.setClickable(false);
+            } else {
+                mSpinner.setVisibility(View.GONE);
+                mImage.setAlpha(1.0f);
+                mView.setClickable(true);
             }
         }
 
@@ -320,14 +416,6 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
                         // display this image.
                         if (imageUrl.equals(mImage.getTag()) && bitmap != null) {
                             mImage.setImageBitmap(bitmap);
-                            if (mIsHandlingClick) {
-                                mIsHandlingClick = false;
-                                // Restores the image state.
-                                mImage.setAlpha(1.0f);
-                                mView.setClickable(true);
-                                // Hides the spinner.
-                                mSpinner.setVisibility(View.GONE);
-                            }
                         }
                     });
         }
