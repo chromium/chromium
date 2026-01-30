@@ -50,7 +50,7 @@ export function getHtml(this: SearchboxElement) {
         .inputState="${this.inputState_}"
         ?show-voice-search="${this.shouldShowVoiceSearch_}"
         ?show-canvas="${this.showCanvas}"
-        ?show-model-picker="${this.showModelPicker}"
+        ?show-model-picker="${this.showModelPicker_}"
         searchbox-layout-mode="${this.searchboxLayoutMode}"
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState}">
       ${!compactLayout ? dropdown : nothing}

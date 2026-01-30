@@ -333,10 +333,6 @@ export class AppElement extends AppElementBase {
        * Whether to show the AIM threads rail when composebox is open.
        */
       enableThreadsRail_: {type: Boolean},
-
-      /* Whether to show the model picker in the contextual action menu. */
-      showModelPicker_: {type: Boolean},
-      showCanvas_: {type: Boolean},
     };
   }
 
@@ -431,10 +427,6 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor enableThreadsRail_: boolean =
       loadTimeData.getBoolean('enableThreadsRail');
-  protected accessor showModelPicker_: boolean =
-      loadTimeData.getBoolean('showModelPicker');
-  protected accessor showCanvas_: boolean =
-      loadTimeData.getBoolean('showCanvas');
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;

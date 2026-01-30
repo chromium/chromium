@@ -7,8 +7,8 @@ import 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ContextualActionMenu', () => {
   let actionMenu: ContextualActionMenuElement;
@@ -34,4 +34,20 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
     assertFalse(actionMenu.$.menu.open);
   });
+
+  test(
+      'Not tabs or tab header displayed when there are no tab suggestions',
+      async () => {
+        // Arrange & Act.
+        actionMenu.tabSuggestions = [];
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+        assertTrue(actionMenu.$.menu.open);
+
+        // Assert.
+        const tabHeader = $$(actionMenu, '#tabHeader');
+        assertFalse(!!tabHeader);
+        const items = actionMenu.$.menu.querySelectorAll('.dropdown-item');
+        assertEquals(0, items.length);
+      });
 });

@@ -56,8 +56,6 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         searchbox-layout-mode="${this.realboxLayoutMode_}"
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
-        ?show-canvas="${this.showCanvas_}"
-        ?show-model-picker="${this.showModelPicker_}"
         @searchbox-input-focus-changed="${this.onInputFocusChanged_}"
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
         ?multi-line-enabled="${this.multiLineEnabled_}">
@@ -74,8 +72,6 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             @composebox-input-focus-changed="${this.onInputFocusChanged_}"
             @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
             @voice-search-action="${this.onComposeVoiceSearchAction_}"
-            ?show-canvas="${this.showCanvas_}"
-            ?show-model-picker="${this.showModelPicker_}"
             searchbox-layout-mode="${this.realboxLayoutMode_}">
         </cr-composebox>
         ${this.enableThreadsRail_ ? html`
