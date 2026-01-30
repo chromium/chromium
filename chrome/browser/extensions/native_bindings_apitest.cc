@@ -720,9 +720,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests that the devtools API is not defined in non-devtools contexts
-// (background service worker, extension page, and content script), but is on
-// the devtools page when the extension has a devtools page.
+// Tests that confirms where some contexts where the the devtools API should and
+// should not be defined for the chrome and browser namespaces.
 IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
                        ChromeAndBrowserObjects_DevToolsVisibility) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -743,13 +742,12 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
                      "<script src='devtools.js'></script>");
   test_dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
                      R"(chrome.test.runTests([
-                          function checkHasDevTools() {
+                          function checkDevTools() {
                             chrome.test.assertTrue(
                               chrome.hasOwnProperty('devtools'));
                             chrome.test.assertNe(undefined, chrome.devtools);
                             chrome.test.assertTrue(
-                              browser.hasOwnProperty('devtools'));
-                            chrome.test.assertNe(undefined, browser.devtools);
+                              typeof browser === 'undefined');
                             chrome.test.succeed();
                           }
                         ]);)");
@@ -759,9 +757,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
              chrome.test.assertFalse(
                chrome.hasOwnProperty('devtools'));
              chrome.test.assertEq(undefined, chrome.devtools);
-             chrome.test.assertFalse(
-               browser.hasOwnProperty('devtools'));
-             chrome.test.assertEq(undefined, browser.devtools);
+             chrome.test.assertTrue(typeof browser === 'undefined');
              chrome.test.succeed();
            }
          ]);)";
@@ -832,8 +828,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
                           function checkNoDevTools() {
                             chrome.test.assertFalse(chrome.hasOwnProperty(
                               'devtools'));
-                            chrome.test.assertFalse(browser.hasOwnProperty(
-                              'devtools'));
+                            chrome.test.assertTrue(
+                              typeof browser === 'undefined');
                             chrome.test.succeed();
                           }
                         ]);)");
@@ -850,9 +846,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests that iframes nested inside a devtools page have access to
-// browser.devtools (matching chrome.devtools behavior), because their top frame
-// is the devtools page (and devtools frontend).
+// Tests the visibility of the devtools API for the chrome and browser
+// namespaces in iframes nested inside a devtools page.
 IN_PROC_BROWSER_TEST_F(
     NativeBindingsBrowserNamespaceTest,
     ChromeAndBrowserObjects_DevToolsVisibility_NestedIframe) {
@@ -870,22 +865,33 @@ IN_PROC_BROWSER_TEST_F(
   test_dir.WriteFile(FILE_PATH_LITERAL("child.html"),
                      "<script src='child.js'></script>");
   test_dir.WriteFile(FILE_PATH_LITERAL("child.js"),
-                     R"(window.onload = function() {
-                          chrome.test.runTests([
-                            function checkNestedFrameHasDevTools() {
-                              chrome.test.assertTrue(
-                                  chrome.hasOwnProperty('devtools'));
-                              chrome.test.assertNe(undefined, chrome.devtools);
-                              chrome.test.assertTrue(browser.hasOwnProperty(
-                                  'devtools'));
-                              chrome.test.assertNe(undefined,
-                                  browser.devtools);
-                              chrome.test.assertEq(chrome.devtools,
-                                  browser.devtools);
-                              chrome.test.succeed();
+                     R"(chrome.test.runTests([
+                          // It takes a bit of time for the devtools frontend to
+                          // inject the API since this is a iframe. So to avoid
+                          // test flakiness we wait for chrome.devtools to be
+                          // defined before proceeding with the test.
+                          async function waitForDevTools() {
+                            const start = Date.now();
+                            // 2 second timeout
+                            while (Date.now() - start < 2000) {
+                              if (chrome.devtools) {
+                                chrome.test.succeed();
+                                return;
+                              }
+                              await new Promise(r => setTimeout(r, 50));
                             }
-                          ]);
-                        };)");
+                            chrome.test.fail('Timed out waiting for ' +
+                              'devtools frontend to define chrome.devtools.');
+                          },
+                          async function checkNestedFrameHasDevTools() {
+                            chrome.test.assertTrue(
+                              chrome.hasOwnProperty('devtools'));
+                            chrome.test.assertNe(undefined, chrome.devtools);
+                            chrome.test.assertTrue(
+                              typeof browser === 'undefined');
+                            chrome.test.succeed();
+                          }
+                        ]);)");
 
   ResultCatcher catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
@@ -898,12 +904,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+// TODO(crbug.com/401226626): Re-enable once the devtools API is on browser
+// namespace.
 // Tests the `browser.devtools` aliasing behavior to `chrome.devtools` in a
 // devtools page. This is tested explicitly because `devtools` APIs are an
 // exception being injected by the devtools frontend rather than the standard
 // extension bindings system.
 IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
-                       ChromeAndBrowserObjects_DevToolsApiAliasing) {
+                       DISABLED_ChromeAndBrowserObjects_DevToolsApiAliasing) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
       R"({

@@ -19,6 +19,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
@@ -35,6 +36,7 @@
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
+#include "extensions/renderer/polyfill_util.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/arguments.h"
 #include "gin/data_object_builder.h"
@@ -95,7 +97,16 @@ struct OneTimeMessageContextData : public base::SupportsUserData::Data {
 
 constexpr char OneTimeMessageContextData::kPerContextDataKey[];
 
-bool IsMessagePolyfillSupportEnabled() {
+bool IsMessagePolyfillSupportEnabled(ScriptContext* script_context) {
+  if (!script_context) {
+    return false;
+  }
+  const Extension* extension = script_context->extension();
+  if (extension) {
+    return IsExtensionBrowserNamespaceAndPolyfillSupportEnabledForExtension(
+        extension);
+  }
+  // For example a non-extension webpage that can communicate with extensions.
   return base::FeatureList::IsEnabled(
       extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
 }
@@ -666,7 +677,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
           *script_context, target_port_id,
           std::move(message_response_callback));
 
-  if (IsMessagePolyfillSupportEnabled()) {
+  if (IsMessagePolyfillSupportEnabled(script_context)) {
     port.message_response_function =
         v8::Global<v8::Function>(isolate, message_response_function);
   }
@@ -696,7 +707,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
     if (port.event_name == messaging_util::kOnMessageEvent ||
         port.event_name == messaging_util::kOnMessageExternalEvent) {
       CallbackID listener_throws_error_callback_id;
-      if (IsMessagePolyfillSupportEnabled()) {
+      if (IsMessagePolyfillSupportEnabled(script_context)) {
         auto listener_throws_error_callback =
             CreateListenerErrorCallback(target_port_id);
         listener_throws_error_callback_id = CallbackID::Create();
@@ -926,7 +937,7 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   if (!message) {
     // Throw an error in the listener context.
     arguments->ThrowTypeError(message_creation_error);
-    if (IsMessagePolyfillSupportEnabled()) {
+    if (IsMessagePolyfillSupportEnabled(script_context)) {
       // This is a "fatal" error for the channel so close it entirely.
       CloseReceiverMessagePortOrChannel(script_context, port_id,
                                         /*close_channel=*/true,
@@ -1062,7 +1073,7 @@ void OneTimeMessageHandler::OneTimeMessageCallbackManager::
     if (!callbacks.empty()) {
       // If we've deleted the callback, but there's still a remaining callback
       // then this should only happen iff polyfill support is enabled.
-      DCHECK(IsMessagePolyfillSupportEnabled());
+      DCHECK(IsMessagePolyfillSupportEnabled(script_context));
       // When polyfill support is enabled we'll create two callbacks (message
       // response and promise reject) that can be collected at different times.
       // Only the last callback of these two collected should continue on to
@@ -1106,11 +1117,11 @@ std::optional<std::string> OneTimeMessageHandler::GetErrorMessageFromValue(
 void OneTimeMessageHandler::OnPromiseRejectedResponse(
     const PortId& port_id,
     gin::Arguments* arguments) {
-  CHECK(IsMessagePolyfillSupportEnabled());
-
   CHECK(arguments);
   v8::Isolate* isolate = arguments->isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
+  CHECK(IsMessagePolyfillSupportEnabled(script_context));
 
   // The promise may reject after the context or the channel has been closed.
   // Fail gracefully.
@@ -1157,17 +1168,17 @@ void OneTimeMessageHandler::OnPromiseRejectedResponse(
   // currently, but plans to (see
   // https://github.com/mozilla/webextension-polyfill/issues/210).
 
-  ScriptContext* script_context = GetScriptContextFromV8Context(context);
   CloseReceiverMessagePortOrChannel(script_context, port_id,
                                     /*close_channel=*/true, error_message);
 }
 
 void OneTimeMessageHandler::OnListenerThrowsError(const PortId& port_id,
                                                   gin::Arguments* arguments) {
-  CHECK(IsMessagePolyfillSupportEnabled());
-
+  CHECK(arguments);
   v8::Isolate* isolate = arguments->isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
+  CHECK(IsMessagePolyfillSupportEnabled(script_context));
 
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
@@ -1204,7 +1215,6 @@ void OneTimeMessageHandler::OnListenerThrowsError(const PortId& port_id,
   // currently, but plans to (see
   // https://github.com/mozilla/webextension-polyfill/issues/210).
 
-  ScriptContext* script_context = GetScriptContextFromV8Context(context);
   CloseReceiverMessagePortOrChannel(script_context, port_id,
                                     /*close_channel=*/true, error_message);
 }
@@ -1245,7 +1255,7 @@ bool OneTimeMessageHandler::CheckAndHandleAsyncListenerReply(
     // If promise returns are not supported, then we don't need to attach any
     // callbacks and can return early once we find at least one listener that
     // wants to reply asynchronously
-    if (!IsMessagePolyfillSupportEnabled() && will_reply_async) {
+    if (!IsMessagePolyfillSupportEnabled(&script_context) && will_reply_async) {
       return true;
     }
 
@@ -1253,7 +1263,8 @@ bool OneTimeMessageHandler::CheckAndHandleAsyncListenerReply(
     // reply async. Attach callbacks for both the promise resolving or
     // rejecting. This is so that whatever the promise settles to is considered
     // the listener replying to the message sender with the settled value.
-    if (IsMessagePolyfillSupportEnabled() && listener_return->IsPromise()) {
+    if (IsMessagePolyfillSupportEnabled(&script_context) &&
+        listener_return->IsPromise()) {
       auto promise_rejected_response_callback =
           CreatePromiseRejectedCallback(port_id);
       v8::Local<v8::Function> promise_rejected_function =
@@ -1301,7 +1312,8 @@ void OneTimeMessageHandler::OnEventFired(
   // Cleanup listener error callback if created since it shouldn't be possible
   // for synchronous thrown errors to appear after all listeners have finished
   // being dispatched to.
-  if (IsMessagePolyfillSupportEnabled() && listener_error_callback_id) {
+  if (IsMessagePolyfillSupportEnabled(script_context) &&
+      listener_error_callback_id) {
     callback_manager_->DeleteCallbackDataForCallbackId(
         script_context, port_id, *listener_error_callback_id);
   }
@@ -1315,7 +1327,7 @@ void OneTimeMessageHandler::OnEventFired(
   OneTimeReceiver& port = iter->second;
 
   v8::Local<v8::Function> promise_resolved_function;
-  if (IsMessagePolyfillSupportEnabled()) {
+  if (IsMessagePolyfillSupportEnabled(script_context)) {
     promise_resolved_function = port.message_response_function.Get(isolate);
     // Ensure the global function doesn't outlive port closing.
     port.message_response_function.SetWeak();

@@ -50,6 +50,7 @@
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/module_system.h"
+#include "extensions/renderer/polyfill_util.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/renderer_frame_context_data.h"
 #include "extensions/renderer/script_context.h"
@@ -611,18 +612,20 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
   std::optional<v8::Local<v8::Object>> browser;
   // TODO(crbug.com/401226626): Determine if `browser` should be created in
   // WebUI script contexts, currently it is not.
-  bool browser_namespace_enabled = base::FeatureList::IsEnabled(
-      extensions_features::kExtensionBrowserNamespaceAndPolyfillSupport);
   bool set_accessor_on_browser = false;
-  if (browser_namespace_enabled) {
-    //  Create if this is an extension script context MV3+.
-    if (context->extension() && context->extension()->manifest_version() >= 3) {
-      set_accessor_on_browser = true;
-    } else if (is_webpage && CanWebpageContextConnectExternally(context)) {
-      //  Create if this is a web page and it can communicate with an extension
-      //  (meaning it will have an extension API enabled for it).
-      set_accessor_on_browser = true;
-    }
+  const Extension* extension = context->extension();
+  //  Create if this is an MV3+ extension script context.
+  if (extension && extension->manifest_version() >= 3 &&
+      IsExtensionBrowserNamespaceAndPolyfillSupportEnabledForExtension(
+          extension)) {
+    set_accessor_on_browser = true;
+  } else if (is_webpage && CanWebpageContextConnectExternally(context) &&
+             base::FeatureList::IsEnabled(
+                 extensions_features::
+                     kExtensionBrowserNamespaceAndPolyfillSupport)) {
+    //  Create if this is a web page and it can communicate with an extension
+    //  (meaning it will have an extension API enabled for it).
+    set_accessor_on_browser = true;
   }
 
   DCHECK(GetBindingsDataFromContext(v8_context));
@@ -738,7 +741,7 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
 
   FeatureCache::FeatureNameVector features =
       feature_cache_.GetAvailableFeatures(
-          context->context_type(), context->extension(), context->url(),
+          context->context_type(), extension, context->url(),
           RendererFrameContextData(context->web_frame()));
   std::string_view last_accessor;
   for (const std::string& feature : features) {
@@ -768,7 +771,7 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
 
   FeatureCache::FeatureNameVector dev_mode_features =
       feature_cache_.GetDeveloperModeRestrictedFeatures(
-          context->context_type(), context->extension(), context->url(),
+          context->context_type(), extension, context->url(),
           RendererFrameContextData(context->web_frame()));
 
   for (const std::string& feature : dev_mode_features) {

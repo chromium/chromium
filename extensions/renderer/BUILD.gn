@@ -165,6 +165,8 @@ source_set("renderer") {
     "native_handler.h",
     "object_backed_native_handler.cc",
     "object_backed_native_handler.h",
+    "polyfill_util.cc",
+    "polyfill_util.h",
     "process_info_native_handler.cc",
     "process_info_native_handler.h",
     "programmatic_script_injector.cc",
