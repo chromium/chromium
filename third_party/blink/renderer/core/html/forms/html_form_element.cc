@@ -283,6 +283,13 @@ String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {
         std::unique_ptr<JSONObject> parameter_schema =
             form_control->GetWebMCPParameterSchema();
         CHECK(parameter_schema);
+
+        if (String title =
+                form_control->FastGetAttribute(html_names::kToolparamtitleAttr);
+            !title.empty()) {
+          parameter_schema->SetString("title", title);
+        }
+
         properties->SetObject(name, std::move(parameter_schema));
         if (form_control->IsRequired()) {
           required->PushString(name);

@@ -375,6 +375,34 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextInput_Required) {
   EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextInput_Title) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="text1" type="text" toolparamtitle="Surname">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "text1": {
+           "type": "string",
+           "title": "Surname"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select) {
   SetBodyInnerHTML(
       R"HTML(
@@ -405,6 +433,39 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select) {
          }
       },
       "required": ["select"]
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Title) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <select name="select" toolparamtitle="Possible Options">
+        <option value="Option 1">This is option 1</option>
+      </select>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "select": {
+           "type": "string",
+           "oneOf": [
+             { "const": "Option 1", "title": "This is option 1" }
+           ],
+           "title": "Possible Options"
+         }
+      },
+      "required": []
     }
   )JSON");
   ASSERT_TRUE(expected_json);
