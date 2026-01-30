@@ -135,10 +135,8 @@ class PermissionRequestManagerBrowserTestBase : public InProcessBrowserTest {
 class PermissionRequestManagerBrowserTest
     : public PermissionRequestManagerBrowserTestBase {
  public:
-  PermissionRequestManagerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {permissions::features::kBackForwardCacheUnblockPermissionRequest});
-  }
+  PermissionRequestManagerBrowserTest()
+      : PermissionRequestManagerBrowserTest({}, {}) {}
 
   PermissionRequestManagerBrowserTest(
       const PermissionRequestManagerBrowserTest&) = delete;
@@ -147,6 +145,19 @@ class PermissionRequestManagerBrowserTest
 
   ~PermissionRequestManagerBrowserTest() override = default;
 
+ protected:
+  PermissionRequestManagerBrowserTest(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
+    std::vector<base::test::FeatureRef> all_disabled_features =
+        disabled_features;
+    all_disabled_features.push_back(
+        permissions::features::kBackForwardCacheUnblockPermissionRequest);
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          all_disabled_features);
+  }
+
+ public:
   void SetUpOnMainThread() override {
     PermissionRequestManagerBrowserTestBase::SetUpOnMainThread();
     permissions::PermissionRequestManager* manager =
@@ -897,10 +908,11 @@ class PermissionRequestManagerPostPromptBrowserTest
 class PermissionRequestManagerQuietUiBrowserTest
     : public PermissionRequestManagerBrowserTest {
  public:
-  PermissionRequestManagerQuietUiBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kQuietNotificationPrompts);
-  }
+  PermissionRequestManagerQuietUiBrowserTest()
+      : PermissionRequestManagerBrowserTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/
+            {permissions::features::kPermissionsGestureGatedPrompts}) {}
 
  protected:
   using UiDecision = permissions::PermissionUiSelector::Decision;
@@ -915,9 +927,6 @@ class PermissionRequestManagerQuietUiBrowserTest
         std::move(selector));
     return selector_ptr;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Re-enable when 1016233 is fixed.

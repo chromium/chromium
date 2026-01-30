@@ -331,7 +331,7 @@ PredictionRequestFeatures BuildRequestFeatures(
     ExperimentId experiment_id,
     PermissionRequestRelevance permission_relevance) {
   return PredictionRequestFeatures{
-      .gesture = PermissionRequestGestureType::NO_GESTURE,
+      .gesture = PermissionRequestGestureType::GESTURE,
       .type = request_type,
       .requested_permission_counts = {},
       .all_permission_counts = {},
@@ -451,7 +451,8 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     SetTranslateSourceLanguage(translate_source_language);
 
-    auto req = std::make_unique<MockPermissionRequest>(request_type());
+    auto req = std::make_unique<MockPermissionRequest>(
+        request_type(), PermissionRequestGestureType::GESTURE);
     manager->AddRequest(primary_main_frame(), std::move(req));
 
     WaitForModelExecutionIfNecessary();

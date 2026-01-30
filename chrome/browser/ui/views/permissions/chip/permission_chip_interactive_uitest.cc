@@ -1421,7 +1421,19 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
+class PermissionChipGestureGatedDisabledInteractiveUITest
+    : public PermissionChipInteractiveUITest {
+ public:
+  PermissionChipGestureGatedDisabledInteractiveUITest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        permissions::features::kPermissionsGestureGatedPrompts);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionChipGestureGatedDisabledInteractiveUITest,
                        PermissionChipWithAndWithoutUserGesture) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
