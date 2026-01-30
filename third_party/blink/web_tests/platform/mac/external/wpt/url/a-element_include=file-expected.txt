@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test that embedded 0x0A is stripped
   assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
 [FAIL] Parsing: <file:c:\\foo\\bar.html> against <file:///tmp/mock/path>
@@ -76,6 +76,8 @@ Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: href expected "file://host/dir/C|a" but got "file://host/dir/C%7Ca"
 [FAIL] Parsing: </c|/foo/bar> against <file:///c:/baz/qux>
   assert_equals: href expected "file:///c:/foo/bar" but got "file:///c%7C/foo/bar"
+[FAIL] Parsing: <..> against <file://x/C:/>
+  assert_equals: href expected "file://x/C:/" but got "file://x/"
 [FAIL] Parsing: <C|/> against <file://host/>
   assert_equals: href expected "file://host/C:/" but got "file://host/C%7C/"
 [FAIL] Parsing: <//C:/> against <file://host/>

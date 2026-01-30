@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] U+000B VT    should not be parsed between directive name and value - meta tag
+  assert_equals: expected "img loaded" but got "img not loaded"
+[FAIL] U+000B VT    should not be parsed between directive name and value - HTTP header
+  assert_equals: expected "img loaded" but got "img not loaded"
+[FAIL] U+000B VT    should not be parsed inside directive value - meta tag
+  assert_equals: expected "img loaded" but got "img not loaded"
+[FAIL] U+000B VT    should not be parsed inside directive value - HTTP header
+  assert_equals: expected "img loaded" but got "img not loaded"
+Harness: the test ran to completion.
+

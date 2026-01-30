@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Property shape-outside value 'rect(0px 3em 2% 1px)'
+  assert_true: 'rect(0px 3em 2% 1px)' is a supported value for shape-outside. expected true got false
+[FAIL] Property shape-outside value 'rect(0px calc(100% - 20px) 2% 3em)'
+  assert_true: 'rect(0px calc(100% - 20px) 2% 3em)' is a supported value for shape-outside. expected true got false
+[FAIL] Property shape-outside value 'rect(10px 20px 30px 25px round 20% / 0px 1px 2% 3em)'
+  assert_true: 'rect(10px 20px 30px 25px round 20% / 0px 1px 2% 3em)' is a supported value for shape-outside. expected true got false
+Harness: the test ran to completion.
+
