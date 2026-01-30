@@ -1659,6 +1659,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DefaultBrowserPromo.EntryPoint.{Source}"
+    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-01-26">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the default browser state of the user at the moment they click a
+    Default Browser Promo entry point. This also records the volume of clicks
+    (Engagement) for the {Source}. Recorded when the user clicks the AppMenu or
+    Settings Menu item.
+  </summary>
+  <token key="Source">
+    <variant name="AppMenu" summary="Clicked from the App Menu."/>
+    <variant name="Settings" summary="Clicked from Chrome Settings."/>
+  </token>
+</histogram>
+
 <histogram name="Android.DefaultBrowserPromo.Outcome.{CurrentState}"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2026-06-28">
   <owner>lazzzis@google.com</owner>

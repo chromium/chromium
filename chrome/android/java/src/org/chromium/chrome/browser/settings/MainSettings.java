@@ -518,7 +518,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         // We decided not to show the Role Model Dialog at all when the menu item in
                         // Settings is clicked.
                         DefaultBrowserPromoUtils.getInstance()
-                                .onMenuItemClick(getActivity(), /* windowAndroid= */ null);
+                                .onMenuItemClick(
+                                        getActivity(),
+                                        /* windowAndroid= */ null,
+                                        DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint
+                                                .SETTINGS);
                         return true;
                     });
         } else {

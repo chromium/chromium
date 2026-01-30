@@ -13,6 +13,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ObserverList;
@@ -27,12 +31,16 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.time.Duration;
 
 /** A utility class providing information regarding states of default browser. */
@@ -55,6 +63,13 @@ public class DefaultBrowserPromoUtils {
 
     private final ObserverList<DefaultBrowserPromoTriggerStateListener>
             mDefaultBrowserPromoTriggerStateListeners;
+
+    @IntDef({DefaultBrowserPromoEntryPoint.APP_MENU, DefaultBrowserPromoEntryPoint.SETTINGS})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DefaultBrowserPromoEntryPoint {
+        int APP_MENU = 0;
+        int SETTINGS = 1;
+    }
 
     DefaultBrowserPromoUtils(
             DefaultBrowserPromoImpressionCounter impressionCounter,
@@ -252,27 +267,69 @@ public class DefaultBrowserPromoUtils {
      *
      * @param activity The current activity.
      * @param windowAndroid The WindowAndroid (required for Role Manager).
+     * @param source The source of the click, one of {@link DefaultBrowserPromoEntryPoint}.
      */
-    public void onMenuItemClick(Activity activity, @Nullable WindowAndroid windowAndroid) {
-        // Show the role manager if:
-        // a) Role manager hasn't been shown before AND
-        // b) If the device supports setting a default browser via role API AND
-        // c) Chrome is currently not a default browser
-        boolean roleManagerShownBefore = mImpressionCounter.getPromoCount() > 0;
+    public void onMenuItemClick(
+            Activity activity,
+            @Nullable WindowAndroid windowAndroid,
+            @DefaultBrowserPromoEntryPoint int source) {
 
-        if (!roleManagerShownBefore
-                && isRoleAvailableButNotHeld(activity)
-                && windowAndroid != null) {
+        String sourceString = getSourceString(source);
+        fetchDefaultBrowserInfo(
+                info -> {
+                    if (info == null) {
+                        // Fallback: show the default apps page in Android settings.
+                        openSystemDefaultAppsSettings(activity);
+                        return;
+                    }
 
-            mImpressionCounter.onPromoShown();
-            DefaultBrowserPromoManager manager =
-                    new DefaultBrowserPromoManager(
-                            activity, windowAndroid, mImpressionCounter, mStateProvider);
-            manager.promoByRoleManager();
+                    // Record the volume/engagement.
+                    @DefaultBrowserState int currentState = info.defaultBrowserState;
+                    DefaultBrowserPromoMetrics.recordEntrypointClick(sourceString, currentState);
+
+                    // Show the role manager if:
+                    // a) Role manager hasn't been shown before AND
+                    // b) If the device supports setting a default browser via role API AND
+                    // c) Chrome is currently not a default browser
+                    boolean roleManagerShownBefore = mImpressionCounter.getPromoCount() > 0;
+
+                    if (!roleManagerShownBefore
+                            && isRoleAvailableButNotHeld(activity)
+                            && windowAndroid != null) {
+
+                        mImpressionCounter.onPromoShown();
+                        DefaultBrowserPromoManager manager =
+                                new DefaultBrowserPromoManager(
+                                        activity,
+                                        windowAndroid,
+                                        mImpressionCounter,
+                                        mStateProvider);
+                        manager.promoByRoleManager();
+                    } else {
+                        // Fallback: show the default apps page in Android settings.
+                        openSystemDefaultAppsSettings(activity);
+                    }
+                });
+    }
+
+    private String getSourceString(@DefaultBrowserPromoEntryPoint int source) {
+        if (source == DefaultBrowserPromoEntryPoint.APP_MENU) {
+            return "AppMenu";
+        } else if (source == DefaultBrowserPromoEntryPoint.SETTINGS) {
+            return "Settings";
         } else {
-            // Fallback: show the default apps page in Android settings.
-            openSystemDefaultAppsSettings(activity);
+            throw new IllegalArgumentException(
+                    "Unexpected DefaultBrowserPromoEntryPoint: " + source);
         }
+    }
+
+    @VisibleForTesting
+    protected void fetchDefaultBrowserInfo(
+            Callback<DefaultBrowserInfo.@Nullable DefaultInfo> callback) {
+        // Force clear the old cached value and generate a fresh DefaultInfoTask.
+        DefaultBrowserInfo.resetDefaultInfoTask();
+        // Fetch the fresh info asynchronously.
+        DefaultBrowserInfo.getDefaultBrowserInfo(callback);
     }
 
     public static void setInstanceForTesting(DefaultBrowserPromoUtils testInstance) {

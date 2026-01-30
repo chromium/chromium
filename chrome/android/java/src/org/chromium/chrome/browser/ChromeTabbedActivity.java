@@ -4041,7 +4041,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         } else if (id == R.id.default_browser_promo_menu_id) {
             // This menu item is not visible if Chrome is already set as default.
-            DefaultBrowserPromoUtils.getInstance().onMenuItemClick(this, getWindowAndroid());
+            DefaultBrowserPromoUtils.getInstance()
+                    .onMenuItemClick(
+                            this,
+                            getWindowAndroid(),
+                            DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.APP_MENU);
             RecordUserAction.record("MobileMenuDefaultBrowserPromo");
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);

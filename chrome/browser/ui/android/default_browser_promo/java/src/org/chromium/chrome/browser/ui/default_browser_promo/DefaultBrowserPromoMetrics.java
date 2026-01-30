@@ -11,6 +11,21 @@ import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 /** Helper class to record histograms related to the default browser promo. */
 @NullMarked
 class DefaultBrowserPromoMetrics {
+
+    /**
+     * Record the click event on an entry point.
+     *
+     * @param source The source of the click ("AppMenu" or "Settings").
+     * @param currentState The state of the browser (OTHER_DEFAULT, CHROME_DEFAULT, etc.) at the
+     *     moment of the click.
+     */
+    static void recordEntrypointClick(String source, @DefaultBrowserState int currentState) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.DefaultBrowserPromo.EntryPoint." + source,
+                currentState,
+                DefaultBrowserState.NUM_ENTRIES);
+    }
+
     /**
      * Record {@link DefaultBrowserState} when role manager dialog is shown.
      *

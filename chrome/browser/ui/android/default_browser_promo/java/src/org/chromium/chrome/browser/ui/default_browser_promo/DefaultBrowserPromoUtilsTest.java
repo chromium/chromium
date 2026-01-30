@@ -39,6 +39,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -46,6 +48,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -80,6 +84,26 @@ public class DefaultBrowserPromoUtilsTest {
     private ShadowRoleManager mShadowRoleManager;
 
     DefaultBrowserPromoUtils mUtils;
+
+    private static class TestingDefaultBrowserPromoUtils extends DefaultBrowserPromoUtils {
+
+        private final DefaultBrowserInfo.DefaultInfo mTestInfo;
+
+        TestingDefaultBrowserPromoUtils(
+                DefaultBrowserPromoImpressionCounter impressionCounter,
+                DefaultBrowserStateProvider stateProvider,
+                DefaultBrowserInfo.DefaultInfo testInfo) {
+            super(impressionCounter, stateProvider);
+            mTestInfo = testInfo;
+        }
+
+        @Override
+        protected void fetchDefaultBrowserInfo(
+                org.chromium.base.Callback<DefaultBrowserInfo.@Nullable DefaultInfo> callback) {
+            // This approach is used so that the lambda code is returned immediately.
+            callback.onResult(mTestInfo);
+        }
+    }
 
     @Before
     public void setUp() {
@@ -343,7 +367,32 @@ public class DefaultBrowserPromoUtilsTest {
         // role is available but not held (Chrome is not set to default).
         when(mCounter.getPromoCount()).thenReturn(0);
 
-        mUtils.onMenuItemClick(mActivity, mWindowAndroid);
+        when(mProvider.getCurrentDefaultBrowserState()).thenReturn(DefaultBrowserState.NO_DEFAULT);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.DefaultBrowserPromo.EntryPoint.AppMenu",
+                                DefaultBrowserState.NO_DEFAULT)
+                        .build();
+
+        DefaultBrowserInfo.DefaultInfo info =
+                new DefaultBrowserInfo.DefaultInfo(
+                        /* defaultBrowserState= */ DefaultBrowserState.NO_DEFAULT,
+                        /* isChromeSystem= */ false,
+                        /* isDefaultSystem= */ false,
+                        /* browserCount= */ 1,
+                        /* systemCount= */ 0,
+                        /* isChromePreStableInstalled= */ false);
+
+        reCreateUtilsWithTestInfo(info);
+
+        mUtils.onMenuItemClick(
+                mActivity,
+                mWindowAndroid,
+                DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.APP_MENU);
+
+        watcher.assertExpected();
 
         // Verify we incremented the counter.
         verify(mCounter).onPromoShown();
@@ -369,7 +418,21 @@ public class DefaultBrowserPromoUtilsTest {
         // Chrome is already the default browser (Role is Held).
         mShadowRoleManager.addHeldRole(RoleManager.ROLE_BROWSER);
 
-        mUtils.onMenuItemClick(mActivity, mWindowAndroid);
+        DefaultBrowserInfo.DefaultInfo info =
+                new DefaultBrowserInfo.DefaultInfo(
+                        /* defaultBrowserState= */ DefaultBrowserState.CHROME_DEFAULT,
+                        /* isChromeSystem= */ true,
+                        /* isDefaultSystem= */ true,
+                        /* browserCount= */ 0,
+                        /* systemCount= */ 1,
+                        /* isChromePreStableInstalled= */ false);
+
+        reCreateUtilsWithTestInfo(info);
+
+        mUtils.onMenuItemClick(
+                mActivity,
+                mWindowAndroid,
+                DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.APP_MENU);
 
         // Should not increment counter since we skipped Role Manager.
         verify(mCounter, never()).onPromoShown();
@@ -384,7 +447,21 @@ public class DefaultBrowserPromoUtilsTest {
         // Promo Count > 0 (Already shown once). Chrome is not set to default.
         when(mCounter.getPromoCount()).thenReturn(1);
 
-        mUtils.onMenuItemClick(mActivity, mWindowAndroid);
+        DefaultBrowserInfo.DefaultInfo info =
+                new DefaultBrowserInfo.DefaultInfo(
+                        /* defaultBrowserState= */ DefaultBrowserState.NO_DEFAULT,
+                        /* isChromeSystem= */ false,
+                        /* isDefaultSystem= */ false,
+                        /* browserCount= */ 1,
+                        /* systemCount= */ 0,
+                        /* isChromePreStableInstalled= */ false);
+
+        reCreateUtilsWithTestInfo(info);
+
+        mUtils.onMenuItemClick(
+                mActivity,
+                mWindowAndroid,
+                DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.APP_MENU);
 
         // Should not increment counter again.
         verify(mCounter, never()).onPromoShown();
@@ -399,9 +476,30 @@ public class DefaultBrowserPromoUtilsTest {
         // Promo never shown. Chrome is not set to default.
         when(mCounter.getPromoCount()).thenReturn(0);
 
+        when(mProvider.getCurrentDefaultBrowserState()).thenReturn(DefaultBrowserState.NO_DEFAULT);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.DefaultBrowserPromo.EntryPoint.Settings",
+                                DefaultBrowserState.NO_DEFAULT)
+                        .build();
+
+        DefaultBrowserInfo.DefaultInfo info =
+                new DefaultBrowserInfo.DefaultInfo(
+                        /* defaultBrowserState= */ DefaultBrowserState.NO_DEFAULT,
+                        /* isChromeSystem= */ false,
+                        /* isDefaultSystem= */ false,
+                        /* browserCount= */ 1,
+                        /* systemCount= */ 0,
+                        /* isChromePreStableInstalled= */ false);
+
+        reCreateUtilsWithTestInfo(info);
+
         // Pass null for WindowAndroid. This would happen when the menu item in Settings (not App
         // Menu) is clicked.
-        mUtils.onMenuItemClick(mActivity, null);
+        mUtils.onMenuItemClick(
+                mActivity, null, DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.SETTINGS);
 
         // Should not increment counter since we are not showing the RoleManaerDialog.
         verify(mCounter, never()).onPromoShown();
@@ -416,6 +514,10 @@ public class DefaultBrowserPromoUtilsTest {
                 "Should launch System Settings",
                 Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS,
                 intent.getAction());
+    }
+
+    private void reCreateUtilsWithTestInfo(DefaultBrowserInfo.DefaultInfo info) {
+        mUtils = new TestingDefaultBrowserPromoUtils(mCounter, mProvider, info);
     }
 
     private void setDepsMockWithDefaultValues() {
