@@ -23,6 +23,20 @@ config("pgo_instrumentation_flags") {
         "-pgo-temporal-instrumentation",
       ]
     }
+
+    # Increase the value profiling counter limit on macOS to capture more
+    # indirect call targets (e.g., C++ virtual calls). Apple Silicon’s massive
+    # instruction cache (icache) and 8-wide execution width make a 'chain of
+    # comparisons' significantly faster than a standard indirect call. While
+    # this increases the Chromium Framework binary size by 0.6%, it yields a
+    # measurable improvement in runtime benchmarks.
+    if (is_mac && current_cpu == "arm64") {
+      cflags += [
+        "-mllvm",
+        "-vp-counters-per-site=6",
+      ]
+    }
+
     if (!is_win) {
       # Windows directly calls link.exe instead of the compiler driver when
       # linking, and embeds the path to the profile runtime library as
