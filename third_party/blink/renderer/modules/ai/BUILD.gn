@@ -23,6 +23,8 @@ blink_modules_sources("ai") {
     "create_monitor.h",
     "exception_helpers.cc",
     "exception_helpers.h",
+    "feedback_helpers.cc",
+    "feedback_helpers.h",
     "language_model.cc",
     "language_model.h",
     "language_model_create_client.cc",

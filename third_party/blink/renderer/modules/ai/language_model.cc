@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
+#include "third_party/blink/renderer/modules/ai/feedback_helpers.h"
 #include "third_party/blink/renderer/modules/ai/language_model_create_client.h"
 #include "third_party/blink/renderer/modules/ai/language_model_prompt_builder.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
@@ -435,6 +436,7 @@ ScriptPromise<LanguageModel> LanguageModel::create(
     ScriptState* script_state,
     LanguageModelCreateOptions* options,
     ExceptionState& exception_state) {
+  MaybeRequestFeedback(script_state, AIMetrics::AISessionType::kLanguageModel);
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return EmptyPromise();

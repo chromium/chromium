@@ -12,10 +12,12 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
+#include "third_party/blink/renderer/modules/ai/feedback_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "v8/include/v8-isolate.h"
 
@@ -280,7 +282,8 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
     LanguageDetectorCreateOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
-
+  MaybeRequestFeedback(script_state,
+                       AIMetrics::AISessionType::kLanguageDetector);
   if (!ValidateScriptState(
           script_state, exception_state,
           RuntimeEnabledFeatures::LanguageDetectionAPIForWorkersEnabled(

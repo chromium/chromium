@@ -17,7 +17,9 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
+#include "third_party/blink/renderer/modules/ai/feedback_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/create_translator_client.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/resolver_with_abort_signal.h"
@@ -142,6 +144,7 @@ ScriptPromise<V8Availability> Translator::availability(
 ScriptPromise<Translator> Translator::create(ScriptState* script_state,
                                              TranslatorCreateOptions* options,
                                              ExceptionState& exception_state) {
+  MaybeRequestFeedback(script_state, AIMetrics::AISessionType::kTranslator);
   // If `sourceLanguage` and `targetLanguage` are not passed, A TypeError should
   // be thrown before we get here.
   CHECK(options && options->sourceLanguage() && options->targetLanguage());

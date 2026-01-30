@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
+#include "third_party/blink/renderer/modules/ai/feedback_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -371,6 +372,7 @@ ScriptPromise<Proofreader> Proofreader::create(
     ScriptState* script_state,
     ProofreaderCreateOptions* options,
     ExceptionState& exception_state) {
+  MaybeRequestFeedback(script_state, AIMetrics::AISessionType::kProofreader);
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<Proofreader>();
