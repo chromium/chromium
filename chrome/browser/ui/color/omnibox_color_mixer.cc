@@ -454,9 +454,10 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxComposeboxFaviconBackground] = {
       kColorOmniboxComposeboxChipBackground};
   mixer[kColorOmniboxComposeboxForegroundDisabled] = {kColorOmniboxTextDimmed};
-  mixer[kColorOmniboxComposeboxSubmitButtonBackground] =
-      ui::SelectBasedOnDarkInput(kColorOmniboxResultsBackground,
-                                 gfx::kGoogleBlue200, gfx::kGoogleBlue600);
+  mixer[kColorOmniboxComposeboxPrimaryAction] = ui::SelectBasedOnDarkInput(
+      kColorOmniboxResultsBackground, gfx::kGoogleBlue200, gfx::kGoogleBlue600);
+  mixer[kColorOmniboxComposeboxSubmitButtonBackground] = {
+      kColorOmniboxComposeboxPrimaryAction};
   mixer[kColorOmniboxComposeboxSubmitButtonIcon] = ui::SelectBasedOnDarkInput(
       kColorOmniboxResultsBackground, gfx::kGoogleGrey900, gfx::kGoogleBlue200);
 
