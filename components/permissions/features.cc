@@ -13,6 +13,9 @@ namespace features {
 #if BUILDFLAG(IS_ANDROID)
 // Enables or disables usage of Window Management Web API.
 BASE_FEATURE(kAndroidWindowManagementWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Shows or hides the cancel button in the ItemChooserDialog.
+BASE_FEATURE(kAndroidItemChooserCancelButton, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables or disables whether pages with pending permission requests will

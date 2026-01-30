@@ -26,14 +26,29 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
     <!-- Button row. -->
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/positive"
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_gravity="end"
+        android:layout_width="fill_parent"
+        android:orientation="horizontal"
         android:layout_marginTop="6dp"
         android:layout_marginEnd="12dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        style="@style/FilledButton" />
+        android:gravity="end">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/negative"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            style="@style/TextButton" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/positive"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            style="@style/FilledButton" />
+    </LinearLayout>
 </LinearLayout>

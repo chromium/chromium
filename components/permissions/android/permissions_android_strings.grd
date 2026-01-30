@@ -211,6 +211,11 @@
         Close any bubbles or overlays from other apps. Then, try again.
       </message>
 
+      <!-- ItemChooserDialog default strings -->
+      <message name="IDS_ITEM_CHOOSER_DIALOG_CANCEL_BUTTON" desc="The button to cancel the item selection and dismiss the chooser dialog. Used in the dialog prompted to users to select a device, e.g. a Bluetooth device, a USB device or a serial port.">
+        Cancel
+      </message>
+
       <!-- Bluetooth Picker UI strings -->
       <message name="IDS_BLUETOOTH_ADAPTER_OFF_HELP" desc="The status message to show along with the message when the bluetooth adapter is turned off (to get Help).">
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>

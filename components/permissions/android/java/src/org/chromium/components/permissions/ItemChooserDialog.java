@@ -183,7 +183,7 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
         mConfirmButton.setText(labels.positiveButton);
         mConfirmButton.setEnabled(false);
 
-        View.OnClickListener clickListener =
+        View.OnClickListener clickConfirmListener =
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -193,13 +193,29 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
                     }
                 };
 
+        Button cancelButton = (Button) dialogContainer.findViewById(R.id.negative);
+        if (PermissionsAndroidFeatureMap.isEnabled(
+                PermissionsAndroidFeatureList.ANDROID_ITEM_CHOOSER_CANCEL_BUTTON)) {
+            cancelButton.setText(context.getString(R.string.item_chooser_dialog_cancel_button));
+            View.OnClickListener clickCancelListener =
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dismiss();
+                        }
+                    };
+            cancelButton.setOnClickListener(clickCancelListener);
+        } else {
+            cancelButton.setVisibility(View.GONE);
+        }
+
         mItemAdapter =
                 new DeviceItemAdapter(
                         mContext, /* itemsSelectable= */ true, R.layout.item_chooser_dialog_row);
         mItemAdapter.setNotifyOnChange(true);
         mItemAdapter.setObserver(this);
 
-        mConfirmButton.setOnClickListener(clickListener);
+        mConfirmButton.setOnClickListener(clickConfirmListener);
         mListView.setOnItemClickListener(mItemAdapter);
 
         mListView.setAdapter(mItemAdapter);

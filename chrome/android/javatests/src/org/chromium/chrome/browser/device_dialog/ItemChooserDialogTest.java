@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -37,6 +38,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.permissions.DeviceItemAdapter;
 import org.chromium.components.permissions.ItemChooserDialog;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -65,6 +67,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
 
     @Before
     public void setUp() throws Exception {
+        FeatureOverrides.enable(PermissionsAndroidFeatureList.ANDROID_ITEM_CHOOSER_CANCEL_BUTTON);
         mChooserDialog = createDialog();
 
         mTestDrawable1 = getNewTestDrawable();
@@ -930,6 +933,29 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                     // also changed to its original description.
                     Assert.assertEquals("desc1", itemAdapter.getDisplayText(0));
                 });
+    }
+
+    @Test
+    @SmallTest
+    public void testPressCancelButton() {
+        Dialog dialog =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Dialog dialog1 = mChooserDialog.getDialogForTesting();
+                            Assert.assertTrue(dialog1.isShowing());
+
+                            return dialog1;
+                        });
+
+        Button cancelButton = (Button) dialog.findViewById(R.id.negative);
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(cancelButton.getVisibility(), Matchers.is(View.VISIBLE)));
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(cancelButton.getWidth(), Matchers.greaterThan(0)));
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(cancelButton.getHeight(), Matchers.greaterThan(0)));
+        TouchCommon.singleClickView(cancelButton);
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mLastSelectedId, Matchers.is("")));
     }
 
     @Test

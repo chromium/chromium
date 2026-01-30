@@ -26,6 +26,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidCancelPermissionPromptOnTouchOutside,
     &kPermissionsAndroidClapperLoud,
     &kPermissionsAndroidClapperQuiet,
+    &features::kAndroidItemChooserCancelButton,
     &features::kPermissionHeuristicAutoGrant,
     &content_settings::features::kApproximateGeolocationPermission,
     &media::kAutoPictureInPictureAndroid,

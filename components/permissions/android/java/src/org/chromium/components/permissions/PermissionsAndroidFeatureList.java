@@ -34,6 +34,8 @@ public abstract class PermissionsAndroidFeatureList {
 
     public static final String ANDROID_CANCEL_PERMISSION_PROMPT_ON_TOUCH_OUTSIDE =
             "AndroidCancelPermissionPromptOnTouchOutside";
+    public static final String ANDROID_ITEM_CHOOSER_CANCEL_BUTTON =
+            "AndroidItemChooserCancelButton";
     public static final String PERMISSIONS_ANDROID_CLAPPER_LOUD = "PermissionsAndroidClapperLoud";
     public static final String PERMISSIONS_ANDROID_CLAPPER_QUIET = "PermissionsAndroidClapperQuiet";
 
