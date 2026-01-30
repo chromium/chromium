@@ -207,7 +207,7 @@ ${renderTextStyleOptions.call(this)}
 <cr-icon-button id="more" tabindex="0" aria-label="$i18n{moreOptionsLabel}"
     title="$i18n{moreOptionsLabel}"
     aria-haspopup="menu"
-    iron-icon="cr:settings_icon"
+    iron-icon="read-anything:settings"
     @click="${this.onMoreOptionsClick_}">
 </cr-icon-button>
 ${getCloseButton.call(this)}
