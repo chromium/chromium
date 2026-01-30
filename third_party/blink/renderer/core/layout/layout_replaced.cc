@@ -67,11 +67,7 @@ namespace blink {
 const int LayoutReplaced::kDefaultWidth = 300;
 const int LayoutReplaced::kDefaultHeight = 150;
 
-LayoutReplaced::LayoutReplaced(Element* element) : LayoutBox(element) {
-  // TODO(jchaffraix): We should not set this boolean for block-level
-  // replaced elements (crbug.com/567964).
-  SetIsAtomicInlineLevel(true);
-}
+LayoutReplaced::LayoutReplaced(Element* element) : LayoutBox(element) {}
 
 LayoutReplaced::~LayoutReplaced() = default;
 

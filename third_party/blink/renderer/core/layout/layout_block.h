@@ -205,9 +205,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
                    HitTestPhase) override;
 
  protected:
-  void StyleWillChange(StyleDifference,
-                       const ComputedStyle& new_style,
-                       StyleChangeContext&) override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const StyleChangeContext&) override;

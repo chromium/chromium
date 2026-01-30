@@ -114,14 +114,6 @@ void LayoutBlock::WillBeDestroyed() {
   LayoutBox::WillBeDestroyed();
 }
 
-void LayoutBlock::StyleWillChange(StyleDifference diff,
-                                  const ComputedStyle& new_style,
-                                  StyleChangeContext& style_change_context) {
-  NOT_DESTROYED();
-  SetIsAtomicInlineLevel(ShouldBeHandledAsInline(new_style));
-  LayoutBox::StyleWillChange(diff, new_style, style_change_context);
-}
-
 // Compute a local version of the "font size scale factor" used by SVG
 // <text>. Squared to avoid computing the square root. See
 // SVGLayoutSupport::CalculateScreenFontSizeScalingFactor().

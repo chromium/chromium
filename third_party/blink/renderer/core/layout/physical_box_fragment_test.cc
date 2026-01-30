@@ -108,8 +108,6 @@ TEST_F(PhysicalBoxFragmentTest, ReplacedBlock) {
   const PhysicalBoxFragment& body = GetBodyFragment();
   const PhysicalFragment& fragment = *body.Children().front();
   EXPECT_EQ(fragment.Type(), PhysicalFragment::kFragmentBox);
-  // |LayoutReplaced| sets |IsAtomicInlineLevel()| even when it is block-level.
-  // crbug.com/567964
   EXPECT_FALSE(fragment.IsAtomicInline());
   EXPECT_EQ(fragment.GetBoxType(), PhysicalFragment::kBlockFlowRoot);
 }

@@ -22,9 +22,7 @@
 
 namespace blink {
 
-LayoutTextCombine::LayoutTextCombine() : LayoutBlockFlow(nullptr) {
-  SetIsAtomicInlineLevel(true);
-}
+LayoutTextCombine::LayoutTextCombine() : LayoutBlockFlow(nullptr) {}
 
 LayoutTextCombine::~LayoutTextCombine() = default;
 

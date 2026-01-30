@@ -1373,10 +1373,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsInline() && !IsBox();
   }
-  bool IsAtomicInlineLevel() const {
-    NOT_DESTROYED();
-    return bitfields_.IsAtomicInlineLevel();
-  }
   bool IsBlockInInline() const {
     NOT_DESTROYED();
     return IsAnonymous() && !IsInline() && !IsFloatingOrOutOfFlowPositioned() &&
@@ -2017,10 +2013,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void SetHasBoxDecorationBackground(bool);
 
-  void SetIsAtomicInlineLevel(bool is_atomic_inline_level) {
-    NOT_DESTROYED();
-    bitfields_.SetIsAtomicInlineLevel(is_atomic_inline_level);
-  }
   void SetHorizontalWritingMode(bool has_horizontal_writing_mode) {
     NOT_DESTROYED();
     bitfields_.SetHorizontalWritingMode(has_horizontal_writing_mode);
@@ -3774,7 +3766,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           is_anonymous(!node),
           is_inline_(true),
           is_in_layout_ng_inline_formatting_context_(false),
-          is_atomic_inline_level_(false),
           horizontal_writing_mode_(true),
           has_layer_(false),
           has_non_visible_overflow_(false),
@@ -3928,21 +3919,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(is_in_layout_ng_inline_formatting_context_,
                          IsInLayoutNGInlineFormattingContext);
 
-    // This boolean is set if the element is an atomic inline-level box.
-    //
-    // In CSS, atomic inline-level boxes are laid out on a line but they
-    // are opaque from the perspective of line layout. This means that they
-    // can't be split across lines like normal inline boxes (LayoutInline).
-    // Examples of atomic inline-level elements: inline tables, inline
-    // blocks and replaced inline elements.
-    // See http://www.w3.org/TR/CSS2/visuren.html#inline-boxes.
-    //
-    // Our code is confused about the use of this boolean and confuses it
-    // with being replaced (see LayoutReplaced about this).
-    // TODO(jchaffraix): We should inspect callers and clarify their use.
-    // TODO(jchaffraix): We set this boolean for replaced elements that are
-    // not inline but shouldn't (crbug.com/567964). This should be enforced.
-    ADD_BOOLEAN_BITFIELD(is_atomic_inline_level_, IsAtomicInlineLevel);
     ADD_BOOLEAN_BITFIELD(horizontal_writing_mode_, HorizontalWritingMode);
 
     ADD_BOOLEAN_BITFIELD(has_layer_, HasLayer);
