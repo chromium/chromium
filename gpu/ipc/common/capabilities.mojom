@@ -10,7 +10,7 @@ import "services/viz/public/mojom/compositing/shared_image_format.mojom";
 struct Capabilities {
   int32 max_texture_size;
   bool egl_image_external;
-  // TODO(crbug.com/445900186): Add mojo support for this bool.
+  // TODO(crbug.com/477164718): Add mojo support for this bool.
   // bool egl_image_external_essl3;
   bool texture_format_bgra8888;
   bool texture_format_etc1_npot;
@@ -24,7 +24,6 @@ struct Capabilities {
   bool image_ycbcr_p010;
   bool render_buffer_format_bgra8888;
   bool msaa_is_slow;
-  bool disable_one_component_textures;
   bool avoid_stencil_buffers;
   bool disable_2d_canvas_copy_on_write;
   bool supports_rgb_to_yuv_conversion;

@@ -60,9 +60,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::CapabilitiesDataView,
   static bool msaa_is_slow(const gpu::Capabilities& cap) {
     return cap.msaa_is_slow;
   }
-  static bool disable_one_component_textures(const gpu::Capabilities& cap) {
-    return cap.disable_one_component_textures;
-  }
   static bool avoid_stencil_buffers(const gpu::Capabilities& cap) {
     return cap.avoid_stencil_buffers;
   }

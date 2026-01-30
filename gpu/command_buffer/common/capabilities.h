@@ -51,7 +51,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   bool image_ycbcr_p010 = false;
   bool render_buffer_format_bgra8888 = false;
   bool msaa_is_slow = false;
-  bool disable_one_component_textures = false;
   bool avoid_stencil_buffers = false;
 
   bool disable_2d_canvas_copy_on_write = false;
