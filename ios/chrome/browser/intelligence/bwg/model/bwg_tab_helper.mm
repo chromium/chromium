@@ -405,7 +405,7 @@ void BwgTabHelper::WasShown(web::WebState* web_state) {
   }
 
   if (IsGeminiCopresenceEnabled()) {
-    [bwg_commands_handler_ showFloatyIfInvokedAnimated:YES];
+    [bwg_commands_handler_ updateFloatyVisibilityIfEligibleAnimated:NO];
   }
 }
 
@@ -483,7 +483,7 @@ void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (IsGeminiCopresenceEnabled()) {
-    [bwg_commands_handler_ showFloatyIfInvokedAnimated:YES];
+    [bwg_commands_handler_ updateFloatyVisibilityIfEligibleAnimated:NO];
   }
 
   const GURL& current_url = navigation_context->GetUrl().GetWithoutRef();

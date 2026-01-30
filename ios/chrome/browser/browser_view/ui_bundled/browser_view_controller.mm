@@ -1141,7 +1141,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                                 completion();
                               }
                               [strongSelf.geminiHandler
-                                  showFloatyIfInvokedAnimated:YES];
+                                  updateFloatyVisibilityIfEligibleAnimated:NO];
                             }];
 }
 
@@ -2977,7 +2977,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     return;
   }
 
-  [self.geminiHandler showFloatyIfInvokedAnimated:YES];
+  [self.geminiHandler updateFloatyVisibilityIfEligibleAnimated:NO];
 }
 
 - (void)lensOverlayDidReadjustPresentation {

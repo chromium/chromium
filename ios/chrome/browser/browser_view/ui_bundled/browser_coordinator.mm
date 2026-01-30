@@ -3380,7 +3380,7 @@ const char kChromeAppStoreUrl[] =
   geminiBrowserAgent->HideFloatyIfInvoked(animated);
 }
 
-- (void)showFloatyIfInvokedAnimated:(BOOL)animated {
+- (void)updateFloatyVisibilityIfEligibleAnimated:(BOOL)animated {
   BwgBrowserAgent* geminiBrowserAgent =
       BwgBrowserAgent::FromBrowser(self.browser);
   BwgService* geminiService = BwgServiceFactory::GetForProfile(self.profile);
@@ -3390,6 +3390,7 @@ const char kChromeAppStoreUrl[] =
 
   // Don't show the floaty if the page is ineligible.
   if (!geminiService->IsBwgAvailableForWebState(self.activeWebState)) {
+    geminiBrowserAgent->HideFloatyIfInvoked(animated);
     return;
   }
 

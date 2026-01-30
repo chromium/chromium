@@ -588,7 +588,7 @@ void BwgBrowserAgent::FullscreenProgressUpdated(
   if (is_floaty_temporarily_hidden_) {
     id<BWGCommands> gemini_handler =
         HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
-    [gemini_handler showFloatyIfInvokedAnimated:NO];
+    [gemini_handler updateFloatyVisibilityIfEligibleAnimated:NO];
   }
 
   CGFloat offset = GetFloatyOffsetFromFullscreenController(controller);

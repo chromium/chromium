@@ -34,13 +34,15 @@ class WebState;
 // web state is eligible. If the page is ineligible, does nothing.
 - (void)showBWGPromoIfPageIsEligible;
 
-// Hide Gemini floaty. When in a hidden state, the floaty still persists in
+// Hides Gemini floaty. When in a hidden state, the floaty still persists in
 // memory and needs to be properly cleaned up.
 - (void)hideFloatyIfInvokedAnimated:(BOOL)animated;
 
-// Show Gemini floaty. Used to re-show an invoked Gemini floaty.
-- (void)showFloatyIfInvokedAnimated:(BOOL)animated;
+// Updates Gemini floaty's visibility based on eligibility. Can be used to
+// re-show an invoked Gemini floaty or hide the floaty for ineligible sites.
+- (void)updateFloatyVisibilityIfEligibleAnimated:(BOOL)animated;
 
+// Updates the Gemini floaty with a trait collection change.
 - (void)updateFloatyWithTraitCollection:(UITraitCollection*)traitCollection;
 
 // Starts the FRE flow with a completion block.
