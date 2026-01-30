@@ -1211,7 +1211,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kOptimizequality;
     case CSSPropertyID::kColumnRuleBreak:
     case CSSPropertyID::kRowRuleBreak:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
+      return value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kIntersection;
     case CSSPropertyID::kColumnRuleVisibilityItems:

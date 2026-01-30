@@ -1223,7 +1223,7 @@ bool RuleBreak::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(ruleBreakShorthand().length(), 2u);
   CSSValue* rule_break =
-      css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone,
+      css_parsing_utils::ConsumeIdent<CSSValueID::kNone,
                                       CSSValueID::kIntersection,
                                       CSSValueID::kNormal>(stream);
 

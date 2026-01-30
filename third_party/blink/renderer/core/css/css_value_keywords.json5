@@ -1304,13 +1304,11 @@
     "column-over-row",
 
     // column-rule-break
-    // auto
     // none
     "intersection",
     // normal
 
     // row-rule-break
-    // auto
     // none
     // intersection
     // normal
