@@ -76,10 +76,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
     video_frame_output_format_ = video_frame_output_format;
   }
 
-  void SetFailToAllocateGpuMemoryBufferForTesting(bool fail) {
-    fail_to_allocate_gpu_memory_buffer_ = fail;
-  }
-
   void SetFailToMapGpuMemoryBufferForTesting(bool fail) {
     fail_to_map_gpu_memory_buffer_ = fail;
   }
@@ -93,8 +89,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
  private:
   base::Lock lock_;
   OutputFormat video_frame_output_format_ = OutputFormat::YV12;
-
-  bool fail_to_allocate_gpu_memory_buffer_ = false;
 
   bool fail_to_map_gpu_memory_buffer_ = false;
 
