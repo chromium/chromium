@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -707,6 +708,9 @@ void WidgetInputHandlerManager::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     mojom::blink::WidgetInputHandler::DispatchEventCallback callback) {
   WebInputEvent::Type event_type = event->Event().GetType();
+  if (base::ShouldRecordSubsampledMetric(0.1)) {
+    UMA_HISTOGRAM_ENUMERATION("Input.Blink.DispatchEvent.Type", event_type);
+  }
   bool event_is_mouse_or_pointer_move =
       event_type == WebInputEvent::Type::kMouseMove ||
       event_type == WebInputEvent::Type::kPointerMove;
