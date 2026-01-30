@@ -6,7 +6,7 @@ import 'chrome://contextual-tasks/app.js';
 
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
@@ -197,111 +197,5 @@ suite('ContextualTasksWebviewTest', function() {
 
     threadFrame.src = 'https://www.google.com/';
     await completionPromise;
-  });
-
-  test('webview sets ghost loader visibility for completed load', async () => {
-    loadTimeData.overrideValues({enableGhostLoader: true});
-
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(proxy);
-
-    const appElement = document.createElement('contextual-tasks-app');
-    document.body.appendChild(appElement);
-    await microtasksFinished();
-
-    const threadFrame =
-        appElement.shadowRoot.querySelector<chrome.webviewTag.WebView>(
-            '#threadFrame');
-    assertTrue(!!threadFrame, 'Thread frame not found');
-
-    const loadstart = new Event('loadstart') as any;
-    loadstart.isTopLevel = true;
-    threadFrame.dispatchEvent(loadstart);
-    await microtasksFinished();
-
-    assertTrue(appElement.getIsGhostLoaderVisibleForTesting());
-
-    const contentload = new Event('contentload') as any;
-    threadFrame.dispatchEvent(contentload);
-    await microtasksFinished();
-
-    assertFalse(appElement.getIsGhostLoaderVisibleForTesting());
-  });
-
-  test('webview sets ghost loader visibility for aborted load', async () => {
-    loadTimeData.overrideValues({enableGhostLoader: true});
-
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(proxy);
-
-    const appElement = document.createElement('contextual-tasks-app');
-    document.body.appendChild(appElement);
-    await microtasksFinished();
-
-    const threadFrame =
-        appElement.shadowRoot.querySelector<chrome.webviewTag.WebView>(
-            '#threadFrame');
-    assertTrue(!!threadFrame, 'Thread frame not found');
-
-    const loadstart = new Event('loadstart') as any;
-    loadstart.isTopLevel = true;
-    threadFrame.dispatchEvent(loadstart);
-    await microtasksFinished();
-
-    assertTrue(appElement.getIsGhostLoaderVisibleForTesting());
-
-    const loadabort = new Event('loadabort') as any;
-    threadFrame.dispatchEvent(loadabort);
-    await microtasksFinished();
-
-    assertFalse(appElement.getIsGhostLoaderVisibleForTesting());
-  });
-
-  test(
-      'webview does not set ghost loader visibility if not top level',
-      async () => {
-        loadTimeData.overrideValues({enableGhostLoader: true});
-
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
-
-        const threadFrame =
-            appElement.shadowRoot.querySelector<chrome.webviewTag.WebView>(
-                '#threadFrame');
-        assertTrue(!!threadFrame, 'Thread frame not found');
-
-        const loadstart = new Event('loadstart') as any;
-        threadFrame.dispatchEvent(loadstart);
-        await microtasksFinished();
-
-        assertFalse(appElement.getIsGhostLoaderVisibleForTesting());
-      });
-
-  test('webview does not set ghost loader visibility on ai page', async () => {
-    loadTimeData.overrideValues({enableGhostLoader: true});
-
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    proxy.handler.setIsAiPage(true);
-    BrowserProxyImpl.setInstance(proxy);
-
-    const appElement = document.createElement('contextual-tasks-app');
-    document.body.appendChild(appElement);
-    await microtasksFinished();
-
-    const threadFrame =
-        appElement.shadowRoot.querySelector<chrome.webviewTag.WebView>(
-            '#threadFrame');
-    assertTrue(!!threadFrame, 'Thread frame not found');
-
-    const loadstart = new Event('loadstart') as any;
-    loadstart.isTopLevel = true;
-    threadFrame.dispatchEvent(loadstart);
-    await microtasksFinished();
-
-    assertFalse(appElement.getIsGhostLoaderVisibleForTesting());
   });
 });

@@ -490,10 +490,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   private setIsGhostLoaderVisible(isVisible: boolean) {
     this.isGhostLoaderVisible_ = isVisible;
   }
-
-  getIsGhostLoaderVisibleForTesting() {
-    return this.isGhostLoaderVisible_;
-  }
 }
 
 declare global {
