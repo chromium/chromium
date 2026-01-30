@@ -9823,3 +9823,6 @@ crbug.com/474155097 [ Linux ] virtual/xslt-disabled/external/wpt/xml/xslt/large-
 crbug.com/475047610 [ Debug Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse.py [ Failure ]
 crbug.com/475126745 [ Debug Linux ] external/wpt/mathml/presentation-markup/scripts/underover-stretchy-003.html [ Failure ]
 crbug.com/465849685 [ Debug Linux ] media/media-playback-while-not-visible-permission-policy-cant-play-if-hidden.html [ Failure Pass ]
+
+# Gardener 2026-01-13
+crbug.com/475366073 [ Win11-arm64 ] virtual/xslt-enabled/http/tests/xsl/xslt/xslt-transform-with-javascript-disabled-quirk.html [ Failure ]
