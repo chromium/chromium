@@ -6310,6 +6310,12 @@
       status: "test",
     },
     {
+      // Support XPath evaluation within Shadow DOM.
+      // This was added in M146 and can be removed after M148.
+      name: "XPathShadowDOMSupport",
+      status: "stable",
+    },
+    {
       // A feature flag that controls whether XSLT is supported by the browser.
       // The current default state is XSLT-enabled. Note that there is a Finch
       // trial underway that sets this flag to false for pre-stable channels.
