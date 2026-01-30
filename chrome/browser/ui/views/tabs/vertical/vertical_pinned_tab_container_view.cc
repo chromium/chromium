@@ -28,9 +28,9 @@ constexpr int kTabPadding = 4;
 
 VerticalPinnedTabContainerView::VerticalPinnedTabContainerView(
     TabCollectionNode* collection_node)
-    : VerticalDraggedTabsContainer(
-          static_cast<views::View&>(*this),
-          VerticalDraggedTabsContainer::DragAxes::kBoth),
+    : VerticalDraggedTabsContainer(static_cast<views::View&>(*this),
+                                   DragAxes::kBoth,
+                                   DragLayout::kSquash),
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(std::make_unique<
                                         TabCollectionAnimatingLayoutManager>(
@@ -106,8 +106,7 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     if (row_index != 0) {
       x += kTabPadding;
     }
-    bounds.set_x(GetXForDraggedTabBounds(*child).value_or(x));
-    bounds.set_y(GetYForDraggedTabBounds(*child).value_or(y));
+    bounds.set_origin(GetOriginForDraggedTabBounds(*child).value_or({x, y}));
     x += bounds.width();
     total_width = std::max(total_width, x);
     total_height = std::max(total_height, (y + bounds.height()));

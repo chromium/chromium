@@ -55,7 +55,8 @@ class VerticalUnpinnedTabContainerViewTargeter
 VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
     TabCollectionNode* collection_node)
     : VerticalDraggedTabsContainer(static_cast<views::View&>(*this),
-                                   DragAxes::kVerticalOnly),
+                                   DragAxes::kVerticalOnly,
+                                   DragLayout::kVertical),
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
@@ -105,8 +106,8 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
                           {});
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_bounds));
     bounds.set_x(x);
-
-    bounds.set_y(GetYForDraggedTabBounds(*child).value_or(height));
+    bounds.set_y(
+        GetOriginForDraggedTabBounds(*child).value_or({0, height}).y());
 
     // If width is bounded, child views should respect the width constraints and
     // take up the available width excluding trailing horizontal padding.
