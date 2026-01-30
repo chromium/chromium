@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "build/build_config.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/data_type_limits.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -607,9 +608,14 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       OperandDataType::kInt8,    OperandDataType::kUint8,
       OperandDataType::kInt4};
 
+#if defined(ARCH_CPU_64_BITS)
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
   static constexpr uint64_t kTensorByteLengthLimit =
       std::numeric_limits<int32_t>::max();
+#else
+  // Allocating 2GiB isn't practical on a 32-bit system. Use a 1GiB limit.
+  static constexpr uint64_t kTensorByteLengthLimit = 1024 * 1024 * 1024;
+#endif
 
   return ContextProperties(
       InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
