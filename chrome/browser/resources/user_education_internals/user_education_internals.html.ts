@@ -155,9 +155,18 @@ export function getHtml(this: UserEducationInternalsElement) {
               </p>
             </div>
             <p>
-              To view debug information for What's New, open the page and
-              trigger <pre>chromeWhatsNew.debugInfo()</pre> in the javascript
-              console.
+              To view debug information for What's New, open the page and run
+              <span class="inline-code">
+                chromeWhatsNew.debugInfo()
+              </span>
+              in the javascript console.
+            </p>
+            <p>
+              To test a browser command for What's New, open the page and run
+              <span class="inline-code">
+                chromeWhatsNew.triggerBrowserCommand(number)
+              </span>
+              in the javascript console.
             </p>
           </div>
         </if>

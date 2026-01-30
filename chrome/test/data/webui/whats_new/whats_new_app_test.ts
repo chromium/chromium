@@ -22,6 +22,7 @@ const whatsNewURL = 'chrome://webui-test/whats_new/test.html';
 declare const window: Window&{
   chromeWhatsNew: {
     debugInfo: () => DebugInfo,
+    triggerBrowserCommand: (commandId: number) => void,
   },
 };
 
@@ -128,6 +129,29 @@ suite('WhatsNewAppTest', function() {
 
     await proxy.handler.whenCalled('recordBrowserCommandExecuted');
     assertEquals(1, proxy.handler.getCallCount('recordBrowserCommandExecuted'));
+  });
+
+  test('with browser command test API', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(whatsNewURL);
+    WhatsNewProxyImpl.setInstance(proxy);
+    const browserCommandHandler = TestMock.fromClass(CommandHandlerRemote);
+    const browserCommandProxy = BrowserCommandProxy.getInstance();
+    browserCommandProxy.handler = browserCommandHandler;
+    browserCommandHandler.setResultFor(
+        'canExecuteCommand', Promise.resolve({canExecute: true}));
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    await microtasksFinished();
+    const executeCommandPromise =
+        browserCommandHandler.whenCalled('executeCommand');
+
+    // Use test API.
+    window.chromeWhatsNew.triggerBrowserCommand(4);
+
+    const [commandId] = await executeCommandPromise;
+    assertEquals(4, commandId);
   });
 
   test('with page_load metrics from embedded page', async () => {

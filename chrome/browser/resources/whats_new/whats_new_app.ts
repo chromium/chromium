@@ -4,6 +4,7 @@
 
 import '/strings.m.js';
 
+import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
@@ -12,7 +13,7 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {handleBrowserCommand, handleModuleEvent, handlePageLoadMetric, handleScrollDepthMetric, handleTimeOnPageMetric} from './handlers.js';
 import {EventType} from './types.js';
-import type {DebugInfo, EventData} from './types.js';
+import type {BrowserCommand, DebugInfo, EventData} from './types.js';
 import {getCss} from './whats_new_app.css.js';
 import {getHtml} from './whats_new_app.html.js';
 import {WhatsNewProxyImpl} from './whats_new_proxy.js';
@@ -20,6 +21,7 @@ import {WhatsNewProxyImpl} from './whats_new_proxy.js';
 declare const window: Window&{
   chromeWhatsNew: {
     debugInfo: () => DebugInfo,
+    triggerBrowserCommand: (commandId: number) => void,
   },
 };
 
@@ -77,6 +79,17 @@ export class WhatsNewAppElement extends CrLitElement {
     // Set up window API.
     window.chromeWhatsNew = {
       debugInfo: () => this.debugInfo_,
+      triggerBrowserCommand: (commandId: number) => {
+        const data: BrowserCommand = {
+          event: EventType.BROWSER_COMMAND,
+          commandId,
+          clickInfo: ({} as ClickInfo),
+        };
+        this.handleMessage_({
+          origin: URL.parse(this.url_)?.origin,
+          data: {data},
+        } as MessageEvent);
+      },
     };
 
     const queryParams = new URLSearchParams(window.location.search);
