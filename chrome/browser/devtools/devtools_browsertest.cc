@@ -2758,53 +2758,6 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, DiscoveryPage) {
   ASSERT_TRUE(RunExtensionTest("discovery_page")) << message_;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-class RemoteDebuggingUserDataDirTest
-    : public RemoteDebuggingTest,
-      public ::testing::WithParamInterface</*default_user_dir*/ bool> {
- public:
-  void SetUp() override {
-    // Explicitly enable the checking, which is normally only enabled for
-    // GOOGLE_CHROME_BRANDING branded builds.
-    RemoteDebuggingServer::EnableDefaultUserDataDirCheckForTesting();
-    chrome::SetUsingDefaultUserDataDirectoryForTesting(
-        IsUsingStandardUserDataDir());
-    RemoteDebuggingTest::SetUp();
-  }
-
- protected:
-  static bool IsUsingStandardUserDataDir() { return GetParam(); }
-
-  base::HistogramTester histograms_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(RemoteDebuggingUserDataDirTest, AttemptDebugging) {
-  histograms_.ExpectUniqueSample(
-      "DevTools.DevToolsDebuggingUserDataDirStatus",
-      IsUsingStandardUserDataDir()
-          ? /*kDebuggingRequestedWithDefaultUserDataDir*/ 2
-          : /*kDebuggingRequestedWithNonDefaultUserDataDir*/ 1,
-      1);
-
-  if (IsUsingStandardUserDataDir()) {
-    EXPECT_FALSE(RunExtensionTest("discovery_page"));
-  } else {
-    EXPECT_TRUE(RunExtensionTest("discovery_page"));
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         RemoteDebuggingUserDataDirTest,
-                         testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "DefaultUserDataDir"
-                                             : "NonDefaultUserDataDir";
-                         });
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)

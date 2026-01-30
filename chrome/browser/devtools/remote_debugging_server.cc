@@ -58,18 +58,6 @@ const uint16_t kMinTetheringPort = 9333;
 const uint16_t kMaxTetheringPort = 9444;
 const int kBackLog = 10;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class DevToolsDebuggingUserDataDirStatus {
-  kNotBeingDebugged = 0,
-  kDebuggingRequestedWithNonDefaultUserDataDir = 1,
-  kDebuggingRequestedWithDefaultUserDataDir = 2,
-  kDebuggingRequestedErrorObtainingUserDataDir = 3,
-
-  // New values go above here.
-  kMaxValue = kDebuggingRequestedErrorObtainingUserDataDir,
-};
-
 // Returns a port if the string is a valid port number, otherwise returns
 // nullopt. A valid port is a number between 0 and 65535, inclusive.
 std::optional<uint16_t> ParsePort(std::string_view port_str) {
@@ -196,6 +184,13 @@ IsRemoteDebuggingAllowed(const std::optional<bool>& is_default_user_data_dir,
   return true;
 }
 
+// Returns true if remote debugging is enabled via chrome://inspect
+// which indicates that we should start the debugging server in the approval
+// mode in which each incoming connection needs to be approved by the user.
+bool isRemoteDebuggingEnabledViaPrefs(PrefService* local_state) {
+  return local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled);
+}
+
 }  // namespace
 
 int RemoteDebuggingServer::GetPortFromUserDataDir(
@@ -238,8 +233,7 @@ void RemoteDebuggingServer::StartHttpServerInApprovalModeWithPort(
   is_http_server_being_started_ = false;
 
   // Recheck the pref value in case it changed since we posted the task.
-  if (!pref_change_registrar_->prefs()->GetBoolean(
-          prefs::kDevToolsRemoteDebuggingEnabled)) {
+  if (!isRemoteDebuggingEnabledViaPrefs(pref_change_registrar_->prefs())) {
     return;
   }
 
@@ -267,7 +261,7 @@ void RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange() {
   }
 
   // Latest chrome://inspect page preference value.
-  if (!local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled)) {
+  if (!isRemoteDebuggingEnabledViaPrefs(local_state)) {
     StopHttpServer();
     is_http_server_running_ = false;
     return;
@@ -350,44 +344,21 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  // Track whether debugging was requested. This determines the metric reported
-  // on function exit.
-  bool wanted_debugging = false;
   // Track whether debugging was started. This determines whether or not to
   // return an instance of the class.
-  bool being_debugged = false;
+  bool debugging_server_started = false;
   std::optional<bool> is_default_user_data_dir =
       chrome::IsUsingDefaultDataDirectory();
-
-  absl::Cleanup record_histogram = [&wanted_debugging,
-                                    &is_default_user_data_dir] {
-    DevToolsDebuggingUserDataDirStatus status =
-        DevToolsDebuggingUserDataDirStatus::kNotBeingDebugged;
-    if (wanted_debugging) {
-      status = DevToolsDebuggingUserDataDirStatus::
-          kDebuggingRequestedErrorObtainingUserDataDir;
-      if (is_default_user_data_dir.has_value()) {
-        status = is_default_user_data_dir.value()
-                     ? DevToolsDebuggingUserDataDirStatus::
-                           kDebuggingRequestedWithDefaultUserDataDir
-                     : DevToolsDebuggingUserDataDirStatus::
-                           kDebuggingRequestedWithNonDefaultUserDataDir;
-      }
-    }
-    base::UmaHistogramEnumeration("DevTools.DevToolsDebuggingUserDataDirStatus",
-                                  status);
-  };
 
   auto server = base::WrapUnique(new RemoteDebuggingServer());
 
   if (command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
-    wanted_debugging = true;
     if (const auto maybe_allow_debugging =
             IsRemoteDebuggingAllowed(is_default_user_data_dir, local_state);
         !maybe_allow_debugging.has_value()) {
       return base::unexpected(maybe_allow_debugging.error());
     }
-    being_debugged = true;
+    debugging_server_started = true;
     server->StartPipeHandler();
   }
 
@@ -412,14 +383,13 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
                                &debug_frontend_dir);
       }
     }
-    wanted_debugging = true;
     if (const auto maybe_allow_debugging =
             IsRemoteDebuggingAllowed(is_default_user_data_dir, local_state);
         !maybe_allow_debugging.has_value()) {
       return base::unexpected(maybe_allow_debugging.error());
     }
 
-    being_debugged = true;
+    debugging_server_started = true;
     server->StartHttpServer(
         std::make_unique<TCPServerSocketFactory>(*port), output_dir,
         debug_frontend_dir,
@@ -429,19 +399,26 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
   // `--remote-debugging-port` and `--remote-debugging-pipe`
   // take precedence over the new mode.
 #if !BUILDFLAG(IS_ANDROID)
-  if (!being_debugged && base::FeatureList::IsEnabled(
-                             ::features::kDevToolsAcceptDebuggingConnections)) {
-    wanted_debugging = true;
+  if (!debugging_server_started &&
+      base::FeatureList::IsEnabled(
+          ::features::kDevToolsAcceptDebuggingConnections) &&
+      isRemoteDebuggingEnabledViaPrefs(local_state)) {
     if (!local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
       return base::unexpected(
           RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy);
     }
-    being_debugged = true;
     server->StartHttpServerInApprovalMode(local_state);
+    // In approval mode, each incoming connection needs to be approved by
+    // the user (allow/disallow actions are tracked via the
+    // DevToolsRemoteDebuggingConnectionPermission histogram).
+    // The server start is asynchronous so we rely on the
+    // is_http_server_being_started_ field to indicate that
+    // debugging was initiated.
+    debugging_server_started = server->is_http_server_being_started_;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (being_debugged) {
+  if (debugging_server_started) {
     return server;
   }
 
