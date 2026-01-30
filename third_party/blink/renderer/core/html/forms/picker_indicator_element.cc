@@ -103,6 +103,7 @@ void PickerIndicatorElement::DidChooseValue(double value) {
 void PickerIndicatorElement::DidEndChooser() {
   chooser_.Clear();
   picker_indicator_owner_->DidEndChooser();
+  OwnerElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
   if (OwnerElement().GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is shown.
     OwnerElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
