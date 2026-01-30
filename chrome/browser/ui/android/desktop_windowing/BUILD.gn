@@ -17,6 +17,7 @@ android_library("java") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/tabwindow:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/multiwindow:java",
     "//chrome/browser/ui/android/tabstrip:enums_java",

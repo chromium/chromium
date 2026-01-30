@@ -178,6 +178,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.FaviconResolver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
@@ -294,7 +295,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier;
     private final MonotonicObservableSupplier<ManualFillingComponent>
             mManualFillingComponentSupplier;
-    private final @NonNull DataSharingTabManager mDataSharingTabManager;
+    private final DataSharingTabManager mDataSharingTabManager;
     private final Supplier<Boolean> mCanAnimateBrowserControls;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
@@ -535,7 +536,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         edgeToEdgeManager.getEdgeToEdgeStateProvider(),
                         browserControlsManager,
                         insetObserver,
-                        activityLifecycleDispatcher));
+                        activityLifecycleDispatcher,
+                        multiInstanceManager));
         mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mSendToBackground = sendToBackground;
@@ -1662,7 +1664,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             EdgeToEdgeStateProvider edgeToEdgeStateProvider,
             BrowserControlsManager browserControlsManager,
             InsetObserver insetObserver,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         if (!ToolbarFeatures.isAppHeaderCustomizationSupported(
                 isTablet, DisplayUtil.isContextInDefaultDisplay(activity))) {
@@ -1677,7 +1680,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 activityLifecycleDispatcher,
                 savedInstanceState,
                 persistentState,
-                edgeToEdgeStateProvider);
+                edgeToEdgeStateProvider,
+                () ->
+                        multiInstanceManager == null
+                                ? TabWindowManager.INVALID_WINDOW_ID
+                                : multiInstanceManager.getCurrentInstanceId());
     }
 
     private void initCollaborationDelegatesOnProfile(Profile profile) {

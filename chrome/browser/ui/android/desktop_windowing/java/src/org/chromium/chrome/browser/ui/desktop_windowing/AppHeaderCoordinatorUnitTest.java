@@ -915,7 +915,8 @@ public class AppHeaderCoordinatorUnitTest {
                         mActivityLifecycleDispatcher,
                         mSavedInstanceStateBundle,
                         mPersistentStateBundle,
-                        mEdgeToEdgeStateProvider);
+                        mEdgeToEdgeStateProvider,
+                        null);
         mAppHeaderCoordinator.addObserver(mObserver);
     }
 

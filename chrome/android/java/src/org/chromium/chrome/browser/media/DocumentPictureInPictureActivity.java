@@ -172,7 +172,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         getLifecycleDispatcher(),
                         getSavedInstanceState(),
                         getPersistentInstanceState(),
-                        edgeToEdgeStateProvider);
+                        edgeToEdgeStateProvider,
+                        null);
 
         mAppThemeColorProvider =
                 new AppThemeColorProvider(this, getLifecycleDispatcher(), mAppHeaderCoordinator);

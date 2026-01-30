@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.Windowing
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
+import java.util.Collections;
+
 /** Unit tests for {@link MultiWindowMetricsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MultiWindowMetricsUtilsUnitTest {
@@ -49,45 +51,51 @@ public class MultiWindowMetricsUtilsUnitTest {
     @Test
     public void testRecordWindowingMode() {
         // Start in fullscreen mode.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, true);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
         assertEquals(
                 "Activity count for fullscreen should be 1.",
                 1,
-                mSharedPreferencesManager.readInt(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITY_COUNT.createKey(
-                                WindowingMode.FULLSCREEN),
-                        0));
+                mSharedPreferencesManager
+                        .readStringSet(
+                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                        WindowingMode.FULLSCREEN),
+                                Collections.emptySet())
+                        .size());
         assertTrue(
                 "Start time should be recorded.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(
                                 WindowingMode.FULLSCREEN)));
 
         // Simulate another activity resuming in fullscreen mode, count should be 2.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, true);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 2, true);
         assertEquals(
                 "Activity count for fullscreen should now be 2.",
                 2,
-                mSharedPreferencesManager.readInt(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITY_COUNT.createKey(
-                                WindowingMode.FULLSCREEN),
-                        0));
+                mSharedPreferencesManager
+                        .readStringSet(
+                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                        WindowingMode.FULLSCREEN),
+                                Collections.emptySet())
+                        .size());
 
         // Stop both activities in fullscreen mode, count should become 0.
         mFakeTimeTestRule.advanceMillis(1000);
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, false);
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, false);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, false);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 2, false);
         assertEquals(
                 "Activity count for fullscreen should be 0.",
                 0,
-                mSharedPreferencesManager.readInt(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITY_COUNT.createKey(
-                                WindowingMode.FULLSCREEN),
-                        0));
+                mSharedPreferencesManager
+                        .readStringSet(
+                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                        WindowingMode.FULLSCREEN),
+                                Collections.emptySet())
+                        .size());
         assertFalse(
                 "Start time should be removed.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(
                                 WindowingMode.FULLSCREEN)));
         assertEquals(
                 "Duration should be recorded.",
@@ -105,13 +113,13 @@ public class MultiWindowMetricsUtilsUnitTest {
                 ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
 
         // Start in fullscreen mode.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, true);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
 
         // Advance time.
         mFakeTimeTestRule.advanceMillis(1000);
 
         // Stop fullscreen mode.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, false);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, false);
 
         // Verify duration is recorded correctly.
         assertEquals(
@@ -124,7 +132,7 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertFalse(
                 "Start time for fullscreen mode should be removed.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(
                                 WindowingMode.FULLSCREEN)));
     }
 
@@ -135,13 +143,13 @@ public class MultiWindowMetricsUtilsUnitTest {
                 ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
 
         // Start in fullscreen mode.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, true);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
 
         // Advance time past the cycle boundary.
         mFakeTimeTestRule.advanceMillis(CYCLE_LENGTH_MS + 100);
 
         // Stop fullscreen mode.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, false);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, false);
 
         // The duration in the new cycle should be recorded.
         assertEquals(
@@ -160,18 +168,18 @@ public class MultiWindowMetricsUtilsUnitTest {
                 ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
 
         // Start in fullscreen mode.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, true);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
 
         mFakeTimeTestRule.advanceMillis(1000);
 
         // Start in desktop window mode.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.DESKTOP_WINDOW, true);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.DESKTOP_WINDOW, 2, true);
 
         // Advance time past the cycle boundary.
         mFakeTimeTestRule.advanceMillis(CYCLE_LENGTH_MS);
 
         // Stop desktop window mode.
-        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.DESKTOP_WINDOW, false);
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.DESKTOP_WINDOW, 2, false);
 
         // Check fullscreen mode (active mode). Duration for the old cycle should have been recorded
         // and its start time updated. Its duration key is removed after recording.
@@ -182,7 +190,7 @@ public class MultiWindowMetricsUtilsUnitTest {
                                 WindowingMode.FULLSCREEN)));
         long newFullscreenStartTime =
                 mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(
                                 WindowingMode.FULLSCREEN),
                         -1L);
         // The new start time will be aligned to the cycle boundary.
@@ -204,7 +212,34 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertFalse(
                 "Desktop window start time key should be removed.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(
                                 WindowingMode.DESKTOP_WINDOW)));
+    }
+
+    @Test
+    public void testRecordWindowingMode_duplicateIds() {
+        // Start in fullscreen mode with window ID 1.
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
+        assertEquals(
+                "Activity count for fullscreen should be 1.",
+                1,
+                mSharedPreferencesManager
+                        .readStringSet(
+                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                        WindowingMode.FULLSCREEN),
+                                Collections.emptySet())
+                        .size());
+
+        // Call again with the same window ID.
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
+        assertEquals(
+                "Activity count for fullscreen should still be 1.",
+                1,
+                mSharedPreferencesManager
+                        .readStringSet(
+                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                        WindowingMode.FULLSCREEN),
+                                Collections.emptySet())
+                        .size());
     }
 }

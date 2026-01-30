@@ -49,6 +49,7 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Class coordinating the business logic to draw into app header in desktop windowing mode, ranging
@@ -92,6 +93,7 @@ public class AppHeaderCoordinator
     private @WindowingMode int mWindowingMode = WindowingMode.UNKNOWN;
     private int mKeyboardInset;
     private int mNavBarInset;
+    private @Nullable final Supplier<Integer> mWindowIdSupplier;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -111,6 +113,7 @@ public class AppHeaderCoordinator
      *     information for restoration after a device reboot or app update.
      * @param edgeToEdgeStateProvider The {@link EdgeToEdgeStateProvider} to determine the
      *     edge-to-edge state.
+     * @param windowIdSupplier The supplier for the window ID of the current activity.
      */
     public AppHeaderCoordinator(
             Activity activity,
@@ -120,7 +123,8 @@ public class AppHeaderCoordinator
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @Nullable Bundle savedInstanceState,
             @Nullable PersistableBundle persistentState,
-            EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
+            EdgeToEdgeStateProvider edgeToEdgeStateProvider,
+            @Nullable Supplier<Integer> windowIdSupplier) {
         mActivity = activity;
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mRootView = rootView;
@@ -128,6 +132,7 @@ public class AppHeaderCoordinator
         mInsetObserver = insetObserver;
         mInsetsController = assertNonNull(mRootView.getWindowInsetsController());
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mWindowIdSupplier = windowIdSupplier;
         mActivityLifecycleDispatcher.register(this);
         // Whether the app started in an unfocused desktop window, so that relevant UI state can be
         // restored.
@@ -251,6 +256,7 @@ public class AppHeaderCoordinator
             int prevWindowingMode = mWindowingMode;
             mWindowingMode = MultiWindowMetricsUtils.getWindowingMode(mActivity, isInDesktopWindow);
             if (prevWindowingMode != mWindowingMode) {
+                int windowId = mWindowIdSupplier != null ? mWindowIdSupplier.get() : -1;
                 // Record this histogram every time the windowing mode changes.
                 RecordHistogram.recordEnumeratedHistogram(
                         "Android.MultiWindowMode.Configuration",
@@ -260,9 +266,9 @@ public class AppHeaderCoordinator
                 if (prevWindowingMode != WindowingMode.UNKNOWN
                         && mWindowingMode != WindowingMode.UNKNOWN) {
                     MultiWindowMetricsUtils.recordWindowingMode(
-                            prevWindowingMode, /* isStarted= */ false);
+                            prevWindowingMode, windowId, /* isStarted= */ false);
                     MultiWindowMetricsUtils.recordWindowingMode(
-                            mWindowingMode, /* isStarted= */ true);
+                            mWindowingMode, windowId, /* isStarted= */ true);
                 }
             }
         }

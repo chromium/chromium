@@ -16,10 +16,14 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /** Utility class for recording histograms for multi-instance features. */
 @NullMarked
 public class MultiWindowMetricsUtils {
     private static final long CYCLE_LENGTH_MS = DateUtils.DAY_IN_MILLIS;
+    public static final int INVALID_WINDOW_ID = -1;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -50,30 +54,48 @@ public class MultiWindowMetricsUtils {
      * activity in a given mode is stopped, it stops the timer and records the duration.
      *
      * @param mode The {@link WindowingMode} to update.
+     * @param windowId The window ID of the activity that is entering or exiting the mode.
      * @param isStarted {@code true} if an activity is entering this mode, {@code false} if it is
      *     exiting.
      */
-    public static void recordWindowingMode(int mode, boolean isStarted) {
-        if (mode == WindowingMode.UNKNOWN) return;
+    public static void recordWindowingMode(int mode, int windowId, boolean isStarted) {
+        if (mode == WindowingMode.UNKNOWN || windowId == INVALID_WINDOW_ID) return;
+        String windowIdString = Integer.toString(windowId);
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        String key = ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITY_COUNT.createKey(mode);
-        int prevCount = prefs.readInt(key, 0);
-        int newCount = isStarted ? prevCount + 1 : prevCount - 1;
-        prefs.writeInt(key, newCount);
-        if (prevCount == 0 && newCount == 1) {
+        String modeActivitiesKey =
+                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(mode);
+        Set<String> modeActivities = prefs.readStringSet(modeActivitiesKey, null);
+
+        if (modeActivities == null) {
+            modeActivities = new HashSet<>();
+        } else {
+            // Make a mutable copy of the set, as the returned set should not be modified.
+            modeActivities = new HashSet<>(modeActivities);
+        }
+        int oldSize = modeActivities.size();
+
+        if (isStarted) {
+            modeActivities.add(windowIdString);
+        } else {
+            modeActivities.remove(windowIdString);
+        }
+
+        prefs.writeStringSet(modeActivitiesKey, modeActivities);
+
+        if (oldSize == 0 && modeActivities.size() > 0) {
             startOrStopClockForWindowingMode(mode, /* startClock= */ true);
-        } else if (prevCount == 1 && newCount == 0) {
+        } else if (oldSize > 0 && modeActivities.size() == 0) {
             startOrStopClockForWindowingMode(mode, /* startClock= */ false);
         }
     }
 
     private static void startOrStopClockForWindowingMode(int mode, boolean startClock) {
+        if (mode == WindowingMode.UNKNOWN) return;
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        long currentTime = TimeUtils.currentTimeMillis();
+        String startTimeKey = ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(mode);
         if (startClock) {
-            String key = ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(mode);
-            prefs.writeLong(key, currentTime);
-        } else {
+            prefs.writeLong(startTimeKey, TimeUtils.currentTimeMillis());
+        } else if (prefs.contains(startTimeKey)) {
             recordTimeSpentInWindowingMode(mode);
         }
     }
@@ -104,13 +126,14 @@ public class MultiWindowMetricsUtils {
 
             long cycleEndTime = cycleStartTime + CYCLE_LENGTH_MS;
             for (int modeIndex = 1; modeIndex < WindowingMode.NUM_ENTRIES; modeIndex++) {
-                int modeActivityCount =
-                        prefs.readInt(
-                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITY_COUNT.createKey(
+                Set<String> modeActivities =
+                        prefs.readStringSet(
+                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
                                         modeIndex),
-                                0);
+                                null);
+                int modeActivityCount = modeActivities == null ? 0 : modeActivities.size();
                 String startTimeKey =
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(modeIndex);
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(modeIndex);
                 String durationKey =
                         ChromePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(modeIndex);
                 long modeStartTime = prefs.readLong(startTimeKey, currentTime);
@@ -139,7 +162,7 @@ public class MultiWindowMetricsUtils {
 
         // Update the duration for the mode that is being stopped and remove the start time key.
         String startTimeKey =
-                ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(stoppedMode);
+                ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(stoppedMode);
         long modeStartTime = prefs.readLong(startTimeKey, currentTime);
         String durationKey =
                 ChromePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(stoppedMode);

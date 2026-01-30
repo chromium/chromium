@@ -564,11 +564,11 @@ public final class ChromePreferenceKeys {
     public static final String MULTI_WINDOW_MODE_CYCLE_START_TIME =
             "Chrome.MultiWindowMode.CycleStartTime";
     // Start timestamp of the current windowing mode.
-    public static final KeyPrefix MULTI_WINDOW_MODE_START_TIME =
-            new KeyPrefix("Chrome.MultiWindowMode.StartTime.*");
-    // Number of activities in the current windowing mode.
-    public static final KeyPrefix MULTI_WINDOW_MODE_ACTIVITY_COUNT =
-            new KeyPrefix("Chrome.MultiWindowMode.ActivityCount.*");
+    public static final KeyPrefix MULTI_WINDOW_MODE_START_TIME2 =
+            new KeyPrefix("Chrome.MultiWindowMode.StartTime2.*");
+    // Tracks window IDs of activities in a given windowing mode.
+    public static final KeyPrefix MULTI_WINDOW_MODE_ACTIVITIES =
+            new KeyPrefix("Chrome.MultiWindowMode.Activities.*");
     // Aggregated duration of time spent in a given windowing mode.
     public static final KeyPrefix MULTI_WINDOW_MODE_DURATION_MS =
             new KeyPrefix("Chrome.MultiWindowMode.DurationMs.*");
@@ -1275,10 +1275,10 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_CUSTOM_TITLE.pattern(),
                 MULTI_INSTANCE_URL.pattern(),
                 MULTI_INSTANCE_MARKED_FOR_DELETION.pattern(),
-                MULTI_WINDOW_MODE_ACTIVITY_COUNT.pattern(),
+                MULTI_WINDOW_MODE_ACTIVITIES.pattern(),
                 MULTI_WINDOW_MODE_CYCLE_START_TIME,
                 MULTI_WINDOW_MODE_DURATION_MS.pattern(),
-                MULTI_WINDOW_MODE_START_TIME.pattern(),
+                MULTI_WINDOW_MODE_START_TIME2.pattern(),
                 NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
                 NOTIFICATION_PERMISSION_REQUEST_COUNT,
                 OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
