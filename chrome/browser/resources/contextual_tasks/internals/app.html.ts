@@ -17,6 +17,7 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
         value="${this.tabSelectionMode_}" @change="${this.onTabSelectionModeChanged_}">
       <option value="kEmbeddingsMatch">Embeddings Match</option>
       <option value="kMultiSignalScoring">Multi Signal Scoring</option>
+      <option value="kStaticSignalsOnly">Static Signals Scoring</option>
     </select>
   </div>
   <div class="container">
