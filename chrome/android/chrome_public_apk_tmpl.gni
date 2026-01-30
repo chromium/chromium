@@ -652,6 +652,7 @@ template("chrome_common_apk_or_module_tmpl") {
                            TESTONLY_AND_VISIBILITY + [
                                  "additional_apks",
                                  "assert_no_deps",
+                                 "asset_deps",
                                  "data_deps",
                                  "deps",
                                  "loadable_modules",
