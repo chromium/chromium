@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -54,6 +55,7 @@ class SchedulerConfigurationManager;
 }  // namespace ash
 
 namespace component_updater {
+class ComponentManagerAsh;
 class ComponentUpdateService;
 }  // namespace component_updater
 
@@ -194,8 +196,11 @@ class CrostiniManager : public KeyedService,
 
   // `component_update_service` and `scheduler_configuration_manager` must
   // outlive `this`, but both of them may be null in unit tests.
+  // `component_manager_ash` may be null in unit tests.
   explicit CrostiniManager(
       const component_updater::ComponentUpdateService* component_update_service,
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash,
       ash::SchedulerConfigurationManager* scheduler_configuration_manager,
       Profile* profile);
 
@@ -777,6 +782,8 @@ class CrostiniManager : public KeyedService,
 
   const raw_ptr<const component_updater::ComponentUpdateService>
       component_update_service_;
+  const scoped_refptr<component_updater::ComponentManagerAsh>
+      component_manager_ash_;
   const raw_ptr<ash::SchedulerConfigurationManager>
       scheduler_configuration_manager_;
 

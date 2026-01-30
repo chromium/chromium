@@ -47,12 +47,18 @@ class GuestOsStabilityMonitorTest : public testing::Test {
             component_updater::MockComponentUpdateService>>());
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
+        ->InitializeComponentManager();
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
         ->InitializeSchedulerConfigurationManager();
 
     // CrostiniManager will create a GuestOsStabilityMonitor for us.
     profile_ = std::make_unique<TestingProfile>();
     crostini_manager_ = std::make_unique<crostini::CrostiniManager>(
         TestingBrowserProcess::GetGlobal()->component_updater(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->scheduler_configuration_manager(),
@@ -77,6 +83,9 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->ShutdownSchedulerConfigurationManager();
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->ShutdownComponentManager();
     TestingBrowserProcess::GetGlobal()->SetComponentUpdater(nullptr);
 
     ash::SeneschalClient::Shutdown();
