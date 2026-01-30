@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/glic/widget/local_hotkey_manager.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"

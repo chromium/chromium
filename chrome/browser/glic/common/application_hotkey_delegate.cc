@@ -2,27 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/widget/application_hotkey_delegate.h"
+#include "chrome/browser/glic/common/application_hotkey_delegate.h"
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#endif
 
 namespace glic {
 
@@ -54,6 +58,7 @@ class ApplicationScopedHotkeyRegistration
 
   ~ApplicationScopedHotkeyRegistration() override {
     CHECK(target_);
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: hotkey registration
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [this](BrowserWindowInterface* browser_window_interface) {
           if (auto* const browser_view = BrowserView::GetBrowserViewForBrowser(
@@ -63,6 +68,7 @@ class ApplicationScopedHotkeyRegistration
           }
           return true;
         });
+#endif
   }
 
  private:
@@ -73,6 +79,7 @@ class ApplicationScopedHotkeyRegistration
 
   void RegisterAccelerator(BrowserWindowInterface* browser_window_interface) {
     CHECK(target_);
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: hotkey registration
     if (auto* const browser_view =
             BrowserView::GetBrowserViewForBrowser(browser_window_interface)) {
       browser_view->GetFocusManager()->RegisterAccelerator(
@@ -80,6 +87,7 @@ class ApplicationScopedHotkeyRegistration
           ui::AcceleratorManager::HandlerPriority::kNormalPriority,
           target_.get());
     }
+#endif
   }
 
   ui::Accelerator accelerator_;

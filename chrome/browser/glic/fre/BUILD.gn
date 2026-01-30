@@ -19,6 +19,7 @@ source_set("fre") {
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/background/glic",
     "//chrome/browser/glic",
     "//chrome/browser/glic/shared",
     "//chrome/browser/resources/glic:resources",
@@ -34,10 +35,7 @@ source_set("fre") {
       "glic_fre_dialog_view.h",
       "glic_fre_ui.cc",
     ]
-    deps += [
-      "//chrome/browser/background/glic",
-      "//chrome/browser/themes",
-    ]
+    deps += [ "//chrome/browser/themes" ]
   }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

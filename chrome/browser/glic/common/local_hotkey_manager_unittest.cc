@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/widget/local_hotkey_manager.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 
 #include <memory>
 #include <vector>

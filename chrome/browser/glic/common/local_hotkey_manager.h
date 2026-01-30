@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_WIDGET_LOCAL_HOTKEY_MANAGER_H_
-#define CHROME_BROWSER_GLIC_WIDGET_LOCAL_HOTKEY_MANAGER_H_
+#ifndef CHROME_BROWSER_GLIC_COMMON_LOCAL_HOTKEY_MANAGER_H_
+#define CHROME_BROWSER_GLIC_COMMON_LOCAL_HOTKEY_MANAGER_H_
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/public/glic_close_options.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#endif
 
 namespace gfx {
 class Point;
@@ -148,4 +151,4 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_WIDGET_LOCAL_HOTKEY_MANAGER_H_
+#endif  // CHROME_BROWSER_GLIC_COMMON_LOCAL_HOTKEY_MANAGER_H_

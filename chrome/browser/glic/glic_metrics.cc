@@ -241,7 +241,10 @@ class BrowserActivityObserver : public BrowserCollectionObserver {
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [&browser_hidden](BrowserWindowInterface* browser_window_interface) {
           if (!browser_window_interface->GetWindow()->IsMinimized() &&
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+#if !BUILDFLAG(IS_ANDROID)
+              // BrowserActiveState is only used for metrics.
+              // `IsVisibleOnScreen()` is not available on Android, and we're
+              // not bothering to add it.
               browser_window_interface->capabilities()->IsVisibleOnScreen() &&
 #endif
               browser_window_interface->GetWindow()->IsVisible()) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/widget/glic_panel_hotkey_delegate.h"
+#include "chrome/browser/glic/common/glic_panel_hotkey_delegate.h"
 
 #include <memory>
 #include <vector>
@@ -10,9 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
 #include "chrome/browser/glic/widget/glic_view.h"
-#include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"

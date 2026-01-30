@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"

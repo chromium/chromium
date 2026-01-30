@@ -6231,20 +6231,20 @@ static_library("browser") {
   }
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic/fre" ]
+    deps += [
+      "//chrome/browser/background/glic",
+      "//chrome/browser/background/glic:impl",
+      "//chrome/browser/glic/fre",
+    ]
 
-    allow_circular_includes_from += [ "//chrome/browser/glic/fre" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/glic/fre",
+      "//chrome/browser/background/glic:impl",
+    ]
 
     if (!is_android) {
-      deps += [
-        "//chrome/browser/background/glic",
-        "//chrome/browser/background/glic:impl",
-        "//chrome/browser/glic/media",
-      ]
-      allow_circular_includes_from += [
-        "//chrome/browser/background/glic:impl",
-        "//chrome/browser/glic/media",
-      ]
+      deps += [ "//chrome/browser/glic/media" ]
+      allow_circular_includes_from += [ "//chrome/browser/glic/media" ]
     }
   }
 

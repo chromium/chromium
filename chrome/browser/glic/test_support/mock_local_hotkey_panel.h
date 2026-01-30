@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_MOCK_LOCAL_HOTKEY_PANEL_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/widget/local_hotkey_manager.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/point.h"
 

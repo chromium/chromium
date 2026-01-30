@@ -2,70 +2,78 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (!is_android) {
-  source_set("glic") {
-    sources = [
+source_set("glic") {
+  sources = [ "glic_launcher_configuration.h" ]
+
+  if (!is_android) {
+    sources += [
       "glic_background_mode_manager.h",
       "glic_controller.h",
-      "glic_launcher_configuration.h",
-    ]
-
-    public_deps = [
-      "//base",
-      "//chrome/browser:shell_integration",
-      "//chrome/browser/glic:mojo_bindings",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/startup",
-      "//components/prefs",
-      "//components/version_info:channel",
-      "//ui/base",
-      "//ui/base/accelerators/global_accelerator_listener",
     ]
   }
 
-  source_set("impl") {
-    sources = [
+  public_deps = [
+    "//base",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/profiles:profile",
+    "//components/prefs",
+    "//components/version_info:channel",
+    "//ui/base",
+    "//ui/base/accelerators/global_accelerator_listener",
+  ]
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/startup" ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "glic_launcher_configuration.cc" ]
+  if (!is_android) {
+    sources += [
       "glic_background_mode_manager.cc",
       "glic_controller.cc",
-      "glic_launcher_configuration.cc",
       "glic_status_icon.cc",
       "glic_status_icon.h",
     ]
+  }
+  if (is_win) {
+    sources += [
+      "glic_status_icon_win.cc",
+      "glic_status_icon_win.h",
+    ]
+  }
 
-    if (is_win) {
-      sources += [
-        "glic_status_icon_win.cc",
-        "glic_status_icon_win.h",
-      ]
-    }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":glic",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/background",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/resources:browser_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/glic:resources_grit",
+    "//chrome/browser/status_icons",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//ui/base",
+    "//ui/base/accelerators/global_accelerator_listener",
+    "//ui/gfx",
+  ]
 
-    deps = [
-      ":glic",
-      "//chrome/app:command_ids",
-      "//chrome/app:generated_resources",
-      "//chrome/browser:browser_process",
-      "//chrome/browser:global_features",
-      "//chrome/browser/background",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/resources:browser_resources",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/resources/glic:resources_grit",
+  if (!is_android) {
+    deps += [
       "//chrome/browser/startup",
-      "//chrome/browser/status_icons",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:browser_list",
       "//components/keep_alive_registry",
-      "//ui/base",
-      "//ui/base/accelerators/global_accelerator_listener",
-      "//ui/gfx",
     ]
-
-    if (is_chromeos) {
-      deps += [ "//ash" ]
-    }
+  }
+  if (is_chromeos) {
+    deps += [ "//ash" ]
   }
 }
 

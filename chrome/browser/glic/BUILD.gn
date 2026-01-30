@@ -17,7 +17,9 @@ assert(enable_glic)
 # the "impl" target.
 source_set("glic") {
   sources = [
+    "common/local_hotkey_manager.h",
     "gemini_act_on_web_settings_policy_handler.h",
+    "glic_hotkey.h",
     "glic_metrics.h",
     "glic_net_log.h",
     "glic_pref_names.h",
@@ -74,10 +76,8 @@ source_set("glic") {
 
     # Desktop-only sources
     sources += [
-      "glic_hotkey.h",
       "widget/glic_view.h",
       "widget/glic_widget.h",
-      "widget/local_hotkey_manager.h",
     ]
   } else {  # is_android
     sources += [ "public/widget/glic_side_panel_coordinator_android.h" ]
@@ -152,7 +152,13 @@ source_set("enum") {
 # dependencies that are only needed internally.
 source_set("impl") {
   sources = [
+    "common/application_hotkey_delegate.cc",
+    "common/application_hotkey_delegate.h",
+    "common/glic_panel_hotkey_delegate.cc",
+    "common/glic_panel_hotkey_delegate.h",
+    "common/local_hotkey_manager.cc",
     "gemini_act_on_web_settings_policy_handler.cc",
+    "glic_hotkey.cc",
     "glic_metrics.cc",
     "glic_metrics_provider.cc",
     "glic_metrics_provider.h",
@@ -243,7 +249,6 @@ source_set("impl") {
 
     # Desktop only
     sources += [
-      "glic_hotkey.cc",
       "glic_occlusion_notifier.cc",
       "glic_occlusion_notifier.h",
       "host/context/glic_focused_browser_manager_impl.cc",
@@ -252,16 +257,12 @@ source_set("impl") {
       "host/context/glic_focused_tab_manager.h",
       "host/glic_region_capture_controller.cc",
       "host/glic_region_capture_controller.h",
-      "widget/application_hotkey_delegate.cc",
-      "widget/application_hotkey_delegate.h",
       "widget/glic_floating_ui.cc",
       "widget/glic_floating_ui.h",
       "widget/glic_inactive_floating_ui.cc",
       "widget/glic_inactive_floating_ui.h",
       "widget/glic_inactive_side_panel_ui.cc",
       "widget/glic_inactive_side_panel_ui.h",
-      "widget/glic_panel_hotkey_delegate.cc",
-      "widget/glic_panel_hotkey_delegate.h",
       "widget/glic_side_panel_ui.cc",
       "widget/glic_side_panel_ui.h",
       "widget/glic_view.cc",
@@ -278,7 +279,6 @@ source_set("impl") {
       "widget/glic_window_resize_animation.h",
       "widget/inactive_view_controller.cc",
       "widget/inactive_view_controller.h",
-      "widget/local_hotkey_manager.cc",
     ]
   } else {  # is_android
     sources += [
@@ -300,6 +300,7 @@ source_set("impl") {
     "//chrome/browser:global_features",
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
+    "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/feedback",
     "//chrome/browser/glic/actor",
@@ -354,7 +355,6 @@ source_set("impl") {
     # Many of these deps will be needed in Android, but are not yet supported.
     deps += [
       "//chrome/browser/actor/ui",
-      "//chrome/browser/background/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/skills",
@@ -437,6 +437,8 @@ source_set("unit_tests") {
   sources = []
   if (!is_android) {
     sources += [
+      "common/glic_panel_hotkey_delegate_unittest.cc",
+      "common/local_hotkey_manager_unittest.cc",
       "glic_metrics_unittest.cc",
       "host/context/glic_pin_candidate_comparator_unittest.cc",
       "host/context/glic_screenshot_capturer_unittest.cc",
@@ -448,8 +450,6 @@ source_set("unit_tests") {
       "service/metrics/glic_instance_coordinator_metrics_unittest.cc",
       "service/metrics/glic_instance_metrics_unittest.cc",
       "service/metrics/glic_metrics_session_manager_unittest.cc",
-      "widget/glic_panel_hotkey_delegate_unittest.cc",
-      "widget/local_hotkey_manager_unittest.cc",
     ]
   } else {
     sources += [ "common/glic_tab_observer_android_unittest.cc" ]
@@ -458,6 +458,7 @@ source_set("unit_tests") {
     ":glic",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/background/glic",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -465,7 +466,6 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser:global_features",
       "//chrome/browser/background",
-      "//chrome/browser/background/glic",
       "//chrome/browser/contextual_cueing:test_support",
       "//chrome/browser/glic/browser_ui:unit_tests",
       "//chrome/browser/glic/fre",
@@ -521,6 +521,7 @@ source_set("browser_tests") {
     ]
   }
   deps = [
+    "//chrome/browser/background/glic",
     "//chrome/browser/glic/common:browser_tests",
     "//chrome/browser/ui/tabs:tab_list_interface",
   ]
@@ -536,7 +537,6 @@ source_set("browser_tests") {
       "//chrome/browser/actor:test_support",
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:test_support",
-      "//chrome/browser/background/glic",
       "//chrome/browser/contextual_cueing:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/glic/common",
