@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -59,12 +60,17 @@ void TabSearchToolbarButtonController::UpdateBubbleHost(
   actions::ActionItem* action_item = GetTabSearchActionItem();
   CHECK(action_item);
 
+  auto scoped_update = action_item->BeginUpdate();
   if (new_tab_search_bubble_host) {
+    action_item->SetImage(
+        ui::ImageModel::FromVectorIcon(kTabSearchToolbarIcon));
     action_item->SetProperty(
         actions::kActionItemPinnableKey,
         static_cast<int>(actions::ActionPinnableState::kPinnable));
     tab_search_bubble_host_observation_.Observe(new_tab_search_bubble_host);
   } else {
+    action_item->SetImage(
+        ui::ImageModel::FromVectorIcon(kTabSearchTabStripIcon));
     action_item->SetProperty(
         actions::kActionItemPinnableKey,
         static_cast<int>(actions::ActionPinnableState::kNotPinnable));

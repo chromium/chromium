@@ -213,6 +213,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_group_closed.icon",
     "tab_group_sharing.icon",
     "tab_groups_sync.icon",
+    "tab_search_tab_strip.icon",
+    "tab_search_toolbar.icon",
     "tab_usb_connected.icon",
     "tablet.icon",
     "task_manager.icon",

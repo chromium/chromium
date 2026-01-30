@@ -626,7 +626,7 @@ void BrowserActions::InitializeBrowserActions() {
                 },
                 bwi),
             kActionTabSearch, IDS_TAB_SEARCH_MENU, IDS_TAB_SEARCH_MENU,
-            vector_icons::kTabSearchIcon)
+            kTabSearchTabStripIcon)
             .Build());
   }
 

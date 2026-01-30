@@ -983,9 +983,8 @@ void ToolsMenuModel::Build(Browser* browser) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (!is_tablet_mode) {
     if (features::HasTabSearchToolbarButton()) {
-      AddItemWithStringIdAndVectorIcon(this, IDC_TAB_SEARCH,
-                                       IDS_TAB_SEARCH_MENU,
-                                       vector_icons::kTabSearchIcon);
+      AddItemWithStringIdAndVectorIcon(
+          this, IDC_TAB_SEARCH, IDS_TAB_SEARCH_MENU, kTabSearchToolbarIcon);
     }
 
     if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
