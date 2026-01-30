@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+
+const THOUSANDTHS = 0.001;
 
 /**
  * Asserts the computed style value for an element.
@@ -15,7 +17,6 @@ export function assertStyle(element: Element, name: string, expected: string) {
   assertEquals(expected, actual);
 }
 
-
 type Constructor<T> = new (...args: any[]) => T;
 type Installer<T> = (instance: T) => void;
 
@@ -26,4 +27,14 @@ export function installMock<T extends object>(
   const mock = TestMock.fromClass(clazz);
   installer(mock);
   return mock;
+}
+
+export function assertAlmostEquals(
+    expected: number, actual: number, delta: number = THOUSANDTHS) {
+  const diff = Math.abs(actual - expected);
+  assertTrue(
+      diff <= delta,
+      `Mismatch in almostEquals. Expected ${expected} with delta: ${
+          delta}. Got ${actual}\
+       with diff ${diff}.`);
 }
