@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/fake_tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -560,5 +561,42 @@ TEST_F(ActionChipsHandlerTest,
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .Times(1);
   handler().StartActionChipsRetrieval();
+}
+
+TEST_F(ActionChipsHandlerTest, ContextSharingDisabled) {
+  // Arrange
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  std::vector<ActionChipPtr> actual_chips;
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, OnActionChipsChanged(_))
+      .WillOnce(
+          [&actual_chips, &run_loop](std::vector<ActionChipPtr> action_chips) {
+            actual_chips = std::move(action_chips);
+            run_loop.Quit();
+          });
+
+  // Add a tab that would normally become the recent tab chip.
+  AddTab(GURL("https://www.example.com"), u"Example Tab");
+  tab_strip_model_fixture_->Activate(/*index=*/0);
+
+  // Act
+  handler().StartActionChipsRetrieval();
+  run_loop.Run();
+
+  // Assert
+  // Expect only the tool chips, no recent tab chip.
+  std::vector<ActionChipPtr> expected;
+  expected.push_back(MakeActionChip(CreateStaticDeepSearchChip()));
+  expected.push_back(MakeActionChip(CreateStaticImageGenerationChip()));
+
+  std::vector<Matcher<ActionChipPtr>> matchers;
+  std::transform(expected.begin(), expected.end(), std::back_inserter(matchers),
+                 [](const ActionChipPtr& chip) { return Eq(std::cref(chip)); });
+
+  EXPECT_THAT(actual_chips, ElementsAreArray(matchers));
 }
 }  // namespace
