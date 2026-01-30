@@ -1108,8 +1108,8 @@ void BaseRenderingContext2D::DrawTextInternal(
   Draw<OverdrawOp::kNone>(
       /*draw_func=*/
       [font, text = std::move(text), direction, bidi_override, location,
-       run_start, run_end, canvas, &text_painter,
-       paint_type](MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
+       run_start, run_end, canvas, &text_painter](MemoryManagedPaintCanvas* c,
+                                                  const cc::PaintFlags* flags) {
         TextRun text_run(text, direction, bidi_override);
         // Font::DrawType::kGlyphsAndClusters is required for printing to PDF,
         // otherwise the character to glyph mapping will not be reversible,
@@ -1123,11 +1123,6 @@ void BaseRenderingContext2D::DrawTextInternal(
         Font::DrawType draw_type = (canvas && canvas->IsPrinting())
                                        ? Font::DrawType::kGlyphsAndClusters
                                        : Font::DrawType::kGlyphsOnly;
-        // Only fill and stroke are used for DrawTextInternal.
-        c->AddHighEntropyCanvasOpTypes(
-            paint_type == CanvasRenderingContext2DState::kFillPaintType
-                ? HighEntropyCanvasOpType::kFillText
-                : HighEntropyCanvasOpType::kStrokeText);
         text_painter.DrawWithBidiReorder(text_run, run_start, run_end, *font,
                                          Font::kUseFallbackIfFontNotReady, *c,
                                          location, *flags, draw_type);

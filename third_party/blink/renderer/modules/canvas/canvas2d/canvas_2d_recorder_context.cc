@@ -1615,9 +1615,6 @@ void Canvas2DRecorderContext::DrawPathInternal(
     return;
   }
 
-  HighEntropyCanvasOpType high_entropy_path_op_types =
-      path.HighEntropyPathOpTypes();
-
   if (path.IsArc()) {
     const auto& arc = path.arc();
     const SkRect oval =
@@ -1630,13 +1627,11 @@ void Canvas2DRecorderContext::DrawPathInternal(
     const bool closed = arc.closed;
     Draw<OverdrawOp::kNone>(
         /*draw_func=*/
-        [oval, start_degrees, sweep_degrees, closed,
-         high_entropy_path_op_types](MemoryManagedPaintCanvas* c,
-                                     const cc::PaintFlags* flags) {
+        [oval, start_degrees, sweep_degrees, closed](
+            MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
           cc::PaintFlags arc_paint_flags(*flags);
           arc_paint_flags.setArcClosed(closed);
           c->drawArc(oval, start_degrees, sweep_degrees, arc_paint_flags);
-          c->AddHighEntropyCanvasOpTypes(high_entropy_path_op_types);
         },
         NoOverdraw, bounds, paint_type,
         GetState().HasPattern(paint_type)
@@ -1651,10 +1646,9 @@ void Canvas2DRecorderContext::DrawPathInternal(
 
   Draw<OverdrawOp::kNone>(
       /*draw_func=*/
-      [sk_path, use_paint_cache, high_entropy_path_op_types](
-          MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
+      [sk_path, use_paint_cache](MemoryManagedPaintCanvas* c,
+                                 const cc::PaintFlags* flags) {
         c->drawPath(sk_path, *flags, use_paint_cache);
-        c->AddHighEntropyCanvasOpTypes(high_entropy_path_op_types);
       },
       NoOverdraw, bounds, paint_type,
       GetState().HasPattern(paint_type)

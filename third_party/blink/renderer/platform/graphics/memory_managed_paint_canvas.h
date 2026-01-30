@@ -45,14 +45,6 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
   bool IsCachingImage(const cc::PaintImage::ContentId content_id) const;
   size_t ImageBytesUsed() const { return image_bytes_used_; }
 
-  void AddHighEntropyCanvasOpTypes(HighEntropyCanvasOpType types) {
-    high_entropy_canvas_op_types_ |= types;
-  }
-
-  HighEntropyCanvasOpType HighEntropyCanvasOpTypes() const {
-    return high_entropy_canvas_op_types_;
-  }
-
  private:
   // Creates a child canvas that has the same transform matrix and size as
   // `parent`. `CreateChildCanvasTag` is used to differentiate this from a copy
@@ -68,9 +60,6 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
 
   // Total size of images stored in this recording.
   size_t image_bytes_used_ = 0;
-
-  HighEntropyCanvasOpType high_entropy_canvas_op_types_ =
-      HighEntropyCanvasOpType::kNone;
 };
 
 }  // namespace blink
