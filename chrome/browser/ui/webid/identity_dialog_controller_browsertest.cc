@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -121,54 +122,6 @@ class MockAccountSelectionView : public AccountSelectionView {
   MOCK_METHOD(content::WebContents*, GetRpWebContents, (), (override));
 };
 
-class MockActorTaskDelegate : public actor::ActorTaskDelegate {
- public:
-  MockActorTaskDelegate() = default;
-  ~MockActorTaskDelegate() override = default;
-
-  MOCK_METHOD(void,
-              OnTabAddedToTask,
-              (TaskId task_id, const tabs::TabInterface::Handle& tab_handle),
-              (override));
-
-  MOCK_METHOD(void,
-              RequestToShowCredentialSelectionDialog,
-              (TaskId task_id,
-               (const base::flat_map<std::string, gfx::Image>&)icons,
-               const std::vector<actor_login::Credential>& credentials,
-               CredentialSelectedCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              RequestToShowUserConfirmationDialog,
-              (TaskId task_id,
-               const url::Origin& navigation_origin,
-               bool for_blocklisted_origin,
-               UserConfirmationDialogCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              RequestToConfirmNavigation,
-              (TaskId task_id,
-               const url::Origin& navigation_origin,
-               NavigationConfirmationCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              RequestToShowAutofillSuggestionsDialog,
-              (TaskId task_id,
-               std::vector<autofill::ActorFormFillingRequest> requests,
-               AutofillSuggestionSelectedCallback callback),
-              (override));
-
-  base::WeakPtr<MockActorTaskDelegate> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<MockActorTaskDelegate> weak_factory_{this};
-};
-
 class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
  public:
   IdentityDialogControllerBrowserTest() = default;
@@ -218,34 +171,30 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
 
  protected:
   raw_ptr<content::WebContents> web_contents_;
-  testing::NiceMock<MockActorTaskDelegate> mock_actor_task_delegate_;
 
   TaskId SimulateNewActiveActorTask() {
-    // ExecutionEngine & ActorTask use separate actor::ui::UiEventDispatcher
-    // objects, so we create separate mocks for each.
-    std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher =
-        actor::ui::NewMockUiEventDispatcher();
-    std::unique_ptr<actor::ui::UiEventDispatcher> task_ui_event_dispatcher =
-        actor::ui::NewMockUiEventDispatcher();
-
-    actor::ScopedExecutionEngineFactory scoped_execution_engine_factory(
-        base::BindLambdaForTesting([&](actor::ActorTask& task) {
-          CHECK(ui_event_dispatcher);
-          return actor::ExecutionEngine::CreateForTesting(
-              task, std::move(ui_event_dispatcher));
-        }));
-
-    auto task = std::make_unique<actor::ActorTask>(
-        browser()->profile(), std::move(task_ui_event_dispatcher),
-        /*options=*/nullptr, mock_actor_task_delegate_.GetWeakPtr());
-    tabs::TabInterface* tab =
-        tabs::TabInterface::GetFromContents(web_contents_);
-    EXPECT_NE(tab, nullptr);
-    task->AddTab(tab->GetHandle(), base::DoNothing());
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(browser()->profile());
     EXPECT_NE(actor_service, nullptr);
+
+    auto task = std::make_unique<actor::ActorTask>(
+        browser()->profile(),
+        actor::ui::NewUiEventDispatcher(
+            actor_service->GetActorUiStateManager()),
+        /*options=*/nullptr);
     TaskId task_id = actor_service->AddActiveTask(std::move(task));
+
+    // Perform an arbitrary action in a tab to put the task into
+    // UnderActorControl state and add the tab to the task.
+    tabs::TabInterface* tab =
+        tabs::TabInterface::GetFromContents(web_contents_);
+    CHECK(tab);
+    auto click = actor::MakeClickRequest(*tab, gfx::Point(1, 1));
+    actor::PerformActionsFuture future;
+    actor_service->PerformActions(task_id, ToRequestList(std::move(click)),
+                                  actor::ActorTaskMetadata(),
+                                  future.GetCallback());
+    EXPECT_TRUE(future.Wait());
     return task_id;
   }
 
@@ -260,7 +209,6 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
     EXPECT_NE(actor_service, nullptr);
     actor_service->StopTask(task_id,
                             actor::ActorTask::StoppedReason::kTaskComplete);
-    // controller->OnActorTaskStateChanged(task_id, state);
   }
 };
 
