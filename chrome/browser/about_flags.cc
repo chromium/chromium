@@ -8040,6 +8040,13 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"gemini-antiscam-protections-metrics-only",
+     flag_descriptions::kGeminiAntiscamProtectionsMetricsOnlyName,
+     flag_descriptions::kGeminiAntiscamProtectionsMetricsOnlyDescription,
+     kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kGeminiAntiscamProtectionForMetricsCollection)},
+
     {"report-notification-content-detection-data",
      flag_descriptions::kReportNotificationContentDetectionDataName,
      flag_descriptions::kReportNotificationContentDetectionDataDescription,

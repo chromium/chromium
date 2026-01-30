@@ -4935,6 +4935,14 @@
     "expiry_milestone": 135
   },
   {
+    "name": "gemini-antiscam-protections-metrics-only",
+    "owners": [
+      "skrakowi@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 151
+  },
+  {
     "name": "gemini-copresence",
     "owners": [
       "adamta@chromium.org",

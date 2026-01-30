@@ -15164,6 +15164,8 @@ from previous Chrome versions.
       label="ReadAnythingReadAloudTSTextSegmentation:enabled"/>
   <int value="289408715" label="MacImeLiveConversionFix:enabled"/>
   <int value="289465857" label="ClipboardHistorySimpleRender:disabled"/>
+  <int value="290029236"
+      label="GeminiAntiscamProtectionForMetricsCollection:disabled"/>
   <int value="290559997" label="LinkCapturingUiUpdate:disabled"/>
   <int value="291389947" label="PercentBasedScrolling:disabled"/>
   <int value="291482671" label="ExperimentalFlingAnimation:disabled"/>
@@ -18750,6 +18752,8 @@ from previous Chrome versions.
   <int value="1514119870" label="enable-file-manager-touch-mode"/>
   <int value="1514158607" label="NearbySharingDeviceContacts:enabled"/>
   <int value="1514409186" label="PasswordGenerationBottomSheet:disabled"/>
+  <int value="1514707844"
+      label="GeminiAntiscamProtectionForMetricsCollection:enabled"/>
   <int value="1514951731" label="ReduceGpuPriorityOnBackground:disabled"/>
   <int value="1515005753"
       label="UncredentialedFilteringFallbackForSupervisedUsers:enabled"/>

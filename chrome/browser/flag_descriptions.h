@@ -8001,6 +8001,12 @@ inline constexpr char kTaskManagerDesktopRefreshName[] =
 inline constexpr char kTaskManagerDesktopRefreshDescription[] =
     "Enables a refreshed design for the Task Manager on Desktop platforms.";
 
+inline constexpr char kGeminiAntiscamProtectionsMetricsOnlyName[] =
+    "Gemini Antiscam Protection";
+inline constexpr char kGeminiAntiscamProtectionsMetricsOnlyDescription[] =
+    "Enables querying Gemini for antiscam protection signals and collecting "
+    "metrics.";
+
 inline constexpr char kGroupPromoPrototypeName[] = "Group Promo Prototype";
 inline constexpr char kGroupPromoPrototypeDescription[] =
     "Enables prototype for group promo.";
