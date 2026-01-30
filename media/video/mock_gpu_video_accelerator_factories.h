@@ -76,10 +76,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
     video_frame_output_format_ = video_frame_output_format;
   }
 
-  void SetFailToMapGpuMemoryBufferForTesting(bool fail) {
-    fail_to_map_gpu_memory_buffer_ = fail;
-  }
-
   // Allocate & return a read-only shared memory region
   base::UnsafeSharedMemoryRegion CreateSharedMemoryRegion(size_t size) override;
 
@@ -89,8 +85,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
  private:
   base::Lock lock_;
   OutputFormat video_frame_output_format_ = OutputFormat::YV12;
-
-  bool fail_to_map_gpu_memory_buffer_ = false;
 
   raw_ptr<gpu::SharedImageInterface> sii_;
 };
