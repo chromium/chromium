@@ -126,25 +126,107 @@ struct JingleAuthentication {
   std::vector<uint8_t> session_authz_session_token;
 };
 
-struct JingleMessage {
-  enum ActionType {
-    UNKNOWN_ACTION,
-    SESSION_INITIATE,
-    SESSION_ACCEPT,
-    SESSION_TERMINATE,
-    SESSION_INFO,
-    TRANSPORT_INFO,
+struct HostAttributesAttachment {
+  HostAttributesAttachment();
+  HostAttributesAttachment(const HostAttributesAttachment&);
+  HostAttributesAttachment(HostAttributesAttachment&&);
+  HostAttributesAttachment& operator=(const HostAttributesAttachment&);
+  HostAttributesAttachment& operator=(HostAttributesAttachment&&);
+  ~HostAttributesAttachment();
+
+  std::vector<std::string> attribute;
+};
+
+struct HostConfigAttachment {
+  HostConfigAttachment();
+  HostConfigAttachment(const HostConfigAttachment&);
+  HostConfigAttachment(HostConfigAttachment&&);
+  HostConfigAttachment& operator=(const HostConfigAttachment&);
+  HostConfigAttachment& operator=(HostConfigAttachment&&);
+  ~HostConfigAttachment();
+
+  std::map<std::string, std::string> settings;
+};
+
+struct Attachment {
+  Attachment();
+  Attachment(const Attachment&);
+  Attachment(Attachment&&);
+  Attachment& operator=(const Attachment&);
+  Attachment& operator=(Attachment&&);
+  ~Attachment();
+
+  std::optional<HostAttributesAttachment> host_attributes;
+  std::optional<HostConfigAttachment> host_config;
+};
+
+struct SessionInitiate {
+  SessionInitiate();
+  SessionInitiate(const SessionInitiate&);
+  SessionInitiate(SessionInitiate&&);
+  SessionInitiate& operator=(const SessionInitiate&);
+  SessionInitiate& operator=(SessionInitiate&&);
+  ~SessionInitiate();
+
+  std::optional<JingleAuthentication> authentication;
+};
+
+struct SessionAccept {
+  SessionAccept();
+  SessionAccept(const SessionAccept&);
+  SessionAccept(SessionAccept&&);
+  SessionAccept& operator=(const SessionAccept&);
+  SessionAccept& operator=(SessionAccept&&);
+  ~SessionAccept();
+
+  std::optional<JingleAuthentication> authentication;
+};
+
+struct SessionInfo {
+  SessionInfo();
+  SessionInfo(const SessionInfo&);
+  SessionInfo(SessionInfo&&);
+  SessionInfo& operator=(const SessionInfo&);
+  SessionInfo& operator=(SessionInfo&&);
+  ~SessionInfo();
+
+  std::optional<JingleAuthentication> authentication;
+};
+
+struct SessionTerminate {
+  SessionTerminate();
+  SessionTerminate(const SessionTerminate&);
+  SessionTerminate(SessionTerminate&&);
+  SessionTerminate& operator=(const SessionTerminate&);
+  SessionTerminate& operator=(SessionTerminate&&);
+  ~SessionTerminate();
+
+  enum class Reason {
+    kUnspecified,
+    kSuccess,
+    kDecline,
+    kCancel,
+    kExpired,
+    kGeneralError,
+    kFailedApplication,
+    kIncompatibleParameters,
+    kUnknownReason,
   };
 
-  enum Reason {
-    UNKNOWN_REASON,
-    SUCCESS,
-    DECLINE,
-    CANCEL,
-    EXPIRED,
-    GENERAL_ERROR,
-    FAILED_APPLICATION,
-    INCOMPATIBLE_PARAMETERS,
+  Reason reason = Reason::kUnspecified;
+  std::string error_code;
+  std::string error_details;
+  std::string error_location;
+};
+
+struct JingleMessage {
+  enum class ActionType {
+    kUnknownAction,
+    kSessionInitiate,
+    kSessionAccept,
+    kSessionTerminate,
+    kSessionInfo,
+    kTransportInfo,
   };
 
   JingleMessage();
@@ -170,26 +252,24 @@ struct JingleMessage {
 
   SignalingAddress from;
   SignalingAddress to;
-  ActionType action = UNKNOWN_ACTION;
+  ActionType action = ActionType::kUnknownAction;
   std::string sid;
 
   std::string initiator;
 
   std::unique_ptr<ContentDescription> description;
 
-  std::unique_ptr<jingle_xmpp::XmlElement> transport_info;
+  // TODO: joedow - Add structured data replacements for XML payloads.
 
-  // Content of session-info messages.
-  std::unique_ptr<jingle_xmpp::XmlElement> info;
-
-  // Content of plugin message. The node is read or written by all plugins, and
-  // ActionType independent.
-  std::unique_ptr<jingle_xmpp::XmlElement> attachments;
+  // Legacy XML-based payloads, maintained for backward compatibility.
+  std::unique_ptr<jingle_xmpp::XmlElement> transport_info_legacy;
+  std::unique_ptr<jingle_xmpp::XmlElement> info_legacy;
+  std::unique_ptr<jingle_xmpp::XmlElement> attachments_legacy;
 
   // Value from the <reason> tag if it is present in the
   // message. Useful mainly for session-terminate messages, but Jingle
   // spec allows it in any message.
-  Reason reason = UNKNOWN_REASON;
+  SessionTerminate::Reason reason = SessionTerminate::Reason::kUnspecified;
 
   // Value from the <google:remoting:error-code> tag if it is present in the
   // message. Useful mainly for session-terminate messages. If it's UNKNOWN,
@@ -243,6 +323,7 @@ struct IceTransportInfo {
   struct NamedCandidate {
     NamedCandidate();
     NamedCandidate(const std::string& name, const webrtc::Candidate& candidate);
+    ~NamedCandidate();
 
     std::string name;
     webrtc::Candidate candidate;

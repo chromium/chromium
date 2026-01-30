@@ -135,7 +135,7 @@ void FakeSession::AddPlugin(SessionPlugin* plugin) {
       JingleMessage jingle_message;
       jingle_message.AddAttachment(
           std::make_unique<jingle_xmpp::XmlElement>(*message));
-      plugin->OnIncomingMessage(*(jingle_message.attachments));
+      plugin->OnIncomingMessage(*(jingle_message.attachments_legacy));
     }
   }
 }

@@ -21,6 +21,8 @@ using jingle_xmpp::XmlElement;
 
 namespace remoting::protocol {
 
+using ActionType = JingleMessage::ActionType;
+
 namespace {
 
 const char kXmlNsNs[] = "http://www.w3.org/2000/xmlns/";
@@ -152,7 +154,7 @@ TEST(JingleMessageTest, SessionInitiate) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::SESSION_INITIATE);
+  EXPECT_EQ(message.action, ActionType::kSessionInitiate);
   EXPECT_FALSE(message.description->config()->webrtc_supported());
   EXPECT_TRUE(message.description->config()->ice_supported());
 }
@@ -180,7 +182,7 @@ TEST(JingleMessageTest, SessionInitiateWebrtc) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::SESSION_INITIATE);
+  EXPECT_EQ(message.action, ActionType::kSessionInitiate);
   EXPECT_TRUE(message.description->config()->webrtc_supported());
   EXPECT_FALSE(message.description->config()->ice_supported());
 }
@@ -214,7 +216,7 @@ TEST(JingleMessageTest, SessionInitiateHybrid) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::SESSION_INITIATE);
+  EXPECT_EQ(message.action, ActionType::kSessionInitiate);
   EXPECT_TRUE(message.description->config()->webrtc_supported());
   EXPECT_TRUE(message.description->config()->ice_supported());
 }
@@ -246,7 +248,7 @@ TEST(JingleMessageTest, SessionInitiateNoIce) {
   JingleMessage message;
   ParseJingleMessageFromXml(kTestSessionInitiateMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::SESSION_INITIATE);
+  EXPECT_EQ(message.action, ActionType::kSessionInitiate);
   EXPECT_FALSE(message.description->config()->ice_supported());
 }
 
@@ -276,7 +278,7 @@ TEST(JingleMessageTest, SessionAccept) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionAcceptMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::SESSION_ACCEPT);
+  EXPECT_EQ(message.action, ActionType::kSessionAccept);
   EXPECT_FALSE(message.description->config()->webrtc_supported());
   EXPECT_TRUE(message.description->config()->ice_supported());
 }
@@ -303,7 +305,7 @@ TEST(JingleMessageTest, SessionAcceptWebrtc) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionAcceptMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::SESSION_ACCEPT);
+  EXPECT_EQ(message.action, ActionType::kSessionAccept);
   EXPECT_TRUE(message.description->config()->webrtc_supported());
   EXPECT_FALSE(message.description->config()->ice_supported());
 }
@@ -334,7 +336,7 @@ TEST(JingleMessageTest, SessionAcceptNoIce) {
   JingleMessage message;
   ParseJingleMessageFromXml(kTestSessionAcceptMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::SESSION_ACCEPT);
+  EXPECT_EQ(message.action, ActionType::kSessionAccept);
   EXPECT_FALSE(message.description->config()->ice_supported());
   EXPECT_FALSE(message.description->config()->webrtc_supported());
 }
@@ -366,10 +368,10 @@ TEST(JingleMessageTest, IceTransportInfo) {
   JingleMessage message;
   ParseFormatAndCompare(kTestIceTransportInfoMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::TRANSPORT_INFO);
+  EXPECT_EQ(message.action, ActionType::kTransportInfo);
 
   IceTransportInfo transport_info;
-  EXPECT_TRUE(transport_info.ParseXml(message.transport_info.get()));
+  EXPECT_TRUE(transport_info.ParseXml(message.transport_info_legacy.get()));
   EXPECT_EQ(transport_info.ice_credentials.size(), 2U);
   EXPECT_EQ(transport_info.candidates.size(), 2U);
 }
@@ -384,7 +386,7 @@ TEST(JingleMessageTest, SessionTerminate) {
 
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionTerminateMessage, &message);
-  EXPECT_EQ(message.action, JingleMessage::SESSION_TERMINATE);
+  EXPECT_EQ(message.action, ActionType::kSessionTerminate);
 }
 
 TEST(JingleMessageTest, SessionInfo) {
@@ -398,9 +400,9 @@ TEST(JingleMessageTest, SessionInfo) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionInfoMessage, &message);
 
-  EXPECT_EQ(message.action, JingleMessage::SESSION_INFO);
-  ASSERT_TRUE(message.info.get() != nullptr);
-  EXPECT_TRUE(message.info->Name() ==
+  EXPECT_EQ(message.action, ActionType::kSessionInfo);
+  ASSERT_TRUE(message.info_legacy.get() != nullptr);
+  EXPECT_TRUE(message.info_legacy->Name() ==
               jingle_xmpp::QName("urn:xmpp:jingle:1", "test-info"));
 }
 
@@ -566,8 +568,8 @@ TEST(JingleMessageTest, RemotingErrorCode) {
       ParseFormatAndCompare(message_str.c_str(), &message);
     }
 
-    EXPECT_EQ(message.action, JingleMessage::SESSION_TERMINATE);
-    EXPECT_EQ(message.reason, JingleMessage::DECLINE);
+    EXPECT_EQ(message.action, ActionType::kSessionTerminate);
+    EXPECT_EQ(message.reason, SessionTerminate::Reason::kDecline);
     EXPECT_EQ(message.error_code, error);
   }
 }
@@ -619,18 +621,17 @@ TEST(JingleMessageTest, AttachmentsMessage) {
       "<gr:attachments xmlns:gr='google:remoting'>"
       "<gr:sometag>some-message</gr:sometag>"
       "</gr:attachments>$2</jingle></cli:iq>";
-  for (int i = JingleMessage::SESSION_INITIATE;
-       i <= JingleMessage::TRANSPORT_INFO; i++) {
-    JingleMessage::ActionType action_type =
-        static_cast<JingleMessage::ActionType>(i);
+  for (int i = static_cast<int>(ActionType::kSessionInitiate);
+       i <= static_cast<int>(ActionType::kTransportInfo); i++) {
+    ActionType action_type = static_cast<ActionType>(i);
     std::vector<std::string> substitutes = {
         JingleMessage::GetActionName(action_type)
     };
-    if (action_type == JingleMessage::SESSION_INFO) {
+    if (action_type == ActionType::kSessionInfo) {
       substitutes.push_back("<test-info>test-message</test-info>");
-    } else if (action_type == JingleMessage::SESSION_TERMINATE) {
+    } else if (action_type == ActionType::kSessionTerminate) {
       substitutes.emplace_back();
-    } else if (action_type == JingleMessage::TRANSPORT_INFO) {
+    } else if (action_type == ActionType::kTransportInfo) {
       substitutes.push_back(
           "<content name='chromoting' creator='initiator'>"
             "<transport xmlns='google:remoting:webrtc'>"
@@ -662,12 +663,12 @@ TEST(JingleMessageTest, AttachmentsMessage) {
     JingleMessage message;
     ParseFormatAndCompare(message_str.c_str(), &message);
 
-    EXPECT_TRUE(message.attachments);
+    EXPECT_TRUE(message.attachments_legacy);
     XmlElement expected(QName("google:remoting", "attachments"));
     expected.AddElement(new XmlElement(QName("google:remoting", "sometag")));
     expected.FirstElement()->SetBodyText("some-message");
     std::string error;
-    EXPECT_TRUE(VerifyXml(&expected, message.attachments.get(), &error))
+    EXPECT_TRUE(VerifyXml(&expected, message.attachments_legacy.get(), &error))
         << error;
   }
 }

@@ -91,7 +91,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
     return true;
   }
 
-  if (message->action == JingleMessage::SESSION_INITIATE) {
+  if (message->action == JingleMessage::ActionType::kSessionInitiate) {
     // Description must be present in session-initiate messages.
     DCHECK(message->description.get());
 

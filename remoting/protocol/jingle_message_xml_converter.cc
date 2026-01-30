@@ -38,21 +38,22 @@ const int kPortMin = 1000;
 const int kPortMax = 65535;
 
 const NameMapElement<JingleMessage::ActionType> kActionTypes[] = {
-    {JingleMessage::SESSION_INITIATE, "session-initiate"},
-    {JingleMessage::SESSION_ACCEPT, "session-accept"},
-    {JingleMessage::SESSION_TERMINATE, "session-terminate"},
-    {JingleMessage::SESSION_INFO, "session-info"},
-    {JingleMessage::TRANSPORT_INFO, "transport-info"},
+    {JingleMessage::ActionType::kSessionInitiate, "session-initiate"},
+    {JingleMessage::ActionType::kSessionAccept, "session-accept"},
+    {JingleMessage::ActionType::kSessionTerminate, "session-terminate"},
+    {JingleMessage::ActionType::kSessionInfo, "session-info"},
+    {JingleMessage::ActionType::kTransportInfo, "transport-info"},
 };
 
-const NameMapElement<JingleMessage::Reason> kReasons[] = {
-    {JingleMessage::SUCCESS, "success"},
-    {JingleMessage::DECLINE, "decline"},
-    {JingleMessage::CANCEL, "cancel"},
-    {JingleMessage::EXPIRED, "expired"},
-    {JingleMessage::GENERAL_ERROR, "general-error"},
-    {JingleMessage::FAILED_APPLICATION, "failed-application"},
-    {JingleMessage::INCOMPATIBLE_PARAMETERS, "incompatible-parameters"},
+const NameMapElement<SessionTerminate::Reason> kReasons[] = {
+    {SessionTerminate::Reason::kSuccess, "success"},
+    {SessionTerminate::Reason::kDecline, "decline"},
+    {SessionTerminate::Reason::kCancel, "cancel"},
+    {SessionTerminate::Reason::kExpired, "expired"},
+    {SessionTerminate::Reason::kGeneralError, "general-error"},
+    {SessionTerminate::Reason::kFailedApplication, "failed-application"},
+    {SessionTerminate::Reason::kIncompatibleParameters,
+     "incompatible-parameters"},
 };
 
 // The type names "local" and "stun" are not standard but JingleMessage has
@@ -208,28 +209,28 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
     message.from.SetInMessage(root.get(), SignalingAddress::FROM);
   }
 
-  const char* action_attr = ValueToName(kActionTypes, message.action);
+  const char* action_attr = ValueToNameUnchecked(kActionTypes, message.action);
   if (!action_attr) {
-    LOG(FATAL) << "Invalid action value " << message.action;
+    LOG(FATAL) << "Invalid action value " << static_cast<int>(message.action);
   }
   jingle_tag->AddAttr(QName(kEmptyNamespace, "action"), action_attr);
 
-  if (message.attachments) {
-    jingle_tag->AddElement(new XmlElement(*message.attachments));
+  if (message.attachments_legacy) {
+    jingle_tag->AddElement(new XmlElement(*message.attachments_legacy));
   }
 
-  if (message.action == JingleMessage::SESSION_INFO) {
-    if (message.info.get()) {
-      jingle_tag->AddElement(new XmlElement(*message.info.get()));
+  if (message.action == JingleMessage::ActionType::kSessionInfo) {
+    if (message.info_legacy) {
+      jingle_tag->AddElement(new XmlElement(*message.info_legacy));
     }
     return root;
   }
 
-  if (message.action == JingleMessage::SESSION_INITIATE) {
+  if (message.action == JingleMessage::ActionType::kSessionInitiate) {
     jingle_tag->AddAttr(QName(kEmptyNamespace, "initiator"), message.initiator);
   }
 
-  if (message.reason != JingleMessage::UNKNOWN_REASON) {
+  if (message.reason != SessionTerminate::Reason::kUnspecified) {
     XmlElement* reason_tag = new XmlElement(QName(kJingleNamespace, "reason"));
     jingle_tag->AddElement(reason_tag);
     reason_tag->AddElement(new XmlElement(
@@ -257,7 +258,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
     }
   }
 
-  if (message.action != JingleMessage::SESSION_TERMINATE) {
+  if (message.action != JingleMessage::ActionType::kSessionTerminate) {
     XmlElement* content_tag =
         new XmlElement(QName(kJingleNamespace, "content"));
     jingle_tag->AddElement(content_tag);
@@ -270,8 +271,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
       content_tag->AddElement(message.description->ToXml());
     }
 
-    if (message.transport_info) {
-      content_tag->AddElement(new XmlElement(*message.transport_info));
+    if (message.transport_info_legacy) {
+      content_tag->AddElement(new XmlElement(*message.transport_info_legacy));
     } else if (message.description &&
                message.description->config()->webrtc_supported()) {
       content_tag->AddElement(
@@ -325,12 +326,13 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
   const XmlElement* attachments_tag =
       jingle_tag->FirstNamed(QName(kChromotingXmlNamespace, "attachments"));
   if (attachments_tag) {
-    message->attachments = std::make_unique<XmlElement>(*attachments_tag);
+    message->attachments_legacy =
+        std::make_unique<XmlElement>(*attachments_tag);
   } else {
-    message->attachments.reset();
+    message->attachments_legacy.reset();
   }
 
-  if (message->action == JingleMessage::SESSION_INFO) {
+  if (message->action == JingleMessage::ActionType::kSessionInfo) {
     // session-info messages may contain arbitrary information not
     // defined by the Jingle protocol. We don't need to parse it.
     const XmlElement* child = jingle_tag->FirstElement();
@@ -341,9 +343,9 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     }
     if (child) {
       // session-info is allowed to be empty.
-      message->info = std::make_unique<XmlElement>(*child);
+      message->info_legacy = std::make_unique<XmlElement>(*child);
     } else {
-      message->info.reset();
+      message->info_legacy.reset();
     }
     return true;
   }
@@ -353,7 +355,7 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
   if (reason_tag && reason_tag->FirstElement()) {
     if (!NameToValue(kReasons, reason_tag->FirstElement()->Name().LocalPart(),
                      &message->reason)) {
-      message->reason = JingleMessage::UNKNOWN_REASON;
+      message->reason = SessionTerminate::Reason::kUnknownReason;
     }
   }
 
@@ -379,7 +381,7 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     message->error_location = error_location_tag->BodyText();
   }
 
-  if (message->action == JingleMessage::SESSION_TERMINATE) {
+  if (message->action == JingleMessage::ActionType::kSessionTerminate) {
     return true;
   }
 
@@ -399,13 +401,13 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
   const XmlElement* webrtc_transport_tag =
       content_tag->FirstNamed(QName(kWebrtcTransportNamespace, "transport"));
   if (webrtc_transport_tag) {
-    message->transport_info =
+    message->transport_info_legacy =
         std::make_unique<jingle_xmpp::XmlElement>(*webrtc_transport_tag);
   }
 
   message->description.reset();
-  if (message->action == JingleMessage::SESSION_INITIATE ||
-      message->action == JingleMessage::SESSION_ACCEPT) {
+  if (message->action == JingleMessage::ActionType::kSessionInitiate ||
+      message->action == JingleMessage::ActionType::kSessionAccept) {
     const XmlElement* description_tag =
         content_tag->FirstNamed(QName(kChromotingXmlNamespace, "description"));
     if (!description_tag) {
@@ -425,7 +427,7 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     const XmlElement* ice_transport_tag =
         content_tag->FirstNamed(QName(kIceTransportNamespace, "transport"));
     if (ice_transport_tag) {
-      message->transport_info =
+      message->transport_info_legacy =
           std::make_unique<jingle_xmpp::XmlElement>(*ice_transport_tag);
     }
   }

@@ -31,11 +31,11 @@ const char kJingleNamespace[] = "urn:xmpp:jingle:1";
 const char kXmlNamespace[] = "http://www.w3.org/XML/1998/namespace";
 
 const NameMapElement<JingleMessage::ActionType> kActionTypes[] = {
-    {JingleMessage::SESSION_INITIATE, "session-initiate"},
-    {JingleMessage::SESSION_ACCEPT, "session-accept"},
-    {JingleMessage::SESSION_TERMINATE, "session-terminate"},
-    {JingleMessage::SESSION_INFO, "session-info"},
-    {JingleMessage::TRANSPORT_INFO, "transport-info"},
+    {JingleMessage::ActionType::kSessionInitiate, "session-initiate"},
+    {JingleMessage::ActionType::kSessionAccept, "session-accept"},
+    {JingleMessage::ActionType::kSessionTerminate, "session-terminate"},
+    {JingleMessage::ActionType::kSessionInfo, "session-info"},
+    {JingleMessage::ActionType::kTransportInfo, "transport-info"},
 };
 
 }  // namespace
@@ -70,11 +70,11 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
 
 void JingleMessage::AddAttachment(std::unique_ptr<XmlElement> attachment) {
   DCHECK(attachment);
-  if (!attachments) {
-    attachments = std::make_unique<XmlElement>(
+  if (!attachments_legacy) {
+    attachments_legacy = std::make_unique<XmlElement>(
         QName(kChromotingXmlNamespace, "attachments"));
   }
-  attachments->AddElement(attachment.release());
+  attachments_legacy->AddElement(attachment.release());
 }
 
 JingleMessageReply::JingleMessageReply()
@@ -181,11 +181,6 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
   return iq;
 }
 
-IceTransportInfo::NamedCandidate::NamedCandidate(
-    const std::string& name,
-    const webrtc::Candidate& candidate)
-    : name(name), candidate(candidate) {}
-
 IceTransportInfo::IceTransportInfo() = default;
 IceTransportInfo::~IceTransportInfo() = default;
 
@@ -232,6 +227,13 @@ JingleAuthentication::~JingleAuthentication() = default;
 
 IceTransportInfo::NamedCandidate::NamedCandidate() = default;
 
+IceTransportInfo::NamedCandidate::NamedCandidate(
+    const std::string& name,
+    const webrtc::Candidate& candidate)
+    : name(name), candidate(candidate) {}
+
+IceTransportInfo::NamedCandidate::~NamedCandidate() = default;
+
 IceTransportInfo::IceCredentials::IceCredentials() = default;
 
 IceTransportInfo::IceCredentials::IceCredentials(std::string channel,
@@ -240,5 +242,62 @@ IceTransportInfo::IceCredentials::IceCredentials(std::string channel,
     : channel(channel), ufrag(ufrag), password(password) {}
 
 IceTransportInfo::IceCredentials::~IceCredentials() = default;
+
+HostAttributesAttachment::HostAttributesAttachment() = default;
+HostAttributesAttachment::HostAttributesAttachment(
+    const HostAttributesAttachment&) = default;
+HostAttributesAttachment::HostAttributesAttachment(HostAttributesAttachment&&) =
+    default;
+HostAttributesAttachment& HostAttributesAttachment::operator=(
+    const HostAttributesAttachment&) = default;
+HostAttributesAttachment& HostAttributesAttachment::operator=(
+    HostAttributesAttachment&&) = default;
+HostAttributesAttachment::~HostAttributesAttachment() = default;
+
+HostConfigAttachment::HostConfigAttachment() = default;
+HostConfigAttachment::HostConfigAttachment(const HostConfigAttachment&) =
+    default;
+HostConfigAttachment::HostConfigAttachment(HostConfigAttachment&&) = default;
+HostConfigAttachment& HostConfigAttachment::operator=(
+    const HostConfigAttachment&) = default;
+HostConfigAttachment& HostConfigAttachment::operator=(HostConfigAttachment&&) =
+    default;
+HostConfigAttachment::~HostConfigAttachment() = default;
+
+Attachment::Attachment() = default;
+Attachment::Attachment(const Attachment&) = default;
+Attachment::Attachment(Attachment&&) = default;
+Attachment& Attachment::operator=(const Attachment&) = default;
+Attachment& Attachment::operator=(Attachment&&) = default;
+Attachment::~Attachment() = default;
+
+SessionInitiate::SessionInitiate() = default;
+SessionInitiate::SessionInitiate(const SessionInitiate&) = default;
+SessionInitiate::SessionInitiate(SessionInitiate&&) = default;
+SessionInitiate& SessionInitiate::operator=(const SessionInitiate&) = default;
+SessionInitiate& SessionInitiate::operator=(SessionInitiate&&) = default;
+SessionInitiate::~SessionInitiate() = default;
+
+SessionAccept::SessionAccept() = default;
+SessionAccept::SessionAccept(const SessionAccept&) = default;
+SessionAccept::SessionAccept(SessionAccept&&) = default;
+SessionAccept& SessionAccept::operator=(const SessionAccept&) = default;
+SessionAccept& SessionAccept::operator=(SessionAccept&&) = default;
+SessionAccept::~SessionAccept() = default;
+
+SessionInfo::SessionInfo() = default;
+SessionInfo::SessionInfo(const SessionInfo&) = default;
+SessionInfo::SessionInfo(SessionInfo&&) = default;
+SessionInfo& SessionInfo::operator=(const SessionInfo&) = default;
+SessionInfo& SessionInfo::operator=(SessionInfo&&) = default;
+SessionInfo::~SessionInfo() = default;
+
+SessionTerminate::SessionTerminate() = default;
+SessionTerminate::SessionTerminate(const SessionTerminate&) = default;
+SessionTerminate::SessionTerminate(SessionTerminate&&) = default;
+SessionTerminate& SessionTerminate::operator=(const SessionTerminate&) =
+    default;
+SessionTerminate& SessionTerminate::operator=(SessionTerminate&&) = default;
+SessionTerminate::~SessionTerminate() = default;
 
 }  // namespace remoting::protocol
