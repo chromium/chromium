@@ -122,23 +122,71 @@ DbStatus LocalStorageSqlite::Open(
 
 StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
 LocalStorageSqlite::ReadMapKeyValues(MapLocator map_locator) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return base::unexpected(DbStatus::NotSupported(""));
+  sql::Transaction transaction(database_.get());
+  RETURN_UNEXPECTED_ON_ERROR(transaction.Begin());
+
+  ASSIGN_OR_RETURN(std::optional<int64_t> map_id,
+                   FindMapId(map_locator.storage_key()));
+  if (!map_id) {
+    // Return an empty map when `map_locator` is not found in the database.
+    return {};
+  }
+
+  ASSIGN_OR_RETURN((std::map<Key, Value> map_entries),
+                   map_entries_table_->GetMapKeyValues(*map_id));
+
+  RETURN_UNEXPECTED_ON_ERROR(transaction.Commit());
+  return map_entries;
 }
 
 DbStatus LocalStorageSqlite::UpdateMaps(
     std::vector<MapBatchUpdate> map_updates) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  sql::Transaction transaction(database_.get());
+  RETURN_STATUS_ON_ERROR(transaction.Begin());
+
+  for (MapBatchUpdate& map_update : map_updates) {
+    const blink::StorageKey& storage_key = map_update.map_locator.storage_key();
+    const std::optional<MapBatchUpdate::Usage>& map_usage =
+        map_update.map_usage;
+
+    // Insert or update the map's metadata.  This creates the map row if it
+    // doesn't exist, assigning a `map_id` (`row_id`) to new maps.
+    // `LocalStorageSqlite` expects a new map's first update to create its
+    // `map_id` through the function call below.
+    DB_RETURN_IF_ERROR(PutMapMetadata(
+        storage_key, map_usage ? map_usage->last_accessed() : std::nullopt,
+        map_usage ? map_usage->last_modified() : std::nullopt,
+        map_usage ? map_usage->total_size() : std::nullopt));
+
+    // If requested, clear all usage metadata fields by setting them to `NULL`.
+    // The map row itself is preserved to keep the same `map_id` for the storage
+    // key.
+    if (map_usage && map_usage->should_delete_all_usage()) {
+      DB_RETURN_IF_ERROR(DeleteMapUsageMetadata(storage_key))
+    }
+
+    // Look up the `map_id` (`row_id`) for this storage key. The map row must
+    // exist since `PutMapMetadata()` creates it above when necessary.
+    ASSIGN_OR_RETURN(std::optional<int64_t> map_id, FindMapId(storage_key));
+
+    // Update `map_locator` with the assigned `map_id` so that
+    // `MapEntriesTable::UpdateMap()` can use `map_id` to write key/value pairs.
+    map_update.map_locator =
+        MapLocator(kLocalStorageSessionId, storage_key, map_id.value());
+
+    // Apply the key/value pair changes (additions, modifications, deletions)
+    // to the `map_entries` table.
+    DB_RETURN_IF_ERROR(map_entries_table_->UpdateMap(std::move(map_update)));
+  }
+
+  RETURN_STATUS_ON_ERROR(transaction.Commit());
+  return DbStatus::OK();
 }
 
 DbStatus LocalStorageSqlite::CloneMap(MapLocator source_map,
                                       MapLocator target_map) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  // Local storage does not support cloning.
+  NOTREACHED();
 }
 
 StatusOr<DomStorageDatabase::Metadata> LocalStorageSqlite::ReadAllMetadata() {
@@ -201,9 +249,9 @@ DbStatus LocalStorageSqlite::DeleteStorageKeysFromSession(
 DbStatus LocalStorageSqlite::DeleteSessions(
     std::vector<std::string> session_ids,
     std::vector<MapLocator> maps_to_delete) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  // Potential callers should delete the entire database instead of the session.
+  // Local storage uses a single global session.
+  NOTREACHED();
 }
 
 DbStatus LocalStorageSqlite::PurgeOrigins(std::set<url::Origin> origins) {
@@ -236,6 +284,24 @@ DbStatus LocalStorageSqlite::PutVersionForTesting(int64_t version) {
   RETURN_STATUS_ON_ERROR(meta_table_->SetCompatibleVersionNumber(version));
   RETURN_STATUS_ON_ERROR(transaction.Commit());
   return DbStatus::OK();
+}
+
+StatusOr<std::optional<int64_t>> LocalStorageSqlite::FindMapId(
+    const blink::StorageKey& storage_key) {
+  constexpr const char kSelectMapId[] =
+      "SELECT row_id FROM maps WHERE storage_key=?";
+
+  sql::Statement statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kSelectMapId));
+  statement.BindBlob(0, storage_key.Serialize());
+
+  if (!statement.Step()) {
+    RETURN_UNEXPECTED_ON_ERROR(statement.Succeeded());
+
+    // No map found for this storage key.  Return an empty map.
+    return std::nullopt;
+  }
+  return /*map_id=*/statement.ColumnInt64(0);
 }
 
 DbStatus LocalStorageSqlite::PutMapMetadata(
@@ -285,6 +351,24 @@ DbStatus LocalStorageSqlite::PutMapMetadata(
 
     RETURN_STATUS_ON_ERROR(insert_statement.Run());
   }
+  return DbStatus::OK();
+}
+
+DbStatus LocalStorageSqlite::DeleteMapUsageMetadata(
+    const blink::StorageKey& storage_key) {
+  CHECK(database_->HasActiveTransactions());
+
+  // Delete the usage metadata by setting all fields to `NULL`.
+  constexpr const char kDeleteUsage[] =
+      "UPDATE maps SET "
+      "last_accessed=NULL,last_modified=NULL,total_size=NULL "
+      "WHERE storage_key=?";
+
+  sql::Statement delete_statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteUsage));
+  delete_statement.BindBlob(0, storage_key.Serialize());
+
+  RETURN_STATUS_ON_ERROR(delete_statement.Run());
   return DbStatus::OK();
 }
 

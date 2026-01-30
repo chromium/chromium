@@ -25,6 +25,7 @@ namespace {
 constexpr const char kFirstUrlString[] = "https://a-fake.test/";
 constexpr const char kSecondUrlString[] = "https://b-fake.test/";
 constexpr const char kThirdUrlString[] = "https://c-fake.test/";
+constexpr base::ByteSize kMapTotalSize{312};
 }  // namespace
 
 class LocalStorageSqliteTest : public testing::Test {
@@ -43,6 +44,13 @@ class LocalStorageSqliteTest : public testing::Test {
 
   void OpenInMemory(std::unique_ptr<LocalStorageSqlite>* result);
 
+  // Uses `DomStorageDatabase::UpdateMaps()` to write `metadata_to_update` to
+  // the database.  Afterwards, verifies with
+  // `DomStorageDatabase::ReadAllMetadata()`.
+  void UpdateMapWithMetadata(
+      LocalStorageSqlite& database,
+      const DomStorageDatabase::MapMetadata& metadata_to_update);
+
   const blink::StorageKey kFirstStorageKey =
       blink::StorageKey::CreateFromStringForTesting(kFirstUrlString);
 
@@ -51,6 +59,9 @@ class LocalStorageSqliteTest : public testing::Test {
 
   const blink::StorageKey kThirdStorageKey =
       blink::StorageKey::CreateFromStringForTesting(kThirdUrlString);
+
+  const base::Time kMapLastAccessed = base::Time::Now() - base::Minutes(10);
+  const base::Time kMapLastModified = base::Time::Now();
 
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
@@ -102,6 +113,35 @@ void LocalStorageSqliteTest::OpenInMemory(
 
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);
+}
+
+void LocalStorageSqliteTest::UpdateMapWithMetadata(
+    LocalStorageSqlite& database,
+    const DomStorageDatabase::MapMetadata& metadata_to_update) {
+  // Write the map usage metadata to the database.
+  std::vector<DomStorageDatabase::MapBatchUpdate> map_update;
+  map_update.emplace_back(metadata_to_update.map_locator.Clone());
+  map_update.back().map_usage = DomStorageDatabase::MapBatchUpdate::Usage();
+
+  if (metadata_to_update.last_accessed) {
+    map_update.back().map_usage->SetLastAccessed(
+        *metadata_to_update.last_accessed);
+  }
+
+  if (metadata_to_update.last_modified) {
+    map_update.back().map_usage->SetLastModifiedAndTotalSize(
+        *metadata_to_update.last_modified, *metadata_to_update.total_size);
+  }
+
+  DbStatus status = database.UpdateMaps(std::move(map_update));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Read back the map usage metadata from the database.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata all_metadata,
+                       database.ReadAllMetadata());
+  EXPECT_EQ(all_metadata.next_map_id, std::nullopt);
+  ExpectEqualsMapMetadataSpan(all_metadata.map_metadata,
+                              base::span_from_ref(metadata_to_update));
 }
 
 TEST_F(LocalStorageSqliteTest, OpenInMemory) {
@@ -396,6 +436,92 @@ TEST_F(LocalStorageSqliteTest, ReadAllMetadataWithInvalidTotalSize) {
     ASSERT_FALSE(result.has_value());
     EXPECT_TRUE(result.error().IsCorruption());
   }
+}
+
+// Verifies that `UpdateMaps()` correctly adds, modifies, and deletes key/value
+// pairs across multiple maps.
+TEST_F(LocalStorageSqliteTest, UpdateMaps) {
+  std::unique_ptr<LocalStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  DomStorageDatabase::MapLocator map1_locator{kLocalStorageSessionId,
+                                              kFirstStorageKey, /*map_id=*/1};
+  DomStorageDatabase::MapLocator map2_locator{kLocalStorageSessionId,
+                                              kSecondStorageKey, /*map_id=*/2};
+  ASSERT_NO_FATAL_FAILURE(
+      TestUpdateMaps(*database, map1_locator, map2_locator));
+}
+
+// Verifies that `UpdateMaps()` correctly persists the access metadata
+// (`last_accessed` timestamp) for a map.
+TEST_F(LocalStorageSqliteTest, UpdateMapsWithAccessMetadata) {
+  std::unique_ptr<LocalStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  const DomStorageDatabase::MapMetadata kExpectedMapMetadata{
+      .map_locator{kLocalStorageSessionId, kFirstStorageKey, /*map_id=*/1},
+      .last_accessed{kMapLastAccessed},
+  };
+  ASSERT_NO_FATAL_FAILURE(
+      UpdateMapWithMetadata(*database, kExpectedMapMetadata));
+}
+
+// Verifies that `UpdateMaps()` correctly persists write metadata
+// (`last_modified` timestamp and `total_size`) for a map.
+TEST_F(LocalStorageSqliteTest, UpdateMapsWithWriteMetadata) {
+  std::unique_ptr<LocalStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  const DomStorageDatabase::MapMetadata kExpectedMapMetadata{
+      .map_locator{kLocalStorageSessionId, kFirstStorageKey, /*map_id=*/1},
+      .last_modified{kMapLastModified},
+      .total_size{kMapTotalSize},
+  };
+  ASSERT_NO_FATAL_FAILURE(
+      UpdateMapWithMetadata(*database, kExpectedMapMetadata));
+}
+
+// Verifies that `UpdateMaps()` with `DeleteAllUsage()` clears all usage
+// metadata fields (`last_accessed`, `last_modified`, `total_size`) while
+// preserving the map row itself in the database.
+TEST_F(LocalStorageSqliteTest, UpdateMapsClearsMetadata) {
+  std::unique_ptr<LocalStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  const DomStorageDatabase::MapMetadata kInitialMapMetadata{
+      .map_locator{kLocalStorageSessionId, kFirstStorageKey, /*map_id=*/1},
+      .last_accessed{kMapLastAccessed},
+      .last_modified{kMapLastModified},
+      .total_size{kMapTotalSize},
+  };
+  ASSERT_NO_FATAL_FAILURE(
+      UpdateMapWithMetadata(*database, kInitialMapMetadata));
+
+  // Use `UpdateMaps()` to delete the map usage metadata from the database.
+  std::vector<DomStorageDatabase::MapBatchUpdate> delete_metadata_update;
+  delete_metadata_update.emplace_back(kInitialMapMetadata.map_locator.Clone());
+
+  delete_metadata_update.back().map_usage =
+      DomStorageDatabase::MapBatchUpdate::Usage();
+  delete_metadata_update.back().map_usage->DeleteAllUsage();
+
+  DbStatus status = database->UpdateMaps(std::move(delete_metadata_update));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the map row still exists but all usage metadata is cleared.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata all_metadata,
+                       database->ReadAllMetadata());
+
+  EXPECT_EQ(all_metadata.next_map_id, std::nullopt);
+  ASSERT_EQ(all_metadata.map_metadata.size(), 1u);
+
+  const DomStorageDatabase::MapMetadata& cleared_metadata =
+      all_metadata.map_metadata[0];
+  ExpectEqualsMapLocator(cleared_metadata.map_locator,
+                         kInitialMapMetadata.map_locator);
+  EXPECT_EQ(cleared_metadata.last_accessed, std::nullopt);
+  EXPECT_EQ(cleared_metadata.last_modified, std::nullopt);
+  EXPECT_EQ(cleared_metadata.total_size, std::nullopt);
 }
 
 }  // namespace storage
