@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/attempt_form_filling_tool.h"
 
+#include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -97,7 +98,7 @@ std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
 
 class MockExecutionEngine : public ExecutionEngine {
  public:
-  explicit MockExecutionEngine(Profile* profile) : ExecutionEngine(profile) {}
+  explicit MockExecutionEngine(ActorTask& task) : ExecutionEngine(task) {}
   ~MockExecutionEngine() override = default;
 
   MOCK_METHOD(void,
@@ -177,9 +178,9 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
         .selections = std::move(selections)};
   }
 
-  std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
-      Profile* profile) override {
-    return std::make_unique<::testing::NiceMock<MockExecutionEngine>>(profile);
+  static std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
+      ActorTask& task) {
+    return std::make_unique<::testing::NiceMock<MockExecutionEngine>>(task);
   }
 
   autofill::MockActorFormFillingService& mock_form_filling_service() {
@@ -223,6 +224,8 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
   autofill::MockActorFormFillingService mock_form_filling_service_;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kGlicActorAutofill};
+  ScopedExecutionEngineFactory mock_execution_engine_factory_{
+      base::BindRepeating(AttemptFormFillingToolTest::CreateExecutionEngine)};
   base::WeakPtrFactory<AttemptFormFillingToolTest> weak_ptr_factory_{this};
 };
 

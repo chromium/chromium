@@ -43,7 +43,7 @@ const SkBitmap GenerateSquareBitmap(int size, SkColor color) {
 
 class MockExecutionEngine : public ExecutionEngine {
  public:
-  explicit MockExecutionEngine(Profile* profile) : ExecutionEngine(profile) {}
+  explicit MockExecutionEngine(ActorTask& task) : ExecutionEngine(task) {}
   ~MockExecutionEngine() override = default;
 
   MOCK_METHOD(actor_login::ActorLoginService&,
@@ -121,8 +121,6 @@ class AttemptLoginToolInteractiveUiTest
     auto create_task_result = create_task_future.Get();
     ASSERT_TRUE(create_task_result.has_value());
     task_id_ = TaskId(create_task_result.value());
-    actor_task().SetExecutionEngineForTesting(
-        CreateExecutionEngine(InProcessBrowserTest::browser()->profile()));
 
     ON_CALL(mock_execution_engine(), GetActorLoginService())
         .WillByDefault(ReturnRef(mock_login_service_));
@@ -149,9 +147,9 @@ class AttemptLoginToolInteractiveUiTest
         AttemptLoginToolInteractiveUiTestBase>::SetUpCommandLine(command_line);
   }
 
-  std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
-      Profile* profile) override {
-    return std::make_unique<NiceMock<MockExecutionEngine>>(profile);
+  static std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
+      ActorTask& task) {
+    return std::make_unique<NiceMock<MockExecutionEngine>>(task);
   }
 
   MockActorLoginService& mock_login_service() { return mock_login_service_; }
@@ -177,6 +175,9 @@ class AttemptLoginToolInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
   actor_login::Credential::Id::Generator credential_id_generator_;
+  ScopedExecutionEngineFactory mock_execution_engine_factory_{
+      base::BindRepeating(
+          AttemptLoginToolInteractiveUiTest::CreateExecutionEngine)};
 };
 
 }  // namespace

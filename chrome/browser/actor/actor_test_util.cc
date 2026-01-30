@@ -680,4 +680,14 @@ void ExecutionEngineStateWaiter::OnStateChanged(
   }
 }
 
+ScopedExecutionEngineFactory::ScopedExecutionEngineFactory(
+    ExecutionEngine::FactoryFunction factory) {
+  CHECK(ExecutionEngine::GetFactoryFunctionForTesting().is_null());
+  ExecutionEngine::GetFactoryFunctionForTesting() = factory;
+}
+
+ScopedExecutionEngineFactory::~ScopedExecutionEngineFactory() {
+  ExecutionEngine::GetFactoryFunctionForTesting().Reset();
+}
+
 }  // namespace actor

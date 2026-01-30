@@ -12,7 +12,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -115,21 +115,29 @@ class ExecutionEngine : public ToolDelegate {
     virtual void OnStateChanged(State old_state, State new_state) = 0;
   };
 
-  explicit ExecutionEngine(Profile* profile);
+  // Tests can provide a factory function which will be used to create
+  // test-instrumented ExecutionEngine instances. See the
+  // ScopedExecutionEngineFactory helper.
+  using FactoryFunction =
+      base::RepeatingCallback<std::unique_ptr<ExecutionEngine>(ActorTask&)>;
+  static FactoryFunction& GetFactoryFunctionForTesting();
+
+  static std::unique_ptr<ExecutionEngine> Create(ActorTask& owner_task);
+  static std::unique_ptr<ExecutionEngine> CreateForTesting(
+      ActorTask& owner_task,
+      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
+
+  // Constructors public for std::make_unique but only usable via static Create
+  // method.
+  explicit ExecutionEngine(base::PassKey<ExecutionEngine>,
+                           ActorTask& owner_task);
   ExecutionEngine(base::PassKey<ExecutionEngine>,
-                  Profile* profile,
+                  ActorTask& owner_task,
                   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
+
   ExecutionEngine(const ExecutionEngine&) = delete;
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
   ~ExecutionEngine() override;
-
-  static std::unique_ptr<ExecutionEngine> CreateForTesting(
-      Profile* profile,
-      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
-
-  // This cannot be in the constructor as we first construct the
-  // ExecutionEngine, then the ActorTask.
-  void SetOwner(ActorTask* task);
 
   // Cancels any ongoing actions.
   void CancelOngoingActions(mojom::ActionResultCode reason);
@@ -230,6 +238,10 @@ class ExecutionEngine : public ToolDelegate {
   }
 
   State state() { return state_; }
+
+ protected:
+  // Allow derived classes to use the natural constructors.
+  explicit ExecutionEngine(ActorTask& owner_task);
 
  private:
   class NewTabWebContentsObserver;
@@ -342,11 +354,10 @@ class ExecutionEngine : public ToolDelegate {
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 
-  raw_ptr<Profile> profile_;
-  base::SafeRef<AggregatedJournal> journal_;
-
   // Owns `this`.
-  raw_ptr<ActorTask> task_;
+  const base::raw_ref<ActorTask> task_;
+
+  base::SafeRef<AggregatedJournal> journal_;
 
   // Created when task_ is set. Handles execution details for an individual tool
   // request.

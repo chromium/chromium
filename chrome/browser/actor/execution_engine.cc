@@ -141,29 +141,59 @@ ToolDelegate::CredentialWithPermission::operator=(CredentialWithPermission&&) =
 ToolDelegate::CredentialWithPermission::~CredentialWithPermission() = default;
 #endif
 
-ExecutionEngine::ExecutionEngine(Profile* profile)
+// static
+ExecutionEngine::FactoryFunction&
+ExecutionEngine::GetFactoryFunctionForTesting() {
+  static base::NoDestructor<FactoryFunction> callback;
+  return *callback;
+}
+
+ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine> pass_key,
+                                 ActorTask& owner_task)
     : ExecutionEngine(
-          base::PassKey<ExecutionEngine>(),
-          profile,
-          ui::NewUiEventDispatcher(
-              ActorKeyedService::Get(profile)->GetActorUiStateManager())) {}
+          pass_key,
+          owner_task,
+          ui::NewUiEventDispatcher(ActorKeyedService::Get(owner_task.profile())
+                                       ->GetActorUiStateManager())) {}
+
+// Protected constructor without pass key to allow subclassing.
+ExecutionEngine::ExecutionEngine(ActorTask& owner_task)
+    : ExecutionEngine(base::PassKey<ExecutionEngine>(), owner_task) {}
 
 ExecutionEngine::ExecutionEngine(
     base::PassKey<ExecutionEngine>,
-    Profile* profile,
+    ActorTask& owner_task,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher)
-    : profile_(profile),
-      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
+    : task_(owner_task),
+      journal_(
+          ActorKeyedService::Get(task_->profile())->GetJournal().GetSafeRef()),
+      tool_controller_(std::make_unique<ToolController>(*task_, *this)),
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+      actor_login_service_(
+          std::make_unique<actor_login::ActorLoginServiceImpl>()),
+      actor_form_filling_service_(
+          std::make_unique<autofill::ActorFormFillingServiceImpl>()),
+#endif
       ui_event_dispatcher_(std::move(ui_event_dispatcher)) {
   TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
-  CHECK(profile_);
+}
+
+// static
+std::unique_ptr<ExecutionEngine> ExecutionEngine::Create(
+    ActorTask& owner_task) {
+  if (!GetFactoryFunctionForTesting().is_null()) {
+    return GetFactoryFunctionForTesting().Run(owner_task);
+  }
+
+  return std::make_unique<ExecutionEngine>(base::PassKey<ExecutionEngine>(),
+                                           owner_task);
 }
 
 std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
-    Profile* profile,
+    ActorTask& owner_task,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher) {
   return std::make_unique<ExecutionEngine>(base::PassKey<ExecutionEngine>(),
-                                           profile,
+                                           owner_task,
                                            std::move(ui_event_dispatcher));
 }
 
@@ -172,17 +202,6 @@ ExecutionEngine::~ExecutionEngine() {
   origin_checker_.RecordSizeMetrics();
 
   RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
-}
-
-void ExecutionEngine::SetOwner(ActorTask* task) {
-  task_ = task;
-  TRACE_EVENT0("actor", "ExecutionEngine::SetOwner");
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  actor_login_service_ = std::make_unique<actor_login::ActorLoginServiceImpl>();
-  actor_form_filling_service_ =
-      std::make_unique<autofill::ActorFormFillingServiceImpl>();
-#endif
-  tool_controller_ = std::make_unique<ToolController>(*task_, *this);
 }
 
 void ExecutionEngine::SetState(State state) {
@@ -306,7 +325,7 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
   // enterprise policy blocklist, as we would already have blocked the
   // navigation before reaching this gating logic.
   const EnterprisePolicyBlockReason enterprise_reason =
-      ActorKeyedService::Get(profile_)
+      ActorKeyedService::Get(task_->profile())
           ->GetPolicyChecker()
           .EvaluateEnterprisePolicyForUrl(destination_url);
   if (enterprise_reason == EnterprisePolicyBlockReason::kExplicitlyAllowed) {
@@ -365,7 +384,7 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
   }
   base::expected<void, DecisionCallback> sensitive_check_result =
       MaybeCheckOptimizationGuideForSensitiveUrl(
-          navigation_url, profile_,
+          navigation_url, task_->profile(),
           base::BindOnce(&ExecutionEngine::OnNavigationSensitiveUrlListChecked,
                          GetWeakPtr(), initiator_origin, navigation_url,
                          skip_prompt, std::move(timer), std::move(callback)));
@@ -700,11 +719,14 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   // invoked `origin_checker_.ConfirmSensitiveOrigin()` with the precursor to
   // ensure the optimization guide sensitive origin check would be skipped as
   // expected.
-  ActorKeyedService::Get(profile_)->GetPolicyChecker().MayActOnTab(
-      *tab, *journal_, task_->id(), origin_checker_,
-      base::BindOnce(
-          &ExecutionEngine::OnMayActOnTabDecision, GetWeakPtr(),
-          tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+  ActorKeyedService::Get(task_->profile())
+      ->GetPolicyChecker()
+      .MayActOnTab(
+          *tab, *journal_, task_->id(), origin_checker_,
+          base::BindOnce(&ExecutionEngine::OnMayActOnTabDecision, GetWeakPtr(),
+                         tab->GetContents()
+                             ->GetPrimaryMainFrame()
+                             ->GetLastCommittedOrigin()));
 }
 
 void ExecutionEngine::OnMayActOnTabDecision(
@@ -957,19 +979,20 @@ bool ExecutionEngine::HasActionSequence() const {
 
 favicon::FaviconService* ExecutionEngine::GetFaviconService() {
   return FaviconServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+      task_->profile(), ServiceAccessType::EXPLICIT_ACCESS);
 }
 
 void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {
-  ActorKeyedService::Get(profile_)->GetPolicyChecker().MayActOnUrl(
-      url, /*allow_insecure_http=*/true, profile_, *journal_, task_->id(),
-      std::move(callback));
+  ActorKeyedService::Get(task_->profile())
+      ->GetPolicyChecker()
+      .MayActOnUrl(url, /*allow_insecure_http=*/true, task_->profile(),
+                   *journal_, task_->id(), std::move(callback));
 }
 
 Profile& ExecutionEngine::GetProfile() {
-  return *profile_;
+  return *task_->profile();
 }
 
 AggregatedJournal& ExecutionEngine::GetJournal() {
@@ -1012,7 +1035,7 @@ void ExecutionEngine::SetUserSelectedCredential(
   user_selected_credentials_[origin] = credential_with_permission;
 
   affiliations::AffiliationService* affiliation_service =
-      AffiliationServiceFactory::GetForProfile(profile_);
+      AffiliationServiceFactory::GetForProfile(task_->profile());
   // Fetch strongly affiliated domains, in order to be able to reuse the
   // permission for sites that do not have the exact same origin but are
   // strongly affiliated.

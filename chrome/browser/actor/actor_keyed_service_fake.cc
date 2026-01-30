@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 
+#include "base/test/bind.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
@@ -48,15 +50,19 @@ TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
             base::BindRepeating(MakeOkResult,
                                 /*requires_page_stabilization=*/true)));
   }
-  auto execution_engine = ExecutionEngine::CreateForTesting(
-      GetProfile(), std::move(ui_event_dispatcher));
+
+  ScopedExecutionEngineFactory scoped_execution_engine_factory_(
+      base::BindLambdaForTesting([&](ActorTask& task) {
+        CHECK(ui_event_dispatcher);
+        return ExecutionEngine::CreateForTesting(
+            task, std::move(ui_event_dispatcher));
+      }));
+
   auto task_options = webui::mojom::TaskOptions::New();
   task_options->title = "Test Task";
   auto actor_task = std::make_unique<ActorTask>(
       GetProfile(), std::move(task_ui_event_dispatcher),
       std::move(task_options));
-  actor_task->SetExecutionEngineForTesting(  // IN-TEST
-      std::move(execution_engine));
   return AddActiveTask(std::move(actor_task));
 }
 
@@ -65,18 +71,18 @@ void ActorKeyedServiceFake::PauseTaskForTesting(TaskId task_id,  // IN-TEST
   GetTask(task_id)->Pause(from_actor);
   // This fake mocks out the event dispatcher, so we need to manually notify the
   // ui state manager.
-  GetActorUiStateManager()->OnUiEvent(actor::ui::TaskStateChanged(
-      task_id, from_actor ? actor::ActorTask::State::kPausedByActor
-                          : actor::ActorTask::State::kPausedByUser));
+  GetActorUiStateManager()->OnUiEvent(ui::TaskStateChanged(
+      task_id, from_actor ? ActorTask::State::kPausedByActor
+                          : ActorTask::State::kPausedByUser));
 }
 
 void ActorKeyedServiceFake::StopTaskForTesting(  // IN-TEST
     TaskId task_id,
-    actor::ActorTask::StoppedReason stopped_reason) {
+    ActorTask::StoppedReason stopped_reason) {
   StopTask(task_id, stopped_reason);
   // This fake mocks out the event dispatcher, so we need to manually notify the
   // ui state manager.
-  GetActorUiStateManager()->OnUiEvent(actor::ui::StopTask(
+  GetActorUiStateManager()->OnUiEvent(ui::StopTask(
       task_id, ActorTask::GetTaskStateFromStoppedReason(stopped_reason),
       "Test Task",
       /*last_acted_on_tab_handle=*/tabs::TabHandle()));

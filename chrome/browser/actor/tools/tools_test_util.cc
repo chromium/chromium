@@ -187,18 +187,12 @@ ActorTask& ActorToolsTest::actor_task() const {
   return *ActorKeyedService::Get(GetProfile())->GetTask(task_id_);
 }
 
-std::unique_ptr<ExecutionEngine> ActorToolsTest::CreateExecutionEngine(
-    Profile* profile) {
-  return std::make_unique<ExecutionEngine>(profile);
-}
-
 TaskId ActorToolsTest::CreateNewTask() {
   auto event_dispatcher = ui::NewUiEventDispatcher(
       ActorKeyedService::Get(GetProfile())->GetActorUiStateManager());
   auto actor_task =
       std::make_unique<ActorTask>(GetProfile(), std::move(event_dispatcher),
                                   /*options=*/nullptr);
-  actor_task->SetExecutionEngineForTesting(CreateExecutionEngine(GetProfile()));
   return ActorKeyedService::Get(GetProfile())
       ->AddActiveTask(std::move(actor_task));
 }

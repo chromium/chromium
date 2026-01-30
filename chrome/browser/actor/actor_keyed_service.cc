@@ -289,7 +289,6 @@ TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
   TRACE_EVENT0("actor", "ActorKeyedService::AddActiveTask");
   const TaskId task_id = next_task_id_.GenerateNextId();
   task->SetId(base::PassKey<ActorKeyedService>(), task_id);
-  task->GetExecutionEngine().SetOwner(task.get());
 
   const ActorTask::State task_state = task->GetState();
   active_tasks_[task_id] = std::move(task);

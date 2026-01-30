@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
@@ -225,12 +227,17 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
         actor::ui::NewMockUiEventDispatcher();
     std::unique_ptr<actor::ui::UiEventDispatcher> task_ui_event_dispatcher =
         actor::ui::NewMockUiEventDispatcher();
-    auto execution_engine = actor::ExecutionEngine::CreateForTesting(
-        browser()->profile(), std::move(ui_event_dispatcher));
+
+    actor::ScopedExecutionEngineFactory scoped_execution_engine_factory(
+        base::BindLambdaForTesting([&](actor::ActorTask& task) {
+          CHECK(ui_event_dispatcher);
+          return actor::ExecutionEngine::CreateForTesting(
+              task, std::move(ui_event_dispatcher));
+        }));
+
     auto task = std::make_unique<actor::ActorTask>(
         browser()->profile(), std::move(task_ui_event_dispatcher),
         /*options=*/nullptr, mock_actor_task_delegate_.GetWeakPtr());
-    task->SetExecutionEngineForTesting(std::move(execution_engine));
     tabs::TabInterface* tab =
         tabs::TabInterface::GetFromContents(web_contents_);
     EXPECT_NE(tab, nullptr);

@@ -264,6 +264,16 @@ class ExecutionEngineStateWaiter : public ExecutionEngine::StateObserver {
   ExecutionEngine::State target_state_;
 };
 
+// Use this RAII helper to provide a factory function for constructing
+// ExecutionEngine. This allows tests to provide a mock ExecutionEngine or one
+// constructed specially to be instrumented for testing.
+class ScopedExecutionEngineFactory {
+ public:
+  explicit ScopedExecutionEngineFactory(
+      ExecutionEngine::FactoryFunction factory);
+  ~ScopedExecutionEngineFactory();
+};
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_

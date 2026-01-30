@@ -123,13 +123,15 @@ ActorTask::ActorTask(Profile* profile,
     : profile_(profile),
       create_time_(base::TimeTicks::Now()),
       action_tracker_for_metrics_(std::make_unique<ActionTrackerForMetrics>()),
-      execution_engine_(std::make_unique<ExecutionEngine>(profile_)),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       title_(options && options->title.has_value() ? options->title.value()
                                                    : ""),
       delegate_(std::move(delegate)),
-      ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {}
+      ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
+  CHECK(profile_);
+  execution_engine_ = ExecutionEngine::Create(*this);
+}
 
 ActorTask::~ActorTask() {
   // The owner of the ActorTasks (ActorKeyedService) should have stopped all
@@ -848,13 +850,6 @@ std::string ToString(const ActorTask::State& state) {
 
 std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
   return os << ToString(state);
-}
-
-void ActorTask::SetExecutionEngineForTesting(
-    std::unique_ptr<ExecutionEngine> engine) {
-  CHECK(engine);
-  execution_engine_.reset(std::move(engine.release()));
-  execution_engine_->SetOwner(this);
 }
 
 // static

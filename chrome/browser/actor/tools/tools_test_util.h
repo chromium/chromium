@@ -98,9 +98,6 @@ class ActorToolsTest : public PlatformBrowserTest {
   void GetPageApc();
 
  protected:
-  virtual std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
-      Profile* profile);
-
   TaskId CreateNewTask();
 
   void SetPageContent(

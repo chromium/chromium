@@ -198,9 +198,9 @@ class ActorTask {
   // The set of tabs that were acted on by the last call to Act.
   TabHandleSet GetLastActedTabs() const;
 
-  void SetExecutionEngineForTesting(std::unique_ptr<ExecutionEngine> engine);
-
   base::WeakPtr<ActorTask> GetWeakPtr();
+
+  Profile* profile() const { return profile_; }
 
  private:
   class ActorControlledTabState : public content::WebContentsObserver {
