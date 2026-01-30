@@ -7879,9 +7879,6 @@ crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile
 # This test is unreliable because of delayed update of history.length during cross-document navigation.
 crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
 
-
-crbug.com/1462784 rootscroller/fixed-chaining-with-implicit.html [ Failure Pass ]
-
 # Gardener 2023-07-25
 crbug.com/1409152 http/tests/forms/color-picker-keyboard-cross-domain.php [ Failure Pass Timeout ]
 crbug.com/1409152 http/tests/forms/date-picker-keyboard-cross-domain.php [ Failure Pass Timeout ]

@@ -62,7 +62,7 @@
     internals.runtimeFlags.implicitRootScrollerEnabled = true;
   }
 
-  async function runTest() {
+  async function runTest(rootscroller) {
     internals.setVisualViewportOffset(0, 0);
     rootscroller.scrollTop = 0;
 
@@ -73,7 +73,10 @@
                   "#rootscroller must be the effective root scroller");
 
     const delta = 3000;
-    const location = { x: 5, y: 5 };
+    const location = {
+      x: Math.round(window.visualViewport.width / 2),
+      y: Math.round(window.visualViewport.height / 2)
+    };
     await smoothScroll(delta,
                        location.x,
                        location.y,
@@ -81,28 +84,34 @@
                        'down',
                        SPEED_INSTANT);
 
-    assert_equals(rootscroller.scrollTop,
-                  0,
-                  "RootScroller must not be scrolled");
+    await waitForCompositorCommit();
   }
 
   window.onload = async () => {
     if (!window.internals)
       return;
 
-    var rootscroller = document.querySelector('#rootscroller');
+    const rootscroller = document.querySelector('#rootscroller');
 
     promise_test( async t => {
       internals.setPageScaleFactor(1);
-      await runTest();
+      await runTest(rootscroller);
+      assert_equals(rootscroller.scrollTop,
+                    0,
+                    "RootScroller must not be scrolled");
     }, "Scrolling from fixed element while unzoomed.");
 
     promise_test( async t => {
       internals.setPageScaleFactor(2);
-      await runTest();
-      assert_greater_than(visualViewport.offsetTop,
-                          0,
-                          "Visual viewport must be scrolled");
+      await runTest(rootscroller);
+
+      // Wait for the scroll to be applied to the visual viewport.
+      await waitFor(() => visualViewport.offsetTop > 0, "Visual viewport must be scrolled");
+
+      // Assert that the root scroller didn't incorrectly catch the scroll.
+      assert_equals(rootscroller.scrollTop,
+                    0,
+                    "RootScroller must not be scrolled");
     }, "Scrolling from fixed element while zoomed");
   }
 </script>
