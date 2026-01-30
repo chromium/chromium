@@ -19,8 +19,10 @@ import android.app.Activity;
 import android.app.PictureInPictureUiState;
 import android.app.assist.AssistContent;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Pair;
 import android.view.ViewGroup;
+import android.window.OnBackInvokedDispatcher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -297,36 +299,45 @@ public class ChromeActivityUnitTest {
         assertEquals(1, userActionTester.getActionCount("MobileMenuHideReaderMode"));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_enabled() {
-        TestChromeActivity chromeActivity = new TestChromeActivity();
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            doReturn(Mockito.mock(OnBackInvokedDispatcher.class))
+                    .when(chromeActivity)
+                    .getOnBackInvokedDispatcher();
+        }
         chromeActivity.onPreCreate();
         assertNotNull(
                 "ThemeResourceProvider should be created.",
                 chromeActivity.getThemeResourceProviderForTesting());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_disabled() {
-        TestChromeActivity chromeActivity = new TestChromeActivity();
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            doReturn(Mockito.mock(OnBackInvokedDispatcher.class))
+                    .when(chromeActivity)
+                    .getOnBackInvokedDispatcher();
+        }
         chromeActivity.onPreCreate();
         assertNull(
                 "ThemeResourceProvider should not be created.",
                 chromeActivity.getThemeResourceProviderForTesting());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_wrongActivityType() {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            doReturn(Mockito.mock(OnBackInvokedDispatcher.class))
+                    .when(chromeActivity)
+                    .getOnBackInvokedDispatcher();
+        }
         doReturn(ActivityType.CUSTOM_TAB).when(chromeActivity).getActivityType();
         chromeActivity.onPreCreate();
         assertNull(
