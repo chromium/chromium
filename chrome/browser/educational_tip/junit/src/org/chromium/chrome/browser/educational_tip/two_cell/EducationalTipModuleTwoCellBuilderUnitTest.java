@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,11 +34,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+
+import java.util.List;
 
 /** Test relating to {@link EducationalTipModuleTwoCellBuilder} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -61,8 +65,11 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     @Before
     public void setUp() {
         SetupListManager.setInstanceForTesting(mSetupListManager);
-        when(mSetupListManager.isSetupListActive()).thenReturn(true);
-
+        when(mSetupListManager.getRankedModuleTypes())
+                .thenReturn(
+                        List.of(
+                                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -89,7 +96,6 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     @Test
     @SmallTest
     public void testGetManualRank_SetupListActive() {
-        when(mSetupListManager.isSetupListActive()).thenReturn(true);
         when(mSetupListManager.shouldShowTwoCellLayout()).thenReturn(true);
         mModuleBuilder = new EducationalTipModuleTwoCellBuilder(MODULE_TYPE, mActionDelegate);
         Integer manualOrder = mModuleBuilder.getManualRank();
@@ -102,6 +108,7 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     public void testGetManualRank_SetupListInActive() {
         when(mSetupListManager.isSetupListActive()).thenReturn(false);
         when(mSetupListManager.shouldShowTwoCellLayout()).thenReturn(true);
+        when(mSetupListManager.getManualRank(anyInt())).thenReturn(null);
         mModuleBuilder = new EducationalTipModuleTwoCellBuilder(MODULE_TYPE, mActionDelegate);
         Integer manualOrder = mModuleBuilder.getManualRank();
         assertNull("Manual order should be null when setup list is inactive", manualOrder);

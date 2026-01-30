@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Test relating to {@link SetupListManager} */
@@ -154,5 +155,50 @@ public class SetupListManagerUnitTest {
         SetupListManager.setInstanceForTesting(new SetupListManager());
         assertFalse(SetupListManager.getInstance().isSetupListActive());
         assertFalse(SetupListManager.getInstance().shouldShowTwoCellLayout());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetRankedModuleTypes_ReordersOnCompletion() {
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        List<Integer> rankedModules = SetupListManager.getInstance().getRankedModuleTypes();
+
+        // Initially, pick the first item.
+        int firstModuleType = rankedModules.get(0);
+        String prefKey = SetupListModuleUtils.getCompletionKeyForModule(firstModuleType);
+
+        // Mark the first item as completed.
+        mSharedPreferencesManager.writeBoolean(prefKey, true);
+
+        // Notify manager of the change.
+        SetupListManager.getInstance().onSharedPreferenceChanged(null, prefKey);
+
+        rankedModules = SetupListManager.getInstance().getRankedModuleTypes();
+
+        // The first item should now be at the end of the list.
+        assertEquals(firstModuleType, (int) rankedModules.get(rankedModules.size() - 1));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetManualRank_UpdatesDynamically() {
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        List<Integer> rankedModules = SetupListManager.getInstance().getRankedModuleTypes();
+
+        // Initially, pick the first item.
+        int firstModuleType = rankedModules.get(0);
+        String prefKey = SetupListModuleUtils.getCompletionKeyForModule(firstModuleType);
+
+        // Its rank should be 0.
+        assertEquals(0, (int) SetupListManager.getInstance().getManualRank(firstModuleType));
+
+        // Complete the first item.
+        mSharedPreferencesManager.writeBoolean(prefKey, true);
+        SetupListManager.getInstance().onSharedPreferenceChanged(null, prefKey);
+
+        // Now its rank should be at the end.
+        int expectedRank = SetupListManager.getInstance().getRankedModuleTypes().size() - 1;
+        assertEquals(
+                expectedRank, (int) SetupListManager.getInstance().getManualRank(firstModuleType));
     }
 }

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import androidx.annotation.DrawableRes;
@@ -50,8 +51,7 @@ public class SetupListCompletableUnitTest {
     @Test
     @SmallTest
     public void testGetCompletionState_NotSetupListModule() {
-        when(mSetupListManager.isSetupListActive()).thenReturn(false);
-        when(mMockCompletableProvider.getCardImage()).thenReturn(DEFAULT_ICON);
+        when(mSetupListManager.isSetupListModule(anyInt())).thenReturn(false);
 
         SetupListCompletable.CompletionState state =
                 SetupListCompletable.getCompletionState(mMockCompletableProvider, TEST_MODULE_TYPE);
@@ -62,7 +62,7 @@ public class SetupListCompletableUnitTest {
     @Test
     @SmallTest
     public void testGetCompletionState_SetupListModule_Completable_NotComplete() {
-        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        when(mSetupListManager.isSetupListModule(TEST_MODULE_TYPE)).thenReturn(true);
         when(mMockCompletableProvider.isComplete()).thenReturn(false);
         when(mMockCompletableProvider.getCardImage()).thenReturn(DEFAULT_ICON);
 
@@ -76,7 +76,7 @@ public class SetupListCompletableUnitTest {
     @Test
     @SmallTest
     public void testGetCompletionState_SetupListModule_Completable_IsComplete() {
-        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        when(mSetupListManager.isSetupListModule(TEST_MODULE_TYPE)).thenReturn(true);
         when(mMockCompletableProvider.isComplete()).thenReturn(true);
         when(mMockCompletableProvider.getCardImageCompletedResId()).thenReturn(COMPLETED_ICON);
 

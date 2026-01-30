@@ -28,7 +28,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder {
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final @ModuleType int mModuleType;
-    private final @Nullable Integer mManualRank;
 
     /**
      * @param moduleType The type of the module to build.
@@ -38,7 +37,6 @@ public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder
             @ModuleType int moduleType, EducationTipModuleActionDelegate actionDelegate) {
         mModuleType = moduleType;
         mActionDelegate = actionDelegate;
-        mManualRank = SetupListModuleUtils.getManualRank(mModuleType);
     }
 
     // ModuleProviderBuilder implementation.
@@ -66,6 +64,6 @@ public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder
 
     @Override
     public @Nullable Integer getManualRank() {
-        return mManualRank;
+        return SetupListModuleUtils.getManualRank(mModuleType);
     }
 }

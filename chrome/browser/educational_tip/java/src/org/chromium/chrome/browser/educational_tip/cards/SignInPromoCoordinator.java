@@ -9,10 +9,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -66,8 +66,7 @@ public class SignInPromoCoordinator implements EducationalTipCardProvider, Setup
 
     @Override
     public boolean isComplete() {
-        if (ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.SETUP_LIST_SIGN_IN_PROMO_COMPLETED, false)) {
+        if (SetupListModuleUtils.isModuleCompleted(ModuleType.SIGN_IN_PROMO)) {
             return true;
         }
 
@@ -78,9 +77,7 @@ public class SignInPromoCoordinator implements EducationalTipCardProvider, Setup
                     IdentityServicesProvider.get().getIdentityManager(profile);
             if (identityManager != null && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
                 // User is signed in, mark as complete
-                ChromeSharedPreferences.getInstance()
-                        .writeBoolean(
-                                ChromePreferenceKeys.SETUP_LIST_SIGN_IN_PROMO_COMPLETED, true);
+                SetupListModuleUtils.setModuleCompleted(ModuleType.SIGN_IN_PROMO);
                 return true;
             }
         }

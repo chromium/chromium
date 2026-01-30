@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -34,7 +35,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
@@ -57,7 +57,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 public class EducationalTipModuleMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private PropertyModel mModel;
+    private PropertyModel mModel;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private Profile mProfile;
@@ -85,9 +85,6 @@ public class EducationalTipModuleMediatorUnitTest {
         mDefaultModuleTypeForTesting = ModuleType.DEFAULT_BROWSER_PROMO;
         TrackerFactory.setTrackerForTests(mTracker);
         mPrefsManager = ChromeSharedPreferences.getInstance();
-        mPrefsManager.removeKey(
-                ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED);
-        mPrefsManager.removeKey(ChromePreferenceKeys.SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
         SetupListManager.setInstanceForTesting(mSetupListManager);
 
@@ -100,6 +97,7 @@ public class EducationalTipModuleMediatorUnitTest {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
+        mModel = new PropertyModel.Builder(EducationalTipModuleProperties.ALL_KEYS).build();
         mEducationalTipModuleMediator =
                 new EducationalTipModuleMediator(
                         mDefaultModuleTypeForTesting,
@@ -219,8 +217,10 @@ public class EducationalTipModuleMediatorUnitTest {
     @SmallTest
     public void testShowSetupList_Completed() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
-        mPrefsManager.writeBoolean(
-                ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED, true);
+        when(mSetupListManager.isSetupListModule(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
+                .thenReturn(true);
+        when(mSetupListManager.isModuleCompleted(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
+                .thenReturn(true);
 
         testShowModuleImpl(
                 ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
@@ -234,8 +234,10 @@ public class EducationalTipModuleMediatorUnitTest {
     @SmallTest
     public void testShowSetupList_NotCompleted() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
-        mPrefsManager.writeBoolean(
-                ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED, false);
+        when(mSetupListManager.isSetupListModule(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
+                .thenReturn(true);
+        when(mSetupListManager.isModuleCompleted(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
+                .thenReturn(false);
 
         testShowModuleImpl(
                 ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
@@ -331,15 +333,15 @@ public class EducationalTipModuleMediatorUnitTest {
         mEducationalTipModuleMediator.setModuleTypeForTesting(moduleType);
         mEducationalTipModuleMediator.showModule();
 
-        verify(mModel)
-                .set(
-                        EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING,
-                        mContext.getString(titleId));
-        verify(mModel)
-                .set(
-                        EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING,
-                        mContext.getString(descriptionId));
-        verify(mModel).set(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE, imageResource);
+        assertEquals(
+                mContext.getString(titleId),
+                mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING));
+        assertEquals(
+                mContext.getString(descriptionId),
+                mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING));
+        assertEquals(
+                imageResource, mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE));
+
         verify(mModuleDelegate).onDataReady(moduleType, mModel);
         verify(mModuleDelegate, never()).onDataFetchFailed(moduleType);
     }
@@ -353,16 +355,18 @@ public class EducationalTipModuleMediatorUnitTest {
         mEducationalTipModuleMediator.setModuleTypeForTesting(moduleType);
         mEducationalTipModuleMediator.showModule();
 
-        verify(mModel)
-                .set(
-                        EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING,
-                        mContext.getString(titleId));
-        verify(mModel)
-                .set(
-                        EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING,
-                        mContext.getString(descriptionId));
-        verify(mModel).set(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE, imageResource);
-        verify(mModel).set(EducationalTipModuleProperties.MARK_COMPLETED, isCompleted);
+        assertEquals(
+                mContext.getString(titleId),
+                mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING));
+        assertEquals(
+                mContext.getString(descriptionId),
+                mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING));
+        assertEquals(
+                imageResource, mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE));
+        assertEquals(
+                isCompleted,
+                mModel.get(EducationalTipModuleProperties.MARK_COMPLETED).booleanValue());
+
         verify(mModuleDelegate).onDataReady(moduleType, mModel);
         verify(mModuleDelegate, never()).onDataFetchFailed(moduleType);
     }

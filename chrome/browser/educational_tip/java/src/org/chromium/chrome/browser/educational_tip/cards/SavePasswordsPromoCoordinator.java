@@ -10,9 +10,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 /** Coordinator for the Save Passwords promo card. */
 @NullMarked
@@ -63,15 +63,13 @@ public class SavePasswordsPromoCoordinator
         // along with an animation
 
         // Considered complete if the user clicks on the promo
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.SETUP_LIST_SAVE_PASSWORDS_PROMO_COMPLETED, true);
+        SetupListModuleUtils.setModuleCompleted(ModuleType.SAVE_PASSWORDS_PROMO);
         mOnModuleClickedCallback.run();
     }
 
     @Override
     public boolean isComplete() {
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.SETUP_LIST_SAVE_PASSWORDS_PROMO_COMPLETED, false);
+        return SetupListModuleUtils.isModuleCompleted(ModuleType.SAVE_PASSWORDS_PROMO);
     }
 
     @Override

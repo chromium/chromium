@@ -44,6 +44,13 @@ public class HomeTipsModulesProviderUnitTest {
     @Before
     public void setUp() {
         SetupListManager.setInstanceForTesting(mSetupListManager);
+        when(mSetupListManager.getRankedModuleTypes())
+                .thenReturn(
+                        List.of(
+                                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
+        when(mSetupListManager.getTwoCellContainerModuleTypes())
+                .thenReturn(List.of(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER));
     }
 
     @Test

@@ -30,14 +30,12 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final @ModuleType int mModuleType;
     private @Nullable Profile mProfile;
-    private final @Nullable Integer mManualRank;
 
     /** Pass in the dependencies needed to build {@link EducationalTipModuleCoordinator}. */
     public EducationalTipModuleBuilder(
             @ModuleType int moduleTypeToBuild, EducationTipModuleActionDelegate actionDelegate) {
         mModuleType = moduleTypeToBuild;
         mActionDelegate = actionDelegate;
-        mManualRank = SetupListModuleUtils.getManualRank(mModuleType);
     }
 
     /** Build {@link ModuleProvider} for the educational tip module. */
@@ -89,7 +87,7 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
 
     @Override
     public @Nullable Integer getManualRank() {
-        return mManualRank;
+        return SetupListModuleUtils.getManualRank(mModuleType);
     }
 
     // ModuleEligibilityChecker implementation:

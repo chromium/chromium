@@ -10,10 +10,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 
 /** Coordinator for the address bar placement promo card. */
@@ -65,19 +65,14 @@ public class AddressBarPlacementPromoCoordinator
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(mActionDelegate.getContext(), AddressBarSettingsFragment.class);
         // Considered complete if the user clicks on the promo
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED, true);
+        SetupListModuleUtils.setModuleCompleted(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
 
         mOnModuleClickedCallback.run();
     }
 
     @Override
     public boolean isComplete() {
-        boolean completed =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED, false);
-        return completed;
+        return SetupListModuleUtils.isModuleCompleted(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
     }
 
     @Override

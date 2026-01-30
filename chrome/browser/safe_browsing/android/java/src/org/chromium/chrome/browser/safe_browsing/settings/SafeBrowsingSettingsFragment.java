@@ -174,8 +174,9 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
             if (newState == SafeBrowsingState.ENHANCED_PROTECTION) {
                 ChromeSharedPreferences.getInstance()
                         .writeBoolean(
-                                ChromePreferenceKeys
-                                        .SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED,
+                                ChromePreferenceKeys.SETUP_LIST_COMPLETED_KEY_PREFIX.createKey(
+                                        String.valueOf(
+                                                12 /* ModuleType.ENHANCED_SAFE_BROWSING_PROMO */)),
                                 true);
             }
         }
