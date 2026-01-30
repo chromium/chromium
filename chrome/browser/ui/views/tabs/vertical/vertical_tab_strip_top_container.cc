@@ -154,8 +154,11 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     }
 
     // Guarantee that the height of the container is at least the height of the
-    // buttons plus padding.
-    min_height += 2 * padding;
+    // buttons plus padding. Use the same padding as the toolbar for approximate
+    // consistency.
+    if (toolbar_height_ == 0) {
+      min_height += GetLayoutInsets(TOOLBAR_BUTTON).height();
+    }
     host_size.SetToMax(gfx::Size(0, min_height));
 
     total_width += (container_buttons.size() - 1) * padding;
