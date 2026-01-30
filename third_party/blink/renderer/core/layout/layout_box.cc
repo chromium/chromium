@@ -3168,10 +3168,12 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,
   // They never refer to children.
   // FIXME: Paint the carets inside empty blocks differently than the carets
   // before/after elements.
-  LayoutUnit caret_width = GetFrameView()->BarCaretWidth();
-  LogicalSize size(LogicalWidth(), LogicalHeight());
 
-  LayoutUnit caret_block_size = size.block_size;
+  const SimpleFontData* font_data = StyleRef().GetFont()->PrimaryFont();
+  const LayoutUnit font_height =
+      font_data ? LayoutUnit(font_data->GetFontMetrics().Height())
+                : LayoutUnit();
+
   // If height of box is smaller than font height, use the latter one,
   // otherwise the caret might become invisible.
   //
@@ -3181,12 +3183,10 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,
   // giant tall-as-window insertion point
   //
   // FIXME: ignoring :first-line, missing good reason to take care of
-  const SimpleFontData* font_data = StyleRef().GetFont()->PrimaryFont();
-  LayoutUnit font_height =
-      LayoutUnit(font_data ? font_data->GetFontMetrics().Height() : 0);
-  if (font_height > size.block_size || (!IsAtomicInlineLevel() && !IsTable())) {
-    caret_block_size = font_height;
-  }
+  const LogicalSize caret_size = {GetFrameView()->BarCaretWidth(),
+                                  (IsAtomicInlineLevel() || IsTable())
+                                      ? std::max(font_height, LogicalHeight())
+                                      : font_height};
 
   // FIXME: Border/padding should be added for all elements but this workaround
   // is needed because we use offsets inside an "atomic" element to represent
@@ -3197,7 +3197,7 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,
 
   WritingDirectionMode writing_direction = Style()->GetWritingDirection();
   LogicalOffset offset;
-  LayoutUnit content_inline_size = size.inline_size;
+  LayoutUnit content_inline_size = LogicalWidth();
   if (apply_border_padding) {
     BoxStrut border_padding = (BorderOutsets() + PaddingOutsets())
                                   .ConvertToLogical(writing_direction);
@@ -3206,12 +3206,11 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,
     content_inline_size -= border_padding.InlineSum();
   }
   if (caret_offset) {
-    offset.inline_offset += content_inline_size - caret_width;
+    offset.inline_offset += content_inline_size - caret_size.inline_size;
   }
 
-  LogicalRect rect(offset, LogicalSize(caret_width, caret_block_size));
   return WritingModeConverter(writing_direction, StitchedSize())
-      .ToPhysical(rect);
+      .ToPhysical({offset, caret_size});
 }
 
 PositionWithAffinity LayoutBox::PositionForPointInFragments(
