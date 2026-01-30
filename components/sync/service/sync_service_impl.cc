@@ -2532,7 +2532,13 @@ void SyncServiceImpl::MaybeStartDeviceStatisticsTracker() {
 
   if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
     // It shouldn't happen in practice that the account info (refresh tokens)
-    // still aren't fully loaded at this point.
+    // still aren't fully loaded at this point. But if it does, attempt starting
+    // the tracker again in a little while.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsTracker,
+                       weak_factory_.GetWeakPtr()),
+        base::Seconds(1));
     return;
   }
 
