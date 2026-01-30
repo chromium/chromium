@@ -1072,10 +1072,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             case CustomTabsUiType.OFFLINE_PAGE:
             case CustomTabsUiType.AUTH_TAB:
             case CustomTabsUiType.NETWORK_BOUND_TAB:
+            case CustomTabsUiType.TRUSTED_WEB_ACTIVITY:
             case CustomTabsUiType.POPUP:
                 return false;
-            case CustomTabsUiType.TRUSTED_WEB_ACTIVITY:
-                return !ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled();
             case CustomTabsUiType.DEFAULT:
             default:
                 return true;

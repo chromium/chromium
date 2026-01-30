@@ -1938,7 +1938,6 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures(ChromeFeatureList.ANDROID_WEB_APP_MENU_BUTTON)
     public void uiTypeTwa_withExperimentFlag_returnsWebAppMenu() {
         CustomTabsSession session =
                 CustomTabsSession.createMockSessionForTesting(
@@ -2551,7 +2550,6 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WEB_APP_MENU_BUTTON)
     public void uiTypes_openInBrowserButtonState_twa() {
         final int stateOff = CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
         assertEquals(stateOff, getOibStateForType(CustomTabsUiType.TRUSTED_WEB_ACTIVITY));

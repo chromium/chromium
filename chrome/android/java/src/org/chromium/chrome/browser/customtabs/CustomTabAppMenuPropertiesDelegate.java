@@ -194,18 +194,16 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
             downloadItemVisible = false;
             bookmarkItemVisible = false;
-            if (ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
-                requestDesktopSiteVisible = false;
+            requestDesktopSiteVisible = false;
 
-                translateVisible = false;
-                // Remove icons.
-                iconRowVisible = false;
-                // Site settings menu item row.
-                siteSettingsItemVisible = true;
-                zoomVisible = true;
-                findInPageVisible = true;
-                mShowShare = true;
-            }
+            translateVisible = false;
+            // Remove icons.
+            iconRowVisible = false;
+            // Site settings menu item row.
+            siteSettingsItemVisible = true;
+            zoomVisible = true;
+            findInPageVisible = true;
+            mShowShare = true;
         } else if (mUiType == CustomTabsUiType.OFFLINE_PAGE) {
             bookmarkItemVisible = true;
             downloadItemVisible = false;

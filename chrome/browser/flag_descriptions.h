@@ -5024,12 +5024,6 @@ inline constexpr char kAndroidWindowPopupResizeAfterSpawnDescription[] =
     "enable-android-window-popup-predict-final-bounds flag that regulates "
     "pre-creation bounds adjustments.";
 
-inline constexpr char kAndroidWebAppMenuButtonName[] =
-    "Enable minimal ui menu button";
-inline constexpr char kAndroidWebAppMenuButtonDescription[] =
-    "Display minimal ui menu button for PWAs on devices that support "
-    "desktop windowing.";
-
 inline constexpr char kAndroidHistoryPaneFaviconsName[] =
     "Android History Pane Favicons";
 inline constexpr char kAndroidHistoryPaneFaviconsDescription[] =

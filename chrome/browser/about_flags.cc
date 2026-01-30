@@ -12690,13 +12690,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-minimal-ui-menu-button",
-     flag_descriptions::kAndroidWebAppMenuButtonName,
-     flag_descriptions::kAndroidWebAppMenuButtonDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(webapps::features::kAndroidWebAppMenuButton)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"enable-twa-origin-display",
      flag_descriptions::kAndroidEnableTWAOriginDisplayName,
      flag_descriptions::kAndroidEnableTWAOriginDisplayDescription, kOsAndroid,

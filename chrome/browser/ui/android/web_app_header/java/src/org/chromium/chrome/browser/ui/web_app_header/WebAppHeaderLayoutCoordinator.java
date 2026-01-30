@@ -386,7 +386,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                         mHistoryDelegate,
                         /* isWebApp= */ true);
 
-        if (mIsTWA && ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
+        if (mIsTWA) {
             mMenuButtonContainer = mView.findViewById(R.id.web_app_menu_button_wrapper);
             mMenuButtonContainer.setVisibility(View.VISIBLE);
 
