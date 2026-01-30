@@ -204,34 +204,6 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
     return false;
   }
 
-  // Determine the current key on the client.
-  const SignatureProvider::SigningKey* client_key = nullptr;
-  const SignatureProvider* signature_provider =
-      policy_storage()->signature_provider();
-  int public_key_version = fetch_request.public_key_version();
-  if (fetch_request.has_public_key_version()) {
-    client_key = signature_provider->GetKeyByVersion(public_key_version);
-    if (!client_key) {
-      error_msg->assign(base::StringPrintf("Invalid public key version: %d",
-                                           public_key_version));
-      return false;
-    }
-  }
-
-  // Choose the key for signing the policy.
-  int signing_key_version = signature_provider->current_key_version();
-  if (fetch_request.has_public_key_version() &&
-      signature_provider->rotate_keys()) {
-    signing_key_version = public_key_version + 1;
-  }
-  const SignatureProvider::SigningKey* signing_key =
-      signature_provider->GetKeyByVersion(signing_key_version);
-  if (!signing_key) {
-    error_msg->assign(base::StringPrintf(
-        "Can't find signin key for version: %d", signing_key_version));
-    return false;
-  }
-
   em::PolicyData policy_data;
   policy_data.set_policy_type(policy_type);
   policy_data.set_timestamp(
@@ -248,10 +220,7 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
           ? "policy-testserver-service-account-identity@gmail.com"
           : policy_storage()->service_account_identity());
   policy_data.set_device_id(client_info.device_id);
-  std::string username =
-      client_info.username.value_or(policy_storage()->policy_user().empty()
-                                        ? kDefaultUsername
-                                        : policy_storage()->policy_user());
+  std::string username = GetUsername(client_info);
   policy_data.set_username(username);
 
   std::string domain = gaia::ExtractDomainName(gaia::SanitizeEmail(username));
@@ -262,10 +231,6 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
   }
   policy_data.set_policy_invalidation_topic(
       policy_storage()->policy_invalidation_topic());
-
-  if (fetch_request.signature_type() != em::PolicyFetchRequest::NONE) {
-    policy_data.set_public_key_version(signing_key_version);
-  }
 
   if (policy_type == policy::dm_protocol::GetChromeUserPolicyType() ||
       policy_type == dm_protocol::kChromePublicAccountPolicyType) {
@@ -303,6 +268,49 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
   std::string directory_api_id = policy_storage()->directory_api_id();
   if (!directory_api_id.empty()) {
     policy_data.set_directory_api_id(directory_api_id);
+  }
+
+  return SerializeAndSignPolicyData(policy_data, fetch_request, domain,
+                                    fetch_response, error_msg);
+}
+
+bool RequestHandlerForPolicy::SerializeAndSignPolicyData(
+    em::PolicyData& policy_data,
+    const em::PolicyFetchRequest& fetch_request,
+    const std::string& domain,
+    em::PolicyFetchResponse* fetch_response,
+    std::string* error_msg) {
+  // Determine the current key on the client.
+  const SignatureProvider::SigningKey* client_key = nullptr;
+  const SignatureProvider* signature_provider =
+      policy_storage()->signature_provider();
+  int public_key_version = fetch_request.public_key_version();
+  if (fetch_request.has_public_key_version()) {
+    client_key = signature_provider->GetKeyByVersion(public_key_version);
+    if (!client_key) {
+      error_msg->assign(base::StringPrintf("Invalid public key version: %d",
+                                           public_key_version));
+      return false;
+    }
+  }
+
+  // Choose the key for signing the policy.
+  int signing_key_version = signature_provider->current_key_version();
+  if (fetch_request.has_public_key_version() &&
+      signature_provider->rotate_keys()) {
+    signing_key_version = fetch_request.public_key_version() + 1;
+  }
+
+  const SignatureProvider::SigningKey* signing_key =
+      signature_provider->GetKeyByVersion(signing_key_version);
+  if (!signing_key) {
+    error_msg->assign(base::StringPrintf(
+        "Can't find signing key for version: %d", signing_key_version));
+    return false;
+  }
+
+  if (fetch_request.signature_type() != em::PolicyFetchRequest::NONE) {
+    policy_data.set_public_key_version(signing_key_version);
   }
 
   policy_data.SerializeToString(fetch_response->mutable_policy_data());
@@ -402,6 +410,7 @@ bool RequestHandlerForPolicy::ProcessCloudPolicyForExtensionInstall(
   // Merge the ExtensionInstallPolicies protos into one uber-proto based on the
   // request's extension_ids_and_version list.
   em::ExtensionInstallPolicies result;
+  em::PolicyData policy_data;
   for (const auto& extension : fetch_request.extension_ids_and_version()) {
     em::PolicyFetchRequest fetch_request_with_id;
     fetch_request_with_id.CopyFrom(fetch_request);
@@ -413,7 +422,7 @@ bool RequestHandlerForPolicy::ProcessCloudPolicyForExtensionInstall(
       return false;
     }
     // Get the payload from the inner response.
-    em::PolicyData policy_data;
+    policy_data.Clear();
     policy_data.ParseFromString(inner_response.policy_data());
     em::ExtensionInstallPolicies extension_install_policies;
     if (!extension_install_policies.ParseFromString(
@@ -431,17 +440,28 @@ bool RequestHandlerForPolicy::ProcessCloudPolicyForExtensionInstall(
   }
 
   // Wrap the uber-proto with PolicyData and add it to the response.
-  em::PolicyData policy_data;
   policy_data.set_policy_type(fetch_request.policy_type());
   policy_data.set_policy_value(result.SerializeAsString());
-  if (fetch_request.extension_ids_and_version_size() == 1) {
+  if (fetch_request.has_settings_entity_id()) {
     policy_data.set_settings_entity_id(
         fetch_request.extension_ids_and_version(0).extension_id());
+  } else {
+    policy_data.clear_settings_entity_id();
   }
-  policy_data.SerializeToString(
-      response->add_responses()->mutable_policy_data());
 
-  return true;
+  std::string username = GetUsername(client_info);
+  std::string domain = gaia::ExtractDomainName(gaia::SanitizeEmail(username));
+  auto* fetch_response = response->add_responses();
+  fetch_response->set_policy_type(fetch_request.policy_type());
+  return SerializeAndSignPolicyData(policy_data, fetch_request, domain,
+                                  fetch_response, error_msg);
+}
+
+std::string RequestHandlerForPolicy::GetUsername(
+    const ClientStorage::ClientInfo& client_info) {
+  return client_info.username.value_or(policy_storage()->policy_user().empty()
+                                           ? kDefaultUsername
+                                           : policy_storage()->policy_user());
 }
 
 }  // namespace policy
