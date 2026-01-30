@@ -86,7 +86,33 @@ std::string BuildTransitTicketRequest(const TransitTicket& ticket) {
   return std::string();
 }
 
+std::string BuildPassportRequest(const Passport& passport) {
+  // TODO(crbug.com/478783796): Implement Passport request building.
+  return std::string();
+}
+
+std::string BuildDriverLicenseRequest(const DriverLicense& license) {
+  // TODO(crbug.com/478783796): Implement DriverLicense request building.
+  return std::string();
+}
+
+std::string BuildNationalIdentityCardRequest(const NationalIdentityCard& card) {
+  // TODO(crbug.com/478783796): Implement NationalIdentityCard request building.
+  return std::string();
+}
+
+std::string BuildKTNRequest(const KTN& ktn) {
+  // TODO(crbug.com/478783796): Implement KTN request building.
+  return std::string();
+}
+
+std::string BuildRedressNumberRequest(const RedressNumber& number) {
+  // TODO(crbug.com/478783796): Implement RedressNumber request building.
+  return std::string();
+}
+
 std::string BuildSavePassRequest(const WalletPass& pass) {
+  // TODO(crbug.com/468916773): Remove non private passes for now.
   return std::visit(
       absl::Overload{
           [](const LoyaltyCard& card) { return BuildLoyaltyCardRequest(card); },
@@ -96,6 +122,19 @@ std::string BuildSavePassRequest(const WalletPass& pass) {
           },
           [](const TransitTicket& ticket) {
             return BuildTransitTicketRequest(ticket);
+          },
+          [](const Passport& passport) {
+            return BuildPassportRequest(passport);
+          },
+          [](const DriverLicense& license) {
+            return BuildDriverLicenseRequest(license);
+          },
+          [](const NationalIdentityCard& card) {
+            return BuildNationalIdentityCardRequest(card);
+          },
+          [](const KTN& ktn) { return BuildKTNRequest(ktn); },
+          [](const RedressNumber& number) {
+            return BuildRedressNumberRequest(number);
           }},
       pass.pass_data);
 }

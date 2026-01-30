@@ -24,7 +24,7 @@ struct BoardingPass {
   BoardingPass& operator=(BoardingPass&&);
   ~BoardingPass();
 
-  bool operator==(const BoardingPass& other) const = default;
+  friend bool operator==(const BoardingPass&, const BoardingPass&) = default;
 
   // The 2-3 character airline designator. e.g. "AC"
   std::string airline;
