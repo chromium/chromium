@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "base/version_info/channel.h"
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/activity_reporter/activity_reporter_for_testing.h"
 #include "components/activity_reporter/constants.h"
@@ -74,7 +75,10 @@ class ActivityReporterImplTest : public testing::Test {
   scoped_refptr<MockUpdateClient> mock_update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   std::unique_ptr<ActivityReporter> activity_reporter_ =
-      CreateActivityReporterForTesting(mock_update_client_, base::DoNothing());
+      CreateActivityReporterForTesting(
+          mock_update_client_,
+          base::DoNothing(),
+          base::BindRepeating([] { return version_info::Channel::UNKNOWN; }));
 };
 
 TEST_F(ActivityReporterImplTest, ReportActive_Throttling) {

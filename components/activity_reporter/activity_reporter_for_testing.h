@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/version_info/channel.h"
 
 namespace update_client {
 class UpdateClient;
@@ -20,7 +21,8 @@ class ActivityReporter;
 
 std::unique_ptr<ActivityReporter> CreateActivityReporterForTesting(
     scoped_refptr<update_client::UpdateClient> update_client,
-    base::RepeatingClosure updater_active_callback);
+    base::RepeatingClosure updater_active_callback,
+    base::RepeatingCallback<version_info::Channel()> channel_provider);
 
 }  // namespace activity_reporter
 
