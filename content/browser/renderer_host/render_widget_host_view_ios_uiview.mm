@@ -1036,6 +1036,10 @@ static void* kObservingContext = &kObservingContext;
   [self handleEditCommands:{"deleteBackward"}];
 }
 
+- (void)selectAll:(nullable id)sender {
+  [self handleEditCommands:{"selectAll"}];
+}
+
 - (void)setSelectedTextRange:(UITextRange*)range {
 }
 
