@@ -56,7 +56,8 @@
   // This will fail if there's another child view controller added before `bvc`.
   // If this happens during startup, it may be the BVC adding the launch screen
   // as a child VC of this VC (BVC's parent).
-  CHECK(self.currentBVC == bvc, base::NotFatalUntil::M150);
+  // TODO:(crbug.com/472278494): This fires frequently in stable.
+  DCHECK(self.currentBVC == bvc);
 }
 
 #pragma mark - UIViewController methods
