@@ -32,10 +32,10 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -86,7 +86,10 @@ import java.util.concurrent.atomic.AtomicReference;
     BaseSwitches.FORCE_DESKTOP_ANDROID,
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
 })
-@Batch(value = Batch.PER_CLASS)
+@DoNotBatch(
+        reason =
+                "Tests will be flaky if batched as they create/close windows and change window"
+                    + " states in quick succession")
 @NullMarked
 public class ChromeAndroidTaskIntegrationTest {
 
