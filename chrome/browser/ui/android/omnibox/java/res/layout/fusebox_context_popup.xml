@@ -17,7 +17,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:paddingTop="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         tools:ignore="MissingConstraints">
         <!--
         Horizontal placement constraints supplied by styles for uniformity.
