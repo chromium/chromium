@@ -174,8 +174,7 @@ class FeatureEntry {
   // valid on an initialized entry that's in shared memory.
   bool GetFeatureAndTrialName(std::string_view* feature_name,
                               std::string_view* trial_name) const {
-    Pickle pickle = Pickle::WithUnownedBuffer(GetPickleData());
-    PickleIterator pickle_iter(pickle);
+    PickleIterator pickle_iter = PickleIterator::WithData(GetPickleData());
     if (!pickle_iter.ReadStringPiece(feature_name)) {
       return false;
     }

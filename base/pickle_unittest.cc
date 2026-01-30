@@ -9,13 +9,16 @@
 #include <stdint.h>
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/memory/aligned_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -195,7 +198,9 @@ TEST(PickleTest, SmallBuffer) {
 
 // Tests that we can handle improper headers.
 TEST(PickleTest, BigSize) {
-  const int buffer[4] = {0x56035200, 25, 40, 50};
+  // In this example the header indicates a size that doesn't match the total
+  // data size.
+  const uint32_t buffer[4] = {0x56035200, 25, 40, 50};
 
   Pickle pickle = Pickle::WithUnownedBuffer(as_byte_span(buffer));
   EXPECT_EQ(0U, pickle.size());
@@ -246,7 +251,9 @@ TEST(PickleTest, CopyWithInvalidHeader) {
 }
 
 TEST(PickleTest, UnalignedSize) {
-  int buffer[] = {10, 25, 40, 50};
+  // In this example the header contains a size of 10, which is invalid because
+  // it doesn't suit the alignment for uint32_t.
+  const uint32_t buffer[] = {10, 25, 40, 50};
 
   Pickle pickle = Pickle::WithUnownedBuffer(as_byte_span(buffer));
 
@@ -732,6 +739,66 @@ TEST(PickleTest, ReadBytesAsSpan) {
   PickleIterator iter(pickle);
   EXPECT_THAT(iter.ReadBytes(kWriteData.size()), testing::Optional(kWriteData));
   EXPECT_FALSE(iter.ReadBytes(kWriteData.size()));
+}
+
+TEST(PickleIteratorTest, WithData) {
+  Pickle pickle;
+  pickle.WriteInt(7);
+
+  PickleIterator iter = PickleIterator::WithData(as_byte_span(pickle));
+  EXPECT_FALSE(iter.ReachedEnd());
+
+  int data;
+  EXPECT_TRUE(iter.ReadInt(&data));
+  EXPECT_EQ(7, data);
+}
+
+// Tests that we can handle improper headers.
+TEST(PickleIteratorTest, WithDataBigSize) {
+  // In this example the header indicates a size that doesn't match the total
+  // data size.
+  const int buffer[4] = {0x56035200, 25, 40, 50};
+
+  PickleIterator iter = PickleIterator::WithData(as_byte_span(buffer));
+  EXPECT_TRUE(iter.ReachedEnd());
+}
+
+// Tests that we can handle improper headers.
+TEST(PickleIteratorTest, WithDataSizeMatchingPayloadSizeInHeader) {
+  // In this example the header indicates a payload size matches exactly the
+  // total size, but that is illegal since that means the header must be 0
+  // bytes.
+  const int buffer[1] = {4};
+
+  PickleIterator iter = PickleIterator::WithData(as_byte_span(buffer));
+  EXPECT_TRUE(iter.ReachedEnd());
+}
+
+TEST(PickleIteratorTest, WithDataInvalidHeader) {
+  // 1. Actual header size (calculated based on the input buffer) > passed in
+  // buffer size. Which results in the iterator behaving as if empty.
+  {
+    Pickle::Header header = {.payload_size = 100};
+    PickleIterator iter = PickleIterator::WithData(byte_span_from_ref(header));
+    EXPECT_TRUE(iter.ReachedEnd());
+  }
+  // 2. Input buffer's size < sizeof(Pickle::Header). Which results in the
+  // iterator behaving as if empty.
+  {
+    const uint8_t data[] = {0x00, 0x00};
+    static_assert(sizeof(Pickle::Header) > sizeof(data));
+    PickleIterator iter = PickleIterator::WithData(data);
+    EXPECT_TRUE(iter.ReachedEnd());
+  }
+}
+
+TEST(PickleIteratorTest, WithDataUnalignedSize) {
+  // In this example the header contains a size of 10, which is invalid because
+  // it doesn't suit the alignment for uint32_t.
+  const int32_t buffer[] = {10, 25, 40, 50};
+
+  PickleIterator iter = PickleIterator::WithData(as_byte_span(buffer));
+  EXPECT_TRUE(iter.ReachedEnd());
 }
 
 }  // namespace base
