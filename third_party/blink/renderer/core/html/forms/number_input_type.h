@@ -76,6 +76,8 @@ class NumberInputType final : public TextFieldInputType {
   String RangeInvalidText(const Decimal& minimum,
                           const Decimal& maximum) const override;
   bool SupportsPlaceholder() const override;
+  bool SupportsWebMCP() const override { return true; }
+  std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const override;
   void MinOrMaxAttributeChanged() override;
   void StepAttributeChanged() override;
   bool SupportsSelectionAPI() const override;

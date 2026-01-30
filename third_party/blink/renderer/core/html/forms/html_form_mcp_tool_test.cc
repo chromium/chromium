@@ -246,6 +246,58 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_Partial) {
   EXPECT_EQ("bar", text2->Value());
 }
 
+TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=num1 name=num1 type=number>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "num1": 42
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* num1 = GetInputElement("num1");
+  ASSERT_TRUE(num1);
+  EXPECT_EQ("42", num1->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_Double) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=num1 name=num1 type=number step=0.1>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "num1": 3.14
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* num1 = GetInputElement("num1");
+  ASSERT_TRUE(num1);
+  EXPECT_EQ("3.14", num1->Value());
+}
+
 TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidJsonFailure) {
   SetBodyInnerHTML(
       R"HTML(
@@ -641,6 +693,91 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Title) {
              { "const": "Option 1", "title": "This is option 1" }
            ],
            "title": "Possible Options"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="num1" type="number" min="10" max="100">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "num1": {
+           "type": "number",
+           "minimum": 10,
+           "maximum": 100
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput_MinOnly) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="num1" type="number" min="10">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "num1": {
+           "type": "number",
+           "minimum": 10
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput_MaxOnly) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="num1" type="number" max="100">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "num1": {
+           "type": "number",
+           "maximum": 100
          }
       },
       "required": []
