@@ -865,6 +865,18 @@ bool GridLayoutTrackCollection::IsDependentOnAvailableSize() const {
       TrackSpanProperties::kIsDependentOnAvailableSize);
 }
 
+wtf_size_t GridLayoutTrackCollection::FirstNonCollapsedLineIndex() const {
+  if (ranges_.empty()) {
+    return kNotFound;
+  }
+  const auto& range = ranges_[0];
+  if (!range.IsCollapsed()) {
+    return range.start_line;
+  }
+
+  return range.start_line + range.track_count;
+}
+
 bool GridLayoutTrackCollection::HasIndefiniteSet() const {
   return !last_indefinite_index_.empty() &&
          last_indefinite_index_.back() != kNotFound;

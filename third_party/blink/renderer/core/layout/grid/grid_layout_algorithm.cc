@@ -1946,15 +1946,22 @@ class GapAccumulator {
     // [1] https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
     // TODO(samomekarajr): This is currently O(nlogn) but can be optimized to
     // be O(n) if we find the first range index and increment it as we go.
-    for (wtf_size_t i = 1; i < row_track_count - 1; ++i) {
-      const wtf_size_t range_index = rows.RangeIndexFromGridLine(i);
+    wtf_size_t row_line_index = rows.FirstNonCollapsedLineIndex();
+    if (row_line_index == kNotFound) {
+      return;
+    }
+    // Start from the next line index since gaps are between tracks.
+    ++row_line_index;
+    for (; row_line_index < row_track_count - 1; ++row_line_index) {
+      const wtf_size_t range_index =
+          rows.RangeIndexFromGridLine(row_line_index);
       if (rows.RangeProperties(range_index)
               .HasProperty(TrackSpanProperties::kIsCollapsed)) {
         continue;
       }
 
       LayoutUnit row_midpoint =
-          LayoutUnit(row_tracks[i] - (row_gutter_size_ / 2.0f));
+          LayoutUnit(row_tracks[row_line_index] - (row_gutter_size_ / 2.0f));
       MainGap main_gap = MainGap(row_midpoint);
       main_gaps_.push_back(main_gap);
     }
@@ -1985,14 +1992,21 @@ class GapAccumulator {
     // See: https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
     // TODO(samomekarajr): This is currently O(nlogn) but can be optimized to
     // be O(n) if we find the first range index and increment it as we go.
-    for (wtf_size_t i = 1; i < col_track_count - 1; ++i) {
-      const wtf_size_t range_index = columns.RangeIndexFromGridLine(i);
+    wtf_size_t col_line_index = columns.FirstNonCollapsedLineIndex();
+    if (col_line_index == kNotFound) {
+      return;
+    }
+    // Start from the next line index since gaps are between tracks.
+    ++col_line_index;
+    for (; col_line_index < col_track_count - 1; ++col_line_index) {
+      const wtf_size_t range_index =
+          columns.RangeIndexFromGridLine(col_line_index);
       if (columns.RangeProperties(range_index)
               .HasProperty(TrackSpanProperties::kIsCollapsed)) {
         continue;
       }
       LayoutUnit col_midpoint =
-          LayoutUnit(col_tracks[i] - (col_gutter_size_ / 2.0f));
+          LayoutUnit(col_tracks[col_line_index] - (col_gutter_size_ / 2.0f));
       LogicalOffset cross_gap_offset =
           LogicalOffset(col_midpoint, LayoutUnit());
       CrossGap cross_gap = CrossGap(cross_gap_offset);

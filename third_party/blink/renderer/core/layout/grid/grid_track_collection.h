@@ -229,6 +229,8 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   bool HasNonDefiniteTrack() const;
   bool IsDependentOnAvailableSize() const;
 
+  wtf_size_t FirstNonCollapsedLineIndex() const;
+
  protected:
   friend class GridLanesLayoutAlgorithmTest;
 
