@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -23,25 +22,12 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace {
 
 class TabSearchToolbarButtonInteractiveUiTest : public InteractiveBrowserTest {
  public:
   TabSearchToolbarButtonInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            features::kGlic,
-#if BUILDFLAG(IS_CHROMEOS)
-            chromeos::features::kFeatureManagementGlic,
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        },
-        /*disabled_features=*/{features::kGlicLocaleFiltering,
-                               features::kGlicCountryFiltering});
+    scoped_feature_list_.InitAndEnableFeature(features::kTabstripComboButton);
   }
   ~TabSearchToolbarButtonInteractiveUiTest() override = default;
 

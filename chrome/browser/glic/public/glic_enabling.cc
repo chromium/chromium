@@ -29,6 +29,7 @@
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
+#include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -340,9 +341,8 @@ GlicGlobalEnabling::GlicGlobalEnabling(Delegate& delegate) {
 GlicGlobalEnabling::~GlicGlobalEnabling() = default;
 
 bool GlicGlobalEnabling::IsEnabledByFlags() {
-  // It is important that this value not change at runtime in production. Any
-  // future updates to this function must maintain that property.
   bool is_enabled = base::FeatureList::IsEnabled(features::kGlic) &&
+                    features::HasTabSearchToolbarButton() &&
                     locale_enablement_.value_or(true) &&
                     country_enablement_.value_or(true);
 #if BUILDFLAG(IS_CHROMEOS)

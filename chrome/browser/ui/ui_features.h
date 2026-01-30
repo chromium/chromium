@@ -347,6 +347,15 @@ BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
 // Controls whether to use the TabStrip browser api's controller.
 BASE_DECLARE_FEATURE(kTabStripBrowserApi);
 
+// Controls where tab search lives in the browser. By default, the tab search
+// feature lives in the tab strip. The feature moves to the toolbar button if
+// the user is in the US and `kLaunchedTabSearchToolbarButton` is enabled or if
+// `kTabstripComboButton` is enabled and `kTabSearchToolbarButton` is true.
+BASE_DECLARE_FEATURE(kTabstripComboButton);
+BASE_DECLARE_FEATURE(kLaunchedTabSearchToolbarButton);
+
+BASE_DECLARE_FEATURE_PARAM(bool, kTabSearchToolbarButton);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Controls whether to add new tabs to active tab group or to the end of the
 // tab strip.
