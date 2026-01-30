@@ -31,17 +31,6 @@ import {RouteObserverMixin, Router} from '../router.js';
 import {getTemplate} from './settings_subpage.html.js';
 
 
-const SETTING_ID_URL_PARAM_NAME: string = 'settingId';
-
-/**
- * Retrieves the setting ID saved in the URL's query parameter. Returns null if
- * setting ID is unavailable.
- */
-function getSettingIdParameter(): string|null {
-  return Router.getInstance().getQueryParameters().get(
-      SETTING_ID_URL_PARAM_NAME);
-}
-
 export interface SettingsSubpageElement {
   $: {
     closeButton: HTMLElement,
@@ -183,12 +172,11 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     if (this.active_ && this.searchLabel && this.preserveSearchTerm) {
       this.getSearchField_().then(() => this.restoreSearchInput_());
     }
-    if (!oldRoute && !getSettingIdParameter()) {
+    if (!oldRoute) {
       // If a settings subpage is opened directly (i.e the |oldRoute| is null,
-      // e.g via an OS settings search result that surfaces from the Chrome OS
-      // launcher, or linking from other places of Chrome UI), the back button
-      // should be focused since it's the first actionable element in the the
-      // subpage. An exception is when a setting is deep linked, focus that
+      // e.g via linking from other places of Chrome UI), the back button should
+      // be focused since it's the first actionable element in the the subpage.
+      // An exception is when a setting is deep linked, focus that
       // setting instead of back button.
       this.focusBackButton();
     }
