@@ -20,12 +20,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Allow ClientAppMetadataProviderService and ProfileKeyedService to depend on
-  # browser_process for now.
-  "client_app_metadata_provider_service\\.cc": [
-    "+chrome/browser/browser_process.h",
-  ],
+  # Allow ProfileKeyedService to depend on browser_process for now.
   "client_app_metadata_provider_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
   ],
 }

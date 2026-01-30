@@ -19,6 +19,7 @@
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class ApplicationLocaleStorage;
 class PrefRegistrySimple;
 class PrefService;
 
@@ -45,9 +46,11 @@ class ClientAppMetadataProviderService
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // `local_state` must be non-null, and must outlive `this`.
+  // `local_state` and `application_locale_storage` must be non-null, and must
+  // outlive `this`.
   ClientAppMetadataProviderService(
       PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
       PrefService* profile_pref_service,
       NetworkStateHandler* network_state_handler,
       instance_id::InstanceIDProfileService* instance_id_profile_service);
@@ -103,6 +106,7 @@ class ClientAppMetadataProviderService
   void InvokePendingCallbacks();
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   raw_ptr<PrefService> pref_service_;
   raw_ptr<NetworkStateHandler> network_state_handler_;
