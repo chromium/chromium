@@ -1584,6 +1584,9 @@ crbug.com/1051136 fast/forms/select/listbox-overlay-scrollbar.html [ Failure ]
 # These performance-sensitive user-timing tests are flaky in debug on all platforms, and flaky on all configurations of windows.
 # See: crbug.com/567965, crbug.com/518992, and crbug.com/518993
 
+# This test very occasionally times out, but mostly passes.
+crbug.com/40235246 fast/dom/gc-image-element-2.html [ Pass Timeout ]
+
 crbug.com/432129 html/marquee/marquee-scroll.html [ Failure Pass ]
 crbug.com/326139 crbug.com/390125 media/video-frame-accurate-seek.html [ Failure Pass ]
 crbug.com/421283 html/marquee/marquee-scrollamount.html [ Failure Pass ]
