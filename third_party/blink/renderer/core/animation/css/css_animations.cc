@@ -2339,8 +2339,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     Animation& animation =
         *running_animations_[cancelled_indices[i]]->animation;
     animation.ClearOwningElement();
-    if (animation.IsCSSAnimation() &&
-        !DynamicTo<CSSAnimation>(animation)->GetIgnoreCSSPlayState()) {
+    if (animation.IsCSSAnimation()) {
       animation.cancel();
     }
     animation.Update(kTimingUpdateOnDemand);
