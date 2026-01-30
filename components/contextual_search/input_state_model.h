@@ -69,6 +69,9 @@ class InputStateModel {
   // Set a new model.
   void setActiveModel(ModelMode model);
 
+  // Called when an input of type `InputType` is added or deleted.
+  void OnContextChanged();
+
   // Gets additional query params for the current state.
   std::map<std::string, std::string> GetAdditionalQueryParams();
 
