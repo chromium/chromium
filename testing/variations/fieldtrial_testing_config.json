@@ -19839,6 +19839,37 @@
             ]
         }
     ],
+    "PermissionsGestureGatedPrompts": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "MuteNotifications",
+                    "params": {
+                        "mute_notifications": "true"
+                    },
+                    "enable_features": [
+                        "PermissionsGestureGatedPrompts"
+                    ]
+                },
+                {
+                    "name": "MuteGeolocation",
+                    "params": {
+                        "mute_geolocation": "true"
+                    },
+                    "enable_features": [
+                        "PermissionsGestureGatedPrompts"
+                    ]
+                }
+            ]
+        }
+    ],
     "PersistentDefaultBrowserPromo": [
         {
             "platforms": [
