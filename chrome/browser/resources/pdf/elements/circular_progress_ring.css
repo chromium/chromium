@@ -18,6 +18,9 @@
   transform: rotate(-90deg);
 }
 
+/* Disable for the following block since these are SVG DOM nodes and the
+ * property values are valid. */
+/* stylelint-disable declaration-property-value-no-unknown */
 #innerProgress,
 #progressTrack {
   r: 90;
@@ -26,6 +29,7 @@
   fill: transparent;
   stroke-width: 16px;
 }
+/* stylelint-enable declaration-property-value-no-unknown */
 
 #progressTrack {
   /* Force dark mode colors even in light mode. */

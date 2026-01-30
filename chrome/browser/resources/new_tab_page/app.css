@@ -245,7 +245,6 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
 
 #backgroundImageAttribution:hover {
   background-color: var(--ntp-protected-icon-background-color-hovered);
-  background: rgba(var(--google-grey-900-rgb), .1);
 }
 
 :host-context([dir='ltr']) #backgroundImageAttribution {

@@ -118,13 +118,15 @@
 
 #button-container {
   display: flex;
+<if expr="not is_win">
   flex-direction: row;
+</if>
+<if expr="is_win">
+  flex-direction: row-reverse;
+</if>
   gap: 12px;
   justify-content: flex-end;
   padding: 0 var(--btn-margin);
-<if expr="is_win">
-  flex-flow: row-reverse;
-</if>
 }
 
 #button-container > cr-button {

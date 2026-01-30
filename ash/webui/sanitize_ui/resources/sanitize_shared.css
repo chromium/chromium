@@ -167,9 +167,9 @@ div[slot='body'] {
 .title {
   margin-top: 16px;
   margin-bottom: 16px;
+  font: var(--cros-display-5-font);
   font-family: var(--cros-display-5-font-family);
   font-size: var(--cros-display-5-font-size);
-  font: var(--cros-display-5-font);
   font-weight: var(--cros-display-5-font-weight);
   line-height: var(--cros-display-5-line-height);
   color: var(--cros-sys-on_surface);
@@ -177,9 +177,9 @@ div[slot='body'] {
 
 .sanitize-description {
   margin-bottom: 24px;
+  font: var(--cros-body-2-font);
   font-family: var(--cros-body-2-font-family);
   font-size: var(--cros-body-2-font-size);
-  font: var(--cros-body-2-font);
   font-weight: var(--cros-body-2-font-weight);
   line-height: var(--cros-body-2-line-height);
   color: var(--cros-sys-on_surface_variant);
