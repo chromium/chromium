@@ -44,6 +44,9 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   // Opens the skills dialog.
   void ShowDialog(const skills::Skill& skill) override;
 
+  // Invokes the skill with skill_id in sidepanel.
+  void InvokeSkill(std::string_view skill_id) override;
+
   // SkillsDialogDelegate override:
   void CloseDialog() override;
   void OnSkillSaved(const std::string& skill_id) override;
@@ -52,11 +55,12 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
     on_dialog_closed_callback_for_testing_ = std::move(callback);
   }
 
-  // Invokes the skill with skill_id in sidepanel.
-  void InvokeSkill(std::string_view skill_id);
-
   ConstrainedWebDialogDelegate* GetDialogDelegateForTesting() {
     return dialog_delegate_.get();
+  }
+
+  const std::string& GetPendingSkillIdForTesting() const {
+    return pending_skill_id_;
   }
 
  protected:

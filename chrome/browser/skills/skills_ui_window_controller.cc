@@ -48,7 +48,16 @@ void SkillsUiWindowController::InvokeLastSavedSkill() {
 }
 
 void SkillsUiWindowController::InvokeSkill(std::string_view skill_id) {
-  // TODO(crbug.com/475549806): Implement.
+  if (skill_id.empty()) {
+    return;
+  }
+
+  if (auto* active_tab = browser_window_interface_->GetActiveTabInterface()) {
+    if (auto* tab_controller =
+            skills::SkillsUiTabControllerInterface::From(active_tab)) {
+      tab_controller->InvokeSkill(skill_id);
+    }
+  }
 }
 
 }  // namespace skills

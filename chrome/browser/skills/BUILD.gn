@@ -104,6 +104,9 @@ source_set("browser_tests") {
     "//components/skills:features",
     "//components/skills/public",
   ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }
 
 if (enable_glic) {

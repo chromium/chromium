@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
+#include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_service.h"
 #include "content/public/browser/web_contents.h"
@@ -29,10 +30,11 @@ SkillsDialogHandler::~SkillsDialogHandler() = default;
 void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
   if (auto* skills_service = SkillsServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
-    skills_service->AddSkill(skill.name, skill.icon, skill.prompt);
+    const Skill* skill_added =
+        skills_service->AddSkill(skill.name, skill.icon, skill.prompt);
     // TODO(marissashen): Add support for UpdateSkill
-    if (delegate_) {
-      delegate_->OnSkillSaved(skill.id);
+    if (skill_added && delegate_) {
+      delegate_->OnSkillSaved(skill_added->id);
       delegate_->CloseDialog();
     }
   } else {

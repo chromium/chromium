@@ -4,22 +4,64 @@
 
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 
+#include "base/test/test_future.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/skills/features.h"
+#include "components/skills/public/skill.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/test/button_test_api.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_enabling.h"
+#endif
 namespace skills {
 
 class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
  public:
-  SkillsUiWindowController* controller() {
+  SkillsUiWindowControllerBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kSkillsEnabled);
+  }
+
+  SkillsUiWindowController* window_controller() {
     return SkillsUiWindowController::From(browser());
   }
+
+  SkillsUiTabController* tab_controller() {
+    auto* tab = browser()->GetActiveTabInterface();
+    if (!tab) {
+      return nullptr;
+    }
+    return static_cast<SkillsUiTabController*>(
+        SkillsUiTabControllerInterface::From(tab));
+  }
+
+  void ClickToastActionButton() {
+    auto* toast_controller = browser()->GetFeatures().toast_controller();
+    ASSERT_TRUE(toast_controller->IsShowingToast());
+    auto* toast_view = toast_controller->GetToastViewForTesting();
+    ASSERT_TRUE(toast_view);
+    auto* button = toast_view->action_button_for_testing();
+    ASSERT_TRUE(button);
+
+    views::test::ButtonTestApi(button).NotifyClick(
+        ui::MouseEvent(::ui::EventType::kMouseReleased, gfx::Point(),
+                       gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
@@ -29,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
   // Call OnSkillSaved with an empty skill ID.
-  controller()->OnSkillSaved("");
+  window_controller()->OnSkillSaved("");
 
   // Verify that the toast is now showing.
   EXPECT_TRUE(toast_controller->IsShowingToast());
@@ -42,11 +84,122 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   const auto* toast_controller = browser()->GetFeatures().toast_controller();
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
-  controller()->OnSkillDeleted();
+  window_controller()->OnSkillDeleted();
 
   // Verify that the toast is now showing.
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kSkillDeleted);
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       InvokeLastSavedSkillRoutesToActiveTab) {
+  const std::string kSkillId = "skill-123";
+  // Save skill on active tab.
+  window_controller()->OnSkillSaved(kSkillId);
+  // Verify Toast is visible
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+#if BUILDFLAG(ENABLE_GLIC)
+  // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
+  // creation.
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  // Click toast "Try It".
+  ClickToastActionButton();
+
+  // Verify Result
+  EXPECT_EQ(tab_controller()->GetPendingSkillIdForTesting(), kSkillId);
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+// Test that switching tabs targets the new tab, not the old one.
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       InvokeRoutesToNewTabAfterSwitch) {
+  const std::string kSkillId = "cross-tab-skill";
+
+  // Save skill on Tab 0
+  window_controller()->OnSkillSaved(kSkillId);
+  // Open a new tab and switch to it
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  // Verify we have the controller for the new tab has no skills yet.
+  EXPECT_TRUE(tab_controller()->GetPendingSkillIdForTesting().empty());
+#if BUILDFLAG(ENABLE_GLIC)
+  // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
+  // creation.
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  // Click toast "Try It".
+  ClickToastActionButton();
+
+  // Verify the new tab got the command.
+  EXPECT_EQ(tab_controller()->GetPendingSkillIdForTesting(), kSkillId);
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       UserFlow_CreateSkill_ThenInvoke) {
+  // Open Dialog.
+  skills::Skill initial_skill(/*id=*/"",
+                              /*name=*/"",
+                              /*icon=*/"", "Skill Prompt");
+  tab_controller()->ShowDialog(initial_skill);
+
+  // Get WebContents to inject JS.
+  auto* delegate = tab_controller()->GetDialogDelegateForTesting();
+  ASSERT_TRUE(delegate);
+  content::WebContents* web_contents = delegate->GetWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Setup Listener for "Dialog Closed".
+  base::test::TestFuture<void> close_future;
+  tab_controller()->SetOnDialogClosedCallbackForTesting(
+      close_future.GetCallback());
+
+  static constexpr char kSaveScript[] = R"(
+  (async () => {
+    const root = document.querySelector('skills-dialog-app').shadowRoot;
+
+    for (let i = 0; i < 50; i++) {
+      const btn = root.querySelector('#save-button');
+      if (btn && !btn.disabled) { btn.click(); return 'CLICKED'; }
+
+      // Fill inputs if found & empty
+      ['#name-text', '#instructions-text'].forEach(id => {
+        const el = root.querySelector(id);
+        if (el && !el.value) {
+          el.value = 'Test';
+          el.dispatchEvent(new CustomEvent('value-changed', {
+            bubbles: true,
+            composed: true,
+            detail: { value: 'Test' }
+          }));
+        }
+      });
+      await new Promise(r => setTimeout(r, 100));
+    }
+    return 'TIMEOUT';
+  })();
+)";
+  EXPECT_EQ("CLICKED", content::EvalJs(web_contents, kSaveScript));
+
+  // Wait for the C++ backend to process the save and close the dialog.
+  ASSERT_TRUE(close_future.Wait());
+  EXPECT_EQ(nullptr, tab_controller()->GetDialogDelegateForTesting());
+#if BUILDFLAG(ENABLE_GLIC)
+  // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
+  // creation.
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  // Click the Toast "Try It" button.
+  ClickToastActionButton();
+
+  // Verify the Invoke happened by checking that some ID is pending (since the
+  // ID was auto-generated by the service)
+  EXPECT_FALSE(tab_controller()->GetPendingSkillIdForTesting().empty());
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 }  // namespace skills

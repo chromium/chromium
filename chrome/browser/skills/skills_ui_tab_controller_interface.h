@@ -29,6 +29,9 @@ class SkillsUiTabControllerInterface {
   // Opens the skills dialog.
   virtual void ShowDialog(const skills::Skill& skill) = 0;
 
+  // Invokes the skill with skill_id in sidepanel.
+  virtual void InvokeSkill(std::string_view skill_id) = 0;
+
  private:
   ::ui::ScopedUnownedUserData<SkillsUiTabControllerInterface>
       scoped_unowned_user_data_;
