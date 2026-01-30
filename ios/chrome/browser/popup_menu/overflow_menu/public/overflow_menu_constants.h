@@ -54,6 +54,7 @@ enum class ActionType {
   AskBWG,
   HideToolbars,
   TabGroup,
+  ShareThisPage,
 };
 // LINT.ThenChange(overflow_menu_metrics.h:actionType)
 

@@ -144,6 +144,9 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::TabGroup:
         finalExpectedActionType = overflow_menu::ActionType::TabGroup;
         break;
+      case overflow_menu::ActionType::ShareThisPage:
+        finalExpectedActionType = overflow_menu::ActionType::ShareThisPage;
+        break;
     }
 
     // If there's no finalExpectedActionType, then the loop has looped through

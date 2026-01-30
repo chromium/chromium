@@ -8008,6 +8008,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_TOOLS_MENU_SHARE" desc="The iOS menu item for sharing the current URL [Length: 15em] [iOS only]">
         Share…
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_SHARE_THIS_PAGE" desc="The iOS menu item for sharing the current page [Length: 15em] [iOS only]">
+        Share This Page
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_SITE_INFORMATION" desc="The iOS menu item for getting the site informations." meaning="[Length: 16em] [iOS only]">
         Site Information
       </message>

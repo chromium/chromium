@@ -262,6 +262,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 @property(nonatomic, strong) OverflowMenuAction* hideToolbarsAction;
 
+@property(nonatomic, strong) OverflowMenuAction* shareAction;
+
 @end
 
 @implementation OverflowMenuMediator
@@ -620,6 +622,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.translateAction = [self newTranslateAction];
 
   self.requestDesktopAction = [self newRequestDesktopAction];
+
+  self.shareAction = [self newShareAction];
 
   NSString* requestMobileHideItemText =
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_MOBILE_SITE);
@@ -1049,6 +1053,22 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf requestDesktopSite];
+                                 }];
+}
+
+- (OverflowMenuAction*)newShareAction {
+  __weak __typeof(self) weakSelf = self;
+  return [self
+      createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_SHARE_THIS_PAGE
+                              actionType:overflow_menu::ActionType::
+                                             ShareThisPage
+                              symbolName:kShareSymbol
+                            systemSymbol:YES
+                        monochromeSymbol:YES
+                         accessibilityID:kToolsMenuShareId
+                            hideItemText:nil
+                                 handler:^{
+                                   [weakSelf shareThisPage];
                                  }];
 }
 
@@ -1597,6 +1617,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   NSMutableArray<OverflowMenuAction*>* appActions =
       [[NSMutableArray alloc] init];
+
+  if (base::FeatureList::IsEnabled(kShareInOverflowMenu) &&
+      [self isCurrentURLWebURL]) {
+    [appActions addObject:self.shareAction];
+  }
 
   // The reload/stop action is only shown when the reload button is not in the
   // toolbar. The reload button is shown in the toolbar when the toolbar is not
@@ -2223,6 +2248,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.askBWGAction;
     case overflow_menu::ActionType::HideToolbars:
       return self.hideToolbarsAction;
+    case overflow_menu::ActionType::ShareThisPage:
+      return self.shareAction;
   }
 }
 
@@ -2242,6 +2269,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::Help:
     case overflow_menu::ActionType::ShareChrome:
     case overflow_menu::ActionType::EditActions:
+    case overflow_menu::ActionType::ShareThisPage:
       NOTREACHED();
     case overflow_menu::ActionType::Bookmark:
       return [self newAddBookmarkAction];
@@ -2462,6 +2490,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.navigationAgent->RequestDesktopSite();
   [self.helpHandler
       presentInProductHelpWithType:InProductHelpType::kDefaultSiteView];
+}
+
+- (void)shareThisPage {
+  RecordAction(UserMetricsAction("MobileMenuShareThisPage"));
+  [self dismissMenu];
+  [self.activityServiceHandler showShareSheet];
 }
 
 // Dismisses the menu and requests the mobile version of the current page

@@ -94,6 +94,8 @@ extern NSString* const kToolsMenuNewTabGroupId;
 extern NSString* const kToolsMenuMoveTabToGroupId;
 // Add Tab to Group accessibility Identifier.
 extern NSString* const kToolsMenuAddTabToGroupId;
+// Share This Page a11y identifier.
+extern NSString* const kToolsMenuShareId;
 
 // Alpha for the background color of the highlighted items.
 extern const CGFloat kSelectedItemBackgroundAlpha;

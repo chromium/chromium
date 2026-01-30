@@ -83,6 +83,8 @@ IOSOverflowMenuAction HistogramActionFromActionType(
       return IOSOverflowMenuAction::kHideToolbars;
     case overflow_menu::ActionType::TabGroup:
       return IOSOverflowMenuAction::kTabGroup;
+    case overflow_menu::ActionType::ShareThisPage:
+      return IOSOverflowMenuAction::kShareThisPage;
   }
 }
 

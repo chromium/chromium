@@ -96,7 +96,8 @@ enum class IOSOverflowMenuAction {
   kAskBWG = 20,
   kHideToolbars = 21,
   kTabGroup = 22,
-  kMaxValue = kTabGroup,
+  kShareThisPage = 23,
+  kMaxValue = kShareThisPage,
 };
 // LINT.ThenChange(overflow_menu_constants.h:actionType)
 

@@ -120,6 +120,8 @@ std::optional<ActionType> ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::HideToolbars;
   } else if (action == "TabGroup") {
     return overflow_menu::ActionType::TabGroup;
+  } else if (action == "ShareThisPage") {
+    return overflow_menu::ActionType::ShareThisPage;
   } else {
     return std::nullopt;
   }
@@ -173,6 +175,8 @@ std::string StringNameForActionType(ActionType action) {
       return "HideToolbars";
     case overflow_menu::ActionType::TabGroup:
       return "TabGroup";
+    case overflow_menu::ActionType::ShareThisPage:
+      return "ShareThisPage";
   }
 }
 // LINT.ThenChange(ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.cc:stringToActionType)
