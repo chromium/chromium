@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -1373,6 +1374,27 @@ TEST_F(AddressSuggestionGeneratorTest,
                                 form_structure->field(0), *autofill_client(),
                                 all_suggestion_data,
                                 suggestions_generated_callback.Get());
+}
+
+// Tests that deduplication of profiles having the same name works as expected.
+// This is a regression test (See the long discussion in crbug.com/443243342).
+TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_NameDeduplication) {
+  constexpr std::u16string_view kName = u"王磊";
+
+  // Set up 2 different profiles.
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile1.SetRawInfo(NAME_FULL, kName);
+  profile1.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  address_data().AddProfile(profile1);
+
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile2.SetRawInfo(NAME_FULL, kName);
+  profile1.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  address_data().AddProfile(profile2);
+
+  std::vector<AutofillProfile> suggested_profiles = GetProfilesToSuggestForTest(
+      address_data(), FormFieldData(), NAME_FULL, {NAME_FULL});
+  EXPECT_EQ(1U, suggested_profiles.size());
 }
 
 }  // namespace

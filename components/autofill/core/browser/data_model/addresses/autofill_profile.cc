@@ -594,7 +594,8 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     // GetInfo for the NAME_FULL type returns the constituent name parts;
     // however, GetRawInfo returns an empty string.
     const std::u16string value = GetInfo(type, app_locale);
-    if (value.empty()) {
+    const std::u16string other_value = profile.GetInfo(type, app_locale);
+    if (value.empty() || value == other_value) {
       continue;
     }
     // TODO(crbug.com/40257475): Use rewriter rules for all kAddressHome types.
@@ -628,13 +629,12 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     } else if (type == PHONE_HOME_WHOLE_NUMBER ||
                type == PHONE_HOME_CITY_AND_NUMBER) {
       if (!i18n::PhoneNumbersMatch(
-              value, profile.GetInfo(type, app_locale),
+              value, other_value,
               base::UTF16ToASCII(GetRawInfo(ADDRESS_HOME_COUNTRY)),
               app_locale)) {
         return false;
       }
-    } else if (!AutofillProfileComparator::Compare(
-                   value, profile.GetInfo(type, app_locale))) {
+    } else if (!AutofillProfileComparator::Compare(value, other_value)) {
       return false;
     }
   }

@@ -1034,6 +1034,15 @@ TEST_F(NameInfoTest, IsNameVariantOf) {
   EXPECT_FALSE(name_info.IsNameVariantOf(u"etienne noel perier", kLocale));
 }
 
+// Tests NameInfo::IsNameVariantOf() on CJK names.
+// TODO(crbug.com/479800251): Re-enable the test.
+TEST_F(NameInfoTest, DISABLED_IsNameVariantOf_CJKNames) {
+  constexpr char16_t kFullName[] = u"王磊";
+  NameInfo name_info = CreateNameInfo(u"", u"", u"", kFullName);
+  // A name should be a variant of itself.
+  EXPECT_TRUE(name_info.IsNameVariantOf(kFullName, kLocale));
+}
+
 TEST_F(NameInfoTest, HaveMergeableNames) {
   NameInfo empty = CreateNameInfo(u"", u"", u"", u"");
 
