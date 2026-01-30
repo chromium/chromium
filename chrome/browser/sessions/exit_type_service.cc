@@ -14,9 +14,10 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/pref_names.h"
@@ -31,10 +32,12 @@ const char kPrefExitTypeForcedShutdown[] = "SessionEnded";
 
 // Converts the `kSessionExitType` pref to the corresponding EXIT_TYPE.
 ExitType SessionTypePrefValueToExitType(const std::string& value) {
-  if (value == kPrefExitTypeForcedShutdown)
+  if (value == kPrefExitTypeForcedShutdown) {
     return ExitType::kForcedShutdown;
-  if (value == kPrefExitTypeCrashed)
+  }
+  if (value == kPrefExitTypeCrashed) {
     return ExitType::kCrashed;
+  }
   return ExitType::kClean;
 }
 
@@ -54,44 +57,47 @@ std::string ExitTypeToSessionTypePrefValue(ExitType type) {
 
 // Responsible for notifying ExitTypeService when a browser or tab is created
 // under the right circumstances.
-class ExitTypeService::BrowserTabObserverImpl : public BrowserListObserver,
-                                                public TabStripModelObserver {
+class ExitTypeService::BrowserTabObserverImpl
+    : public BrowserCollectionObserver,
+      public TabStripModelObserver {
  public:
   explicit BrowserTabObserverImpl(ExitTypeService* service)
       : service_(service) {
-    BrowserList::GetInstance()->AddObserver(this);
+    browser_collection_observation_.Observe(
+        ProfileBrowserCollection::GetForProfile(service->profile()));
   }
 
   ~BrowserTabObserverImpl() override {
-    BrowserList::GetInstance()->RemoveObserver(this);
-    for (Browser* browser : browsers_)
-      browser->tab_strip_model()->RemoveObserver(this);
+    for (BrowserWindowInterface* browser : browsers_) {
+      browser->GetTabStripModel()->RemoveObserver(this);
+    }
   }
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
-    if (browser->profile() != service_->profile() ||
-        browser->omit_from_session_restore() ||
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    if (browser->GetBrowserForMigrationOnly()->omit_from_session_restore() ||
         !SessionService::IsRelevantWindowType(
-            WindowTypeForBrowserType(browser->type()))) {
+            WindowTypeForBrowserType(browser->GetType()))) {
       return;
     }
-    if (browser->create_params().creation_source !=
-        Browser::CreationSource::kStartupCreator) {
+    if (browser->GetBrowserForMigrationOnly()
+            ->create_params()
+            .creation_source != Browser::CreationSource::kStartupCreator) {
       // Ideally this would call directly to `service_`, but at the time this
       // is called it is too early to do that. So, this waits for the first tab
       // to be added.
       // be added.
       browsers_.insert(browser);
-      browser->tab_strip_model()->AddObserver(this);
+      browser->GetTabStripModel()->AddObserver(this);
     }
   }
 
-  void OnBrowserRemoved(Browser* browser) override {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     auto iter = browsers_.find(browser);
-    if (iter == browsers_.end())
+    if (iter == browsers_.end()) {
       return;
-    browser->tab_strip_model()->RemoveObserver(this);
+    }
+    browser->GetTabStripModel()->RemoveObserver(this);
     browsers_.erase(iter);
   }
 
@@ -100,15 +106,19 @@ class ExitTypeService::BrowserTabObserverImpl : public BrowserListObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() == TabStripModelChange::kInserted)
+    if (change.type() == TabStripModelChange::kInserted) {
       service_->OnTabAddedToNonStartupBrowser();
+    }
   }
 
  private:
   raw_ptr<ExitTypeService> service_;
 
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
+
   // Browsers whose TabStripModel this is observing.
-  base::flat_set<raw_ptr<Browser, CtnExperimental>> browsers_;
+  base::flat_set<raw_ptr<BrowserWindowInterface, CtnExperimental>> browsers_;
 };
 
 ExitTypeService::CrashedLock::~CrashedLock() {
@@ -123,8 +133,9 @@ ExitTypeService::~ExitTypeService() {
   // (such as closing the crash bubble, or creating a new browser), do not
   // reset the crash status. This way the user will have another chance to
   // restore when chrome starts again.
-  if (!waiting_for_user_to_ack_crash_)
+  if (!waiting_for_user_to_ack_crash_) {
     SetCurrentSessionExitType(ExitType::kClean);
+  }
 }
 
 // static
@@ -144,8 +155,9 @@ ExitType ExitTypeService::GetLastSessionExitType(Profile* profile) {
 
 void ExitTypeService::SetCurrentSessionExitType(ExitType exit_type) {
   if (waiting_for_user_to_ack_crash_) {
-    if (!exit_type_to_apply_on_ack_.has_value())
+    if (!exit_type_to_apply_on_ack_.has_value()) {
       exit_type_to_apply_on_ack_ = exit_type;
+    }
     return;
   }
 
@@ -161,8 +173,9 @@ void ExitTypeService::SetCurrentSessionExitType(ExitType exit_type) {
 
 std::unique_ptr<ExitTypeService::CrashedLock>
 ExitTypeService::CreateCrashedLock() {
-  if (!waiting_for_user_to_ack_crash_)
+  if (!waiting_for_user_to_ack_crash_) {
     return nullptr;
+  }
 
   ++crashed_lock_count_;
   // Uses WrapUnique() as constructor is private.
@@ -172,8 +185,9 @@ ExitTypeService::CreateCrashedLock() {
 void ExitTypeService::AddCrashAckCallback(base::OnceClosure callback) {
   // `waiting_for_user_to_ack_crash_` never goes from false to true. So any
   // callback added when false can be ignored.
-  if (!waiting_for_user_to_ack_crash_)
+  if (!waiting_for_user_to_ack_crash_) {
     return;
+  }
   crash_ack_callbacks_.push_back(std::move(callback));
 }
 
@@ -187,19 +201,22 @@ ExitTypeService::ExitTypeService(Profile* profile)
   // Mark the session as open.
   profile_->GetPrefs()->SetString(prefs::kSessionExitType,
                                   kPrefExitTypeCrashed);
-  if (waiting_for_user_to_ack_crash_)
+  if (waiting_for_user_to_ack_crash_) {
     browser_tab_observer_ = std::make_unique<BrowserTabObserverImpl>(this);
+  }
 }
 
 void ExitTypeService::CheckUserAckedCrash() {
   // Once shutdown has started the state this checks may be torn down. During
   // tear down we shouldn't run the callbacks, as the user did not really ack
   // the crash.
-  if (browser_shutdown::HasShutdownStarted())
+  if (browser_shutdown::HasShutdownStarted()) {
     return;
+  }
 
-  if (!DidUserAckCrash())
+  if (!DidUserAckCrash()) {
     return;
+  }
 
   if (!IsWaitingForRestore() && SessionRestore::IsRestoring(profile_) &&
       !did_restore_complete_) {
@@ -213,20 +230,23 @@ void ExitTypeService::CheckUserAckedCrash() {
 
   waiting_for_user_to_ack_crash_ = false;
 
-  if (exit_type_to_apply_on_ack_.has_value())
+  if (exit_type_to_apply_on_ack_.has_value()) {
     SetCurrentSessionExitType(*exit_type_to_apply_on_ack_);
+  }
 
   std::vector<base::OnceClosure> callbacks;
   std::swap(callbacks, crash_ack_callbacks_);
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     std::move(callback).Run();
+  }
 }
 
 void ExitTypeService::CrashedLockDestroyed() {
   --crashed_lock_count_;
   DCHECK_GE(crashed_lock_count_, 0);
-  if (crashed_lock_count_ == 0)
+  if (crashed_lock_count_ == 0) {
     CheckUserAckedCrash();
+  }
 }
 
 void ExitTypeService::OnTabAddedToNonStartupBrowser() {
@@ -242,8 +262,9 @@ bool ExitTypeService::DidUserAckCrash() const {
 
 void ExitTypeService::OnSessionRestoreDone(Profile* profile,
                                            int tabs_restored) {
-  if (profile != profile_)
+  if (profile != profile_) {
     return;
+  }
   did_restore_complete_ = true;
   restore_subscription_ = {};
   CheckUserAckedCrash();

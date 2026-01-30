@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -36,7 +37,9 @@ ExitTypeServiceFactory::ExitTypeServiceFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(BrowserManagerServiceFactory::GetInstance());
+}
 
 ExitTypeServiceFactory::~ExitTypeServiceFactory() = default;
 
@@ -46,8 +49,9 @@ ExitTypeServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   // TODO(sky): is this necessary?
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ash::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
+  }
 #endif
   return std::make_unique<ExitTypeService>(profile);
 }
