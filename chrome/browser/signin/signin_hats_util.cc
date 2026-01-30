@@ -137,41 +137,58 @@ bool IsLocaleAllowedForSurvey() {
 // Surveys are gated by both a feature flag and locale eligibility.
 // However, if the feature flag is overridden (e.g., by Finch or command-line),
 // the locale check is bypassed to allow server-side control.
+//
+// The given survey might still be suppressed if it has a conflicting feature
+// enabled (used to coordinate surveys associated with similar Chrome triggers).
 bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
   static const base::NoDestructor<
       absl::flat_hash_map<std::string_view, const base::Feature*>>
-      kChromeIdentityHatsTriggerFeatureMap({
-          {kHatsSurveyTriggerIdentityAddressBubbleSignin,
-           &switches::kChromeIdentitySurveyAddressBubbleSignin},
-          {kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
-           &switches::kChromeIdentitySurveyDiceWebSigninAccepted},
-          {kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
-           &switches::kChromeIdentitySurveyDiceWebSigninDeclined},
-          {kHatsSurveyTriggerIdentityFirstRunSignin,
-           &switches::kChromeIdentitySurveyFirstRunSignin},
-          {kHatsSurveyTriggerIdentityPasswordBubbleSignin,
-           &switches::kChromeIdentitySurveyPasswordBubbleSignin},
-          {kHatsSurveyTriggerIdentityProfileMenuDismissed,
-           &switches::kChromeIdentitySurveyProfileMenuDismissed},
-          {kHatsSurveyTriggerIdentityProfileMenuSignin,
-           &switches::kChromeIdentitySurveyProfileMenuSignin},
-          {kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
-           &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin},
-          {kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
-           &switches::kChromeIdentitySurveySigninInterceptProfileSeparation},
-          {kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
-           &switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
-          {kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
-           &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu},
-          {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
-           &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
-      });
+      kHatsTriggerFeatureMap(
+          {{kHatsSurveyTriggerIdentityAddressBubbleSignin,
+            &switches::kChromeIdentitySurveyAddressBubbleSignin},
+           {kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
+            &switches::kChromeIdentitySurveyDiceWebSigninAccepted},
+           {kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
+            &switches::kChromeIdentitySurveyDiceWebSigninDeclined},
+           {kHatsSurveyTriggerIdentityFirstRunSignin,
+            &switches::kChromeIdentitySurveyFirstRunSignin},
+           {kHatsSurveyTriggerIdentityPasswordBubbleSignin,
+            &switches::kChromeIdentitySurveyPasswordBubbleSignin},
+           {kHatsSurveyTriggerIdentityProfileMenuDismissed,
+            &switches::kChromeIdentitySurveyProfileMenuDismissed},
+           {kHatsSurveyTriggerIdentityProfileMenuSignin,
+            &switches::kChromeIdentitySurveyProfileMenuSignin},
+           {kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
+            &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin},
+           {kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
+            &switches::kChromeIdentitySurveySigninInterceptProfileSeparation},
+           {kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+            &switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
+           {kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
+            &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu},
+           {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
+            &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
+           {kHatsSurveyTriggerIdentityFirstRunCompleted,
+            &switches::kBeforeFirstRunDesktopRefreshSurvey}});
+  // Map of HaTS features that are conflicting with each other. Keys are
+  // features that are suppressed if the corresponding value feature is
+  // enabled.
+  static const base::NoDestructor<
+      absl::flat_hash_map<const base::Feature*, const base::Feature*>>
+      kConflictingFeaturesMap(
+          {{&switches::kChromeIdentitySurveyFirstRunSignin,
+            &switches::kBeforeFirstRunDesktopRefreshSurvey}});
 
-  const auto* feature =
-      base::FindPtrOrNull(*kChromeIdentityHatsTriggerFeatureMap, trigger);
+  const auto* feature = base::FindPtrOrNull(*kHatsTriggerFeatureMap, trigger);
 
   if (!feature) {
     // No matching feature for the given trigger.
+    return false;
+  }
+
+  if (kConflictingFeaturesMap->contains(feature) &&
+      base::FeatureList::IsEnabled(*kConflictingFeaturesMap->at(feature))) {
+    // If the feature has a conflicting feature, suppress the survey.
     return false;
   }
 

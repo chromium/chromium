@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
@@ -26,6 +27,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
@@ -72,6 +75,10 @@
 
 namespace {
 
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Not;
+
 using Step = ::ProfileManagementFlowController::Step;
 using DeepQuery = ::WebContentsInteractionTestUtil::DeepQuery;
 
@@ -102,6 +109,12 @@ const DeepQuery& GetDontSignInButtonQuery() {
   static const base::NoDestructor<DeepQuery> kDontSignInButton(
       {"intro-app", "sign-in-promo", "#declineSignInButton"});
   return *kDontSignInButton;
+}
+
+const DeepQuery& GetAcceptManagementButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kDeclineManagementButton(
+      {"managed-user-profile-notice-app", "#proceed-button"});
+  return *kDeclineManagementButton;
 }
 
 const DeepQuery& GetDeclineManagementButtonQuery() {
@@ -1373,4 +1386,233 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
                                       6);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       6);
+}
+
+class FirstRunWithHatsInteractiveUiTest : public FirstRunInteractiveUiTest {
+ public:
+  FirstRunWithHatsInteractiveUiTest()
+      : scoped_feature_list_(
+            /*enable_feature=*/switches::kBeforeFirstRunDesktopRefreshSurvey) {}
+
+  void SetUpOnMainThread() override {
+    FirstRunInteractiveUiTest::SetUpOnMainThread();
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            CHECK_DEREF(browser()).profile(),
+            base::BindRepeating(&BuildMockHatsService)));
+  }
+
+  void TearDownOnMainThread() override {
+    FirstRunInteractiveUiTest::TearDownOnMainThread();
+    mock_hats_service_ = nullptr;
+  }
+
+ protected:
+  MockHatsService& mock_hats_service() {
+    return CHECK_DEREF(mock_hats_service_);
+  }
+
+  InteractiveTestApi::MultiStep DeclineHistorySync() {
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      return Steps(
+          WaitForWebContentsNavigation(kWebContentsId,
+                                       GetHistorySyncOptinURL()),
+          WaitForButtonVisible(kWebContentsId, GetDontSyncHistoryButtonQuery()),
+          EnsurePresent(kWebContentsId, GetDontSyncHistoryButtonQuery()),
+          PressJsButton(kWebContentsId, GetDontSyncHistoryButtonQuery())
+              .SetMustRemainVisible(false));
+    }
+    GURL sync_page_url = AppendSyncConfirmationQueryParams(
+        GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
+        /*is_sync_promo=*/true);
+    return Steps(
+        WaitForWebContentsNavigation(kWebContentsId, std::move(sync_page_url)),
+        WaitForButtonVisible(kWebContentsId, GetDontSyncButtonQuery()),
+        EnsurePresent(kWebContentsId, GetDontSyncButtonQuery()),
+        PressJsButton(kWebContentsId, GetDontSyncButtonQuery())
+            .SetMustRemainVisible(false));
+  }
+
+ private:
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/366082752): Re-enable this test once the issue is fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LaunchHats DISABLED_LaunchHats
+#else
+#define MAYBE_LaunchHats LaunchHats
+#endif
+IN_PROC_BROWSER_TEST_F(FirstRunWithHatsInteractiveUiTest, MAYBE_LaunchHats) {
+  ASSERT_TRUE(IsProfileNameDefault());
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  const std::map<std::string, std::string> survey_data = {
+      {"Channel", "unknown"}};
+  EXPECT_CALL(mock_hats_service(),
+              LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunCompleted,
+                                  _, _, Eq(survey_data)));
+  // No other survey should be launched (e.g. permanent identity FRE survey).
+  EXPECT_CALL(mock_hats_service(),
+              LaunchDelayedSurvey(
+                  Not(kHatsSurveyTriggerIdentityFirstRunCompleted), _, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      DeclineHistorySync());
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+}
+
+// TODO(crbug.com/366082752): Re-enable this test once the issue is fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoNotLaunchHatsIfDeclineSignIn \
+  DISABLED_DoNotLaunchHatsIfDeclineSignIn
+#else
+#define MAYBE_DoNotLaunchHatsIfDeclineSignIn DoNotLaunchHatsIfDeclineSignIn
+#endif
+IN_PROC_BROWSER_TEST_F(FirstRunWithHatsInteractiveUiTest,
+                       MAYBE_DoNotLaunchHatsIfDeclineSignIn) {
+  ASSERT_TRUE(IsProfileNameDefault());
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  EXPECT_CALL(
+      mock_hats_service(),
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunCompleted, _, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/false));
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+}
+
+// TODO(crbug.com/366082752): Re-enable this test once the issue is fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoNotLaunchHatsIfEnterpriseUser \
+  DISABLED_DoNotLaunchHatsIfEnterpriseUser
+#else
+#define MAYBE_DoNotLaunchHatsIfEnterpriseUser DoNotLaunchHatsIfEnterpriseUser
+#endif
+IN_PROC_BROWSER_TEST_F(FirstRunWithHatsInteractiveUiTest,
+                       MAYBE_DoNotLaunchHatsIfEnterpriseUser) {
+  ASSERT_TRUE(IsProfileNameDefault());
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(
+                     &policy::FakeUserPolicySigninService::BuildForEnterprise));
+
+  EXPECT_CALL(
+      mock_hats_service(),
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunCompleted, _, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  SimulateSignIn(kTestEnterpriseEmail, kTestGivenName,
+                 /*with_extended_info=*/false);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForWebContentsNavigation(
+          kWebContentsId,
+          AppendSyncConfirmationQueryParams(
+              GURL(chrome::kChromeUISyncConfirmationURL)
+                  .Resolve(chrome::kChromeUISyncConfirmationLoadingPath),
+              SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true)));
+
+  auto& identity_manager =
+      CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile()));
+
+  AccountInfo account_info =
+      identity_manager.FindExtendedAccountInfoByAccountId(
+          identity_manager.GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  account_info = signin::WithGeneratedUserInfo(account_info, kTestGivenName);
+  account_info = AccountInfo::Builder(account_info)
+                     .SetHostedDomain("chromium.org")
+                     .Build();
+  signin::UpdateAccountInfoForAccount(&identity_manager,
+                                      std::move(account_info));
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForWebContentsNavigation(
+          kWebContentsId, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
+      EnsurePresent(kWebContentsId, GetAcceptManagementButtonQuery()),
+      PressJsButton(kWebContentsId, GetAcceptManagementButtonQuery()),
+      DeclineHistorySync());
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunWithHatsInteractiveUiTest,
+                       DoNotLaunchHatsIfFlowNotCompleted) {
+  ASSERT_TRUE(IsProfileNameDefault());
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  EXPECT_CALL(
+      mock_hats_service(),
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunCompleted, _, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_CLOSE_WINDOW))
+          .SetMustRemainVisible(false));
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
 }

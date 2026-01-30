@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_hats_util.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
@@ -35,13 +38,17 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
@@ -558,6 +565,9 @@ bool FirstRunFlowController::PreFinishWithBrowser() {
   DCHECK(first_run_exited_callback_);
   std::move(first_run_exited_callback_)
       .Run(ProfilePicker::FirstRunExitStatus::kCompleted);
+
+  MaybeTriggerHatsSurvey();
+
   return true;
 }
 
@@ -596,6 +606,37 @@ void FirstRunFlowController::RunFinishFlowCallback() {
   if (finish_flow_callback_) {
     std::move(finish_flow_callback_).Run();
   }
+}
+
+void FirstRunFlowController::MaybeTriggerHatsSurvey() {
+  if (!base::FeatureList::IsEnabled(
+          switches::kBeforeFirstRunDesktopRefreshSurvey)) {
+    return;
+  }
+
+  if (current_step() != Step::kFinishFlow) {
+    // Skip the survey if the user did not complete the flow.
+    return;
+  }
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  if (!identity_manager) {
+    return;
+  }
+  const AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  if (account_info.IsEmpty() ||
+      account_info.IsManaged() != signin::Tribool::kFalse) {
+    // Skip the survey for not signed in users and for managed users.
+    return;
+  }
+
+  std::map<std::string, std::string> data = {
+      {"Channel",
+       std::string(version_info::GetChannelString(chrome::GetChannel()))}};
+  signin::LaunchHatsSurveyForProfile(
+      kHatsSurveyTriggerIdentityFirstRunCompleted, profile_,
+      /*defer_if_no_browser=*/true, std::move(data));
 }
 
 base::queue<ProfileManagementFlowController::Step>

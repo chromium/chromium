@@ -35,8 +35,9 @@ using ::testing::Values;
 
 class SigninHatsUtilBaseBrowserTest : public SigninBrowserTestBase {
  public:
-  explicit SigninHatsUtilBaseBrowserTest(const base::Feature& feature) {
-    feature_list_.InitAndEnableFeature(feature);
+  explicit SigninHatsUtilBaseBrowserTest(
+      const std::vector<base::test::FeatureRef> enabled_features) {
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -79,7 +80,8 @@ class SigninHatsUtilBrowserTest : public SigninHatsUtilBaseBrowserTest {
  public:
   SigninHatsUtilBrowserTest()
       : SigninHatsUtilBaseBrowserTest(
-            switches::kChromeIdentitySurveyFirstRunSignin) {}
+            /*enabled_features=*/{
+                switches::kChromeIdentitySurveyFirstRunSignin}) {}
 
  protected:
   std::string trigger() const {
@@ -179,7 +181,8 @@ class SigninHatsUtilPromoBubbleDismissedBrowserTest
  public:
   SigninHatsUtilPromoBubbleDismissedBrowserTest()
       : SigninHatsUtilBaseBrowserTest(
-            switches::kChromeIdentitySurveySigninPromoBubbleDismissed) {}
+            /*enabled_features=*/{
+                switches::kChromeIdentitySurveySigninPromoBubbleDismissed}) {}
 
  protected:
   std::string trigger() const {
@@ -233,3 +236,42 @@ INSTANTIATE_TEST_SUITE_P(
       base::RemoveChars(info.param.expected_bubble_type, " ", &test_suffix);
       return test_suffix;
     });
+
+class SigninHatsUtilConflictingFeaturesBrowserTest
+    : public SigninHatsUtilBaseBrowserTest {
+ public:
+  SigninHatsUtilConflictingFeaturesBrowserTest()
+      : SigninHatsUtilBaseBrowserTest(
+            /*enabled_features=*/{
+                switches::kChromeIdentitySurveyFirstRunSignin,
+                switches::kBeforeFirstRunDesktopRefreshSurvey}) {}
+
+ protected:
+  std::string trigger_with_no_conflict() const {
+    return kHatsSurveyTriggerIdentityFirstRunCompleted;
+  }
+
+  std::string trigger_with_conflict() const {
+    return kHatsSurveyTriggerIdentityFirstRunSignin;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SigninHatsUtilConflictingFeaturesBrowserTest,
+                       LaunchHatsSurveyForProfileIfNoConflict) {
+  EXPECT_CALL(mock_hats_service(),
+              LaunchDelayedSurvey(trigger_with_no_conflict(), _, _, _));
+  EXPECT_CALL(mock_hats_service(),
+              LaunchDelayedSurvey(Not(trigger_with_no_conflict()), _, _, _))
+      .Times(0);
+
+  signin::LaunchHatsSurveyForProfile(trigger_with_no_conflict(),
+                                     CHECK_DEREF(browser()).profile());
+}
+
+IN_PROC_BROWSER_TEST_F(SigninHatsUtilConflictingFeaturesBrowserTest,
+                       DoNotLaunchHatsSurveyForProfileIfConflict) {
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey).Times(0);
+
+  signin::LaunchHatsSurveyForProfile(trigger_with_conflict(),
+                                     CHECK_DEREF(browser()).profile());
+}

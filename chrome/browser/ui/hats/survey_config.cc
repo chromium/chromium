@@ -100,6 +100,8 @@ constexpr char kHatsSurveyTriggerIdentityDiceWebSigninDeclined[] =
     "identity-dice-web-signin-declined";
 constexpr char kHatsSurveyTriggerIdentityFirstRunSignin[] =
     "identity-first-run-signin";
+constexpr char kHatsSurveyTriggerIdentityFirstRunCompleted[] =
+    "identity-first-run-completed";
 constexpr char kHatsSurveyTriggerIdentityPasswordBubbleSignin[] =
     "identity-password-bubble-signin";
 constexpr char kHatsSurveyTriggerIdentityProfileMenuDismissed[] =
@@ -649,6 +651,18 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
       "b5zoUGRaf0ugnJ3q1cK0RaxK8yrp", std::vector<std::string>{},
       identity_string_psd_fields);
+
+  survey_configs.emplace_back(
+      &switches::kBeforeFirstRunDesktopRefreshSurvey,
+      kHatsSurveyTriggerIdentityFirstRunCompleted,
+      "XhHJ3uboj0ugnJ3q1cK0S6RQC7u7",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Channel"},
+      // TODO(crbug.com/477193830): Add UMA integration.
+      /*log_responses_to_uma=*/false,
+      /*log_responses_to_ukm=*/false,
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
