@@ -187,7 +187,7 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--enable-features=TreesInViz",
+          "--additional-driver-flag=--enable-features=TreesInViz",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb"
         ],
         "description": "Run with android_35_google_apis_x64",

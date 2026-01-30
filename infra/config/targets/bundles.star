@@ -6815,11 +6815,23 @@ targets.bundle(
         "content_browsertests",
         "browser_tests",
     ],
-    mixins = [
-        targets.mixin(
+    per_test_modifications = {
+        "cc_unittests": targets.mixin(
             args = ["--disable-features=TreesInViz"],
         ),
-    ],
+        "viz_unittests": targets.mixin(
+            args = ["--disable-features=TreesInViz"],
+        ),
+        "blink_web_tests": targets.mixin(
+            args = ["--additional-driver-flag=--disable-features=TreesInViz"],
+        ),
+        "content_browsertests": targets.mixin(
+            args = ["--disable-features=TreesInViz"],
+        ),
+        "browser_tests": targets.mixin(
+            args = ["--disable-features=TreesInViz"],
+        ),
+    },
 )
 
 targets.bundle(
@@ -6831,11 +6843,23 @@ targets.bundle(
         "content_browsertests",
         "browser_tests",
     ],
-    mixins = [
-        targets.mixin(
+    per_test_modifications = {
+        "cc_unittests": targets.mixin(
             args = ["--enable-features=TreesInViz"],
         ),
-    ],
+        "viz_unittests": targets.mixin(
+            args = ["--enable-features=TreesInViz"],
+        ),
+        "blink_web_tests": targets.mixin(
+            args = ["--additional-driver-flag=--enable-features=TreesInViz"],
+        ),
+        "content_browsertests": targets.mixin(
+            args = ["--enable-features=TreesInViz"],
+        ),
+        "browser_tests": targets.mixin(
+            args = ["--enable-features=TreesInViz"],
+        ),
+    },
 )
 
 targets.bundle(

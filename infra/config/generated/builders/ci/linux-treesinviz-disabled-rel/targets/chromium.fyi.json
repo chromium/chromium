@@ -83,7 +83,7 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--disable-features=TreesInViz"
+          "--additional-driver-flag=--disable-features=TreesInViz"
         ],
         "merge": {
           "args": [
