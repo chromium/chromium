@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -125,8 +126,9 @@ double HTMLProgressElement::max() const {
 }
 
 void HTMLProgressElement::setMax(double max) {
-  // FIXME: The specification says we should ignore the input value if it is
-  // inferior or equal to 0.
+  if (RuntimeEnabledFeatures::ProgressMaxIsPositiveEnabled() && max <= 0) {
+    return;
+  }
   SetFloatingPointAttribute(html_names::kMaxAttr, max > 0 ? max : 1);
 }
 

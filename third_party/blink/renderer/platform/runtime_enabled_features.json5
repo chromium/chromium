@@ -4226,6 +4226,12 @@
       name: "ProgrammaticScrollPromise",
     },
     {
+      // When enabled, setting progress.max enforces a >0 constraint.
+      // This will be shipped in M146, and it can be removed in M148.
+      name: "ProgressMaxIsPositive",
+      status: "experimental",
+    },
+    {
       // Propagate overscroll-behavior from the root element rather than the
       // body element. crbug.com/41453796
       name: "PropagateOverscrollBehaviorFromRoot",
