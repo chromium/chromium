@@ -57,7 +57,7 @@ You will need to **manually** add this to the deps entry. After adding this entr
 
 ## Writing TestTraceProcessor Tests
 
-See [test_trace_processor_example_unittests.cc](../../test/test_trace_processor_example_unittest.cc) for examples you can compile and run.
+See [test_trace_processor_example_unittest.cc](../../test/test_trace_processor_example_unittest.cc) for examples you can compile and run.
 
 You can write unit or browser tests with the TestTraceProcessor to record a trace, run a query on it and write expectations against the result.
 

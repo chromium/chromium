@@ -15,7 +15,7 @@
 
 // A flat_map is basically a interface to flat_tree. So several basic
 // operations are tested to make sure things are set up properly, but the bulk
-// of the tests are in flat_tree_unittests.cc.
+// of the tests are in flat_tree_pa_unittest.cc.
 
 using ::testing::ElementsAre;
 

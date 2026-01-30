@@ -138,7 +138,7 @@ TEST(TimeTestOutOfBounds, FromExplodedOutOfBoundsTime) {
 
 // Specialized test fixture allowing time strings without timezones to be
 // tested by comparing them to a known time in the local zone.
-// See also pr_time_unittests.cc
+// See also pr_time_unittest.cc
 class TimeTest : public testing::Test {
  protected:
 #if BUILDFLAG(IS_FUCHSIA)

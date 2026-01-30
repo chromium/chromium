@@ -63,7 +63,7 @@
 #define BASE_TIMER_TIMER_H_
 
 // IMPORTANT: If you change timer code, make sure that all tests (including
-// disabled ones) from timer_unittests.cc pass locally. Some are disabled
+// disabled ones) from timer_unittest.cc pass locally. Some are disabled
 // because they're flaky on the buildbot, but when you run them locally you
 // should be able to tell the difference.
 

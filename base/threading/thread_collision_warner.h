@@ -132,7 +132,7 @@ namespace base {
 // The class ThreadCollisionWarner uses an Asserter to notify the collision
 // AsserterBase is the interfaces and DCheckAsserter is the default asserter
 // used. During the unit tests is used another class that doesn't "DCHECK"
-// in case of collision (check thread_collision_warner_unittests.cc)
+// in case of collision (check thread_collision_warner_unittest.cc)
 struct BASE_EXPORT AsserterBase {
   virtual ~AsserterBase() = default;
   virtual void warn() = 0;
