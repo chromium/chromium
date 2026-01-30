@@ -21,7 +21,7 @@
                     askEveryTime:(BOOL)askEveryTime;
 
 // Called when the user taps "Cancel" in the confirmation screen.
-- (void)accountPickerCoordinatorWantsToBeStopped:
+- (void)accountPickerCoordinatorCancel:
     (AccountPickerCoordinator*)accountPickerCoordinator;
 
 // Called when the form has no identities left to present (identities have been

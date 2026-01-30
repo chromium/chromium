@@ -17,8 +17,6 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_layout_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_logger.h"
-#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_mediator.h"
-#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_mediator_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_navigation_controller.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_presentation_controller.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_slide_transition_animator.h"
@@ -31,7 +29,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -44,7 +41,6 @@
 @interface AccountPickerCoordinator () <
     AccountPickerConfirmationScreenCoordinatorDelegate,
     AccountPickerLayoutDelegate,
-    AccountPickerMediatorDelegate,
     AccountPickerSelectionScreenCoordinatorDelegate,
     AccountPickerScreenPresentationControllerDelegate,
     SigninReauthCoordinatorDelegate,
@@ -75,9 +71,6 @@
   // The configuration for the account picker.
   AccountPickerConfiguration* _configuration;
 
-  // The mediator of this coordinator.
-  AccountPickerMediator* _mediator;
-
   // Whether the identity button has been hidden.
   BOOL _identityButtonHidden;
 }
@@ -95,16 +88,8 @@
              base::NotFatalUntil::M145);
     _accessPoint = accessPoint;
     _configuration = configuration;
-    _mediator = [[AccountPickerMediator alloc]
-        initWithAuthenticationService:AuthenticationServiceFactory::
-                                          GetForProfile(self.profile)];
-    _mediator.delegate = self;
   }
   return self;
-}
-
-- (void)dealloc {
-  CHECK(!_mediator, base::NotFatalUntil::M152);
 }
 
 - (void)stopAnimated:(BOOL)animated {
@@ -118,9 +103,6 @@
   _navigationController.delegate = nil;
   _navigationController.transitioningDelegate = nil;
   _navigationController = nil;
-  [_mediator disconnect];
-  _mediator = nil;
-  _mediator.delegate = nil;
   [self stopChildrenCoordinators];
   [super stop];
 }
@@ -402,7 +384,7 @@
 
 - (void)accountPickerConfirmationScreenCoordinatorCancel:
     (AccountPickerConfirmationScreenCoordinator*)coordinator {
-  [self.delegate accountPickerCoordinatorWantsToBeStopped:self];
+  [self.delegate accountPickerCoordinatorCancel:self];
 }
 
 - (void)
@@ -460,15 +442,8 @@
 - (void)accountPickerScreenPresentationControllerBackgroundTapped:
     (AccountPickerScreenPresentationController*)controller {
   if (_configuration.dismissOnBackgroundTap) {
-    [self.delegate accountPickerCoordinatorWantsToBeStopped:self];
+    [self.delegate accountPickerCoordinatorCancel:self];
   }
-}
-
-#pragma mark - AccountPickerMediatorDelegate
-
-- (void)accountPickerMediatorWantsToBeStopped:(AccountPickerMediator*)mediator {
-  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M152);
-  [self.delegate accountPickerCoordinatorWantsToBeStopped:self];
 }
 
 #pragma mark - NSObject
