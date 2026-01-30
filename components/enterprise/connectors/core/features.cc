@@ -30,6 +30,6 @@ BASE_FEATURE_PARAM(size_t,
 BASE_FEATURE(kEnableEncryptedFileUpload, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables scanning of pasted images for DLP.
-BASE_FEATURE(kDlpScanPastedImages, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDlpScanPastedImages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace enterprise_connectors
