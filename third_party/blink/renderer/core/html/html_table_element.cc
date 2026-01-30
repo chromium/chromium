@@ -485,7 +485,9 @@ HTMLTableElement::AdditionalPresentationAttributeStyle() {
   if (frame_attr_)
     return nullptr;
 
-  if (!border_attr_ && !border_color_attr_) {
+  if (!border_attr_ &&
+      (!border_color_attr_ ||
+       RuntimeEnabledFeatures::TableBorderColorNoImplicitBorderEnabled())) {
     // Setting the border to 'hidden' allows it to win over any border
     // set on the table's cells during border-conflict resolution.
     if (rules_attr_ != kUnsetRules) {

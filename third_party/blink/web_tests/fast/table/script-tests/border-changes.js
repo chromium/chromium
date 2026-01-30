@@ -153,17 +153,17 @@ shouldBe("getComputedStyle(cell, '').borderRightColor", "red");
 shouldBe("getComputedStyle(cell, '').borderTopColor", "red");
 shouldBe("getComputedStyle(cell, '').borderBottomColor", "red");
 
-// resets to default border width of 3px
+// bordercolor should not trigger a border if the border attribute is not set.
 table.removeAttribute("border");
 
-shouldBe("getComputedStyle(table, '').borderLeftWidth", "'3px'");
-shouldBe("getComputedStyle(table, '').borderRightWidth", "'3px'");
-shouldBe("getComputedStyle(table, '').borderTopWidth", "'3px'");
-shouldBe("getComputedStyle(table, '').borderBottomWidth", "'3px'");
-shouldBe("getComputedStyle(table, '').borderLeftStyle", "'solid'");
-shouldBe("getComputedStyle(table, '').borderRightStyle", "'solid'");
-shouldBe("getComputedStyle(table, '').borderTopStyle", "'solid'");
-shouldBe("getComputedStyle(table, '').borderBottomStyle", "'solid'");
+shouldBe("getComputedStyle(table, '').borderLeftWidth", "'0px'");
+shouldBe("getComputedStyle(table, '').borderRightWidth", "'0px'");
+shouldBe("getComputedStyle(table, '').borderTopWidth", "'0px'");
+shouldBe("getComputedStyle(table, '').borderBottomWidth", "'0px'");
+shouldBe("getComputedStyle(table, '').borderLeftStyle", "'hidden'");
+shouldBe("getComputedStyle(table, '').borderRightStyle", "'hidden'");
+shouldBe("getComputedStyle(table, '').borderTopStyle", "'hidden'");
+shouldBe("getComputedStyle(table, '').borderBottomStyle", "'hidden'");
 shouldBe("getComputedStyle(table, '').borderLeftColor", "yellow");
 shouldBe("getComputedStyle(table, '').borderRightColor", "yellow");
 shouldBe("getComputedStyle(table, '').borderTopColor", "yellow");
