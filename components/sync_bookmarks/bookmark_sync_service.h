@@ -77,7 +77,7 @@ class BookmarkSyncService : public KeyedService {
 
   // For integration tests.
   void SetIsTrackingMetadataForTesting();
-  void SetBookmarksLimitForTesting(size_t limit);
+  void SetLocalBookmarksLimitForTesting(size_t limit);
 
  private:
   std::unique_ptr<BookmarkModelView> bookmark_model_view_;

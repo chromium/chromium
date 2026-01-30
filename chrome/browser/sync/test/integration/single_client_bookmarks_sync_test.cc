@@ -1611,7 +1611,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Set a limit of 4 bookmarks. This is to avoid erroring out when the fake
   // server sends an update of size 4.
-  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(4);
 
   ASSERT_TRUE(SetupSync());
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
@@ -1649,7 +1649,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
 
   // Set a limit of 4 bookmarks. This is to avoid erroring out when the fake
   // server sends an update of size 4.
-  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(4);
 
   // Add 2 new bookmarks to exceed the limit.
   const BookmarkNode* bookmark_bar_node =
@@ -1706,7 +1706,7 @@ IN_PROC_BROWSER_TEST_P(
   // server sends an update of size 5.
   LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
       GetProfile(kSingleProfileIndex))
-      ->SetBookmarksLimitForTesting(5);
+      ->SetLocalBookmarksLimitForTesting(5);
 
   // Set up 2 preexisting local bookmark under other node.
   const BookmarkNode* other_node =
@@ -1749,7 +1749,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupSync());
   // Set a limit of 4 bookmarks. This is to avoid erroring out when the fake
   // server sends an update of size 4.
-  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(4);
 
   const BookmarkNode* other_node =
       GetOtherNode(kSingleProfileIndex, GetStoreType());
@@ -1802,9 +1802,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
           GURL(kUrl2)));
 
   ASSERT_TRUE(SetupClients());
-  // Set a limit of 4 bookmarks. This should result in an error when we get an
-  // update of size 5.
-  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
+  // Set a limit of 2 bookmarks. This implies a remote limit of 2*2=4.
+  // This should result in an error when we get an update of size 5.
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(2);
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
                    ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
@@ -1825,6 +1825,119 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
   // Bookmarks should be in an error state. Thus excluding it from the
   // CheckForDataTypeFailures() check.
   ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientBookmarksSyncTest,
+    ShouldReportErrorIfInitialUpdatesCrossMaxCountLimitAfterMerge) {
+  // Create two bookmarks on the server under BookmarkBar.
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  const std::u16string kTitle1 = u"title1";
+  const std::string kUrl1 = "http://www.url1.com";
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder(kTitle1).BuildBookmark(
+          GURL(kUrl1)));
+
+  const std::u16string kTitle2 = u"title2";
+  const std::string kUrl2 = "http://www.url2.com";
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder(kTitle2).BuildBookmark(
+          GURL(kUrl2)));
+
+  ASSERT_TRUE(SetupClients());
+  // Set a limit of 4 bookmarks. This implies a remote limit of 2*4=8.
+  // So 5 updates are allowed during merge, but will trigger a local count error
+  // afterwards.
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(4);
+
+  ASSERT_FALSE(GetClient(kSingleProfileIndex)
+                   ->service()
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
+
+  ASSERT_TRUE(SetupSync());
+
+  // Update of size 5 (3 permanent + 2 injected) exceeds the limit of 4.
+  // But it is within the remote limit of 6.
+  // So we expect the merge to happen (bookmarks present), but then an error to
+  // be reported.
+
+  EXPECT_TRUE(
+      BookmarksDataTypeErrorChecker(GetClient(kSingleProfileIndex)->service())
+          .Wait());
+
+  // Bookmarks should be present despite the error.
+  EXPECT_THAT(
+      GetBookmarkBarNode(kSingleProfileIndex, GetStoreType())->children(),
+      SizeIs(2));
+
+  // Bookmarks should be in an error state.
+  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientBookmarksSyncTest,
+    PRE_ShouldAllowRecoverIfInitialUpdatesCrossMaxCountLimitAfterMerge) {
+  // Create two bookmarks on the server under BookmarkBar.
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  const std::u16string kTitle1 = u"title1";
+  const std::string kUrl1 = "http://www.url1.com";
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder(kTitle1).BuildBookmark(
+          GURL(kUrl1)));
+
+  const std::u16string kTitle2 = u"title2";
+  const std::string kUrl2 = "http://www.url2.com";
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder(kTitle2).BuildBookmark(
+          GURL(kUrl2)));
+
+  ASSERT_TRUE(SetupClients());
+  // Set a limit of 4 bookmarks. This implies a remote limit of 2*4=8.
+  // So 5 updates are allowed during merge, but will trigger a local count error
+  // afterwards.
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(4);
+
+  ASSERT_FALSE(GetClient(kSingleProfileIndex)
+                   ->service()
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
+
+  ASSERT_TRUE(SetupSync());
+
+  // Update of size 5 (3 permanent + 2 injected) exceeds the limit of 4.
+  // But it is within the remote limit of 8.
+  // So we expect the merge to happen (bookmarks present), but then an error to
+  // be reported.
+
+  EXPECT_TRUE(
+      BookmarksDataTypeErrorChecker(GetClient(kSingleProfileIndex)->service())
+          .Wait());
+
+  // Bookmarks should be present despite the error.
+  const BookmarkNode* bookmark_bar =
+      GetBookmarkBarNode(kSingleProfileIndex, GetStoreType());
+  EXPECT_THAT(bookmark_bar->children(), SizeIs(2));
+
+  // Delete one bookmark to bring the count below the limit.
+  // Total was 5 (3 permanent + 2 children).
+  // Removing 1 child makes total 4. 4 <= 4.
+  Remove(kSingleProfileIndex, bookmark_bar, /*index=*/0);
+
+  // Bookmarks should be in an error state.
+  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientBookmarksSyncTest,
+    ShouldAllowRecoverIfInitialUpdatesCrossMaxCountLimitAfterMerge) {
+  ASSERT_TRUE(SetupClients());
+
+  // Set a limit of 20 bookmarks.
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(20);
+
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
+  EXPECT_FALSE(GetClient(kSingleProfileIndex)
+                   ->service()
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
@@ -1935,7 +2048,7 @@ IN_PROC_BROWSER_TEST_P(
     PRE_ShouldAllowRecoverIfLocalBookmarksDeletedBelowMaxCountLimit) {
   ASSERT_TRUE(SetupSync());
 
-  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(4);
 
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
@@ -1968,7 +2081,7 @@ IN_PROC_BROWSER_TEST_P(
     ShouldAllowRecoverIfLocalBookmarksDeletedBelowMaxCountLimit) {
   ASSERT_TRUE(SetupClients());
 
-  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
+  GetBookmarkSyncService()->SetLocalBookmarksLimitForTesting(4);
 
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(GetSyncService(kSingleProfileIndex)
@@ -3051,11 +3164,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
           GURL(kUrl2)));
 
   ASSERT_TRUE(SetupClients());
-  // Set a limit of 4 bookmarks. This should result in an error when we get an
-  // update of size 5.
+  // Set a limit of 2 bookmarks. This implies a remote limit of 2*2=4.
+  // This should result in an error when we get an update of size 5.
   AccountBookmarkSyncServiceFactory::GetForProfile(
       GetProfile(kSingleProfileIndex))
-      ->SetBookmarksLimitForTesting(4);
+      ->SetLocalBookmarksLimitForTesting(2);
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
@@ -3088,7 +3201,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // The fact that too many bookmarks were downloaded should have been persisted
   // and hence remembered now. Note that this test doesn't override
-  // SetBookmarksLimitForTesting(), so the error must have been detected in
+  // SetLocalBookmarksLimitForTesting(), so the error must have been detected in
   // the PRE_ test.
   EXPECT_TRUE(
       BookmarksDataTypeErrorChecker(GetClient(kSingleProfileIndex)->service())

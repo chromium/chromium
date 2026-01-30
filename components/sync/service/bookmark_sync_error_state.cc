@@ -22,6 +22,7 @@ bool IsBookmarksLimitExceededError(const SyncError& error) {
     case ModelError::Type::kBookmarksLocalCountExceededLimitOnSyncStart:
     case ModelError::Type::kBookmarksLocalCountExceededLimitOnUpdateReceived:
     case ModelError::Type::kBookmarksLocalCountExceededLimitNudgeForCommit:
+    case ModelError::Type::kBookmarksLocalCountExceededLimitAfterInitialMerge:
       return true;
     default:
       return false;
