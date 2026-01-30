@@ -497,7 +497,11 @@ std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
       ScopedMapping::Create(metadata_, mappable_buffer_.get(),
                             /*is_already_mapped=*/false);
   if (!scoped_mapping) {
-    LOG(ERROR) << "Unable to create ScopedMapping";
+    std::ostringstream s;
+    s << " shared_image Info: {"
+      << " format: " << format().ToString() << " usage: " << usage().ToString()
+      << " label: " << debug_label() << " }";
+    LOG(ERROR) << "Unable to create ScopedMapping.  " << s.str();
   }
   return scoped_mapping;
 }
