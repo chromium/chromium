@@ -435,8 +435,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
              GetIndexOf(view) == 0);
   }
 
-  TabSlotView* GetTabGroupHeader(
-      const tab_groups::TabGroupId& group) const override {
+  TabSlotView* GetTabGroupHeader(const tab_groups::TabGroupId& group) override {
+    return std::as_const(*this).GetTabGroupHeader(group);
+  }
+
+  TabSlotView* GetTabGroupHeader(const tab_groups::TabGroupId& group) const {
     return tab_strip_->group_header(group);
   }
 

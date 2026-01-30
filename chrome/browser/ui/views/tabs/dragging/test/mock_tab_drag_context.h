@@ -36,7 +36,7 @@ class MockTabDragContext : public TabDragContext {
   MOCK_METHOD(TabSlotView*,
               GetTabGroupHeader,
               (const tab_groups::TabGroupId& group),
-              (const, override));
+              (override));
   MOCK_METHOD(TabStripModel*, GetTabStripModel, (), (override));
   MOCK_METHOD(TabDragController*, GetDragController, (), (override));
   MOCK_METHOD(void,

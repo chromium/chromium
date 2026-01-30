@@ -71,7 +71,7 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
       tab_group_visual_data_(
           *GetTabGroupFromNode(collection_node_)->visual_data()),
       group_header_(AddChildView(std::make_unique<VerticalTabGroupHeaderView>(
-          this,
+          *this,
           &tab_group_visual_data_))),
       group_line_(AddChildView(std::make_unique<views::View>())),
       layout_manager_(*SetLayoutManager(
@@ -336,6 +336,18 @@ bool VerticalTabGroupView::GetIsShared() {
       tab_group_service->GetGroup(GetTabGroupFromNode(collection_node_)->id());
 
   return saved_group && saved_group->is_shared_tab_group();
+}
+
+void VerticalTabGroupView::InitHeaderDrag(const ui::MouseEvent& event) {
+  GetDragHandler().InitializeDrag(*collection_node_, event);
+}
+
+bool VerticalTabGroupView::ContinueHeaderDrag(const ui::MouseEvent& event) {
+  return GetDragHandler().ContinueDrag(*group_header_, event);
+}
+
+void VerticalTabGroupView::CancelHeaderDrag() {
+  GetDragHandler().EndDrag(EndDragReason::kCancel);
 }
 
 BEGIN_METADATA(VerticalTabGroupView)

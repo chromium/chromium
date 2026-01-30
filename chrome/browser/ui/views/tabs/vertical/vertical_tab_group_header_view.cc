@@ -100,7 +100,7 @@ END_METADATA
 }  // namespace
 
 VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
-    Delegate* delegate,
+    Delegate& delegate,
     const tab_groups::TabGroupVisualData* tab_group_visual_data)
     : sync_icon_(AddChildView(std::make_unique<views::ImageView>())),
       group_header_label_(
@@ -192,11 +192,22 @@ bool VerticalTabGroupHeaderView::OnMousePressed(const ui::MouseEvent& event) {
     return false;
   }
 
+  // Potentially start the drag for the mouse press.
+  // Follow-up mouse-movement events will update the drag controller and
+  // eventually kick off the drag-loop.
+  delegate_->InitHeaderDrag(event);
+
   // Return true so that we receive subsequent MouseRelease event.
   return true;
 }
 
+bool VerticalTabGroupHeaderView::OnMouseDragged(const ui::MouseEvent& event) {
+  return delegate_->ContinueHeaderDrag(event);
+}
+
 void VerticalTabGroupHeaderView::OnMouseReleased(const ui::MouseEvent& event) {
+  delegate_->CancelHeaderDrag();
+
   bool open_editor_bubble =
       event.IsRightMouseButton() && !editor_bubble_tracker_.is_open();
   bool toggle_collapse = event.IsLeftMouseButton();

@@ -52,6 +52,9 @@ class VerticalTabGroupView
   views::Widget* ShowGroupEditorBubble(
       bool stop_context_menu_propagation) override;
   std::u16string GetGroupContentString() const override;
+  void InitHeaderDrag(const ui::MouseEvent& event) override;
+  bool ContinueHeaderDrag(const ui::MouseEvent& event) override;
+  void CancelHeaderDrag() override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsViewDragging(const views::View& child_view) const override;

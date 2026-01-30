@@ -188,7 +188,14 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
     node = tab_view->collection_node();
   } else if (auto* group_view =
                  views::AsViewClass<VerticalTabGroupView>(view_at_point)) {
-    node = group_view->collection_node();
+    // Don't set the node if dragging a group header over another group view to
+    // avoid bouncing the group view around.
+    // TODO(crbug.com/476509652): This shouldn't be necessary once hit-testing
+    // is improved.
+    if (!GetDragHandler().GetDraggingGroupHeaderId().has_value() ||
+        group_view->IsCollapsed()) {
+      node = group_view->collection_node();
+    }
   } else if (auto* split_tab_view =
                  views::AsViewClass<VerticalSplitTabView>(view_at_point)) {
     node = split_tab_view->collection_node();
@@ -200,6 +207,12 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
 VerticalDraggedTabsContainer&
 VerticalUnpinnedTabContainerView::GetTabDragTarget(
     const gfx::Point& point_in_screen) {
+  if (GetDragHandler().GetDraggingGroupHeaderId().has_value()) {
+    // Don't consider other tab group views as a drag target if we're dragging
+    // a group header already.
+    return *this;
+  }
+
   gfx::Point point_in_container =
       views::View::ConvertPointFromScreen(this, point_in_screen);
   // Use the center of the bounds so views with padding are still targetable

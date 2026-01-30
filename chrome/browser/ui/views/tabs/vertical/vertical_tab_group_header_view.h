@@ -20,7 +20,7 @@ namespace views {
 class LabelButton;
 class ImageView;
 class Label;
-}
+}  // namespace views
 
 // View for a tab group header in the vertical tabstrip.
 class VerticalTabGroupHeaderView : public views::FlexLayoutView,
@@ -36,10 +36,14 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
     virtual views::Widget* ShowGroupEditorBubble(
         bool stop_context_menu_propagation) = 0;
     virtual std::u16string GetGroupContentString() const = 0;
+
+    virtual void InitHeaderDrag(const ui::MouseEvent& event) = 0;
+    virtual bool ContinueHeaderDrag(const ui::MouseEvent& event) = 0;
+    virtual void CancelHeaderDrag() = 0;
   };
 
-  explicit VerticalTabGroupHeaderView(
-      Delegate* delegate,
+  VerticalTabGroupHeaderView(
+      Delegate& delegate,
       const tab_groups::TabGroupVisualData* tab_group_visual_data);
   VerticalTabGroupHeaderView(const VerticalTabGroupHeaderView&) = delete;
   VerticalTabGroupHeaderView& operator=(const VerticalTabGroupHeaderView&) =
@@ -49,6 +53,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   // views::View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
@@ -93,7 +98,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   const raw_ptr<views::LabelButton> editor_bubble_button_ = nullptr;
 
   const raw_ptr<views::ImageView> collapse_icon_ = nullptr;
-  const raw_ptr<Delegate> delegate_ = nullptr;
+  const raw_ref<Delegate> delegate_;
 
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;
