@@ -1539,7 +1539,8 @@ StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
       css_parsing_utils::IsValidIdentAnimationName(
           name_token.Value().ToAtomicString())) {
     name = name_token.Value().ToString();
-  } else if (name_token.GetType() == kStringToken) {
+  } else if (name_token.GetType() == kStringToken &&
+             !name_token.Value().empty()) {
     context_->Count(WebFeature::kOBSOLETE_QuotedKeyframesRule);
     name = name_token.Value().ToString();
   } else {

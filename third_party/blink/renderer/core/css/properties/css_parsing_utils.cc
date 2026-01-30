@@ -4284,7 +4284,8 @@ CSSValue* ConsumeAnimationIterationCount(CSSParserTokenStream& stream,
 }
 
 bool IsValidIdentAnimationName(const AtomicString& name) {
-  return !EqualIgnoringASCIICase(name, "none") &&
+  return !EqualIgnoringASCIICase(name, "") &&
+         !EqualIgnoringASCIICase(name, "none") &&
          !EqualIgnoringASCIICase(name, "default") && !IsCSSWideKeyword(name);
 }
 
@@ -4297,13 +4298,18 @@ CSSValue* ConsumeAnimationName(CSSParserTokenStream& stream,
 
   if (stream.Peek().GetType() == kStringToken) {
     context.Count(WebFeature::kOBSOLETE_QuotedAnimationName);
-
     const CSSParserToken& token = stream.ConsumeIncludingWhitespace();
-    if (IsValidIdentAnimationName(token.Value().ToAtomicString())) {
-      return MakeGarbageCollected<CSSCustomIdentValue>(
-          token.Value().ToAtomicString());
+
+    // Empty string is not a valid animation name.
+    // https://github.com/w3c/csswg-drafts/issues/7762
+    if (token.Value().empty()) {
+      return nullptr;
     }
-    return MakeGarbageCollected<CSSStringValue>(token.Value().ToString());
+    const AtomicString& name = token.Value().ToAtomicString();
+    if (IsValidIdentAnimationName(name)) {
+      return MakeGarbageCollected<CSSCustomIdentValue>(name);
+    }
+    return MakeGarbageCollected<CSSStringValue>(name);
   }
 
   return ConsumeCustomIdent(stream, context, local_context);
