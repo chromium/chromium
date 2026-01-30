@@ -81,8 +81,8 @@ void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
 
 void IOSChromePasskeyClient::ShowSuggestionBottomSheet(
     RequestInfo request_info) {
-  // TODO(crbug.com/460485496): Open the suggestion bottom sheet.
-  // See CredentialSuggestionBottomSheet* classes.
+  [command_handler_ showPasskeySuggestionBottomSheet:request_info.request_id];
+
   // TODO(crbug.com/460485496): remove the code below and related dependencies
   // once the bottom sheet is implemented.
   web::WebFramesManager* web_frames_manager =

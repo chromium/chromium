@@ -2234,8 +2234,6 @@ const char kChromeAppStoreUrl[] =
                              browser:self.browser
                               params:params
                             delegate:self];
-  self.credentialSuggestionBottomSheetCoordinator.settingsHandler =
-      HandlerForProtocol(self.dispatcher, SettingsCommands);
   self.credentialSuggestionBottomSheetCoordinator
       .browserCoordinatorCommandsHandler =
       HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
@@ -2420,8 +2418,17 @@ const char kChromeAppStoreUrl[] =
   [_passkeyCreationBottomSheetCoordinator start];
 }
 
-- (void)showPasskeySuggestionBottomSheet:(const std::string&)requestId {
-  // TODO(crbug.com/460485496) : Add implementation.
+- (void)showPasskeySuggestionBottomSheet:(const std::string&)requestID {
+  self.credentialSuggestionBottomSheetCoordinator =
+      [[CredentialSuggestionBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                           requestID:requestID
+                            delegate:self];
+  self.credentialSuggestionBottomSheetCoordinator
+      .browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
+  [self.credentialSuggestionBottomSheetCoordinator start];
 }
 
 #pragma mark - BrowserCoordinatorCommands
