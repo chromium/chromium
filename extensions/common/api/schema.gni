@@ -80,7 +80,7 @@ if (enable_extensions) {
     "hid.idl",
     "mime_handler_private.idl",
     "mime_handler_view_guest_internal.json",
-    "mojo_private.idl",
+    "mojo_private.webidl",
     "networking_private.idl",
     "printer_provider_internal.idl",
     "printer_provider.idl",

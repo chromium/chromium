@@ -9,7 +9,7 @@ events.json
 extension_types.json
 metrics_private.json
 metrics_private_individual_apis.json
-mojo_private.idl
+mojo_private.webidl
 networking_private.idl
 runtime.json
 test.json
