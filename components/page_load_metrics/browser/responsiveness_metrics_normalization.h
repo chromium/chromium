@@ -32,6 +32,10 @@ class ResponsivenessMetricsNormalization {
 
   void ClearAllUserInteractionLatencies();
 
+  // Merges the other_interactions ResponsivenessMetricsNormalization object
+  // into this one while clearing the other object.
+  void MergeAndClear(ResponsivenessMetricsNormalization* other_interactions);
+
   // Approximate a high percentile of user interaction latency.
   std::optional<mojom::UserInteractionLatency> ApproximateHighPercentile()
       const;
@@ -47,7 +51,7 @@ class ResponsivenessMetricsNormalization {
 
   // A sorted list of the worst ten latencies, used to approximate a high
   // percentile.
-  std::vector<mojom::UserInteractionLatency> worst_ten_latencies_;
+  std::vector<mojom::UserInteractionLatencyPtr> worst_ten_latencies_;
   uint64_t num_user_interactions_ = 0;
 };
 

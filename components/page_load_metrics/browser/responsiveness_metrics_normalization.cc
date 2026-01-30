@@ -19,7 +19,7 @@ ResponsivenessMetricsNormalization::ApproximateHighPercentile() const {
         std::min(static_cast<uint64_t>(worst_ten_latencies_.size() - 1),
                  static_cast<uint64_t>(num_user_interactions_ /
                                        kHighPercentileUpdateFrequency));
-    approximate_high_percentile = worst_ten_latencies_[index];
+    approximate_high_percentile = *worst_ten_latencies_[index];
   }
   return approximate_high_percentile;
 }
@@ -28,7 +28,7 @@ std::optional<mojom::UserInteractionLatency>
 ResponsivenessMetricsNormalization::worst_latency() const {
   std::optional<mojom::UserInteractionLatency> worst_latency;
   if (worst_ten_latencies_.size()) {
-    worst_latency = worst_ten_latencies_[0];
+    worst_latency = *worst_ten_latencies_[0];
   }
   return worst_latency;
 }
@@ -42,7 +42,15 @@ void ResponsivenessMetricsNormalization::AddNewUserInteractionLatencies(
 
 void ResponsivenessMetricsNormalization::ClearAllUserInteractionLatencies() {
   num_user_interactions_ = 0;
-  worst_ten_latencies_ = std::vector<mojom::UserInteractionLatency>();
+  worst_ten_latencies_.clear();
+}
+
+void ResponsivenessMetricsNormalization::MergeAndClear(
+
+    ResponsivenessMetricsNormalization* other_interactions) {
+  num_user_interactions_ += other_interactions->num_user_interactions_;
+  NormalizeUserInteractionLatencies(other_interactions->worst_ten_latencies_);
+  other_interactions->ClearAllUserInteractionLatencies();
 }
 
 void ResponsivenessMetricsNormalization::NormalizeUserInteractionLatencies(
@@ -53,20 +61,21 @@ void ResponsivenessMetricsNormalization::NormalizeUserInteractionLatencies(
   for (const mojom::UserInteractionLatencyPtr& user_interaction :
        user_interaction_latencies) {
     if (worst_ten_latencies_.size() < 10) {
-      worst_ten_latencies_.push_back(*user_interaction);
+      worst_ten_latencies_.push_back(user_interaction->Clone());
     } else if (user_interaction->interaction_latency >
-               worst_ten_latencies_.back().interaction_latency) {
-      worst_ten_latencies_.back() = *user_interaction;
+               worst_ten_latencies_.back()->interaction_latency) {
+      worst_ten_latencies_.back() = user_interaction->Clone();
     } else {
       continue;
     }
     if (worst_ten_latencies_.size() > 1) {
-      std::inplace_merge(
-          worst_ten_latencies_.begin(), std::prev(worst_ten_latencies_.end()),
-          worst_ten_latencies_.end(),
-          [](const auto& latency1, const auto& latency2) {
-            return latency1.interaction_latency > latency2.interaction_latency;
-          });
+      std::inplace_merge(worst_ten_latencies_.begin(),
+                         std::prev(worst_ten_latencies_.end()),
+                         worst_ten_latencies_.end(),
+                         [](const auto& latency1, const auto& latency2) {
+                           return latency1->interaction_latency >
+                                  latency2->interaction_latency;
+                         });
     }
   }
 }

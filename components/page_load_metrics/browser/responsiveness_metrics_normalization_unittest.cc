@@ -127,3 +127,33 @@ TEST_F(ResponsivenessMetricsNormalizationTest, TooManyInteractions) {
   EXPECT_EQ(GetHighPercentileInteraction().interaction_latency,
             base::Milliseconds(2991));
 }
+
+TEST_F(ResponsivenessMetricsNormalizationTest, MergeAndClear) {
+  page_load_metrics::ResponsivenessMetricsNormalization normalization1;
+  page_load_metrics::ResponsivenessMetricsNormalization normalization2;
+
+  InputTiming input_timing1;
+  auto& latencies1 = input_timing1.user_interaction_latencies;
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  latencies1.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(100), 0, current_time + base::Milliseconds(100)));
+  latencies1.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(200), 1, current_time + base::Milliseconds(200)));
+  normalization1.AddNewUserInteractionLatencies(latencies1);
+
+  InputTiming input_timing2;
+  auto& latencies2 = input_timing2.user_interaction_latencies;
+  latencies2.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(300), 2, current_time + base::Milliseconds(300)));
+  latencies2.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(400), 3, current_time + base::Milliseconds(400)));
+  normalization2.AddNewUserInteractionLatencies(latencies2);
+
+  normalization1.MergeAndClear(&normalization2);
+
+  EXPECT_EQ(normalization1.num_user_interactions(), 4u);
+  EXPECT_EQ(normalization1.worst_latency()->interaction_latency,
+            base::Milliseconds(400));
+  EXPECT_EQ(normalization2.num_user_interactions(), 0u);
+  EXPECT_FALSE(normalization2.worst_latency().has_value());
+}
