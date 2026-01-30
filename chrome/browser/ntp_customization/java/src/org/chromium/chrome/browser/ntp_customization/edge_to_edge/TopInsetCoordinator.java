@@ -112,14 +112,16 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
                         } else {
                             mIsTabSwitcherShowing = false;
                         }
+                    }
 
-                        // When GTS is hiding, ToolbarPositionController updates the position of
-                        // toolbar in #onFinishedShowing() of the next layout. Therefore, calling
-                        // retriggerOnApplyWindowInsets() to apply the top insets if the transition
-                        // happens from GTS to a NTP. This can't be handled in #onTabSwitched()
-                        // which happens before the ToolbarPositionController updates the Toolbar's
-                        // position.
-                        if (mInTabSwitcherToNtpTransition && layoutType == LayoutType.BROWSING) {
+                    @Override
+                    public void onFinishedHiding(int layoutType) {
+                        // When GTS is hiding, calling retriggerOnApplyWindowInsets() to apply the
+                        // top insets if the transition happens from GTS to a NTP. This can't be
+                        // handled in #onTabSwitched() which happens before the
+                        // ToolbarPositionController updates the Toolbar's position.
+                        if (mInTabSwitcherToNtpTransition
+                                && layoutType == LayoutType.TAB_SWITCHER) {
                             mInTabSwitcherToNtpTransition = false;
                             mInsetObserver.retriggerOnApplyWindowInsets();
                         }

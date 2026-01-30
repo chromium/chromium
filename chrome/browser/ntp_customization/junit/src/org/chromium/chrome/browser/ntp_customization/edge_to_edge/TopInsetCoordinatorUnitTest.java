@@ -391,22 +391,28 @@ public class TopInsetCoordinatorUnitTest {
         setBackgroundType(NtpBackgroundImageType.DEFAULT, NtpBackgroundImageType.CHROME_COLOR);
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
 
-        // Tests the transition from Tab switcher to a NTP.
+        // 1. Tests the transition from Tab switcher to a NTP
+        // Switches to Tab switcher.
         mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
         assertTrue(mTopInsetCoordinator.getIsTabSwitcherShowingForTesting());
+
+        // Sets the next Tab is NTP.
         mTopInsetCoordinator.onTabSwitched(mNtpTab);
         assertTrue(mTopInsetCoordinator.getInTabSwitcherToNtpTransitionForTesting());
         clearInvocations(mInsetObserver);
 
-        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
-        assertFalse(mTopInsetCoordinator.getIsTabSwitcherShowingForTesting());
+        // Finishes hiding the Tab switcher.
+        mLayoutStateObserverCaptor.getValue().onFinishedHiding(LayoutType.TAB_SWITCHER);
+        assertFalse(mTopInsetCoordinator.getInTabSwitcherToNtpTransitionForTesting());
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
-        // Tests the transition from a NTP to Tab switcher.
+        // 2. Tests the transition from a NTP to Tab switcher.
+        // Switches to Tab switcher.
         mTopInsetCoordinator.onTabSwitched(null);
         assertFalse(mTopInsetCoordinator.getInTabSwitcherToNtpTransitionForTesting());
         clearInvocations(mInsetObserver);
-        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
+        // Finishes hiding the NTP.
+        mLayoutStateObserverCaptor.getValue().onFinishedHiding(LayoutType.BROWSING);
         assertTrue(mTopInsetCoordinator.getIsTabSwitcherShowingForTesting());
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
     }
