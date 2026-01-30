@@ -76,6 +76,9 @@ class TabModelObserver {
   // anymore.
   virtual void AllTabsClosureCommitted();
 
+  // Called when tabs are being closed and there are no more tabs left.
+  virtual void AllTabsAreClosing();
+
   // Called after a tab has been removed. At this point the tab is no longer in
   // the TabModel.
   virtual void TabRemoved(TabAndroid* tab);

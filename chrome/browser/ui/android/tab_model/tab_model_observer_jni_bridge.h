@@ -74,6 +74,8 @@ class TabModelObserverJniBridge {
 
   void AllTabsClosureCommitted(JNIEnv* env);
 
+  void AllTabsAreClosing(JNIEnv* env);
+
   void TabRemoved(JNIEnv* env, TabAndroid* tab);
 
   void OnTabGroupCreated(JNIEnv* env, base::Token group_id);

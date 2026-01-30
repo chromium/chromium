@@ -175,6 +175,9 @@ public interface TabModelObserver {
     /** Called when an "all tabs" closure has been committed and can't be undone anymore. */
     default void allTabsClosureCommitted(boolean isIncognito) {}
 
+    /** Called when tabs are being closed, and none will be left in the {@link TabModel}. */
+    default void allTabsAreClosing() {}
+
     /**
      * Called after a tab has been removed. At this point, the tab is no longer in the tab model.
      *

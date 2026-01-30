@@ -170,6 +170,12 @@ void TabModelObserverJniBridge::AllTabsClosureCommitted(JNIEnv* env) {
   }
 }
 
+void TabModelObserverJniBridge::AllTabsAreClosing(JNIEnv* env) {
+  for (auto& observer : model_observers_) {
+    observer.AllTabsAreClosing();
+  }
+}
+
 void TabModelObserverJniBridge::TabRemoved(JNIEnv* env, TabAndroid* tab) {
   CHECK(tab);
   for (auto& observer : model_observers_) {

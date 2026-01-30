@@ -47,6 +47,8 @@ void TabModelObserver::TabClosureCommitted(TabAndroid* tab) {}
 
 void TabModelObserver::AllTabsClosureCommitted() {}
 
+void TabModelObserver::AllTabsAreClosing() {}
+
 void TabModelObserver::TabRemoved(TabAndroid* tab) {}
 
 void TabModelObserver::OnTabGroupCreated(tab_groups::TabGroupId group_id) {}

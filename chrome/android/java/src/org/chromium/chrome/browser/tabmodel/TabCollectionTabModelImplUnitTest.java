@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.ScopedStorageBatch;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCause;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -121,6 +124,8 @@ public class TabCollectionTabModelImplUnitTest {
                         mTabUngrouper,
                         /* supportUndo= */ false);
         mTabModel.addObserver(mTabModelObserver);
+
+        when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);
     }
 
     @After
@@ -500,6 +505,40 @@ public class TabCollectionTabModelImplUnitTest {
         // Without pending closures, should return model delegate's time.
         mTabModel.setPendingTabClosureManagerForTesting(null);
         assertEquals(5L, mTabModel.getMostRecentClosureTime());
+    }
+
+    @Test
+    public void testAllTabsAreClosing_closeAllTabs() {
+        @TabId int tabId = 789;
+        MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
+        tab.setIsInitialized(true);
+
+        ArrayList<Tab> tabs = new ArrayList<>();
+        tabs.add(tab);
+
+        when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mTabModel);
+        when(mTabCollectionTabModelImplJni.getTabCountRecursive(anyLong())).thenReturn(1);
+        when(mTabCollectionTabModelImplJni.getAllTabs(anyLong())).thenReturn(tabs);
+
+        mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.closeTabs(TabClosureParams.closeAllTabs().allowUndo(false).build());
+
+        verify(mTabModelObserver).allTabsAreClosing();
+    }
+
+    @Test
+    public void testAllTabsAreClosing_closeOneTab() {
+        when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mTabModel);
+        when(mTabCollectionTabModelImplJni.getTabCountRecursive(anyLong())).thenReturn(1);
+
+        @TabId int tabId = 789;
+        MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
+        tab.setIsInitialized(true);
+        mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        assertEquals(1, mTabModel.getCount());
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+        verify(mTabModelObserver).allTabsAreClosing();
     }
 
     @Test

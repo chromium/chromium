@@ -1749,10 +1749,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
+        Set<Integer> tabsToCloseIds = new HashSet<>();
         boolean didCloseAlone = params.tabCloseType == TabCloseType.SINGLE;
         for (Tab tab : tabsToClose) {
+            tabsToCloseIds.add(tab.getId());
             for (TabModelObserver obs : mTabModelObservers) {
                 obs.willCloseTab(tab, didCloseAlone);
+            }
+        }
+
+        if (tabsToCloseIds.size() == getCount()) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.allTabsAreClosing();
             }
         }
 
@@ -1799,10 +1807,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
-        Set<Integer> tabsToCloseIds = new HashSet<>();
-        for (Tab tab : tabsToClose) {
-            tabsToCloseIds.add(tab.getId());
-        }
         setTabsMultiSelected(tabsToCloseIds, /* isSelected= */ false);
 
         return true;

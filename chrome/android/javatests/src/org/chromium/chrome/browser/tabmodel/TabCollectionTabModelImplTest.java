@@ -567,6 +567,7 @@ public class TabCollectionTabModelImplTest {
         assertEquals(tab1, getCurrentTab());
 
         CallbackHelper willCloseAllTabsHelper = new CallbackHelper();
+        CallbackHelper allTabsAreClosingHelper = new CallbackHelper();
         CallbackHelper willCloseTabHelper = new CallbackHelper();
         CallbackHelper didRemoveTabForClosureHelper = new CallbackHelper();
         CallbackHelper onFinishingMultipleTabClosureHelper = new CallbackHelper();
@@ -582,6 +583,11 @@ public class TabCollectionTabModelImplTest {
                     @Override
                     public void willCloseAllTabs(boolean isIncognito) {
                         willCloseAllTabsHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void allTabsAreClosing() {
+                        allTabsAreClosingHelper.notifyCalled();
                     }
 
                     @Override
@@ -629,6 +635,7 @@ public class TabCollectionTabModelImplTest {
                 });
 
         willCloseAllTabsHelper.waitForOnly();
+        allTabsAreClosingHelper.waitForOnly();
         willCloseTabHelper.waitForCallback(0, 3);
         didRemoveTabForClosureHelper.waitForCallback(0, 3);
         onFinishingMultipleTabClosureHelper.waitForOnly();
