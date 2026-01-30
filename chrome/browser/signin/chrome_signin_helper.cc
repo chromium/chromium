@@ -32,6 +32,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -91,6 +92,21 @@ const char kRemoveLocalAccountObfuscatedIDAttrName[] = "obfuscatedid";
 // TODO(droger): Remove this delay when the Dice implementation is finished on
 // the server side.
 int g_dice_account_reconcilor_blocked_delay_ms = 1000;
+
+#if BUILDFLAG(IS_ANDROID)
+std::optional<CoreAccountInfo> FindCoreAccountInfoByEmail(
+    const signin::IdentityManager* identity_manager,
+    const std::string& email) {
+  CHECK(identity_manager);
+  for (const CoreAccountInfo& account :
+       identity_manager->GetAccountsWithRefreshTokens()) {
+    if (gaia::AreEmailsSame(email, account.email)) {
+      return account;
+    }
+  }
+  return std::nullopt;
+}
+#endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -337,10 +353,15 @@ void ProcessMirrorHeader(
   GURL continue_url = GURL(manage_accounts_params.continue_url.empty()
                                ? chrome::kChromeUINativeNewTabURL
                                : manage_accounts_params.continue_url);
-
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   if (manage_accounts_params.show_consistency_promo) {
+    std::optional<CoreAccountInfo> account_info = FindCoreAccountInfoByEmail(
+        identity_manager, manage_accounts_params.email);
     SigninBridgeFactory::GetForProfile(profile)->OpenAccountPickerBottomSheet(
-        web_contents, continue_url);
+        web_contents, continue_url,
+        account_info ? std::make_optional(account_info->account_id)
+                     : std::nullopt);
     return;
   }
 
@@ -360,16 +381,12 @@ void ProcessMirrorHeader(
 
   if (service_type == signin::GAIA_SERVICE_TYPE_ADDSESSION &&
       base::FeatureList::IsEnabled(switches::kSupportWebSigninAddSession)) {
-    signin::IdentityManager* const identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    for (CoreAccountInfo account :
-         identity_manager->GetAccountsWithRefreshTokens()) {
-      if (gaia::AreEmailsSame(account.email, manage_accounts_params.email)) {
-        // If account is already on device don't start the add account flow.
-        // TODO(crbug.com/456445865): Consider adding a reauth flow or a wait
-        // for cookies in this scenario.
-        return;
-      }
+    if (FindCoreAccountInfoByEmail(identity_manager,
+                                   manage_accounts_params.email)) {
+      // If account is already on device don't start the add account flow.
+      // TODO(crbug.com/456445865): Consider adding a reauth flow or a wait
+      // for cookies in this scenario.
+      return;
     }
     SigninBridgeFactory::GetForProfile(profile)->StartAddAccountFlow(
         TabAndroid::FromWebContents(web_contents), manage_accounts_params.email,

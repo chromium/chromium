@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -128,9 +129,21 @@ public class SigninBridgeTest {
         when(mTabMock.getWindowAndroid()).thenReturn(null);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
+                mTabMock,
+                CONTINUE_URL,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT1.getId());
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), any(), any(), anyInt());
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        anyInt(),
+                        eq(TestAccounts.ACCOUNT1.getId()));
     }
 
     @Test
@@ -142,9 +155,21 @@ public class SigninBridgeTest {
         when(mTabMock.isUserInteractable()).thenReturn(false);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
+                mTabMock,
+                CONTINUE_URL,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT1.getId());
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), any(), any(), anyInt());
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        anyInt(),
+                        eq(TestAccounts.ACCOUNT1.getId()));
     }
 
     @Test
@@ -153,13 +178,25 @@ public class SigninBridgeTest {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
+                mTabMock,
+                CONTINUE_URL,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT1.getId());
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), any(), any(), anyInt());
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        anyInt(),
+                        eq(TestAccounts.ACCOUNT1.getId()));
     }
 
     @Test
@@ -168,13 +205,25 @@ public class SigninBridgeTest {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
+                mTabMock,
+                CONTINUE_URL,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT1.getId());
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), any(), any(), anyInt());
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        anyInt(),
+                        eq(TestAccounts.ACCOUNT1.getId()));
     }
 
     @Test
@@ -188,13 +237,25 @@ public class SigninBridgeTest {
                         SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
+                mTabMock,
+                CONTINUE_URL,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT1.getId());
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), any(), any(), anyInt());
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        anyInt(),
+                        eq(TestAccounts.ACCOUNT1.getId()));
     }
 
     @Test
@@ -206,7 +267,10 @@ public class SigninBridgeTest {
         when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
+                mTabMock,
+                CONTINUE_URL,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT1.getId());
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
@@ -216,6 +280,30 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         any(),
-                        anyInt());
+                        anyInt(),
+                        eq(TestAccounts.ACCOUNT1.getId()));
+    }
+
+    @Test
+    @SmallTest
+    public void testAccountPickerShownWithNoSelectedAccountId() {
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        Context context = ApplicationProvider.getApplicationContext();
+        when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
+
+        SigninBridge.openAccountPickerBottomSheet(
+                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock, null);
+        verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
+                .create(
+                        eq(mWindowAndroidMock),
+                        any(),
+                        any(),
+                        eq(mBottomSheetControllerMock),
+                        any(),
+                        any(),
+                        any(),
+                        anyInt(),
+                        isNull());
     }
 }

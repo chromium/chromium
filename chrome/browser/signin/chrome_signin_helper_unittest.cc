@@ -17,6 +17,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -29,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -60,6 +63,9 @@ const char kMirrorActionAddSession[] = "action=ADDSESSION";
 #if BUILDFLAG(IS_ANDROID)
 const char kMirrorActionGoIncognito[] =
     "action=INCOGNITO,continue_url=http://example.com";
+const char kMirrorActionWithPromoAndContinueUrlSelectedEmail[] =
+    "action=DEFAULT,show_consistency_promo=true,continue_url=http://"
+    "example.com,email=test@gmail.com";
 const char kMirrorActionWithPromoAndContinueUrl[] =
     "action=DEFAULT,show_consistency_promo=true,continue_url=http://"
     "example.com";
@@ -214,7 +220,9 @@ class MockSigninBridge : public SigninBridge {
 
   MOCK_METHOD(void,
               OpenAccountPickerBottomSheet,
-              (content::WebContents * web_contents, const GURL& continue_url),
+              (content::WebContents * web_contents,
+               const GURL& continue_url,
+               const std::optional<CoreAccountId>& account_id),
               (override));
 };
 
@@ -228,6 +236,7 @@ std::unique_ptr<KeyedService> BuildMockSigninBridgeForTesting(
 }  // namespace
 
 using ::testing::_;
+using ::testing::Eq;
 
 class ChromeSigninHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
@@ -244,7 +253,23 @@ class ChromeSigninHelperTest : public ChromeRenderViewHostTestHarness {
 
   MockSigninBridge* signin_bridge() { return mock_signin_bridge_; }
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
+  }
+
+  void InitializeIdentityTestEnvironment() {
+    CHECK(profile());
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  }
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
+  }
+
  private:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
   raw_ptr<MockSigninBridge> mock_signin_bridge_ = nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
@@ -480,6 +505,89 @@ TEST_F(ChromeSigninHelperTest, AddSessionOpensBottomSheet) {
   task_environment()->RunUntilIdle();
 }
 
+// Tests that receiving an action with show_consistency_promo parameter and a
+// specified email within kChromeManageAccountsHeader opens the bottom sheet
+// with the correct continue URL and account id.
+TEST_F(ChromeSigninHelperTest,
+       OpenBottomSheetWithConsistencyParameterWithSelectedEmail) {
+  InitializeIdentityTestEnvironment();
+  std::optional<CoreAccountId> account_id =
+      identity_test_env()
+          ->MakePrimaryAccountAvailable("test@gmail.com",
+                                        signin::ConsentLevel::kSignin)
+          .account_id;
+
+  std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+  base::ScopedClosureRunner remover(base::BindOnce(
+      TabModelList::RemoveTabModel, base::Unretained(&tab_model)));
+
+  // WebContents should be considered foremost for kChromeManageAccountsHeader
+  // to be processed.
+  tab_model.SetWebContentsList({web_contents.get()});
+  tab_model.SetIsActiveModel(true);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android = ui::WindowAndroid::CreateForTesting();
+  window_android.get()->get()->AddChild(web_contents->GetNativeView());
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionWithPromoAndContinueUrlSelectedEmail,
+      /*is_outermost_main_frame=*/true, web_contents.get());
+
+  // Check that the sign-in bridge is called to open the sign-in bottom sheet
+  // with the correct continue URL.
+  EXPECT_CALL(*signin_bridge(), OpenAccountPickerBottomSheet(
+                                    _, GURL("http://example.com"), account_id));
+
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  task_environment()->RunUntilIdle();
+}
+
+// Tests that receiving an action with show_consistency_promo parameter and a
+// specified email within kChromeManageAccountsHeader opens the bottom sheet
+// with the correct continue URL and account id that is not the device.
+TEST_F(ChromeSigninHelperTest,
+       OpenBottomSheetWithConsistencyParameterWithSelectedEmailNotAvailable) {
+  InitializeIdentityTestEnvironment();
+
+  std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+  base::ScopedClosureRunner remover(base::BindOnce(
+      TabModelList::RemoveTabModel, base::Unretained(&tab_model)));
+
+  // WebContents should be considered foremost for kChromeManageAccountsHeader
+  // to be processed.
+  tab_model.SetWebContentsList({web_contents.get()});
+  tab_model.SetIsActiveModel(true);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android = ui::WindowAndroid::CreateForTesting();
+  window_android.get()->get()->AddChild(web_contents->GetNativeView());
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionWithPromoAndContinueUrlSelectedEmail,
+      /*is_outermost_main_frame=*/true, web_contents.get());
+
+  // Check that the sign-in bridge is called to open the sign-in bottom sheet
+  // with the correct continue URL and no account id as the email is not on the
+  // device.
+  EXPECT_CALL(*signin_bridge(),
+              OpenAccountPickerBottomSheet(_, GURL("http://example.com"),
+                                           Eq(std::nullopt)));
+
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  task_environment()->RunUntilIdle();
+}
+
 // Tests that receiving an action with show_consistency_promo parameter
 // within kChromeManageAccountsHeader opens the bottom sheet with the correct
 // continue URL.
@@ -508,7 +616,8 @@ TEST_F(ChromeSigninHelperTest, OpenBottomSheetWithConsistencyParameter) {
   // Check that the sign-in bridge is called to open the sign-in bottom sheet
   // with the correct continue URL.
   EXPECT_CALL(*signin_bridge(),
-              OpenAccountPickerBottomSheet(_, GURL("http://example.com")));
+              OpenAccountPickerBottomSheet(_, GURL("http://example.com"),
+                                           Eq(std::nullopt)));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);

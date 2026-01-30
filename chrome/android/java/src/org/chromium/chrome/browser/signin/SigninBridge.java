@@ -51,6 +51,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -70,7 +71,8 @@ final class SigninBridge {
                 AccountPickerDelegate accountPickerDelegate,
                 AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
                 DeviceLockActivityLauncher deviceLockActivityLauncher,
-                @AccountPickerLaunchMode int accountPickerLaunchMode) {
+                @AccountPickerLaunchMode int accountPickerLaunchMode,
+                @Nullable CoreAccountId selectedAccountId) {
             return new AccountPickerBottomSheetCoordinator(
                     windowAndroid,
                     identityManager,
@@ -82,7 +84,7 @@ final class SigninBridge {
                     accountPickerLaunchMode,
                     /* isWebSignin= */ true,
                     SigninAccessPoint.WEB_SIGNIN,
-                    /* selectedAccountId= */ null);
+                    selectedAccountId);
         }
     }
 
@@ -187,15 +189,24 @@ final class SigninBridge {
 
     /** Opens account picker bottom sheet. */
     @CalledByNative
-    private static void openAccountPickerBottomSheet(Tab tab, @JniType("GURL") GURL continueUrl) {
+    private static void openAccountPickerBottomSheet(
+            Tab tab,
+            @JniType("GURL") GURL continueUrl,
+            @Nullable @JniType("std::optional<CoreAccountId>") CoreAccountId selectedAccountId) {
         openAccountPickerBottomSheet(
-                tab, continueUrl, new AccountPickerBottomSheetCoordinatorFactory());
+                tab,
+                continueUrl,
+                new AccountPickerBottomSheetCoordinatorFactory(),
+                selectedAccountId);
     }
 
     /** Opens account picker bottom sheet. */
     @VisibleForTesting
     static void openAccountPickerBottomSheet(
-            Tab tab, GURL continueUrl, AccountPickerBottomSheetCoordinatorFactory factory) {
+            Tab tab,
+            GURL continueUrl,
+            AccountPickerBottomSheetCoordinatorFactory factory,
+            @Nullable CoreAccountId selectedAccountId) {
         ThreadUtils.assertOnUiThread();
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
@@ -262,7 +273,8 @@ final class SigninBridge {
                 new WebSigninAccountPickerDelegate(tab, new WebSigninBridge.Factory(), continueUrl),
                 strings,
                 DeviceLockActivityLauncherImpl.get(),
-                AccountPickerLaunchMode.DEFAULT);
+                AccountPickerLaunchMode.DEFAULT,
+                selectedAccountId);
     }
 
     private SigninBridge() {}

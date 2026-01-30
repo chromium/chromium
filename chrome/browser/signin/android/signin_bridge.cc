@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/tab_android.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
 
@@ -39,14 +40,15 @@ void SigninBridge::OpenAccountManagementScreen(
 
 void SigninBridge::OpenAccountPickerBottomSheet(
     content::WebContents* web_contents,
-    const GURL& continue_url) {
+    const GURL& continue_url,
+    const std::optional<CoreAccountId>& account_id) {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   if (!tab) {
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SigninBridge_openAccountPickerBottomSheet(env, tab->GetJavaObject(),
-                                                 continue_url);
+                                                 continue_url, account_id);
 }
 
 DEFINE_JNI(SigninBridge)

@@ -11,6 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace content {
 class WebContents;
@@ -38,8 +39,10 @@ class SigninBridge : public KeyedService {
       signin::GAIAServiceType service_type);
 
   // Opens the account picker bottomsheet.
-  virtual void OpenAccountPickerBottomSheet(content::WebContents* web_contents,
-                                            const GURL& continue_url);
+  virtual void OpenAccountPickerBottomSheet(
+      content::WebContents* web_contents,
+      const GURL& continue_url,
+      const std::optional<CoreAccountId>& account_id);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_
