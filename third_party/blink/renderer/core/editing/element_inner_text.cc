@@ -164,24 +164,17 @@ bool ElementInnerTextCollector::IsBeingRendered(const Node& node) {
 // static
 bool ElementInnerTextCollector::IsDisplayBlockLevel(const Node& node) {
   const LayoutObject* const layout_object = node.GetLayoutObject();
-  if (!layout_object)
+  if (!layout_object) {
     return false;
+  }
+  if (layout_object->IsInline()) {
+    return false;
+  }
   if (layout_object->IsTableSection()) {
     // Note: |LayoutTableSection::IsInline()| returns false, but it is not
     // block-level.
     return false;
   }
-  if (!layout_object->IsLayoutBlock()) {
-    // Note: Block-level replaced elements, e.g. <img style=display:block>,
-    // reach here. Unlike |LayoutBlockFlow::AddChild()|, innerText considers
-    // floats and absolutely-positioned elements as block-level node.
-    return !layout_object->IsInline();
-  }
-  // TODO(crbug.com/567964): Due by the issue, |IsAtomicInlineLevel()| is always
-  // true for replaced elements event if it has display:block, once it is fixed
-  // we should check at first.
-  if (layout_object->IsAtomicInlineLevel())
-    return false;
   // Note: CAPTION is associated to |LayoutTableCaption| in LayoutNG or
   // |LayoutBlockFlow| in legacy layout.
   return true;
