@@ -134,7 +134,8 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
   }
 
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
-          profile->GetPrefs())) {
+          profile->GetPrefs()) &&
+      !ntp_composebox::kShowModelPicker.Get()) {
     return false;
   }
 
@@ -334,7 +335,8 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
   }
 
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
-          profile->GetPrefs())) {
+          profile->GetPrefs()) &&
+      !ntp_composebox::kShowModelPicker.Get()) {
     return false;
   }
 
