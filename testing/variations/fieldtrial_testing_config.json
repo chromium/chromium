@@ -26253,6 +26253,38 @@
             ]
         }
     ],
+    "ThreadPoolForegroundBlockingTimeouts": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Moderate",
+                    "params": {
+                        "BlockedWorkersPoll": "600ms",
+                        "MayBlockThreshold": "500ms"
+                    },
+                    "enable_features": [
+                        "ThreadPoolForegroundBlockingTimeouts"
+                    ]
+                },
+                {
+                    "name": "Enabled_Aggressive",
+                    "params": {
+                        "BlockedWorkersPoll": "200ms",
+                        "MayBlockThreshold": "100ms"
+                    },
+                    "enable_features": [
+                        "ThreadPoolForegroundBlockingTimeouts"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThreeButtonPasswordSaveDialog": [
         {
             "platforms": [
