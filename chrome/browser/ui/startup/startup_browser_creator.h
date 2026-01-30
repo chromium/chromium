@@ -273,10 +273,10 @@ class StartupBrowserCreator {
 
 // Returns true if |profile| has exited uncleanly and has not been launched
 // after the unclean exit.
+//
+// TODO(crbug.com/479862082): consider moving this into
+// profile_launch_observer.h.
 bool HasPendingUncleanExit(Profile* profile);
-
-// Adds launched |profile| to ProfileLaunchObserver.
-void AddLaunchedProfile(Profile* profile);
 
 // Returns the path that contains the profile that should be loaded on process
 // startup. This can do blocking operations to check if the profile exists in
