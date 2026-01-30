@@ -555,6 +555,8 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("Chrome.MultiInstance.CustomTitle.*");
     public static final KeyPrefix MULTI_INSTANCE_LAST_ACCESSED_TIME =
             new KeyPrefix("Chrome.MultiInstance.LastAccessedTime.*");
+    public static final KeyPrefix MULTI_INSTANCE_CLOSURE_TIME =
+            new KeyPrefix("Chrome.MultiInstance.ClosureTime.*");
     public static final KeyPrefix MULTI_INSTANCE_URL = new KeyPrefix("Chrome.MultiInstance.Url.*");
     public static final KeyPrefix MULTI_INSTANCE_MARKED_FOR_DELETION =
             new KeyPrefix("Chrome.MultiInstance.MarkedForDeletion.*");
@@ -1267,6 +1269,7 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_MAX_INSTANCE_COUNT,
                 MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO,
                 MULTI_INSTANCE_LAST_ACCESSED_TIME.pattern(),
+                MULTI_INSTANCE_CLOSURE_TIME.pattern(),
                 MULTI_INSTANCE_START_TIME,
                 MULTI_INSTANCE_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.pattern(),

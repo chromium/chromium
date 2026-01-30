@@ -131,6 +131,160 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
+    public void testShowDialog_ListsAreSorted() throws Exception {
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            /* instanceId= */ 0,
+                            /* taskId= */ 57,
+                            InstanceInfo.Type.OTHER,
+                            "url0",
+                            "title0",
+                            /* customTitle= */ null,
+                            /* tabCount= */ 0,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ getDaysAgoMillis(2),
+                            /* closureTime= */ 0,
+                            /* markedForDeletion= */ false),
+                    new InstanceInfo(
+                            /* instanceId= */ 1,
+                            /* taskId= */ 58,
+                            InstanceInfo.Type.OTHER,
+                            "ur11",
+                            "title1",
+                            /* customTitle= */ null,
+                            /* tabCount= */ 2,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ getDaysAgoMillis(1),
+                            /* closureTime= */ 0,
+                            /* markedForDeletion= */ false),
+                    new InstanceInfo(
+                            /* instanceId= */ 2,
+                            /* taskId= */ 59,
+                            InstanceInfo.Type.CURRENT,
+                            "url2",
+                            "title2",
+                            /* customTitle= */ null,
+                            /* tabCount= */ 0,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ getDaysAgoMillis(0),
+                            /* closureTime= */ 0,
+                            /* markedForDeletion= */ false),
+                    new InstanceInfo(
+                            /* instanceId= */ 3,
+                            /* taskId= */ -1,
+                            InstanceInfo.Type.OTHER,
+                            "url3",
+                            "title3",
+                            /* customTitle= */ null,
+                            /* tabCount= */ 0,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ getDaysAgoMillis(1),
+                            /* closureTime= */ 0,
+                            /* markedForDeletion= */ false),
+                    new InstanceInfo(
+                            /* instanceId= */ 4,
+                            /* taskId= */ -1,
+                            InstanceInfo.Type.OTHER,
+                            "url4",
+                            "title4",
+                            /* customTitle= */ null,
+                            /* tabCount= */ 0,
+                            /* incognitoTabCount= */ 0,
+                            /* isIncognitoSelected= */ false,
+                            /* lastAccessedTime= */ getDaysAgoMillis(3),
+                            /* closureTime= */ getDaysAgoMillis(2),
+                            /* markedForDeletion= */ false)
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            mDelegate,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+
+        // Verify that the "Current window" string is at position 0.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        0,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.last_accessed),
+                                                        withText("Current window"),
+                                                        isDisplayed())))));
+
+        // Verify that the "Yesterday" string is at position 1.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        1,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.last_accessed),
+                                                        withText("Yesterday"),
+                                                        isDisplayed())))));
+
+        // Verify that the "2 days ago" string is at position 2.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        2,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.last_accessed),
+                                                        withText("2 days ago"),
+                                                        isDisplayed())))));
+
+        // Switch to the the inactive instances tab.
+        onView(allOf(withText("Inactive (2)"), isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        // Verify that the "Yesterday" string is at position 0.
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        0,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.last_accessed),
+                                                        withText("Yesterday"),
+                                                        isDisplayed())))));
+
+        // Verify that the "2 days ago" string is at position 1.
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        1,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.last_accessed),
+                                                        withText("2 days ago"),
+                                                        isDisplayed())))));
+    }
+
+    @Test
+    @SmallTest
     public void testOpenWindow() throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
@@ -829,7 +983,8 @@ public class InstanceSwitcherCoordinatorTest {
                             /* tabCount= */ 0,
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
-                            /* lastAccessedTime= */ 0,
+                            /* lastAccessedTime= */ 3,
+                            /* closureTime= */ 0,
                             /* markedForDeletion= */ false),
                     new InstanceInfo(
                             /* instanceId= */ 1,
@@ -841,7 +996,8 @@ public class InstanceSwitcherCoordinatorTest {
                             /* tabCount= */ 2,
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
-                            /* lastAccessedTime= */ 0,
+                            /* lastAccessedTime= */ 2,
+                            /* closureTime= */ 0,
                             /* markedForDeletion= */ false),
                     new InstanceInfo(
                             /* instanceId= */ 2,
@@ -853,7 +1009,8 @@ public class InstanceSwitcherCoordinatorTest {
                             /* tabCount= */ 0,
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
-                            /* lastAccessedTime= */ 0,
+                            /* lastAccessedTime= */ 1,
+                            /* closureTime= */ 0,
                             /* markedForDeletion= */ false)
                 };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
@@ -1777,7 +1934,8 @@ public class InstanceSwitcherCoordinatorTest {
                         /* tabCount= */ 1,
                         /* incognitoTabCount= */ 1,
                         /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 0,
+                        /* lastAccessedTime= */ getDaysAgoMillis(0),
+                        /* closureTime= */ 0,
                         /* markedForDeletion= */ false);
 
         // Create other active instances.
@@ -1794,6 +1952,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(i),
+                            /* closureTime= */ 0,
                             /* markedForDeletion= */ false);
         }
 
@@ -1810,7 +1969,8 @@ public class InstanceSwitcherCoordinatorTest {
                             /* tabCount= */ 1,
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
-                            /* lastAccessedTime= */ 0,
+                            /* lastAccessedTime= */ getDaysAgoMillis(i),
+                            /* closureTime= */ 3,
                             /* markedForDeletion= */ false);
         }
 

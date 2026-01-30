@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.multiwindow.UiUtils.INVALID_TASK_ID;
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
@@ -358,20 +359,41 @@ public class InstanceSwitcherCoordinator {
     private void show(List<InstanceInfo> items) {
         UiUtils.closeOpenDialogs();
         sPrevInstance = this;
+
+        List<InstanceInfo> activeInstances = new ArrayList<>();
+        List<InstanceInfo> inactiveInstances = new ArrayList<>();
+
+        InstanceInfo currentInstance = null;
         for (int i = 0; i < items.size(); ++i) {
             InstanceInfo instanceInfo = items.get(i);
             // Do not show instances that are closed by user.
             if (instanceInfo.markedForDeletion) continue;
+
+            // Add the current instance to the front of the list after it is sorted by timestamp.
+            if (instanceInfo.type == InstanceInfo.Type.CURRENT) {
+                currentInstance = instanceInfo;
+                continue;
+            }
+
             // An active instance should have an associated live task.
             boolean isActiveInstance = instanceInfo.taskId != INVALID_TASK_ID;
-            PropertyModel itemModel = generateListItem(items.get(i));
-
             if (isActiveInstance) {
-                mActiveModelList.add(new ListItem(TYPE_INSTANCE, itemModel));
+                activeInstances.add(instanceInfo);
             } else {
-                mInactiveModelList.add(new ListItem(TYPE_INSTANCE, itemModel));
+                inactiveInstances.add(instanceInfo);
             }
         }
+
+        activeInstances.sort(
+                (info1, info2) -> Long.compare(info2.lastAccessedTime, info1.lastAccessedTime));
+        assertNonNull(currentInstance);
+        activeInstances.add(0, currentInstance);
+        inactiveInstances.sort(
+                (info1, info2) ->
+                        Long.compare(calculateClosureTime(info2), calculateClosureTime(info1)));
+
+        addItemsToModelList(mActiveModelList, activeInstances);
+        addItemsToModelList(mInactiveModelList, inactiveInstances);
 
         // Update UI state.
         updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
@@ -381,6 +403,18 @@ public class InstanceSwitcherCoordinator {
         updateMoreMenu();
         updateActionButtons();
         mModalDialogManager.showDialog(mDialog, ModalDialogType.APP);
+    }
+
+    private void addItemsToModelList(ModelList modelList, List<InstanceInfo> items) {
+        for (int i = 0; i < items.size(); ++i) {
+            PropertyModel itemModel = generateListItem(items.get(i));
+            modelList.add(new ListItem(TYPE_INSTANCE, itemModel));
+        }
+    }
+
+    private static long calculateClosureTime(InstanceInfo item) {
+        // Default to lastAccessedTime if closureTime is not available.
+        return item.closureTime > 0 ? item.closureTime : item.lastAccessedTime;
     }
 
     private PropertyModel createDialog(View dialogView) {
@@ -464,8 +498,10 @@ public class InstanceSwitcherCoordinator {
                                     updateMoreMenu();
                                 });
 
+        long timestamp;
         if (item.taskId != INVALID_TASK_ID) {
             buildMoreMenu(builder, item);
+            timestamp = item.lastAccessedTime;
         } else {
             builder.with(
                     InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER,
@@ -476,12 +512,12 @@ public class InstanceSwitcherCoordinator {
                     mContext.getString(
                             R.string.instance_switcher_item_close_content_description,
                             mUiUtils.getItemTitle(item)));
+            timestamp = calculateClosureTime(item);
         }
         String lastAccessedString =
                 isCurrentWindow
                         ? mContext.getString(R.string.instance_last_accessed_current)
-                        : TimeTextResolver.resolveTimeAgoText(
-                                mContext.getResources(), item.lastAccessedTime);
+                        : TimeTextResolver.resolveTimeAgoText(mContext.getResources(), timestamp);
         builder.with(InstanceSwitcherItemProperties.LAST_ACCESSED, lastAccessedString);
         builder.with(InstanceSwitcherItemProperties.IS_SELECTED, false);
 

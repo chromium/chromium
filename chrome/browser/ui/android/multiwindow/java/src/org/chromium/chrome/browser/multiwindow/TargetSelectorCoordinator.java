@@ -114,6 +114,7 @@ public class TargetSelectorCoordinator {
     }
 
     private PropertyModel createDialog(List<InstanceInfo> items, @StringRes int titleId) {
+        items.sort((info1, info2) -> Long.compare(info2.lastAccessedTime, info1.lastAccessedTime));
         for (InstanceInfo info : items) {
             if (info.type == InstanceInfo.Type.CURRENT) {
                 mSelectedItem = info;

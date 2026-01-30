@@ -318,6 +318,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 /* incognitoTabCount= */ 0,
                                 /* isIncognitoSelected= */ false,
                                 MultiInstancePersistentStore.readLastAccessedTime(instanceId),
+                                MultiInstancePersistentStore.readClosureTime(instanceId),
                                 /* markedForDeletion= */ false));
             }
         }
@@ -876,6 +877,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Trigger a soft closure for instance ID 1.
         when(mActivityTask57.isFinishing()).thenReturn(true);
+        long initialTime = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 1);
+        mFakeTimeTestRule.advanceMillis(100);
         mMultiInstanceManager.closeWindows(
                 Collections.singletonList(1), CloseWindowAppSource.WINDOW_MANAGER);
 
@@ -883,6 +886,9 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE).size());
         assertEquals(
                 1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE).size());
+
+        // Verify that closure time is updated.
+        assertTrue(MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 1) > initialTime);
 
         // Verify #onInstanceClosed is invoked.
         ArgumentCaptor<InstanceInfo> captor = ArgumentCaptor.forClass(InstanceInfo.class);
@@ -912,26 +918,6 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals(3, instanceInfoList.size());
         assertFalse(instanceInfoList.get(1).markedForDeletion);
-    }
-
-    @Test
-    public void testGetInstanceInfo_currentInfoAtTop() {
-        // Ensure the single instance at non-zero position is handled okay.
-        assertEquals(2, allocInstanceIndex(2, mActivityTask56));
-        List<InstanceInfo> info = mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
-        assertEquals(1, info.size());
-        assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
-
-        assertEquals(1, allocInstanceIndex(1, mActivityTask58));
-        info = mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
-        assertEquals(2, info.size());
-        // Current instance (56) is always positioned at the top of the list.
-        assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
-
-        assertEquals(0, allocInstanceIndex(0, mActivityTask57));
-        info = mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
-        assertEquals(3, info.size());
-        assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
     }
 
     @Test
@@ -1362,6 +1348,7 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstancePersistentStore.writeTabCountForRelaunchSync(index, /* tabCount= */ 2);
         MultiInstancePersistentStore.writeIncognitoSelected(index, /* incognitoSelected= */ true);
         MultiInstancePersistentStore.writeLastAccessedTime(index);
+        MultiInstancePersistentStore.writeClosureTime(index);
         MultiInstancePersistentStore.writeProfileType(
                 index, /* profileType= */ SupportedProfileType.MIXED);
         MultiInstancePersistentStore.writeMarkedForDeletion(index, /* markedForDeletion= */ true);
@@ -1403,6 +1390,10 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Persistent store should be updated.",
                 0,
                 MultiInstancePersistentStore.readLastAccessedTime(index));
+        assertEquals(
+                "Persistent store should be updated.",
+                0,
+                MultiInstancePersistentStore.readClosureTime(index));
         assertEquals(
                 "Persistent store should be updated.",
                 SupportedProfileType.UNSET,
@@ -1891,6 +1882,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
+                        /* closureTime= */ 0,
                         /* markedForDeletion= */ false);
         mMultiInstanceManager.moveTabsToWindow(
                 info,
@@ -1932,6 +1924,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
+                        /* closureTime= */ 0,
                         /* markedForDeletion= */ false);
         mMultiInstanceManager.moveTabsToWindow(
                 info, tabs, /* tabAtIndex= */ 0, NewWindowAppSource.OTHER);
@@ -1966,6 +1959,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
+                        /* closureTime= */ 0,
                         /* markedForDeletion= */ false);
         mMultiInstanceManager.moveTabGroupToWindow(
                 info, mTabGroupMetadata, /* startIndex= */ 0, NewWindowAppSource.OTHER);
@@ -2954,18 +2948,18 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testOnStopWithNative_updatesLastAccessedTime() {
+    public void testOnStopWithNative_updatesClosureTime() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         mMultiInstanceManager.initialize(
                 /* instanceId= */ 0, /* taskId= */ TASK_ID_56, SupportedProfileType.MIXED);
-        long initialTime = MultiInstancePersistentStore.readLastAccessedTime(/* instanceId= */ 0);
+        long initialTime = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0);
 
         mFakeTimeTestRule.advanceMillis(100);
 
         mMultiInstanceManager.onStopWithNative();
-        long updatedTime = MultiInstancePersistentStore.readLastAccessedTime(0);
+        long updatedTime = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0);
 
-        assertTrue("Last accessed time should be updated.", updatedTime > initialTime);
+        assertTrue("Closure time should be updated.", updatedTime > initialTime);
     }
 
     @Test
@@ -2978,18 +2972,25 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
         manager2.initialize(
                 /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
+        long initialTime0 = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0);
+
+        mFakeTimeTestRule.advanceMillis(100);
 
         // Destroy an instance with non-zero tab count.
         when(mTabbedActivityTask62.isFinishing()).thenReturn(true);
         MultiInstancePersistentStore.writeTabCount(
                 /* instanceId= */ 0, /* normalTabCount= */ 3, /* incognitoTabCount= */ 0);
         manager1.onDestroy();
+        long closureTime0 = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 0);
+        assertTrue("Closure time should be updated.", closureTime0 > initialTime0);
 
         // Destroy an instance with zero tabs.
         when(mTabbedActivityTask63.isFinishing()).thenReturn(true);
         MultiInstancePersistentStore.writeTabCount(
                 /* instanceId= */ 1, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
         manager2.onDestroy();
+        long closureTime1 = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 1);
+        assertEquals("Closure time should be updated.", 0, closureTime1);
 
         InOrder inOrderVerifier = inOrder(mRecentlyClosedTracker);
         inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(false));

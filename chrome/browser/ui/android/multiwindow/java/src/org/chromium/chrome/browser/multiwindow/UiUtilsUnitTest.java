@@ -472,6 +472,7 @@ public class UiUtilsUnitTest {
                 incognitoTabCount,
                 isIncognito,
                 /* lastAccessedTime= */ 0,
+                /* closureTime= */ 0,
                 /* markedForDeletion= */ false);
     }
 
@@ -492,6 +493,7 @@ public class UiUtilsUnitTest {
                 incognitoTabCount,
                 isIncognito,
                 /* lastAccessedTime= */ 0,
+                /* closureTime= */ 0,
                 /* markedForDeletion= */ false);
     }
 
@@ -507,6 +509,7 @@ public class UiUtilsUnitTest {
                 /* incognitoTabCount= */ 1,
                 /* isIncognitoSelected= */ true,
                 /* lastAccessedTime= */ 0,
+                /* closureTime= */ 0,
                 /* markedForDeletion= */ false);
     }
 
@@ -522,6 +525,7 @@ public class UiUtilsUnitTest {
                 /* incognitoTabCount= */ 0,
                 /* isIncognitoSelected= */ false,
                 /* lastAccessedTime= */ 0,
+                /* closureTime= */ 0,
                 /* markedForDeletion= */ false);
     }
 }

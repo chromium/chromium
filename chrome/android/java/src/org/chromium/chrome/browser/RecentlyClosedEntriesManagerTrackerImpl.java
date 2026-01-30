@@ -52,9 +52,15 @@ public final class RecentlyClosedEntriesManagerTrackerImpl
 
     @Override
     public void onInstanceClosed(InstanceInfo instanceInfo, boolean isPermanentDeletion) {
+        // Use lastAccessedTime as the closure time if a valid closureTime is not available.
+        long closureTime =
+                instanceInfo.closureTime > 0
+                        ? instanceInfo.closureTime
+                        : instanceInfo.lastAccessedTime;
+        assert isPermanentDeletion || closureTime > 0 : "Expected a valid window closure time.";
         RecentlyClosedWindow window =
                 new RecentlyClosedWindow(
-                        instanceInfo.lastAccessedTime,
+                        closureTime,
                         instanceInfo.instanceId,
                         instanceInfo.url,
                         instanceInfo.customTitle,

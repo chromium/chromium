@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.isRestorableInstance;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
@@ -657,7 +656,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         removeInvalidInstanceData();
         List<InstanceInfo> result = new ArrayList<>();
         SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
-        int currentItemPos = -1;
         for (int i : getPersistedInstanceIds(persistedInstanceType)) {
             @InstanceInfo.Type int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
@@ -677,7 +675,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 assert persistedTaskId == activityTaskId : error;
                 if (a == mActivity) {
                     type = InstanceInfo.Type.CURRENT;
-                    currentItemPos = result.size();
                 } else if (isRunningInAdjacentWindow(visibleTasks, a)) {
                     type = InstanceInfo.Type.ADJACENT;
                 }
@@ -708,26 +705,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                             MultiInstancePersistentStore.readIncognitoTabCount(i),
                             MultiInstancePersistentStore.readIncognitoSelected(i),
                             lastAccessedTime,
+                            MultiInstancePersistentStore.readClosureTime(i),
                             MultiInstancePersistentStore.readMarkedForDeletion(i)));
-        }
-
-        // Sort instances by recency of last access, for reasonable display on relevant UI surfaces.
-        // It is possible that |currentItemPos| is invalid if this method is invoked early
-        // during app startup or when the current activity is being / already destroyed. A non-null
-        // current instance will be added at the first position after sorting the other instances by
-        // recency of last access; this is to ensure that the current instance is always the first
-        // in the list because order of persistence of lastAccessedTime for activities
-        // simultaneously undergoing an activity lifecycle change is not guaranteed to be
-        // consistent. Such sorting is particularly important only for display on the UI, and
-        // arbitrary ordering of other instances with similar last access times (controlled mostly
-        // by activity lifecycle management by the OS) is assumed to be acceptable for other cases.
-        InstanceInfo currentInstance = null;
-        if (currentItemPos > 0 && currentItemPos < result.size()) {
-            currentInstance = result.remove(currentItemPos);
-        }
-        result.sort((info1, info2) -> Long.compare(info2.lastAccessedTime, info1.lastAccessedTime));
-        if (currentInstance != null) {
-            result.add(0, currentInstance);
         }
         return result;
     }
@@ -1420,7 +1399,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             } else {
                 MultiInstancePersistentStore.writeMarkedForDeletion(
                         instanceId, /* markedForDeletion= */ true);
-                MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
+                MultiInstancePersistentStore.writeClosureTime(instanceId);
                 MultiInstancePersistentStore.removeTaskId(instanceId);
             }
             Activity activity = getActivityById(instanceId);
@@ -1467,6 +1446,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                         MultiInstancePersistentStore.readIncognitoTabCount(instanceId),
                         MultiInstancePersistentStore.readIncognitoSelected(instanceId),
                         MultiInstancePersistentStore.readLastAccessedTime(instanceId),
+                        MultiInstancePersistentStore.readClosureTime(instanceId),
                         !isPermanentDeletion);
 
         RecentlyClosedEntriesManagerTrackerFactory.getInstance()
@@ -1585,15 +1565,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // subsequent task kill will also not be reflected as an instance closure until the Recent
         // Tabs page is reopened.
         if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            // A point of activity destruction should be recorded as last access of the instance for
-            // a more accurate ordering of inactive instances displayed on surfaces like the
-            // instance switcher dialog and Recent Tabs.
-            MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+            int normalTabCount = MultiInstancePersistentStore.readNormalTabCount(mInstanceId);
+            boolean isPermanentDeletion = normalTabCount == 0;
+
+            if (!isPermanentDeletion) {
+                MultiInstancePersistentStore.writeClosureTime(mInstanceId);
+            }
 
             if (mActivity.isFinishing()) {
                 // Notify Recent Tabs page that the instance is closing.
-                int normalTabCount = MultiInstancePersistentStore.readNormalTabCount(mInstanceId);
-                notifyInstanceClosed(mInstanceId, /* isPermanentDeletion= */ normalTabCount == 0);
+                notifyInstanceClosed(mInstanceId, isPermanentDeletion);
             }
         }
 
@@ -1634,13 +1615,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     @Override
     public void onStopWithNative() {
         super.onStopWithNative();
-        // We persist last accessed time when the activity is stopped as a fallback for when
-        // #onDestroy() is not called for a finishing activity. Ideally, point of activity
-        // destruction needs to be recorded as an additional case of last access of the instance so
-        // that surfaces like Recent Tabs and the instance switcher dialog can display a more
-        // accurate list of inactive instances sorted by their last accessed time.
+        // We persist last closed time when the activity is stopped as a fallback for when
+        // #onDestroy() is not called for a finishing activity.
         if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+            MultiInstancePersistentStore.writeClosureTime(mInstanceId);
         }
     }
 

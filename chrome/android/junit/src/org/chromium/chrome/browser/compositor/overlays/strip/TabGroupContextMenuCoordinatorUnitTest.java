@@ -151,6 +151,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                     NUM_INCOGNITO_TABS,
                     /* isIncognitoSelected= */ false,
                     LAST_ACCESSED_TIME,
+                    /* closureTime= */ 0,
                     /* markedForDeletion= */ false);
 
     private static final InstanceInfo INSTANCE_INFO_2 =
@@ -165,6 +166,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                     NUM_INCOGNITO_TABS,
                     /* isIncognitoSelected= */ false,
                     LAST_ACCESSED_TIME,
+                    /* closureTime= */ 0,
                     /* markedForDeletion= */ false);
 
     // Other dependencies
@@ -979,6 +981,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         NUM_INCOGNITO_TABS,
                         /* isIncognitoSelected= */ false,
                         LAST_ACCESSED_TIME,
+                        /* closureTime= */ 0,
                         /* markedForDeletion= */ false);
 
         setUpTabGroupModelFilter();

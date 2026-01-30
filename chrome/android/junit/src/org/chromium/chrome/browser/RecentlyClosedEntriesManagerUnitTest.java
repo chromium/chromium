@@ -451,7 +451,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* tabCount= */ 0,
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 3,
+                        /* lastAccessedTime= */ 1,
+                        /* closureTime= */ 3,
                         /* markedForDeletion= */ true));
         when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
                 .thenReturn(instanceInfoList);
@@ -479,7 +480,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* tabCount= */ 0,
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 2,
+                        /* lastAccessedTime= */ 1,
+                        /* closureTime= */ 2,
                         /* markedForDeletion= */ true));
         when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
                 .thenReturn(instanceInfoList);
@@ -508,7 +510,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* tabCount= */ 0,
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 3,
+                        /* lastAccessedTime= */ 1,
+                        /* closureTime= */ 3,
                         /* markedForDeletion= */ true));
         when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
                 .thenReturn(instanceInfoList);
@@ -539,7 +542,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* tabCount= */ 0,
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 3,
+                        /* lastAccessedTime= */ 1,
+                        /* closureTime= */ 3,
                         /* markedForDeletion= */ true));
         when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
                 .thenReturn(instanceInfoList);
@@ -856,6 +860,112 @@ public class RecentlyClosedEntriesManagerUnitTest {
         assertTrue(entries.get(2) instanceof RecentlyClosedWindow);
     }
 
+    @Test
+    public void testUpdateRecentlyClosedEntries_InstanceInfoListIsNotSorted() {
+        when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt())).thenReturn(null);
+        List<InstanceInfo> instanceInfoList = new ArrayList<>();
+        instanceInfoList.add(
+                new InstanceInfo(
+                        /* instanceId= */ 2,
+                        /* taskId= */ -1,
+                        InstanceInfo.Type.OTHER,
+                        /* url= */ "",
+                        /* title= */ "",
+                        /* customTitle= */ null,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 1,
+                        /* closureTime= */ 2,
+                        /* markedForDeletion= */ true));
+        instanceInfoList.add(
+                new InstanceInfo(
+                        /* instanceId= */ 1,
+                        /* taskId= */ -1,
+                        InstanceInfo.Type.OTHER,
+                        /* url= */ "",
+                        /* title= */ "",
+                        /* customTitle= */ null,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 1,
+                        /* closureTime= */ 3,
+                        /* markedForDeletion= */ true));
+        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
+                .thenReturn(instanceInfoList);
+
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+
+        assertEquals(2, entries.size());
+        assertTrue(
+                "Window entries are not sorted by most recent closure time.",
+                entries.get(0).getDate().getTime() > entries.get(1).getDate().getTime());
+    }
+
+    @Test
+    public void testUpdateRecentlyClosedEntries_InstanceClosureTimeUnavailable() {
+        when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt())).thenReturn(null);
+        List<InstanceInfo> instanceInfoList = new ArrayList<>();
+        instanceInfoList.add(
+                new InstanceInfo(
+                        /* instanceId= */ 2,
+                        /* taskId= */ -1,
+                        InstanceInfo.Type.OTHER,
+                        /* url= */ "",
+                        /* title= */ "",
+                        /* customTitle= */ null,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 2,
+                        /* closureTime= */ 0,
+                        /* markedForDeletion= */ true));
+        instanceInfoList.add(
+                new InstanceInfo(
+                        /* instanceId= */ 1,
+                        /* taskId= */ -1,
+                        InstanceInfo.Type.OTHER,
+                        /* url= */ "",
+                        /* title= */ "",
+                        /* customTitle= */ null,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 1,
+                        /* closureTime= */ 3,
+                        /* markedForDeletion= */ true));
+        instanceInfoList.add(
+                new InstanceInfo(
+                        /* instanceId= */ 2,
+                        /* taskId= */ -1,
+                        InstanceInfo.Type.OTHER,
+                        /* url= */ "",
+                        /* title= */ "",
+                        /* customTitle= */ null,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 1,
+                        /* closureTime= */ 1,
+                        /* markedForDeletion= */ true));
+        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
+                .thenReturn(instanceInfoList);
+
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+
+        assertEquals(3, entries.size());
+        assertEquals(3, entries.get(0).getDate().getTime());
+        assertEquals(2, entries.get(1).getDate().getTime());
+        assertEquals(1, entries.get(2).getDate().getTime());
+    }
+
     /**
      * Creates a list of synthetic {@code SessionRecentlyClosedEntry} objects for testing purposes.
      *
@@ -894,7 +1004,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
      */
     private void createRecentlyClosedWindows(int numOfWindows) {
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        int lastAccessedTime = 2;
+        int closureTime = 2;
         int instanceId = 2;
         for (int i = 0; i < numOfWindows; i++) {
             InstanceInfo instanceInfo =
@@ -908,11 +1018,12 @@ public class RecentlyClosedEntriesManagerUnitTest {
                             /* tabCount= */ 0,
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
-                            lastAccessedTime,
+                            /* lastAccessedTime= */ closureTime - 1,
+                            closureTime,
                             /* markedForDeletion= */ true);
             instanceInfoList.add(0, instanceInfo);
             instanceId += 2;
-            lastAccessedTime += 2;
+            closureTime += 2;
         }
         when(mMultiInstanceManager.getInstanceInfo(anyInt())).thenReturn(instanceInfoList);
     }

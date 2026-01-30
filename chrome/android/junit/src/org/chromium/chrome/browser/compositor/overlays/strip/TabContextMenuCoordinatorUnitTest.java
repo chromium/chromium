@@ -153,6 +153,7 @@ public class TabContextMenuCoordinatorUnitTest {
                     NUM_INCOGNITO_TABS,
                     /* isIncognitoSelected= */ false,
                     LAST_ACCESSED_TIME,
+                    /* closureTime= */ 0,
                     /* markedForDeletion= */ false);
 
     private static final InstanceInfo INSTANCE_INFO_2 =
@@ -167,6 +168,7 @@ public class TabContextMenuCoordinatorUnitTest {
                     NUM_INCOGNITO_TABS,
                     /* isIncognitoSelected= */ false,
                     LAST_ACCESSED_TIME,
+                    /* closureTime= */ 0,
                     /* markedForDeletion= */ false);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -1354,6 +1356,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         NUM_INCOGNITO_TABS,
                         /* isIncognitoSelected= */ false,
                         LAST_ACCESSED_TIME,
+                        /* closureTime= */ 0,
                         /* markedForDeletion= */ false);
 
         MultiWindowUtils.setInstanceCountForTesting(2);

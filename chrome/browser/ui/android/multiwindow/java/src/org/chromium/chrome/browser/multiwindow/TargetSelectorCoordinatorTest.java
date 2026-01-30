@@ -89,6 +89,7 @@ public class TargetSelectorCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 0,
+                            /* closureTime= */ 0,
                             /* markedForDeletion= */ false),
                     new InstanceInfo(
                             /* instanceId= */ 1,
@@ -101,6 +102,7 @@ public class TargetSelectorCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 0,
+                            /* closureTime= */ 0,
                             /* markedForDeletion= */ false),
                     new InstanceInfo(
                             /* instanceId= */ 2,
@@ -113,6 +115,7 @@ public class TargetSelectorCoordinatorTest {
                             /* incognitoTabCount= */ 1,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 0,
+                            /* closureTime= */ 0,
                             /* markedForDeletion= */ false)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();

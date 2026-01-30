@@ -33,6 +33,7 @@ public class MultiWindowTestUtils {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_URL);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
+        prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_CLOSURE_TIME);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         prefs.removeKey(ChromePreferenceKeys.MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED);
