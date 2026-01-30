@@ -106,6 +106,8 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
          BackingEqual(backing_flags_, ids_, other.backing_flags_, other.ids_) &&
          BackingEqual(backing_flags_, tag_names_, other.backing_flags_,
                       other.tag_names_) &&
+         BackingEqual(backing_flags_, custom_pseudo_names_,
+                      other.backing_flags_, other.custom_pseudo_names_) &&
          BackingEqual(backing_flags_, attributes_, other.backing_flags_,
                       other.attributes_);
 }
@@ -141,6 +143,17 @@ bool InvalidationSet::InvalidatesElement(Element& element) const {
       TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
           element, kInvalidationSetMatchedClass, *this, *class_name);
       return true;
+    }
+  }
+
+  if (HasCustomPseudoNames()) {
+    if (const AtomicString& pseudo_id = element.ShadowPseudoId();
+        pseudo_id != g_null_atom) {
+      if (HasCustomPseudoName(pseudo_id)) {
+        TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
+            element, kInvalidationSetMatchedCustomPseudoName, *this, pseudo_id);
+        return true;
+      }
     }
   }
 
@@ -231,10 +244,6 @@ void InvalidationSet::Combine(const InvalidationSet& other) {
     return;
   }
 
-  if (other.CustomPseudoInvalid()) {
-    SetCustomPseudoInvalid();
-  }
-
   if (other.TreeBoundaryCrossing()) {
     SetTreeBoundaryCrossing();
   }
@@ -267,6 +276,10 @@ void InvalidationSet::Combine(const InvalidationSet& other) {
     AddTagName(tag_name);
   }
 
+  for (const auto& custom_pseudo_name : other.CustomPseudoNames()) {
+    AddCustomPseudoName(custom_pseudo_name);
+  }
+
   for (const auto& attribute : other.Attributes()) {
     AddAttribute(attribute);
   }
@@ -285,12 +298,14 @@ void InvalidationSet::ClearAllBackings() {
   classes_.Clear(backing_flags_);
   ids_.Clear(backing_flags_);
   tag_names_.Clear(backing_flags_);
+  custom_pseudo_names_.Clear(backing_flags_);
   attributes_.Clear(backing_flags_);
 }
 
 bool InvalidationSet::HasEmptyBackings() const {
   return classes_.IsEmpty(backing_flags_) && ids_.IsEmpty(backing_flags_) &&
          tag_names_.IsEmpty(backing_flags_) &&
+         custom_pseudo_names_.IsEmpty(backing_flags_) &&
          attributes_.IsEmpty(backing_flags_);
 }
 
@@ -356,6 +371,15 @@ void InvalidationSet::AddTagName(const AtomicString& tag_name) {
   tag_names_.Add(backing_flags_, tag_name);
 }
 
+void InvalidationSet::AddCustomPseudoName(
+    const AtomicString& custom_pseudo_name) {
+  if (WholeSubtreeInvalid()) {
+    return;
+  }
+  CHECK(!custom_pseudo_name.empty());
+  custom_pseudo_names_.Add(backing_flags_, custom_pseudo_name);
+}
+
 void InvalidationSet::AddAttribute(const AtomicString& attribute) {
   if (WholeSubtreeInvalid()) {
     return;
@@ -370,7 +394,6 @@ void InvalidationSet::SetWholeSubtreeInvalid() {
   }
 
   invalidation_flags_.SetWholeSubtreeInvalid(true);
-  invalidation_flags_.SetInvalidateCustomPseudo(false);
   invalidation_flags_.SetTreeBoundaryCrossing(false);
   invalidation_flags_.SetInsertionPointCrossing(false);
   invalidation_flags_.SetInvalidatesSlotted(false);
@@ -427,9 +450,6 @@ void InvalidationSet::WriteIntoTrace(perfetto::TracedValue context) const {
   if (invalidation_flags_.WholeSubtreeInvalid()) {
     dict.Add("allDescendantsMightBeInvalid", true);
   }
-  if (invalidation_flags_.InvalidateCustomPseudo()) {
-    dict.Add("customPseudoInvalid", true);
-  }
   if (invalidation_flags_.TreeBoundaryCrossing()) {
     dict.Add("treeBoundaryCrossing", true);
   }
@@ -456,6 +476,10 @@ void InvalidationSet::WriteIntoTrace(perfetto::TracedValue context) const {
 
   if (HasTagNames()) {
     dict.Add("tagNames", TagNames());
+  }
+
+  if (HasCustomPseudoNames()) {
+    dict.Add("customPseudoNames", CustomPseudoNames());
   }
 
   if (HasAttributes()) {
@@ -498,6 +522,10 @@ String InvalidationSet::ToString() const {
     features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(TagNames(), "", ""));
   }
+  if (HasCustomPseudoNames()) {
+    features.Append(!features.empty() ? " " : "");
+    features.Append(format_backing(CustomPseudoNames(), "", ""));
+  }
   if (HasAttributes()) {
     features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(Attributes(), "[", "]"));
@@ -522,7 +550,6 @@ String InvalidationSet::ToString() const {
   metadata.Append(InvalidatesSelf() ? "$" : "");
   metadata.Append(InvalidatesNth() ? "N" : "");
   metadata.Append(invalidation_flags_.WholeSubtreeInvalid() ? "W" : "");
-  metadata.Append(invalidation_flags_.InvalidateCustomPseudo() ? "C" : "");
   metadata.Append(invalidation_flags_.TreeBoundaryCrossing() ? "T" : "");
   metadata.Append(invalidation_flags_.InsertionPointCrossing() ? "I" : "");
   metadata.Append(invalidation_flags_.InvalidatesSlotted() ? "S" : "");

@@ -383,7 +383,7 @@ TEST(InvalidationSetTest, SubtreeInvalid_Combine_2) {
 
 TEST(InvalidationSetTest, SubtreeInvalid_AddCustomPseudoBefore) {
   scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
-  set->SetCustomPseudoInvalid();
+  set->AddCustomPseudoName(AtomicString("::-webkit-dummy"));
   ASSERT_FALSE(set->IsEmpty());
 
   set->SetWholeSubtreeInvalid();

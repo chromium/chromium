@@ -16,11 +16,6 @@ class InvalidationFlags {
   // Merges two sets of flags together by orring all fields.
   void Merge(const InvalidationFlags& other);
 
-  bool InvalidateCustomPseudo() const { return invalidate_custom_pseudo_; }
-  void SetInvalidateCustomPseudo(bool value) {
-    invalidate_custom_pseudo_ = value;
-  }
-
   bool WholeSubtreeInvalid() const { return whole_subtree_invalid_; }
   void SetWholeSubtreeInvalid(bool value) { whole_subtree_invalid_ = value; }
 

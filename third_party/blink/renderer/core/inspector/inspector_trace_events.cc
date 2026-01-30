@@ -502,6 +502,9 @@ const char inspector_style_invalidator_invalidate_event::
 const char inspector_style_invalidator_invalidate_event::
     kInvalidationSetInvalidatesTreeCounting[] =
         "Invalidation set invalidates tree-counting";
+const char inspector_style_invalidator_invalidate_event::
+    kInvalidationSetMatchedCustomPseudoName[] =
+        "Invalidation set matched custom pseudo element name";
 
 namespace inspector_style_invalidator_invalidate_event {
 void FillCommonPart(perfetto::TracedDictionary& dict,
@@ -562,6 +565,9 @@ void inspector_style_invalidator_invalidate_event::SelectorPart(
     feature_type = InvalidationSetToSelectorMap::SelectorFeatureType::kId;
   } else if (reason == kInvalidationSetMatchedTagName) {
     feature_type = InvalidationSetToSelectorMap::SelectorFeatureType::kTagName;
+  } else if (reason == kInvalidationSetMatchedCustomPseudoName) {
+    feature_type =
+        InvalidationSetToSelectorMap::SelectorFeatureType::kCustomPseudoName;
   } else if (reason == kInvalidationSetMatchedAttribute) {
     feature_type =
         InvalidationSetToSelectorMap::SelectorFeatureType::kAttribute;

@@ -128,6 +128,14 @@ class RuleInvalidationDataVisitor {
       ClearFeatures();
       tag_names.push_back(tag_name);
     }
+    void NarrowToCustomPseudo(const AtomicString& custom_pseudo_name) {
+      if (Size() == 1 && (!ids.empty() || !classes.empty() ||
+                          !attributes.empty() || !custom_pseudo_name.empty())) {
+        return;
+      }
+      ClearFeatures();
+      custom_pseudo_names.push_back(custom_pseudo_name);
+    }
     void NarrowToFeatures(const InvalidationSetFeatures&);
     void ClearFeatures() {
       classes.clear();
@@ -135,10 +143,12 @@ class RuleInvalidationDataVisitor {
       ids.clear();
       tag_names.clear();
       emitted_tag_names.clear();
+      custom_pseudo_names.clear();
     }
     unsigned Size() const {
       return classes.size() + attributes.size() + ids.size() +
-             tag_names.size() + emitted_tag_names.size();
+             tag_names.size() + emitted_tag_names.size() +
+             custom_pseudo_names.size();
     }
 
     Vector<AtomicString, 4> classes;
@@ -146,6 +156,7 @@ class RuleInvalidationDataVisitor {
     Vector<AtomicString, 4> ids;
     Vector<AtomicString, 4> tag_names;
     Vector<AtomicString, 4> emitted_tag_names;
+    Vector<AtomicString, 4> custom_pseudo_names;
     unsigned max_direct_adjacent_selectors = 0;
 
     // descendant_features_depth is used while adding features for logical

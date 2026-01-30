@@ -119,6 +119,7 @@ class CORE_EXPORT InvalidationSet
   void AddClass(const AtomicString& class_name);
   void AddId(const AtomicString& id);
   void AddTagName(const AtomicString& tag_name);
+  void AddCustomPseudoName(const AtomicString& custom_pseudo_name);
   void AddAttribute(const AtomicString& attribute_local_name);
 
   void SetInvalidationFlags(InvalidationFlags flags) {
@@ -153,13 +154,6 @@ class CORE_EXPORT InvalidationSet
     return invalidation_flags_.InsertionPointCrossing();
   }
 
-  void SetCustomPseudoInvalid() {
-    invalidation_flags_.SetInvalidateCustomPseudo(true);
-  }
-  bool CustomPseudoInvalid() const {
-    return invalidation_flags_.InvalidateCustomPseudo();
-  }
-
   void SetInvalidatesSlotted() {
     invalidation_flags_.SetInvalidatesSlotted(true);
   }
@@ -185,7 +179,6 @@ class CORE_EXPORT InvalidationSet
 
   bool IsEmpty() const {
     return HasEmptyBackings() &&
-           !invalidation_flags_.InvalidateCustomPseudo() &&
            !invalidation_flags_.InsertionPointCrossing() &&
            !invalidation_flags_.InvalidatesSlotted() &&
            !invalidation_flags_.InvalidatesParts() &&
@@ -256,6 +249,7 @@ class CORE_EXPORT InvalidationSet
     kClasses,
     kIds,
     kTagNames,
+    kCustomPseudoNames,
     kAttributes
     // These values are used as bit-indices, and must be smaller than 8.
     // See Backing::GetMask.
@@ -402,6 +396,9 @@ class CORE_EXPORT InvalidationSet
   bool HasClasses() const { return !classes_.IsEmpty(backing_flags_); }
   bool HasIds() const { return !ids_.IsEmpty(backing_flags_); }
   bool HasTagNames() const { return !tag_names_.IsEmpty(backing_flags_); }
+  bool HasCustomPseudoNames() const {
+    return !custom_pseudo_names_.IsEmpty(backing_flags_);
+  }
   bool HasAttributes() const { return !attributes_.IsEmpty(backing_flags_); }
 
   bool HasId(const AtomicString& string) const {
@@ -410,6 +407,10 @@ class CORE_EXPORT InvalidationSet
 
   bool HasTagName(const AtomicString& string) const {
     return tag_names_.Contains(backing_flags_, string);
+  }
+
+  bool HasCustomPseudoName(const AtomicString& string) const {
+    return custom_pseudo_names_.Contains(backing_flags_, string);
   }
 
   Backing<BackingType::kClasses>::Range Classes() const {
@@ -424,6 +425,10 @@ class CORE_EXPORT InvalidationSet
     return tag_names_.Items(backing_flags_);
   }
 
+  Backing<BackingType::kCustomPseudoNames>::Range CustomPseudoNames() const {
+    return custom_pseudo_names_.Items(backing_flags_);
+  }
+
   Backing<BackingType::kAttributes>::Range Attributes() const {
     return attributes_.Items(backing_flags_);
   }
@@ -436,6 +441,7 @@ class CORE_EXPORT InvalidationSet
   Backing<BackingType::kClasses> classes_;
   Backing<BackingType::kIds> ids_;
   Backing<BackingType::kTagNames> tag_names_;
+  Backing<BackingType::kCustomPseudoNames> custom_pseudo_names_;
   Backing<BackingType::kAttributes> attributes_;
 
   InvalidationFlags invalidation_flags_;

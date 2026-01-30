@@ -186,6 +186,12 @@ class RuleFeatureSetTest : public testing::Test {
     return ToHashSet<BackingType::kTagNames>(invalidation_set.TagNames());
   }
 
+  HashSet<AtomicString> CustomPseudoNameSet(
+      const InvalidationSet& invalidation_set) {
+    return ToHashSet<BackingType::kCustomPseudoNames>(
+        invalidation_set.CustomPseudoNames());
+  }
+
   HashSet<AtomicString> AttributeSet(const InvalidationSet& invalidation_set) {
     return ToHashSet<BackingType::kAttributes>(invalidation_set.Attributes());
   }
@@ -625,6 +631,25 @@ class RuleFeatureSetTest : public testing::Test {
     }
     if (!invalidation_sets[0]->InvalidatesParts()) {
       return AssertionFailure() << "should invalidate parts";
+    }
+    return AssertionSuccess();
+  }
+
+  AssertionResult HasCustomPseudoNameInvalidation(
+      const char* pseudo_name,
+      InvalidationSetVector& invalidation_sets) {
+    if (invalidation_sets.size() != 1u) {
+      return AssertionFailure() << "has " << invalidation_sets.size()
+                                << " invalidation set(s), should have 1";
+    }
+    HashSet<AtomicString> custom_pseudo_names =
+        CustomPseudoNameSet(*invalidation_sets[0]);
+    if (custom_pseudo_names.size() != 1u) {
+      return AssertionFailure() << custom_pseudo_names.size() << " should be 1";
+    }
+    if (!custom_pseudo_names.Contains(AtomicString(pseudo_name))) {
+      return AssertionFailure()
+             << "should invalidate custom pseudo " << pseudo_name;
     }
     return AssertionSuccess();
   }
@@ -1714,6 +1739,19 @@ TEST_F(RuleFeatureSetTest,
     EXPECT_TRUE(HasClassInvalidation("c", invalidation_lists.descendants));
     EXPECT_TRUE(invalidation_lists.descendants[0]->TreeBoundaryCrossing());
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, invalidatesCustomPseudo) {
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(":hover::-webkit-slider-thumb"));
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForPseudoClass(invalidation_lists,
+                                          CSSSelector::kPseudoHover);
+    EXPECT_TRUE(HasCustomPseudoNameInvalidation(
+        "-webkit-slider-thumb", invalidation_lists.descendants));
   }
 }
 

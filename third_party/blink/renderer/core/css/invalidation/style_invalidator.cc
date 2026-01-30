@@ -60,9 +60,6 @@ void StyleInvalidator::PushInvalidationSet(
   DCHECK(!invalidation_flags_.WholeSubtreeInvalid());
   DCHECK(!invalidation_set.WholeSubtreeInvalid());
   DCHECK(!invalidation_set.IsEmpty());
-  if (invalidation_set.CustomPseudoInvalid()) {
-    invalidation_flags_.SetInvalidateCustomPseudo(true);
-  }
   if (invalidation_set.TreeBoundaryCrossing()) {
     invalidation_flags_.SetTreeBoundaryCrossing(true);
   }
@@ -80,13 +77,6 @@ void StyleInvalidator::PushInvalidationSet(
 
 ALWAYS_INLINE bool StyleInvalidator::MatchesCurrentInvalidationSets(
     Element& element) const {
-  if (invalidation_flags_.InvalidateCustomPseudo() &&
-      element.ShadowPseudoId() != g_null_atom) {
-    TRACE_STYLE_INVALIDATOR_INVALIDATION_IF_ENABLED(element,
-                                                    kInvalidateCustomPseudo);
-    return true;
-  }
-
   for (auto* const invalidation_set : invalidation_sets_) {
     if (invalidation_set->InvalidatesElement(element)) {
       return true;
