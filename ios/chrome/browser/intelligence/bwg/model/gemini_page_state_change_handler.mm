@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_page_state_change_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 
 #import <UIKit/UIKit.h>
 
@@ -11,11 +11,11 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@implementation BWGPageStateChangeHandler {
+@implementation GeminiPageStateChangeHandler {
   // The pref service used by this handler.
   raw_ptr<PrefService> _prefService;
 
-  // The base view controller the BWG overlay is currently presented on.
+  // The base view controller the Gemini overlay is currently presented on.
   __weak UIViewController* _baseViewController;
 }
 
@@ -57,7 +57,7 @@
                                IDS_IOS_BWG_PAGE_CONTENT_SHARING_ALERT_MESSAGE)
                 preferredStyle:UIAlertControllerStyleAlert];
 
-  __weak BWGPageStateChangeHandler* weakSelf = self;
+  __weak GeminiPageStateChangeHandler* weakSelf = self;
 
   UIAlertAction* acceptAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(

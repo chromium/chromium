@@ -30,7 +30,7 @@ class PageContext;
 }  // namespace optimization_guide::proto
 
 @class BWGLinkOpeningHandler;
-@class BWGPageStateChangeHandler;
+@class GeminiPageStateChangeHandler;
 @class BWGSessionHandler;
 @class GeminiCameraHandler;
 @class GeminiPageContext;
@@ -205,7 +205,8 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   __strong BWGLinkOpeningHandler* bwg_link_opening_handler_ = nullptr;
 
   // Handler for PageState changes.
-  __strong BWGPageStateChangeHandler* bwg_page_state_change_handler_ = nullptr;
+  __strong GeminiPageStateChangeHandler* gemini_page_state_change_handler_ =
+      nullptr;
 
   // Handler for the BWG sessions.
   __strong BWGSessionHandler* bwg_session_handler_ = nullptr;

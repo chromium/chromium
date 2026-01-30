@@ -19,12 +19,12 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
@@ -99,9 +99,9 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
   if (bwg_gateway_) {
     bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc]
         initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)];
-    bwg_page_state_change_handler_ = [[BWGPageStateChangeHandler alloc]
+    gemini_page_state_change_handler_ = [[GeminiPageStateChangeHandler alloc]
         initWithPrefService:browser_->GetProfile()->GetPrefs()];
-    bwg_gateway_.pageStateChangeHandler = bwg_page_state_change_handler_;
+    bwg_gateway_.pageStateChangeHandler = gemini_page_state_change_handler_;
 
     bwg_session_handler_ = [[BWGSessionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
@@ -649,7 +649,8 @@ void BwgBrowserAgent::PresentFloatyWithState(
     gemini::EntryPoint entry_point,
     UIImage* image_attachment) {
   SetSessionCommandHandlers();
-  [bwg_page_state_change_handler_ setBaseViewController:base_view_controller];
+  [gemini_page_state_change_handler_
+      setBaseViewController:base_view_controller];
 
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
 
