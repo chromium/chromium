@@ -329,20 +329,16 @@ BASE_DECLARE_FEATURE(kCSPScriptSrcV2);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kCSPScriptSrcHashesInV1);
 
-// When enabled, fetches for "pervasive" scripts that match one of the
+// When enabled, fetches for "pervasive" resources that match one of the
 // configured patterns will use a shared, single-keyed cache.
 // See https://chromestatus.com/feature/5202380930678784
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kCacheSharingForPervasiveScripts);
+BASE_DECLARE_FEATURE(kCacheSharingForPervasiveResources);
 
 // When enabled, sends SameSite=Lax cookies for FedCM requests in addition to
 // SameSite=None.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kSendSameSiteLaxForFedCM);
-
-// newline-delimited list of URL patterns for "pervasive" scripts.
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE_PARAM(std::string, kPervasiveScriptURLPatterns);
 
 // When enabled, disk-based shared dictionaries will use a memory cache to
 // keep frequently used dictionaries in memory.

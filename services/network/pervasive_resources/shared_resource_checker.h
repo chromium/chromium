@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SHARED_RESOURCE_CHECKER_H_
-#define SERVICES_NETWORK_SHARED_RESOURCE_CHECKER_H_
+#ifndef SERVICES_NETWORK_PERVASIVE_RESOURCES_SHARED_RESOURCE_CHECKER_H_
+#define SERVICES_NETWORK_PERVASIVE_RESOURCES_SHARED_RESOURCE_CHECKER_H_
 
 #include <list>
 #include <map>
@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "url/origin.h"
@@ -24,7 +25,7 @@ struct ResourceRequest;
 
 // This class is attached to NetworkContext and is responsible for determining
 // if a given request is for a well-known pervasive script when
-// network::features::kCacheSharingForPervasiveScripts is enabled.
+// network::features::kCacheSharingForPervasiveResources is enabled.
 // See https://chromestatus.com/feature/5202380930678784
 class COMPONENT_EXPORT(NETWORK_SERVICE) SharedResourceChecker {
  public:
@@ -52,15 +53,32 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedResourceChecker {
       base::optional_ref<const net::CookiePartitionKey> cookie_partition_key);
 
  private:
+  friend class SharedResourceCheckerTest;
+
+  // Load the zstd-compressed list of pervasive resources. This is done
+  // automatically in the constructor with the static list but is exposed so
+  // that testing can use test-specific lists.
+  void LoadPervasivePatterns(const uint8_t* compressed_patterns,
+                             size_t compressed_patterns_size,
+                             const base::Time::Exploded& expiration);
+
   const raw_ref<const content_settings::CookieSettingsBase> cookie_settings_;
   bool enabled_ = false;
+  bool loaded_ = false;
 
-  // URLPatterns for matching URLs for shared static resource.
+  // Processed URLPatterns for matching URLs for shared static resource.
   // The patterns are stored in lists, indexed by origin.
   typedef std::list<std::unique_ptr<PatternEntry>> UrlPatternList;
   std::map<url::Origin, std::unique_ptr<UrlPatternList>> patterns_;
+  base::Time patterns_expiration_;
+
+  // Static list of unprocessed URL patterns
+  static const char raw_patterns_[];
+
+  // Expiration date for the pervasive pattern list
+  static const base::Time::Exploded raw_patterns_expiration_;
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_SHARED_RESOURCE_CHECKER_H_
+#endif  // SERVICES_NETWORK_PERVASIVE_RESOURCES_SHARED_RESOURCE_CHECKER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/shared_resource_checker.h"
+#include "services/network/pervasive_resources/shared_resource_checker.h"
 
 #include <string>
 
@@ -65,11 +65,19 @@ static ResourceRequest CreateResourceRequest(const char* url) {
   return request;
 }
 
-static constexpr char kTestUrlPatterns[] =
-    "https://www.example.test/exact\n"
-    "https://www.example.test/wildcard/end/*\n"
-    "https://www.example.test/wildcard/*/middle\n"
-    "https://www2.example.test/exact\n";
+// Zstandard-compressed list of newline-delimited URL patterns:
+// https://www.example.test/exact
+// https://www.example.test/wildcard/end/*
+// https://www.example.test/wildcard/*/middle
+// https://www2.example.test/exact
+static constexpr uint8_t kTestUrlPatternsZstd[] = {
+    0x28, 0xb5, 0x2f, 0xfd, 0x24, 0x91, 0xfd, 0x01, 0x00, 0x62, 0x83,
+    0x0b, 0x10, 0xb0, 0xeb, 0xc0, 0x6a, 0xcf, 0x90, 0x83, 0xa5, 0x91,
+    0xf1, 0x43, 0x89, 0xcd, 0xae, 0x12, 0x03, 0xe3, 0xc9, 0x46, 0xaa,
+    0x21, 0xd4, 0xeb, 0x75, 0x2b, 0xc6, 0x09, 0x25, 0x40, 0x53, 0xde,
+    0x8b, 0xee, 0x28, 0x9e, 0x98, 0x2a, 0xef, 0x22, 0x33, 0x5b, 0xe2,
+    0x18, 0xe2, 0x09, 0x04, 0x00, 0x76, 0x48, 0x84, 0x53, 0x1c, 0x67,
+    0x29, 0x52, 0x2d, 0x16, 0xe5, 0x04, 0xd5, 0xee, 0x35, 0x49};
 
 static const char* kPatternMatches[] = {
     "https://www.example.test/exact",
@@ -100,22 +108,26 @@ class SharedResourceCheckerTest : public testing::Test,
  public:
   SharedResourceCheckerTest() {
     enabled_ = GetParam();
-    if (enabled_) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kCacheSharingForPervasiveScripts,
-          {{"url_patterns", kTestUrlPatterns}});
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kCacheSharingForPervasiveScripts);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        features::kCacheSharingForPervasiveResources, enabled_);
     shared_resource_checker_ =
         std::make_unique<SharedResourceChecker>(cookie_settings_);
+
+    // Load the custom pervasive pattern list for testing.
+    base::Time expires = base::Time::Now() + base::Days(1);
+    base::Time::Exploded expiration;
+    expires.UTCExplode(&expiration);
+    LoadPervasivePatterns(expiration);
   }
   void BlockAllCookies() { cookie_settings_.set_block_all(true); }
   bool enabled() const { return enabled_; }
   const std::unique_ptr<SharedResourceChecker>& shared_resource_checker()
       const {
     return shared_resource_checker_;
+  }
+  void LoadPervasivePatterns(base::Time::Exploded& expiration) const {
+    shared_resource_checker_->LoadPervasivePatterns(
+        kTestUrlPatternsZstd, sizeof(kTestUrlPatternsZstd), expiration);
   }
 
  private:
@@ -156,14 +168,17 @@ constexpr mojom::RequestDestination kAllDestinations[] = {
     mojom::RequestDestination::kSharedStorageWorklet,
 };
 
-// Make sure that all request destinations except for Script fail.
-TEST_P(SharedResourceCheckerTest, DestinationIsScript) {
+// Make sure that all request destinations except for Script, Style or
+// Dictionary fail.
+TEST_P(SharedResourceCheckerTest, DestinationIsAllowed) {
   ResourceRequest request = CreateResourceRequest(kPatternMatches[0]);
   std::optional<url::Origin> origin = url::Origin::Create(request.url);
   for (const mojom::RequestDestination& destination : kAllDestinations) {
     request.destination = destination;
     if (enabled() &&
-        request.destination == mojom::RequestDestination::kScript) {
+        (request.destination == mojom::RequestDestination::kScript ||
+         request.destination == mojom::RequestDestination::kStyle ||
+         request.destination == mojom::RequestDestination::kDictionary)) {
       EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin,
                                                               std::nullopt));
     } else {
@@ -277,6 +292,28 @@ TEST_P(SharedResourceCheckerTest, PatternLimits) {
                                                            std::nullopt));
   EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request1, origin,
                                                           std::nullopt));
+}
+
+TEST_P(SharedResourceCheckerTest, ListExpired) {
+  if (!enabled()) {
+    return;
+  }
+  ResourceRequest request = CreateResourceRequest(kPatternMatches[0]);
+  std::optional<url::Origin> origin = url::Origin::Create(request.url);
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                          std::nullopt));
+  // Reload the list of patterns with an expiration time in the past
+  base::Time expires = base::Time::Now() - base::Days(1);
+  base::Time::Exploded expiration;
+  expires.UTCExplode(&expiration);
+  LoadPervasivePatterns(expiration);
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                           std::nullopt));
+  // Reload the list of patterns with an invalid expiration time
+  base::Time::Exploded invalid;
+  LoadPervasivePatterns(invalid);
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                           std::nullopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,

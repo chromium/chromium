@@ -4874,7 +4874,7 @@
             ]
         }
     ],
-    "CacheSharingForPervasiveScripts": [
+    "CacheSharingForPervasiveResources": [
         {
             "platforms": [
                 "android",
@@ -4886,12 +4886,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20250520",
-                    "params": {
-                        "url_patterns": "https://www.google-analytics.com/analytics.js\nhttps://ssl.google-analytics.com/ga.js\nhttps://www.google-analytics.com/plugins/ua/ec.js\nhttps://pagead2.googlesyndication.com/pagead/managed/js/adsense/*/show_ads_impl_fy2021.js\nhttps://pagead2.googlesyndication.com/pagead/managed/js/activeview/current/ufs_web_display.js\nhttps://pagead2.googlesyndication.com/pagead/managed/js/adsense/*/reactive_library_fy2021.js\nhttps://www.googleadservices.com/pagead/conversion.js\nhttps://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.js\nhttps://securepubads.g.doubleclick.net/pagead/managed/js/gpt/*/pubads_impl.js\nhttps://securepubads.g.doubleclick.net/pagead/managed/js/gpt/*/pubads_impl_page_level_ads.js\nhttps://tpc.googlesyndication.com/pagead/js/*/client/qs_click_protection_fy2021.js\nhttps://tpc.googlesyndication.com/safeframe/*/js/ext.js\nhttps://ep2.adtrafficquality.google/sodar/sodar2.js"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "CacheSharingForPervasiveScripts"
+                        "CacheSharingForPervasiveResources"
                     ]
                 }
             ]

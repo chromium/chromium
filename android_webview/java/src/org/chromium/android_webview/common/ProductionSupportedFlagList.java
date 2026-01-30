@@ -981,7 +981,7 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.SHARED_DICTIONARY_CACHE,
                 "When enabled, keep recently-used compression dictionaries in a memory cache."),
         Flag.baseFeature(
-                NetworkServiceFeatures.CACHE_SHARING_FOR_PERVASIVE_SCRIPTS,
+                NetworkServiceFeatures.CACHE_SHARING_FOR_PERVASIVE_RESOURCES,
                 "When enabled, enables a singled-keyed HTTP cache for well-known privacy-safe"
                         + " resources."),
         Flag.baseFeature(

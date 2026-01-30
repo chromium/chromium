@@ -1077,9 +1077,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // Manager for device bound sessions.
   std::unique_ptr<DeviceBoundSessionManager> device_bound_session_manager_;
 
-  // Used only when network::features::kCacheSharingForPervasiveScripts is
+  // Used only when network::features::kCacheSharingForPervasiveResources is
   // enabled to determine if a given request is for a well-known
-  // pervasive script.
+  // pervasive resource.
   // See https://chromestatus.com/feature/5202380930678784
   // This needs to be ordered after cookie_manager_ as it maintains a reference
   // to the cookie settings object from cookie_manager_.

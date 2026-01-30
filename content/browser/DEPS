@@ -158,8 +158,8 @@ specific_include_rules = {
   ],
   "navigation_url_loader_impl_unittest\.cc": [
     "+services/network/cookie_settings.h",
+    "+services/network/pervasive_resources/shared_resource_checker.h",
     "+services/network/resource_scheduler/resource_scheduler_client.h",
-    "+services/network/shared_resource_checker.h",
     "+services/network/url_loader.h",
     "+services/network/url_request_context_owner.h",
   ],

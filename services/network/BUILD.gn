@@ -125,6 +125,8 @@ component("network_service") {
     "partial_decoder.h",
     "pending_callback_chain.cc",
     "pending_callback_chain.h",
+    "pervasive_resources/shared_resource_checker.cc",
+    "pervasive_resources/shared_resource_checker.h",
     "prefetch_cache.cc",
     "prefetch_cache.h",
     "prefetch_matches.cc",
@@ -210,8 +212,6 @@ component("network_service") {
     "shared_dictionary/shared_dictionary_writer_in_memory.h",
     "shared_dictionary/shared_dictionary_writer_on_disk.cc",
     "shared_dictionary/shared_dictionary_writer_on_disk.h",
-    "shared_resource_checker.cc",
-    "shared_resource_checker.h",
     "slop_bucket.cc",
     "slop_bucket.h",
     "socket_data_pump.cc",
@@ -343,6 +343,10 @@ component("network_service") {
     ]
   }
 
+  if (!is_fuchsia) {
+    sources += [ "pervasive_resources/shared_resource_checker_patterns.h" ]
+  }
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
@@ -385,6 +389,7 @@ component("network_service") {
     "//services/service_manager/public/mojom",
     "//third_party/liburlpattern",
     "//third_party/re2",
+    "//third_party/zstd:decompress",
     "//url",
   ]
 
@@ -513,7 +518,6 @@ source_set("tests") {
     "shared_dictionary/shared_dictionary_on_disk_unittest.cc",
     "shared_dictionary/shared_dictionary_writer_in_memory_unittest.cc",
     "shared_dictionary/shared_dictionary_writer_on_disk_unittest.cc",
-    "shared_resource_checker_unittest.cc",
     "socket_data_pump_unittest.cc",
     "ssl_config_service_mojo_unittest.cc",
     "stringify_enum_unittest.cc",
@@ -582,6 +586,10 @@ source_set("tests") {
 
   if (enable_device_bound_sessions) {
     sources += [ "device_bound_session_manager_unittest.cc" ]
+  }
+
+  if (!is_fuchsia) {
+    sources += [ "pervasive_resources/shared_resource_checker_unittest.cc" ]
   }
 
   deps = [

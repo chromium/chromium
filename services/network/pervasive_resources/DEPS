@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "shared_resource_checker\.cc": [
+    "+third_party/zstd",
+  ],
+}

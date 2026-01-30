@@ -30,6 +30,7 @@
 #include "services/network/cookie_settings.h"
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/network_context.h"
+#include "services/network/pervasive_resources/shared_resource_checker.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/data_element.h"
@@ -46,7 +47,6 @@
 #include "services/network/public/mojom/url_request.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/sec_header_helpers.h"
-#include "services/network/shared_resource_checker.h"
 
 namespace network::url_loader_util {
 
