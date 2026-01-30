@@ -165,7 +165,7 @@ cr-input.font-size-input::part(input)::-webkit-outer-spin-button {
 }
 
 #fontSizeInputError {
-  align-items: right;
+  align-items: end;
   display: flex;
   justify-content: right;
   visibility: hidden;

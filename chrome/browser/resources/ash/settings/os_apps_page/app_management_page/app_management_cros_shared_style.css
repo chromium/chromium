@@ -142,14 +142,14 @@
 }
 
 #info-icon {
-  float: inline-block;
+  float: inline-start;
   height: var(--help-icon-size);
   padding-inline-end: var(--help-icon-padding);
   width: var(--help-icon-size);
 }
 
 #info-text {
-  float: inline-block;
+  float: inline-end;
   overflow-wrap: break-word;
 }
 

@@ -33,7 +33,6 @@ cr-dialog::backdrop {
 }
 
 #dialog::part(button-container) {
-  display: center;
   width: 100%;
 }
 

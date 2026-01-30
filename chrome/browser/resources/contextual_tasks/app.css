@@ -301,7 +301,7 @@ error-page {
 }
 
 :host([is-zero-state_]:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
-  justify-content: align-start;
+  justify-content: flex-start;
   inset-inline-start: 28px;
   inset-inline-end: 20px;
   width: calc(100% - 48px);  /* 20px space on right. */
