@@ -42,6 +42,7 @@ chromium-metrics-reviews@google.com.
 <variants name="LogAiDataRequestFeature">
   <variant name="BlingPrototyping" summary="Bling Prototyping"/>
   <variant name="Compose" summary="Compose"/>
+  <variant name="ContextualTasksContext" summary="Contextual Tasks Context"/>
   <variant name="Default" summary="Default"/>
   <variant name="EnhancedCalendar" summary="Enhanced Calendar"/>
   <variant name="FeatureNotSet" summary="Feature not set"/>
