@@ -278,6 +278,7 @@ size_t TemplateURLRef::SearchTermsArgs::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(image_thumbnail_content_type);
   res += base::trace_event::EstimateMemoryUsage(image_url);
   res += base::trace_event::EstimateMemoryUsage(contextual_search_params);
+  res += base::trace_event::EstimateMemoryUsage(input_state);
   res += base::trace_event::EstimateMemoryUsage(image_translate_source_locale);
   res += base::trace_event::EstimateMemoryUsage(image_translate_target_locale);
 

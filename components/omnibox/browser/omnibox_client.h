@@ -341,8 +341,8 @@ class OmniboxClient {
   // use it.
   virtual bool IsAimPopupEnabled() const;
 
-  // Returns the current enabled tool mode if any.
-  virtual omnibox::ToolMode AimToolMode() const;
+  // Returns the current input state if any.
+  virtual omnibox::InputState GetInputState() const;
 
   virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };

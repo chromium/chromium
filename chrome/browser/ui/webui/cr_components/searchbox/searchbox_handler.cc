@@ -891,7 +891,8 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
           controller_->client()->GetLensOverlaySuggestInputs()) {
     // Don't set lens params if in "Create Image" mode. This prevents the
     // contextual client from being used in this tool mode.
-    if (GetAimToolMode() != omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
+    if (GetInputState().active_tool !=
+        omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
       autocomplete_input.set_lens_overlay_suggest_inputs(*suggest_inputs);
     }
   }
@@ -905,7 +906,7 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
     }
   }
 
-  autocomplete_input.set_aim_tool_mode(GetAimToolMode());
+  autocomplete_input.set_input_state(GetInputState());
 
   edit_model()->SetAutocompleteInput(autocomplete_input);
   omnibox_controller()->StartAutocomplete(autocomplete_input);
@@ -1134,8 +1135,8 @@ const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(
   return &match;
 }
 
-omnibox::ToolMode SearchboxHandler::GetAimToolMode() const {
-  return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+omnibox::InputState SearchboxHandler::GetInputState() const {
+  return omnibox::InputState();
 }
 
 OmniboxController* SearchboxHandler::omnibox_controller() const {

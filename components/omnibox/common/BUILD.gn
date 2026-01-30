@@ -4,6 +4,8 @@
 
 source_set("common") {
   sources = [
+    "input_state.cc",
+    "input_state.h",
     "omnibox_feature_configs.cc",
     "omnibox_feature_configs.h",
     "omnibox_features.cc",
@@ -21,6 +23,8 @@ source_set("common") {
     "//ui/base:features",
     "//url",
   ]
+
+  public_deps = [ "//third_party/omnibox_proto" ]
 
   if (is_android) {
     deps += [ ":jni_headers" ]

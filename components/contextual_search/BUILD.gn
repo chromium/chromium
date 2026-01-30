@@ -56,6 +56,7 @@ source_set("public") {
   deps = [
     "//components/keyed_service/core",
     "//components/lens/proto/server:proto",
+    "//components/omnibox/common",
     "//components/prefs",
     "//components/search_engines",
     "//components/sessions",

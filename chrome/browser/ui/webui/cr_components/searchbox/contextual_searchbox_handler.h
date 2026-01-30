@@ -156,6 +156,9 @@ class ContextualSearchboxHandler
     return context_input_data_;
   }
 
+  // SearchboxHandler:
+  omnibox::InputState GetInputState() const override;
+
   std::vector<base::UnguessableToken> GetUploadedContextTokens();
 
   // Resets `input_state_model_`.

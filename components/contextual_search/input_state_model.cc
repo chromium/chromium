@@ -22,10 +22,6 @@ namespace contextual_search {
 
 using omnibox::SearchboxConfig;
 
-InputState::InputState() = default;
-InputState::InputState(const InputState&) = default;
-InputState::~InputState() = default;
-
 namespace {
 
 // Populates `InputTypeRule` for `omnibox::INPUT_TYPE_BROWSER_TAB` if it does

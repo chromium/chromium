@@ -540,17 +540,15 @@ TEST_F(RemoteSuggestionsServiceTest,
   TemplateURL google_template_url(google_template_url_data);
 
   TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
-  search_terms_args.page_classification =
-      metrics::OmniboxEventProto::NTP_COMPOSEBOX;
-  search_terms_args.aim_tool_mode = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
-
-  GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
+  search_terms_args.input_state.active_tool =
+      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+  GURL url = RemoteSuggestionsService::EndpointUrl(
       google_template_url, search_terms_args, SearchTermsData());
 
   // `azm` param should be getting attached as a URL param and the
   // chrome-compose param should not be getting overridden.
   ASSERT_EQ(
-      endpoint_url.spec(),
+      url.spec(),
       "https://www.google.com/suggest?q=query&client=chrome-compose&azm=1");
 }
 
