@@ -1901,17 +1901,12 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
     auto* controller =
         ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
             render_frame_host);
-    // TODO(https://crbug.com/358119268): `AmbientSigninController` needs to be
-    // refactored, since this is now the single source of all credentials it
-    // shows.
-    controller->AddAndShowWebAuthnMethods(
-        model(), credentials, credential_types_,
+    controller->Show(
+        model(), credentials, std::move(passwords_),
         base::BindOnce(
             IgnoreResult(
                 &AuthenticatorRequestDialogController::OnAccountPreselected),
-            weak_factory_.GetWeakPtr()));
-    controller->AddAndShowPasswordMethods(
-        std::move(passwords_), credential_types_,
+            weak_factory_.GetWeakPtr()),
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::OnPasswordCredentialSelected,
             base::Unretained(model_)));

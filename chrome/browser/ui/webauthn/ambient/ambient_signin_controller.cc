@@ -50,15 +50,13 @@ AmbientSigninController::~AmbientSigninController() {
   }
 }
 
-void AmbientSigninController::AddAndShowWebAuthnMethods(
+void AmbientSigninController::Show(
     AuthenticatorRequestDialogModel* model,
-    const std::vector<password_manager::PasskeyCredential>& credentials,
-    int expected_credential_type_flags,
-    PasskeyCredentialSelectionCallback callback) {
-  CHECK(expected_credential_type_flags &
-            static_cast<int>(CredentialTypeFlags::kPassword) ||
-        expected_credential_type_flags &
-            static_cast<int>(CredentialTypeFlags::kPublicKey));
+    std::vector<password_manager::PasskeyCredential> credentials,
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+    PasskeyCredentialSelectionCallback passkey_callback,
+    PasswordCredentialSelectionCallback password_callback) {
+  CHECK(!(credentials.empty() && forms.empty()));
   if (!model_) {
     model_ = model;
     model_->observers.AddObserver(this);
@@ -66,62 +64,10 @@ void AmbientSigninController::AddAndShowWebAuthnMethods(
     CHECK(model == model_);
   }
 
-  passkey_selection_callback_ = std::move(callback);
-  passkey_credentials_ = credentials;
-
-  // TODO(358119268): There isn't a strong guarantee that passwords will ever
-  // arrive here, since errors can be encountered on the credential manager
-  // path. This needs to be addressed, and in general we need to better ensure
-  // that state in both credential manager and webauthn code is adequately
-  // cleaned up.
-  if (credentials_received_state_ == CredentialsReceived::kPasskeys ||
-      credentials_received_state_ ==
-          CredentialsReceived::kPasswordsAndPasskeys) {
-    return;
-  }
-
-  if (credentials_received_state_ == CredentialsReceived::kNone) {
-    credentials_received_state_ = CredentialsReceived::kPasskeys;
-    if (expected_credential_type_flags &
-        static_cast<int>(CredentialTypeFlags::kPassword)) {
-      // Wait for passwords.
-      return;
-    }
-  } else {
-    credentials_received_state_ = CredentialsReceived::kPasswordsAndPasskeys;
-  }
-
-  ShowBubble();
-}
-
-void AmbientSigninController::AddAndShowPasswordMethods(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-    int expected_credential_type_flags,
-    PasswordCredentialSelectionCallback callback) {
-  CHECK(expected_credential_type_flags &
-            static_cast<int>(CredentialTypeFlags::kPassword) ||
-        expected_credential_type_flags &
-            static_cast<int>(CredentialTypeFlags::kPublicKey));
-  password_selection_callback_ = std::move(callback);
-
+  passkey_selection_callback_ = std::move(passkey_callback);
+  password_selection_callback_ = std::move(password_callback);
+  passkey_credentials_.swap(credentials);
   password_forms_.swap(forms);
-
-  if (credentials_received_state_ == CredentialsReceived::kPasswords ||
-      credentials_received_state_ ==
-          CredentialsReceived::kPasswordsAndPasskeys) {
-    return;
-  }
-
-  if (credentials_received_state_ == CredentialsReceived::kNone) {
-    credentials_received_state_ = CredentialsReceived::kPasswords;
-    if (expected_credential_type_flags &
-        static_cast<int>(CredentialTypeFlags::kPublicKey)) {
-      // Wait for passkeys.
-      return;
-    }
-  } else {
-    credentials_received_state_ = CredentialsReceived::kPasswordsAndPasskeys;
-  }
 
   ShowBubble();
 }

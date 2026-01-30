@@ -57,17 +57,12 @@ class AmbientSigninController
 
   ~AmbientSigninController() override;
 
-  // Adds and shows the WebAuthn credentials in the Ambient UI.
-  void AddAndShowWebAuthnMethods(
-      AuthenticatorRequestDialogModel* model,
-      const std::vector<password_manager::PasskeyCredential>& credentials,
-      int expected_credential_type_flags,
-      PasskeyCredentialSelectionCallback callback);
-
-  void AddAndShowPasswordMethods(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-      int expected_credential_type_flags,
-      PasswordCredentialSelectionCallback callback);
+  // Shows the Ambient UI with the provided credentials.
+  void Show(AuthenticatorRequestDialogModel* model,
+            std::vector<password_manager::PasskeyCredential> credentials,
+            std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+            PasskeyCredentialSelectionCallback passkey_callback,
+            PasswordCredentialSelectionCallback password_callback);
 
   // Called when the user selects a passkey shown in the bubble.
   void OnPasskeySelected(const std::vector<uint8_t>& account_id);
@@ -86,13 +81,6 @@ class AmbientSigninController
   friend class content::DocumentUserData<AmbientSigninController>;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  enum class CredentialsReceived {
-    kNone,
-    kPasskeys,
-    kPasswords,
-    kPasswordsAndPasskeys,
-  };
-
   void ShowBubble();
 
   // views::WidgetObserver:
@@ -110,7 +98,6 @@ class AmbientSigninController
   raw_ptr<AmbientSigninBubbleView> ambient_signin_bubble_view_;
   PasskeyCredentialSelectionCallback passkey_selection_callback_;
   PasswordCredentialSelectionCallback password_selection_callback_;
-  CredentialsReceived credentials_received_state_ = CredentialsReceived::kNone;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> password_forms_;
   std::vector<password_manager::PasskeyCredential> passkey_credentials_;
 
