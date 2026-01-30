@@ -146,6 +146,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
 
+  bool IsContentSharingEnabled() const;
+
   raw_ptr<OmniboxController> GetOmniboxController() const;
   raw_ptr<OmniboxEditModel> GetEditModel();
   raw_ptr<OmniboxPopupUI> GetOmniboxPopupUI() const;

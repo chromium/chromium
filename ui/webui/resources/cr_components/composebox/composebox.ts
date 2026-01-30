@@ -757,7 +757,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onPaste_(event: ClipboardEvent) {
-    if (!event.clipboardData?.items) {
+    if (!this.dragAndDropEnabled_ || !event.clipboardData?.items) {
       return;
     }
 

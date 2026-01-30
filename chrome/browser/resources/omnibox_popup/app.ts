@@ -206,8 +206,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         changedPrivateProperties.has('showAiModePrefEnabled_') ||
         changedPrivateProperties.has('tabSuggestions_') ||
         changedPrivateProperties.has('result_') ||
-        changedPrivateProperties.has('isLensSearchEligible_') ||
-        changedPrivateProperties.has('isContentSharingEnabled_')) {
+        changedPrivateProperties.has('isLensSearchEligible_')) {
       this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
     }
   }
@@ -231,7 +230,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         showContextualChips && this.searchboxLayoutMode_ === 'Compact';
     return this.isAimEligible_ && this.showAiModePrefEnabled_ &&
         (isTallSearchbox || showContextualChipsInCompactMode) &&
-        !this.isInKeywordMode_ && this.isContentSharingEnabled_;
+        !this.isInKeywordMode_;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {

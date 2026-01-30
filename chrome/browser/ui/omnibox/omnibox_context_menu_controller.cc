@@ -138,6 +138,10 @@ void OmniboxContextMenuController::AddSeparator() {
 }
 
 void OmniboxContextMenuController::AddRecentTabItems() {
+  if (!IsContentSharingEnabled()) {
+    return;
+  }
+
   if (omnibox::kShowContextMenuHeaders.Get()) {
     AddTitleWithStringId(IDS_NTP_COMPOSE_MOST_RECENT_TABS);
   }
@@ -343,6 +347,23 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
   }
 }
 
+bool OmniboxContextMenuController::IsContentSharingEnabled() const {
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  if (!browser_window_interface) {
+    return false;
+  }
+  Profile* profile = browser_window_interface->GetProfile();
+  if (!profile) {
+    return false;
+  }
+  auto* session_handle =
+      GetOmniboxPopupUI()
+          ? GetOmniboxPopupUI()->GetOrCreateContextualSessionHandle()
+          : nullptr;
+  return omnibox::IsContentSharingEnabled(profile, session_handle);
+}
+
 raw_ptr<OmniboxController> OmniboxContextMenuController::GetOmniboxController()
     const {
   auto* helper =
@@ -521,7 +542,9 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
 }
 
 bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
-  if (command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH ||
+  if (command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
+      command_id == IDC_OMNIBOX_CONTEXT_ADD_FILE ||
+      command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH ||
       command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_.get());
@@ -529,15 +552,16 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
       return false;
     }
     Profile* profile = browser_window_interface->GetProfile();
-
     if (!profile) {
       return false;
     }
 
-    if (command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH) {
+    if (command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
+        command_id == IDC_OMNIBOX_CONTEXT_ADD_FILE) {
+      return IsContentSharingEnabled();
+    } else if (command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH) {
       return omnibox::IsDeepSearchEnabled(profile);
-    }
-    if (command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
+    } else if (command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
       return omnibox::IsCreateImagesEnabled(profile);
     }
   }

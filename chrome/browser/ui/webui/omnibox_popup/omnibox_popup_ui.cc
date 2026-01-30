@@ -122,8 +122,13 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kCloseComposeboxByEscape.Get());
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
                      omnibox::kContextMenuEnableMultiTabSelection.Get());
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  bool allow_drag_and_drop =
+      session_handle &&
+      session_handle->CheckSearchContentSharingSettings(profile_->GetPrefs()) &&
+      omnibox::kEnableContextDragAndDrop.Get();
   source->AddBoolean("composeboxContextDragAndDropEnabled",
-                     omnibox::kEnableContextDragAndDrop.Get());
+                     allow_drag_and_drop);
   source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   source->AddBoolean("composeboxShowContextMenu",
                      omnibox::kShowContextMenu.Get());
