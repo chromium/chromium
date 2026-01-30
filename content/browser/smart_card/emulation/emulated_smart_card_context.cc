@@ -24,11 +24,7 @@ EmulatedSmartCardContext::EmulatedSmartCardContext(
     uint32_t id)
     : manager_(std::move(manager)), id_(id) {}
 
-EmulatedSmartCardContext::~EmulatedSmartCardContext() {
-  if (manager_) {
-    manager_->OnReleaseContext(id_);
-  }
-}
+EmulatedSmartCardContext::~EmulatedSmartCardContext() = default;
 
 void EmulatedSmartCardContext::ListReaders(ListReadersCallback callback) {
   if (!manager_) {

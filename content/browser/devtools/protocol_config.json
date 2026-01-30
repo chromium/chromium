@@ -243,7 +243,10 @@
                 ]
             },
             {
-                "domain": "SmartCardEmulation"
+                "domain": "SmartCardEmulation",
+                "exclude": [
+                    "reportReleaseContextResult"
+                ]
             }
         ]
     },

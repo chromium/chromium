@@ -82,8 +82,6 @@ class SmartCardEmulationManager {
       uint32_t connection_id,
       device::mojom::SmartCardDisposition disposition,
       device::mojom::SmartCardTransaction::EndTransactionCallback callback) = 0;
-
-  virtual void OnReleaseContext(uint32_t context_id) = 0;
 };
 
 }  // namespace content
