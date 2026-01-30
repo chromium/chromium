@@ -204,7 +204,8 @@ function getImmersiveToolbarHtml(this: ReadAnythingToolbarElement) {
   return html`<!--_html_template_start_-->
 ${getToolbarAudioControlsHtml.call(this)}
 ${renderTextStyleOptions.call(this)}
-<cr-icon-button id="more" tabindex="0" aria-label="$i18n{moreOptionsLabel}"
+<cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
+    class="toolbar-button"
     title="$i18n{moreOptionsLabel}"
     aria-haspopup="menu"
     iron-icon="read-anything:settings"

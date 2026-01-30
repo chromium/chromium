@@ -829,7 +829,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {
-    if (!isHorizontalArrow(e.key) || this.isImmersiveEnabled_) {
+    if (!isHorizontalArrow(e.key)) {
       return;
     }
 
@@ -843,9 +843,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // itself and go directly to the children. We still need this button in the
     // list of focusable elements because it can become focused by tabbing while
     // the menu is open and we want the arrow key behavior to continue smoothly.
+    // This is skipped in immersive mode because the more options button opens
+    // the main settings menu instead of the overflow menu.
     const elementToFocus = focusableElements[newIndex];
     assert(elementToFocus);
-    if (elementToFocus.id === 'more' ||
+    if ((elementToFocus.id === 'more' && !this.isImmersiveEnabled_) ||
         elementToFocus.classList.contains(moreOptionsClass.slice(1))) {
       const moreOptionsRendered = this.$.moreOptionsMenu.getIfExists();
       // If the more options menu has not been rendered yet, render it and wait
@@ -927,7 +929,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     } else {
       elementToFocus.tabIndex = 0;
       // Close the overflow menu if the next button is not in the menu.
-      this.$.moreOptionsMenu.getIfExists()?.close();
+      if (!this.isImmersiveEnabled_) {
+        this.$.moreOptionsMenu.getIfExists()?.close();
+      }
     }
 
     // Wait for the next animation frame for the overflow menu to show or hide.
