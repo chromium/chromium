@@ -230,13 +230,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/query")) << message_;
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-// TODO(crbug.com/40254426): Move to tabs_interactive_test.cc
-// TODO(crbug.com/40890826): Re-enable once flakiness is fixed.
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Highlight) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, LastAccessed) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/last_accessed")) << message_;

@@ -37,21 +37,24 @@ chrome.test.runTests([
     }));
   },
 
-  function highlightCurrentWindow() {
-    // Check that omitting the windowId highlights the current window
-    chrome.windows.getCurrent(pass(function(win1) {
-      chrome.tabs.highlight({tabs: [0]}, pass(function(win2) {
-        assertEq(win1.id, win2.id);
-      }));
-    }));
-  },
+  // TODO(crbug.com/40254426): "Current window" can rely on window focus, which
+  // can be flaky outside of interactive UI tests. We should move this to an
+  // interactive UI test (but not the rest of these, which are useful to run on
+  // other platforms as part of the browser test suite).
+  // function highlightCurrentWindow() {
+  //   // Check that omitting the windowId highlights the current window
+  //   chrome.windows.getCurrent(pass(function(win1) {
+  //     chrome.tabs.highlight({tabs: [0]}, pass(function(win2) {
+  //       assertEq(win1.id, win2.id);
+  //     }));
+  //   }));
+  // },
 
   function highlightA() {
     chrome.tabs.query({windowId: testWindowId1, url: 'http://a.com/*'},
                       pass(function(tabs) {
       assertEq(4, tabs.length);
-      // Note: tabs.onHighlightChanged is deprecated.
-      chrome.test.listenOnce(chrome.tabs.onHighlightChanged,
+      chrome.test.listenOnce(chrome.tabs.onHighlighted,
                              function(highlightInfo) {
         var tabIds = tabs.map(function(tab) { return tab.id; });
         assertEq(highlightInfo.windowId, testWindowId1);
