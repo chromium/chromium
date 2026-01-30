@@ -85,6 +85,16 @@ std::unique_ptr<MetricsLogUploader> TestMetricsServiceClient::CreateUploader(
   return uploader;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool TestMetricsServiceClient::IsJobSchedulerSupported() const {
+  // For simplicity, don't go through the JobScheduler code path, as all it does
+  // is add a layer of indirection and is usually irrelevant to most tests.
+  // There is a full end to end test of the JobScheduler code path in
+  // chrome/browser/metrics/android/background_upload_task_browsertest.cc.
+  return false;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 base::TimeDelta TestMetricsServiceClient::GetStandardUploadInterval() {
   return base::Minutes(5);
 }

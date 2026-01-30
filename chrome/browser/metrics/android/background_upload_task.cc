@@ -4,6 +4,9 @@
 
 #include "chrome/browser/metrics/android/background_upload_task.h"
 
+#include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +21,10 @@
 
 namespace metrics {
 namespace {
+
+static base::NoDestructor<
+    base::flat_map<MetricsLogUploader::MetricServiceType, ReportingService*>>
+    g_reporting_service_overrides_for_testing;
 
 MetricsLogUploader::MetricServiceType TaskIdToMetricServiceType(
     background_task::TaskIds task_id) {
@@ -37,11 +44,39 @@ MetricsLogUploader::MetricServiceType TaskIdToMetricServiceType(
   }
 }
 
+ReportingService* GetReportingService(background_task::TaskIds task_id) {
+  MetricsLogUploader::MetricServiceType service_type =
+      TaskIdToMetricServiceType(task_id);
+
+  if (auto* value = base::FindOrNull(*g_reporting_service_overrides_for_testing,
+                                     service_type)) {
+    return *value;
+  }
+
+  CHECK(g_browser_process);
+  auto* manager = g_browser_process->GetMetricsServicesManager();
+  CHECK(manager);
+  return manager->GetReportingService(service_type);
+}
+
 }  // namespace
 
 BackgroundUploadTask::BackgroundUploadTask(background_task::TaskIds task_id)
     : task_id_(task_id) {}
 BackgroundUploadTask::~BackgroundUploadTask() = default;
+
+// static
+void BackgroundUploadTask::SetReportingServiceForTesting(
+    MetricsLogUploader::MetricServiceType service_type,
+    ReportingService* service) {
+  if (!service) {
+    // Empty `service` means to delete the override instead.
+    g_reporting_service_overrides_for_testing->erase(service_type);
+    return;
+  }
+  g_reporting_service_overrides_for_testing->insert_or_assign(service_type,
+                                                              service);
+}
 
 void BackgroundUploadTask::OnStartTaskInReducedMode(
     const background_task::TaskParameters& task_params,
@@ -80,12 +115,8 @@ void BackgroundUploadTask::StartUpload(
   // services already have their own rescheduling mechanisms.
   base::OnceClosure done_callback =
       base::BindOnce(std::move(callback), /*reschedule=*/false);
-  CHECK(g_browser_process);
-  auto* manager = g_browser_process->GetMetricsServicesManager();
-  CHECK(manager);
-  manager->GetReportingService(TaskIdToMetricServiceType(task_id_))
-      ->SendNextLogNow(base::PassKey<BackgroundUploadTask>(),
-                       std::move(done_callback));
+  GetReportingService(task_id_)->SendNextLogNow(
+      base::PassKey<BackgroundUploadTask>(), std::move(done_callback));
 }
 
 }  // namespace metrics
