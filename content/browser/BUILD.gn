@@ -2664,6 +2664,8 @@ source_set("browser") {
     sources += [
       "$target_gen_dir/devtools/protocol/smart_card_emulation.cc",
       "$target_gen_dir/devtools/protocol/smart_card_emulation.h",
+      "devtools/protocol/smart_card_emulation_handler.cc",
+      "devtools/protocol/smart_card_emulation_handler.h",
       "handwriting/handwriting_recognition_service_impl_cros.cc",
       "handwriting/handwriting_recognition_service_impl_cros.h",
       "handwriting/handwriting_recognizer_impl_cros.cc",

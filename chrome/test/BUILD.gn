@@ -45,6 +45,7 @@ import("//rlz/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/widevine/cdm/widevine.gni")
@@ -4330,6 +4331,10 @@ if (!is_android) {
             "//pdf",
           ]
         }
+      }
+
+      if (enable_smart_card) {
+        sources += [ "../browser/devtools/protocol/smart_card_emulation_handler_browsertest.cc" ]
       }
 
       if (enable_pdf_save_to_drive) {

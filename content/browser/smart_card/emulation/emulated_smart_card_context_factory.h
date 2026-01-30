@@ -33,6 +33,10 @@ class EmulatedSmartCardContextFactory
   void BindReceiver(
       mojo::PendingReceiver<device::mojom::SmartCardContextFactory> receiver);
 
+  base::WeakPtr<EmulatedSmartCardContextFactory> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // References the SmartCardEmulationManager instance that owns this factory.
   // Since the manager owns this factory via std::unique_ptr, it is
