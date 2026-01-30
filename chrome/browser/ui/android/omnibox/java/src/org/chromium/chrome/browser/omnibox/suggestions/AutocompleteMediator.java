@@ -153,8 +153,6 @@ class AutocompleteMediator
     private boolean mOmniboxFocusResultedInNavigation;
     // Facilitate detection of Autocomplete actions being scheduled from an Autocomplete action.
     private boolean mIsExecutingAutocompleteAction;
-    // Whether user scrolled the suggestions list.
-    private boolean mSuggestionsListScrolled;
     // The value of the last ZPS suppress metric recorded for the current ZPS session.
     // The value is reset to null for each new ZPS session.
     private @Nullable Boolean mLastRecordedZpsSuppressionValue;
@@ -464,7 +462,6 @@ class AutocompleteMediator
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
 
             mOmniboxFocusResultedInNavigation = false;
-            mSuggestionsListScrolled = false;
         }
 
         // Ask directly for zero-suggestions related to current input, unless the user is
@@ -513,7 +510,8 @@ class AutocompleteMediator
         OmniboxMetrics.recordRefineActionUsage(mAutocompleteInput.getRefineActionUsage());
 
         OmniboxMetrics.recordSuggestionsListScrolled(
-                mAutocompleteInput.getPageClassification(), mSuggestionsListScrolled);
+                mAutocompleteInput.getPageClassification(),
+                mAutocompleteInput.isSuggestionsListScrolled());
 
         // Reset the per omnibox session state of touch down prefetch.
         OmniboxMetrics.recordNumPrefetchesStartedInOmniboxSession(
@@ -1368,7 +1366,7 @@ class AutocompleteMediator
 
     @Override
     public void onSuggestionDropdownScroll() {
-        mSuggestionsListScrolled = true;
+        assumeNonNull(mAutocompleteInput).setSuggestionsListScrolled();
         mDelegate.setKeyboardVisibility(false, false);
     }
 

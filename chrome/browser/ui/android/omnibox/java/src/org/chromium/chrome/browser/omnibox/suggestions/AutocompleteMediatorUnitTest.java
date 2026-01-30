@@ -338,6 +338,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void updateSuggestionsList_scrolEventsWithConcealedItemsTogglesKeyboardVisibility() {
         mMediator.onNativeInitialized();
+        mMediator.beginInput(new AutocompleteInput());
 
         final int heightWithOneConcealedItem =
                 (mSuggestionsList.size() - 2) * SUGGESTION_MIN_HEIGHT;

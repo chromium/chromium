@@ -59,6 +59,7 @@ public class AutocompleteInput implements UserData {
     private int mSelectionStart;
     private int mSelectionEnd;
     private @RefineActionUsage int mRefineActionUsage;
+    private boolean mSuggestionsListScrolled;
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mRequestTypeSupplier = new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
 
@@ -303,6 +304,7 @@ public class AutocompleteInput implements UserData {
         mPageClassification = PageClassification.BLANK_VALUE;
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mUrlFocusTime = 0;
+        mSuggestionsListScrolled = false;
 
         return this;
     }
@@ -314,5 +316,13 @@ public class AutocompleteInput implements UserData {
     public AutocompleteInput setUrlFocusTime(long urlFocusTime) {
         mUrlFocusTime = urlFocusTime;
         return this;
+    }
+
+    public boolean isSuggestionsListScrolled() {
+        return mSuggestionsListScrolled;
+    }
+
+    public void setSuggestionsListScrolled() {
+        mSuggestionsListScrolled = true;
     }
 }
