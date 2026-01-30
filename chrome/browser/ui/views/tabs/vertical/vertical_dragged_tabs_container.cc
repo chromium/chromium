@@ -243,9 +243,8 @@ views::View* VerticalDraggedTabsContainer::GetViewAtPoint(
     const views::ProposedLayout& layout,
     const gfx::Point& point) {
   for (const auto& child_layout : layout.child_layouts) {
-    if (child_layout.visible &&
-        !dragging_views_.contains(child_layout.child_view) &&
-        child_layout.bounds.Contains(point)) {
+    if (child_layout.visible && child_layout.bounds.Contains(point) &&
+        !GetDragHandler().IsViewDragging(*child_layout.child_view)) {
       return child_layout.child_view;
     }
   }
