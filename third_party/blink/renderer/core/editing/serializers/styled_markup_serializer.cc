@@ -530,6 +530,16 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
     }
   }
 
+  // If traversal stopped exactly at past_end, any ancestors that were opened
+  // and never revisited remain in ancestors_to_close. Close them to keep markup
+  // balanced for partial selections (e.g. nested MathML containers).
+  while (!ancestors_to_close.empty()) {
+    ContainerNode* ancestor = ancestors_to_close.back();
+    AppendEndMarkup(*ancestor);
+    last_closed = ancestor;
+    ancestors_to_close.pop_back();
+  }
+
   return last_closed;
 }
 

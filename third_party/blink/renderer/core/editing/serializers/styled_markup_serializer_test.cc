@@ -432,4 +432,72 @@ TEST_F(StyledMarkupSerializerTest, MathMLTableRowNotDuplicated) {
       << "Found duplicate <mtr><mtr> pattern. Full output: " << serialized;
 }
 
+TEST_F(StyledMarkupSerializerTest,
+       MathMLPartialSelectionShouldHaveBalancedTags) {
+  const char* body_content =
+      "<math><mrow>"
+      "  <mfrac>"
+      "    <mrow>"
+      "      <msqrt>"
+      "        <mrow>"
+      "          <mo id='start'>±</mo>"
+      "          <msqrt>"
+      "            <mrow>"
+      "              <msup><mi>b</mi><mn>2</mn></msup>"
+      "              <mo>-</mo>"
+      "              <mi id='after'>x</mi>"
+      "            </mrow>"
+      "          </msqrt>"
+      "        </mrow>"
+      "      </msqrt>"
+      "    </mrow>"
+      "  </mfrac>"
+      "</mrow></math>";
+
+  SetBodyContent(body_content);
+
+  Element* start_mo = GetDocument().getElementById(AtomicString("start"));
+  Element* after_mi = GetDocument().getElementById(AtomicString("after"));
+  ASSERT_TRUE(start_mo);
+  ASSERT_TRUE(after_mi);
+
+  Node* start_text = start_mo->firstChild();
+  ASSERT_TRUE(start_text);
+
+  // Select from the ± operator up to (but not into) the following <mi>.
+  Position start_pos(start_text, 0);
+  Position end_pos(after_mi, 0);
+
+  std::string serialized =
+      SerializePart<EditingStrategy>(start_pos, end_pos,
+                                     CreateMarkupOptions::Builder()
+                                         .SetShouldAnnotateForInterchange(true)
+                                         .Build());
+
+  auto count_occurrences = [](const std::string& str,
+                              const std::string& substr) -> int {
+    int count = 0;
+    size_t pos = 0;
+    while ((pos = str.find(substr, pos)) != std::string::npos) {
+      count++;
+      pos += substr.length();
+    }
+    return count;
+  };
+
+  int open_msqrt = count_occurrences(serialized, "<msqrt");
+  int close_msqrt = count_occurrences(serialized, "</msqrt>");
+  int open_mrow = count_occurrences(serialized, "<mrow");
+  int close_mrow = count_occurrences(serialized, "</mrow>");
+
+  // Expected to be balanced after the fix; currently fails (unbalanced).
+  EXPECT_EQ(open_msqrt, close_msqrt)
+      << "Unbalanced <msqrt> tags. Opens: " << open_msqrt
+      << ", Closes: " << close_msqrt << "\nFull output: " << serialized;
+
+  EXPECT_EQ(open_mrow, close_mrow)
+      << "Unbalanced <mrow> tags. Opens: " << open_mrow
+      << ", Closes: " << close_mrow << "\nFull output: " << serialized;
+}
+
 }  // namespace blink
