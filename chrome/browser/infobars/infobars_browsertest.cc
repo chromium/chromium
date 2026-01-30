@@ -371,7 +371,14 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_dev_tools) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_extension_dev_tools) {
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/480154187): This test case has been frequently failing on
+// Windows bots since 2026-01-30.
+#define MAYBE_InvokeUi_extension_dev_tools DISABLED_InvokeUi_extension_dev_tools
+#else
+#define MAYBE_InvokeUi_extension_dev_tools InvokeUi_extension_dev_tools
+#endif
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_extension_dev_tools) {
   ShowAndVerifyUi();
 }
 
