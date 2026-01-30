@@ -22546,7 +22546,10 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "background-password-check-interval": "10d"
+                        "background-password-check-interval": "10d",
+                        "password-check-mon-weight": "5",
+                        "password-check-sat-weight": "5",
+                        "password-check-sun-weight": "5"
                     },
                     "enable_features": [
                         "SafetyHub"
