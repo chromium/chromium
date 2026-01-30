@@ -309,9 +309,14 @@ void HTMLFormElement::HTMLFormMcpTool::Trace(Visitor* visitor) const {
   visitor->Trace(active_submit_button_);
 }
 
-void HTMLFormElement::RespondWithHandler::React(ScriptState* script_state,
-                                                ScriptValue value) {
-  if (resolved_) {
+void HTMLFormElement::HandleWebMcpToolResponse(HTMLFormMcpTool* tool,
+                                               bool resolved,
+                                               ScriptState* script_state,
+                                               ScriptValue value) {
+  if (!tool->CurrentlyRunning()) {
+    return;
+  }
+  if (resolved) {
     String result;
     if (value.IsObject()) {
       v8::Local<v8::String> json_string;
@@ -325,19 +330,14 @@ void HTMLFormElement::RespondWithHandler::React(ScriptState* script_state,
     if (result.IsNull()) {
       value.ToString(result);
     }
-    tool_->CallDoneCallback(result);
+    tool->CallDoneCallback(result);
   } else {
     // Promise rejected - error.
     V8ScriptRunner::ReportException(script_state->GetIsolate(),
                                     value.V8Value());
-    tool_->CallDoneCallback(
+    tool->CallDoneCallback(
         base::unexpected(WebDocument::ScriptToolError::kToolInvocationFailed));
   }
-}
-
-void HTMLFormElement::RespondWithHandler::Trace(Visitor* visitor) const {
-  visitor->Trace(tool_);
-  ThenCallable<IDLAny, RespondWithHandler>::Trace(visitor);
 }
 
 // This gets called when a <form> is added or removed from the document, or
@@ -636,22 +636,22 @@ void HTMLFormElement::PrepareForSubmission(
       should_submit =
           DispatchEvent(*submit_event) == DispatchEventResult::kNotCanceled;
       if (declarative_webmcp_call) {
-        if (auto promise_and_script_state = submit_event->RespondWithPromise();
-            promise_and_script_state.has_value()) {
-          auto promise = promise_and_script_state->first;
-          auto script_state = promise_and_script_state->second;
+        if (auto promise = submit_event->TakeRespondWithPromise()) {
           // Since we have a promise, respondWith() was called. That should only
           // work if `preventDefault()` was already called. So we should never
           // be submitting the form here.
           CHECK(!should_submit);
           // Wait for the provided promise to resolve or reject, and then call
           // the active_webmcp_tool_'s callback with the result.
-          ScriptState::Scope scope(script_state);
-          promise.Unwrap().Then(script_state,
-                                MakeGarbageCollected<RespondWithHandler>(
-                                    active_webmcp_tool_, /*resolved*/ true),
-                                MakeGarbageCollected<RespondWithHandler>(
-                                    active_webmcp_tool_, /*resolved*/ false));
+          std::move(*promise).Then(
+              BindOnce(&HTMLFormElement::HandleWebMcpToolResponse,
+                       WrapWeakPersistent(this),
+                       WrapPersistent(active_webmcp_tool_.Get()),
+                       /*resolved=*/true),
+              BindOnce(&HTMLFormElement::HandleWebMcpToolResponse,
+                       WrapWeakPersistent(this),
+                       WrapPersistent(active_webmcp_tool_.Get()),
+                       /*resolved=*/false));
         }
       }
     }

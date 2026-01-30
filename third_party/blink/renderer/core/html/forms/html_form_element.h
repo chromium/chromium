@@ -295,17 +295,10 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     base::OnceCallback<void(McpToolCallbackResult)> done_callback_;
   };
 
-  class RespondWithHandler : public ThenCallable<IDLAny, RespondWithHandler> {
-   public:
-    RespondWithHandler(HTMLFormElement::HTMLFormMcpTool* tool, bool resolved)
-        : tool_(tool), resolved_(resolved) {}
-    void React(ScriptState* script_state, ScriptValue value);
-    void Trace(Visitor* visitor) const override;
-
-   private:
-    Member<HTMLFormMcpTool> tool_;
-    bool resolved_;
-  };
+  void HandleWebMcpToolResponse(HTMLFormMcpTool* tool,
+                                bool resolved,
+                                ScriptState* script_state,
+                                ScriptValue value);
 
   // Used only for (experimental) declarative WebMCP.
   Member<HTMLFormMcpTool> active_webmcp_tool_;

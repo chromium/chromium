@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_submit_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -25,6 +26,7 @@ SubmitEvent* SubmitEvent::Create(const AtomicString& type,
 void SubmitEvent::Trace(Visitor* visitor) const {
   visitor->Trace(submitter_);
   visitor->Trace(respond_with_promise_);
+  visitor->Trace(respond_with_script_state_);
   Event::Trace(visitor);
 }
 
@@ -55,16 +57,22 @@ void SubmitEvent::respondWith(ScriptState* script_state,
         "dispatched.");
     return;
   }
-  respond_with_promise_ = {script_promise, script_state};
+  respond_with_promise_ = std::move(script_promise);
+  respond_with_script_state_ = script_state;
 }
 
-std::optional<std::pair<MemberScriptPromise<IDLAny>, Member<ScriptState>>>
-SubmitEvent::RespondWithPromise() const {
-  if (respond_with_promise_.first.IsEmpty() || !respond_with_promise_.second ||
-      !respond_with_promise_.second->ContextIsValid()) {
+std::optional<SubmitEvent::PromiseResult>
+SubmitEvent::TakeRespondWithPromise() {
+  if (respond_with_promise_.IsEmpty() || !respond_with_script_state_ ||
+      !respond_with_script_state_->ContextIsValid()) {
     return std::nullopt;
   }
-  return respond_with_promise_;
+  ScriptState::Scope unwrap_scope(respond_with_script_state_);
+  PromiseResult result(std::move(respond_with_script_state_),
+                       respond_with_promise_.Unwrap());
+  respond_with_promise_.Clear();
+  respond_with_script_state_ = nullptr;
+  return result;
 }
 
 }  // namespace blink
