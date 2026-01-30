@@ -13,8 +13,13 @@
 // boolean indicating success.
 typedef void (^WebStateLoadedCompletionBlock)(BOOL success);
 
+@protocol WebStateDeferredExecutorDelegate;
+
 // Utilitary to delay execution until the web state is loaded.
 @interface WebStateDeferredExecutor : NSObject <CRWWebStateObserver>
+
+// Delegate for the executor.
+@property(nonatomic, weak) id<WebStateDeferredExecutorDelegate> delegate;
 
 // Executes the given `completion` once the web state is loaded.
 - (void)webState:(web::WebState*)webState
@@ -23,6 +28,25 @@ typedef void (^WebStateLoadedCompletionBlock)(BOOL success);
 // Executes the given `completion` once the web state is realized.
 - (void)webState:(web::WebState*)webState
     executeOnceRealized:(ProceduralBlock)completion;
+
+@end
+
+// Delegate for web state deferred executor.
+@protocol WebStateDeferredExecutorDelegate
+
+// Called before the web state is explicitly loaded.
+- (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
+                willLoadWebState:(web::WebState*)webState;
+// Called after the web state is explicitly loaded.
+- (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
+                 didLoadWebState:(web::WebState*)webState
+                         success:(BOOL)success;
+// Called after the web state is forced realized.
+- (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
+        willForceRealizeWebState:(web::WebState*)webState;
+// Called after the web state is forced realized.
+- (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
+         didForceRealizeWebState:(web::WebState*)webState;
 
 @end
 

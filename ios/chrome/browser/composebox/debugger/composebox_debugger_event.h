@@ -48,6 +48,7 @@ enum class Tabs {
   kDidRealizeTab,
   kWillLoadTab,
   kDidLoadTab,
+  kFailedToLoadTab,
   kDidSelectTab,
   kDidDeselectTab,
 };
@@ -100,10 +101,10 @@ enum class AttachmentType {
     (composebox_debugger::element::TabPicker)element;
 + (instancetype)tabEvent:(composebox_debugger::event::Tabs)event
                withTitle:(NSString*)tabTitle
-                   tabID:(NSString*)tabID;
+                   tabID:(int32_t)tabID;
 + (instancetype)apcEvent:(composebox_debugger::event::APC)event
                withTitle:(NSString*)tabTitle
-                   tabID:(NSString*)tabID;
+                   tabID:(int32_t)tabID;
 
 + (instancetype)composeboxGeneralEvent:
     (composebox_debugger::event::Composebox)event;

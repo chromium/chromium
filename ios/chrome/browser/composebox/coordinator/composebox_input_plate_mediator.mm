@@ -153,7 +153,8 @@ CreateInputDataFromAnnotatedPageContent(
 
 @interface ComposeboxInputPlateMediator () <
     SearchEngineObserving,
-    ComposeboxInputItemCollectionDelegate>
+    ComposeboxInputItemCollectionDelegate,
+    WebStateDeferredExecutorDelegate>
 @end
 
 @implementation ComposeboxInputPlateMediator {
@@ -244,6 +245,7 @@ CreateInputDataFromAnnotatedPageContent(
     _webStateList = webStateList;
     _faviconLoader = faviconLoader;
     _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
+    _webStateDeferredExecutor.delegate = self;
     _persistTabContextAgent = persistTabContextAgent;
     _isIncognito = isIncognito;
     _modeHolder = modeHolder;
@@ -1712,6 +1714,48 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)voiceSearchDidReceiveSearchQuery:(NSString*)query {
   [self sendText:query];
+}
+
+#pragma mark - WebStateDeferredExecutorDelegate
+
+- (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
+                willLoadWebState:(web::WebState*)webState {
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+       tabEvent:composebox_debugger::event::Tabs::kWillLoadTab
+      withTitle:base::SysUTF16ToNSString(webState->GetTitle())
+          tabID:webState->GetUniqueIdentifier().identifier()];
+  [self.debugLogger logEvent:event];
+}
+
+- (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
+                 didLoadWebState:(web::WebState*)webState
+                         success:(BOOL)success {
+  composebox_debugger::event::Tabs tabEvent =
+      success ? composebox_debugger::event::Tabs::kDidLoadTab
+              : composebox_debugger::event::Tabs::kFailedToLoadTab;
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+       tabEvent:tabEvent
+      withTitle:base::SysUTF16ToNSString(webState->GetTitle())
+          tabID:webState->GetUniqueIdentifier().identifier()];
+  [self.debugLogger logEvent:event];
+}
+
+- (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
+        willForceRealizeWebState:(web::WebState*)webState {
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+       tabEvent:composebox_debugger::event::Tabs::kWillRealizeTab
+      withTitle:base::SysUTF16ToNSString(webState->GetTitle())
+          tabID:webState->GetUniqueIdentifier().identifier()];
+  [self.debugLogger logEvent:event];
+}
+
+- (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
+         didForceRealizeWebState:(web::WebState*)webState {
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+       tabEvent:composebox_debugger::event::Tabs::kDidRealizeTab
+      withTitle:base::SysUTF16ToNSString(webState->GetTitle())
+          tabID:webState->GetUniqueIdentifier().identifier()];
+  [self.debugLogger logEvent:event];
 }
 
 @end

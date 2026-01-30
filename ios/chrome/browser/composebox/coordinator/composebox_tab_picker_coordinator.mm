@@ -47,6 +47,7 @@
         initWithGridConsumer:_viewController.gridViewController
            tabPickerConsumer:_viewController
       tabsAttachmentDelegate:self];
+  _mediator.debugLogger = self.debugLogger;
   _mediator.browser = self.browser;
 
   _viewController.mutator = _mediator;

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
 
+#import "base/memory/weak_ptr.h"
+
 @implementation WebStateDeferredExecutor {
   // Observer for the web state loading.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
@@ -39,6 +41,20 @@
     return;
   }
 
+  [self.delegate webStateDeferredExecutor:self willLoadWebState:webState];
+
+  __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+
+  _loadedCallbacks[webState->GetUniqueIdentifier()] = ^(BOOL success) {
+    if (weakWebState) {
+      [weakSelf.delegate webStateDeferredExecutor:weakSelf
+                                  didLoadWebState:weakWebState.get()
+                                          success:success];
+    }
+    return completion(success);
+  };
+
   if (loading) {
     [self observeWebState:webState];
     return;
@@ -50,14 +66,30 @@
 
 - (void)webState:(web::WebState*)webState
     executeOnceRealized:(ProceduralBlock)completion {
-  _realizedCallbacks[webState->GetUniqueIdentifier()] = completion;
   BOOL realized = webState->IsRealized();
 
   if (realized) {
+    _realizedCallbacks[webState->GetUniqueIdentifier()] = completion;
     [self callRealizedCompletionForID:webState->GetUniqueIdentifier()];
     return;
   }
 
+  [self.delegate webStateDeferredExecutor:self
+                 willForceRealizeWebState:webState];
+
+  __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+
+  _realizedCallbacks[webState->GetUniqueIdentifier()] = ^{
+    if (weakWebState) {
+      [weakSelf.delegate webStateDeferredExecutor:weakSelf
+                          didForceRealizeWebState:weakWebState.get()];
+    }
+
+    if (completion) {
+      completion();
+    };
+  };
   [self observeWebState:webState];
   [self forceRealizeWebState:webState];
 }

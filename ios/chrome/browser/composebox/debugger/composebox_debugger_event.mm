@@ -67,9 +67,11 @@ NSString* GetEventDescription(composebox_debugger::event::Tabs event) {
     case kDidRealizeTab:
       return @"Composebox did realize tab";
     case kWillLoadTab:
-      return @"Composebox did realize tab";
+      return @"Composebox will load tab";
     case kDidLoadTab:
       return @"Composebox did load tab";
+    case kFailedToLoadTab:
+      return @"Composebox failed to load tab";
     case kDidSelectTab:
       return @"User selected tab in picker";
     case kDidDeselectTab:
@@ -164,7 +166,7 @@ NSString* GetAttachmentTypeName(composebox_debugger::AttachmentType type) {
 - (instancetype)initWithEventDescription:(NSString*)description
                            eventMetadata:(NSString*)metadata;
 - (instancetype)initWithEventDescription:(NSString*)description
-                                   tabID:(NSString*)tabID
+                                   tabID:(int32_t)tabID
                                 tabTitle:(NSString*)tabTitle;
 
 @end
@@ -197,7 +199,7 @@ NSString* GetAttachmentTypeName(composebox_debugger::AttachmentType type) {
 
 + (instancetype)tabEvent:(composebox_debugger::event::Tabs)event
                withTitle:(NSString*)tabTitle
-                   tabID:(NSString*)tabID {
+                   tabID:(int32_t)tabID {
   return [[ComposeboxDebuggerEvent alloc]
       initWithEventDescription:GetEventDescription(event)
                          tabID:tabID
@@ -206,7 +208,7 @@ NSString* GetAttachmentTypeName(composebox_debugger::AttachmentType type) {
 
 + (instancetype)apcEvent:(composebox_debugger::event::APC)event
                withTitle:(NSString*)tabTitle
-                   tabID:(NSString*)tabID {
+                   tabID:(int32_t)tabID {
   return [[ComposeboxDebuggerEvent alloc]
       initWithEventDescription:GetEventDescription(event)
                          tabID:tabID
@@ -242,10 +244,10 @@ NSString* GetAttachmentTypeName(composebox_debugger::AttachmentType type) {
 }
 
 - (instancetype)initWithEventDescription:(NSString*)description
-                                   tabID:(NSString*)tabID
+                                   tabID:(int32_t)tabID
                                 tabTitle:(NSString*)tabTitle {
   NSString* eventMetadata =
-      [NSString stringWithFormat:@"[Tab %@] %@", tabID, tabTitle];
+      [NSString stringWithFormat:@"[Tab %d] %@", tabID, tabTitle];
   return [self initWithEventDescription:description
                           eventMetadata:eventMetadata];
 }
