@@ -209,15 +209,14 @@ void JsCommunication::OnDestruct() {
   delete this;
 }
 
-void JsCommunication::RunScriptsAtDocumentStart() {
+void JsCommunication::RunScripts(mojom::DocumentInjectionTime injection_time) {
   url::Origin frame_origin =
       url::Origin(render_frame()->GetWebFrame()->GetSecurityOrigin());
   for (const auto& script : scripts_) {
     if (!script->origin_matcher.Matches(frame_origin)) {
       continue;
     }
-    if (script->injection_time ==
-        mojom::DocumentInjectionTime::kDocumentStart) {
+    if (script->injection_time == injection_time) {
       if (script->js_world == content::ISOLATED_WORLD_ID_GLOBAL) {
         render_frame()->GetWebFrame()->ExecuteScript(
             blink::WebScriptSource(script->script));

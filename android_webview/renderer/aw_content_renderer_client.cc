@@ -288,7 +288,16 @@ void AwContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
   js_injection::JsCommunication* communication =
       js_injection::JsCommunication::Get(render_frame);
-  communication->RunScriptsAtDocumentStart();
+  communication->RunScripts(
+      js_injection::mojom::DocumentInjectionTime::kDocumentStart);
+}
+
+void AwContentRendererClient::RunScriptsAtDocumentEnd(
+    content::RenderFrame* render_frame) {
+  js_injection::JsCommunication* communication =
+      js_injection::JsCommunication::Get(render_frame);
+  communication->RunScripts(
+      js_injection::mojom::DocumentInjectionTime::kDocumentEnd);
 }
 
 std::unique_ptr<media::KeySystemSupportRegistration>

@@ -51,7 +51,7 @@ class JsCommunication
                                 int32_t world_id) override;
   void OnDestruct() override;
 
-  void RunScriptsAtDocumentStart();
+  void RunScripts(mojom::DocumentInjectionTime injection_time);
 
   mojom::JsToBrowserMessaging* GetJsToJavaMessage(
       const std::u16string& js_object_name);
