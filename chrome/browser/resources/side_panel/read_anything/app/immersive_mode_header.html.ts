@@ -16,11 +16,6 @@ export function getHtml(this: ImmersiveModeHeaderElement) {
 <header id="headerContainer" class="read-anything-header">
   <p>$i18n{readAnythingTabTitle}</p>
   <div>
-    <cr-icon-button class="toolbar-button"
-      id="pin"
-      iron-icon="${this.getPinIcon_()}"
-      @click="${this.onPinButtonClick_}">
-    </cr-icon-button>
   </div>
 </header>
 <!--_html_template_end_-->`;

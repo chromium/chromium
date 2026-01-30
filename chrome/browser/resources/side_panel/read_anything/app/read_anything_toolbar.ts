@@ -149,6 +149,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       pageLanguage: {type: String},
       presentationState: {type: Number},
       isImmersiveMode: {type: Boolean},
+      isReadAnythingPinned: {type: Boolean},
     };
   }
 
@@ -167,6 +168,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // certain toolbar buttons like the play / pause button should be disabled.
   // This is set from the parent element via one way data binding.
   accessor isReadAloudPlayable: boolean = false;
+  accessor isReadAnythingPinned: boolean = false;
   accessor localeToDisplayName: {[lang: string]: string} = {};
   accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;

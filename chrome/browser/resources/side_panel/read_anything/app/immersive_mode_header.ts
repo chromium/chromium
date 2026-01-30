@@ -27,9 +27,6 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './immersive_mode_header.css.js';
 import {getHtml} from './immersive_mode_header.html.js';
 
-const PIN_ICON = 'read-anything:pin';
-const UNPIN_ICON = 'read-anything:unpin';
-
 export interface ImmersiveModeHeaderElement {
   $: {
     close: CrIconButtonElement,
@@ -47,29 +44,15 @@ export class ImmersiveModeHeaderElement extends ImmersiveModeHeaderElementBase {
     return getCss();
   }
 
-  static override get properties() {
-    return {isReadAnythingPinned: {type: Boolean}};
-  }
   override render() {
     return getHtml.bind(this)();
   }
 
-  accessor isReadAnythingPinned: boolean = false;
   protected isImmersiveEnabled_: boolean = false;
 
   constructor() {
     super();
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
-  }
-
-  protected getPinIcon_(): string {
-    return this.isReadAnythingPinned ? UNPIN_ICON : PIN_ICON;
-  }
-
-  protected onPinButtonClick_() {
-    chrome.readingMode.togglePinState();
-    // Updates the pin status by getting it from the browser.
-    chrome.readingMode.sendPinStateRequest();
   }
 }
 

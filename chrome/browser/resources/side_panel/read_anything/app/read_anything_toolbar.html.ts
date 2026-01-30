@@ -215,6 +215,8 @@ ${getCloseButton.call(this)}
 <settings-menu
   id="settingsMenu"
   .settingsPrefs="${this.settingsPrefs}"
+  .isImmersiveMode="${this.isImmersiveMode}"
+  .isReadAnythingPinned="${this.isReadAnythingPinned}"
   @close-submenu-requested="${this.onCloseSubmenuRequested_}"
   @close-all-menus="${this.onCloseAllMenus_}"
   @open-settings-submenu="${this.onOpenSettingsSubmenu_}">

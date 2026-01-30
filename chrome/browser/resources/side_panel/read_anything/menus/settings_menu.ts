@@ -97,6 +97,12 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
     title: 'lineFocusLabel',
     itemType: SettingsItemType.MENU,
   },
+  [SettingsOption.PINNED_TO_TOOLBAR]: {
+    id: SettingsOption.PINNED_TO_TOOLBAR,
+    icon: 'read-anything:pin',
+    title: 'pinLabel',
+    itemType: SettingsItemType.TOGGLE,
+  },
   [SettingsOption.PRESENTATION]: {
     id: SettingsOption.PRESENTATION,
     icon: 'read-anything:view',
@@ -142,10 +148,14 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   static override get properties() {
     return {
+      isImmersiveMode: {type: Boolean},
+      isReadAnythingPinned: {type: Boolean},
       settingsPrefs: {type: Object},
     };
   }
 
+  accessor isImmersiveMode: boolean = false;
+  accessor isReadAnythingPinned: boolean = false;
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
 
   protected options_: SettingsItem[] = [];
@@ -169,7 +179,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('settingsPrefs')) {
+    if (changedProperties.has('settingsPrefs') ||
+        changedProperties.has('isImmersiveMode') ||
+        changedProperties.has('isReadAnythingPinned')) {
       this.initializeMenuOptions_();
     }
   }
@@ -195,6 +207,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.IMAGES);
     }
 
+    if (this.isImmersiveMode) {
+      optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
+    }
+
     this.options_ = optionIDs.map(id => {
       const original = MENU_ITEM_DATA[id];
       const title = loadTimeData.getString(original.title);
@@ -209,6 +225,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       if (id === SettingsOption.LINKS) {
         enabled = this.settingsPrefs.linksEnabled;
         ariaLabel = this.getLinkItemLabels();
+      }
+
+      if (id === SettingsOption.PINNED_TO_TOOLBAR) {
+        enabled = this.isReadAnythingPinned;
+        ariaLabel = this.getPinItemLabels();
       }
 
       return {
@@ -235,6 +256,14 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     return loadTimeData.getString('enableImagesLabel');
+  }
+
+  private getPinItemLabels() {
+    if (this.isReadAnythingPinned) {
+      return loadTimeData.getString('enablePinLabel');
+    }
+
+    return loadTimeData.getString('disablePinLabel');
   }
 
   protected onMenuItemClick_(e: Event) {
@@ -282,6 +311,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       this.fire(ToolbarEvent.IMAGES);
       item.ariaLabel = this.getImageItemLabels();
       item.enabled = chrome.readingMode.imagesEnabled;
+    } else if (item.id === SettingsOption.PINNED_TO_TOOLBAR) {
+      chrome.readingMode.togglePinState();
+      chrome.readingMode.sendPinStateRequest();
     }
 
     this.requestUpdate();

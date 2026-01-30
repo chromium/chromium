@@ -384,6 +384,9 @@ export class FakeReadingMode {
   // TODO(crbug.com/377697173) Rename `VoicePack` to `Voice`
   sendInstallVoicePackRequest(_language: string) {}
 
+  // Called to get the pin state from the browser.
+  sendPinStateRequest() {}
+
   // Sends an async request to uninstall a Natural voice for a specific
   // language.
   sendUninstallVoiceRequest(_language: string) {}

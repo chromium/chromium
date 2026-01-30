@@ -227,6 +227,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       imagesEnabled: chrome.readingMode.imagesEnabled,
     };
 
+    chrome.readingMode.sendPinStateRequest();
+
     document.onselectionchange = () => {
       // When Read Aloud is playing, user-selection is disabled on the Read
       // Anything panel, so don't attempt to update selection, as this can
@@ -326,7 +328,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
         };
 
     chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
-      this.$.immersiveHeader.isReadAnythingPinned = pinState;
+      this.$.toolbar.isReadAnythingPinned = pinState;
     };
   }
 

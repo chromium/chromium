@@ -137,6 +137,7 @@ export enum SettingsOption {
   LINE_FOCUS = 'line-focus',
   LINE_SPACING = 'line-spacing',
   LINKS = 'links',
+  PINNED_TO_TOOLBAR = 'pinned-to-toolbar',
   PRESENTATION = 'presentation',
   VOICE_HIGHLIGHT = 'voice-highlight',
   VOICE_SELECTION = 'voice-selection',
