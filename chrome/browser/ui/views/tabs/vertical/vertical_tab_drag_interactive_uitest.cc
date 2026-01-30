@@ -264,8 +264,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<PinnedURLs>,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DragToDetachIntoNewWindow DragToDetachIntoNewWindow
 #else
 #define MAYBE_DragToDetachIntoNewWindow DISABLED_DragToDetachIntoNewWindow
@@ -292,8 +291,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland. Fails on Windows.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && \
+    !BUILDFLAG(IS_WIN)
 #define MAYBE_DragToDetachIntoNewWindowWithVerticalTabsState \
   DragToDetachIntoNewWindowWithVerticalTabsState
 #else
@@ -325,8 +324,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland. Fails on Windows.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && \
+    !BUILDFLAG(IS_WIN)
 #define MAYBE_DragToDetachThenCancel DragToDetachThenCancel
 #else
 #define MAYBE_DragToDetachThenCancel DISABLED_DragToDetachThenCancel
@@ -353,8 +352,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DragToDetachThenReattach DragToDetachThenReattach
 #else
 #define MAYBE_DragToDetachThenReattach DISABLED_DragToDetachThenReattach
@@ -379,8 +377,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DragWithinUnpinnedContainer DragWithinUnpinnedContainer
 #else
 #define MAYBE_DragWithinUnpinnedContainer DISABLED_DragWithinUnpinnedContainer
@@ -422,8 +419,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_CancelDragWithinUnpinnedContainer \
   CancelDragWithinUnpinnedContainer
 #else
@@ -629,8 +625,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       ReleaseMouseAsync());
 }
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DetachMultipleTabs DetachMultipleTabs
 #else
 #define MAYBE_DetachMultipleTabs DISABLED_DetachMultipleTabs
@@ -665,8 +660,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, MAYBE_DetachMultipleTabs) {
       ReleaseMouseAsync());
 }
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DragMultipleTabs DragMultipleTabs
 #else
 #define MAYBE_DragMultipleTabs DISABLED_DragMultipleTabs
@@ -825,8 +819,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragOutOfGroup) {
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && \
+    !BUILDFLAG(IS_WIN)
 #define MAYBE_DragPinnedTabWithinContainer DragPinnedTabWithinContainer
 #else
 #define MAYBE_DragPinnedTabWithinContainer DISABLED_DragPinnedTabWithinContainer
@@ -874,8 +868,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && \
+    !BUILDFLAG(IS_WIN)
 #define MAYBE_DragSplitWithinPinnedContainer DragSplitWithinPinnedContainer
 #else
 #define MAYBE_DragSplitWithinPinnedContainer \
@@ -922,8 +916,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && \
+    !BUILDFLAG(IS_WIN)
 #define MAYBE_DetachPinnedTab DetachPinnedTab
 #else
 #define MAYBE_DetachPinnedTab DISABLED_DetachPinnedTab
@@ -951,8 +945,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, MAYBE_DetachPinnedTab) {
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && \
+    !BUILDFLAG(IS_WIN)
 #define MAYBE_DragFromPinnedToUnpinnedContainer \
   DragFromPinnedToUnpinnedContainer
 #else
