@@ -15,7 +15,6 @@ found in the LICENSE file.
 
     <!-- Full Screen Dimensions -->
     <dimen name="control_container_height">96dp</dimen>
-    <dimen name="custom_tabs_control_container_height">64dp</dimen>
 
     <!-- NTP dimensions -->
     <dimen name="ntp_search_box_transition_start_offset">60dp</dimen>
