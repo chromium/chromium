@@ -1136,6 +1136,10 @@
     <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with new attributes">
       <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> added
     </message>
+    <!-- TODO(crbug.com/477845712): Add translation when ready. -->
+    <message name="IDS_AUTOFILL_AI_WALLET_UPLOAD_THROBBER_ACCESSIBLE_NAME" desc="Announced when the loading throbber during upload to Google Wallet is shown." translateable="false">
+      Uploading to Google Wallet
+    </message>
   </if>
 
   <!-- Prompt strings used on Android -->

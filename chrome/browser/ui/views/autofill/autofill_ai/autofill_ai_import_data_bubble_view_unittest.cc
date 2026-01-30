@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_ai/mock_autofill_ai_import_data_controller.h"
+#include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -153,6 +154,22 @@ TEST_F(AutofillAiImportDataBubbleViewTest, AcceptDoesNotCloseTheBubble) {
   // Clear expectations explicitly since the widget is destroyed during tear
   // down.
   Mock::VerifyAndClearExpectations(&mock_controller());
+}
+
+TEST_F(AutofillAiImportDataBubbleViewTest, AcceptShowsThrobber) {
+  CreateViewAndShow();
+  EXPECT_CALL(mock_controller(), CloseOnAccept()).WillOnce(Return(false));
+  EXPECT_CALL(mock_controller(), OnSaveButtonClicked);
+
+  views::View* throbber = view()->GetViewByID(DialogViewId::LOADING_THROBBER);
+  ASSERT_TRUE(throbber);
+  EXPECT_FALSE(throbber->parent()->GetVisible());
+
+  view()->AcceptDialog();
+
+  EXPECT_TRUE(throbber->parent()->GetVisible());
+  EXPECT_EQ(view()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
 }
 
 TEST_F(AutofillAiImportDataBubbleViewTest, CancelInvokesTheController) {

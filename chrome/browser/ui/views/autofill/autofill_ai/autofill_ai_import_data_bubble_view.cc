@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
+#include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -39,6 +40,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -128,6 +130,17 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
       base::BindRepeating(&AutofillAiImportDataBubbleView::OnDialogAccepted,
                           base::Unretained(this)));
   SetShowCloseButton(true);
+
+  loading_progress_row_ = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
+          .SetVisible(false)
+          .SetInsideBorderInsets(gfx::Insets::TLBR(40, 0, 0, 40))
+          .AddChildren(views::Builder<views::Throbber>().CopyAddressTo(
+              &loading_throbber_))
+          .Build());
+  loading_throbber_->SetID(DialogViewId::LOADING_THROBBER);
 }
 
 AutofillAiImportDataBubbleView::~AutofillAiImportDataBubbleView() = default;
@@ -238,13 +251,23 @@ void AutofillAiImportDataBubbleView::WindowClosing() {
   controller_ = nullptr;
 }
 
-bool AutofillAiImportDataBubbleView::OnDialogAccepted() const {
-  if (controller_) {
-    controller_->OnSaveButtonClicked();
-    return controller_->CloseOnAccept();
+bool AutofillAiImportDataBubbleView::OnDialogAccepted() {
+  if (!controller_) {
+    return true;
   }
-  // Always close the bubble when the controller is no longer available.
-  return true;
+  controller_->OnSaveButtonClicked();
+  if (controller_->CloseOnAccept()) {
+    return true;
+  }
+
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  loading_progress_row_->SetVisible(true);
+  loading_throbber_->Start();
+  loading_throbber_->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_WALLET_UPLOAD_THROBBER_ACCESSIBLE_NAME));
+  DialogModelChanged();
+  return false;
 }
 
 BEGIN_METADATA(AutofillAiImportDataBubbleView)
