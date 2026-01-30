@@ -19,10 +19,8 @@ source_set("libprotobuf-mutator") {
 
   # Remove *San and coverage for a performance boost.
   configs -= not_fuzzed_remove_configs
-  configs += [
-    "//build/config/sanitizers:not_fuzzed",
-    ":private_config",
-  ]
+  configs += not_fuzzed_add_configs
+  configs += [ ":private_config" ]
 
   public_configs = [ ":public_config" ]
 

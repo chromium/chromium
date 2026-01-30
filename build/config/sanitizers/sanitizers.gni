@@ -396,31 +396,54 @@ assert(
 # Use these lists of configs to disable instrumenting code that is part of a
 # fuzzer, but which isn't being targeted (such as libprotobuf-mutator, *.pb.cc
 # and libprotobuf when they are built as part of a proto fuzzer). Adding or
-# removing these lists does not have any effect if use_libfuzzer or use_afl are
-# not passed as arguments to gn.
+# removing these lists does not have any effect if use_fuzzing_engine is false.
 not_fuzzed_remove_configs = []
-not_fuzzed_remove_nonasan_configs = []
+not_fuzzed_add_configs = []
+
+# It is usually OK to compile only certain parts of a binary with ASan. Usually,
+# but not always :)
+# The `needs_asan` variant can be used in such cases: it disables coverage and
+# instrumentation to the extent possible, but leaves ASan enabled.
+not_fuzzed_needs_asan_add_configs = []
 
 if (use_fuzzing_engine) {
-  # Removing coverage should always just work.
-  not_fuzzed_remove_configs += [ "//build/config/coverage:default_coverage" ]
-  not_fuzzed_remove_nonasan_configs +=
-      [ "//build/config/coverage:default_coverage" ]
+  # Remove coverage and sanitizer flags for "not fuzzed" targets.
+  # Some might be added back via the "not_fuzzed*_add_configs" lists.
+  not_fuzzed_remove_configs += [
+    "//build/config/coverage:default_coverage",
+    "//build/config/sanitizers:default_sanitizer_flags",
+  ]
 
-  if (!is_msan) {
-    # Allow sanitizer instrumentation to be removed if we are not using MSan
-    # since binaries cannot be partially instrumented with MSan.
-    not_fuzzed_remove_configs +=
-        [ "//build/config/sanitizers:default_sanitizer_flags" ]
+  # Always add the `not_fuzzed` config for "not fuzzed" targets, and explicitly
+  # add sanitizer ldflags which are needed to link even partially-sanitized
+  # binaries. Depending on asan / msan the ldflags might already be included
+  # via the default_sanitizer_flags_but_coverage config, but it's fine to add
+  # it explicitly here.
+  not_fuzzed_add_configs += [
+    "//build/config/sanitizers:not_fuzzed",
+    "//build/config/sanitizers:default_sanitizer_ldflags",
+  ]
 
-    # Certain parts of binaries must be instrumented with ASan if the rest of
-    # the binary is. For these, only remove non-ASan sanitizer instrumentation.
-    if (!is_asan) {
-      not_fuzzed_remove_nonasan_configs +=
-          [ "//build/config/sanitizers:default_sanitizer_flags" ]
+  # If we are using MSan: Add back sanitizer instrumentation except for coverage
+  # since binaries cannot be partially instrumented with MSan.
+  if (is_msan) {
+    not_fuzzed_add_configs +=
+        [ "//build/config/sanitizers:default_sanitizer_flags_but_coverage" ]
+  }
 
-      assert(not_fuzzed_remove_nonasan_configs == not_fuzzed_remove_configs)
-    }
+  not_fuzzed_needs_asan_add_configs = not_fuzzed_add_configs
+
+  # For selected targets which need ASan instrumentation, do also add back
+  # sanitizer flags except for coverage.
+  if (is_asan && !is_msan) {
+    not_fuzzed_needs_asan_add_configs +=
+        [ "//build/config/sanitizers:default_sanitizer_flags_but_coverage" ]
+  }
+
+  if (is_asan && !is_msan) {
+    assert(not_fuzzed_add_configs != not_fuzzed_needs_asan_add_configs)
+  } else {
+    assert(not_fuzzed_add_configs == not_fuzzed_needs_asan_add_configs)
   }
 }
 

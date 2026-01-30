@@ -694,7 +694,7 @@ template("proto_library") {
       # fuzzing, since the only fuzzers that use protobuf are libprotobuf-mutator
       # based fuzzers, and they don't actually target protobuf code.
       configs -= not_fuzzed_remove_configs
-      configs += [ "//build/config/sanitizers:not_fuzzed" ]
+      configs += not_fuzzed_add_configs
     }
 
     if (_generate_cc || _generate_with_plugin) {

@@ -85,8 +85,8 @@ target(_protobuf_lite_target_type, "protobuf_lite") {
   # Remove coverage and Sanitizers other than ASan for a performance boost when
   # fuzzing. ASan can't be removed here because of a bug preventing unsanitized
   # code from using libc++, which protobuf_full uses.
-  configs -= not_fuzzed_remove_nonasan_configs
-  configs += [ "//build/config/sanitizers:not_fuzzed" ]
+  configs -= not_fuzzed_remove_configs
+  configs += not_fuzzed_needs_asan_add_configs
 
   if (is_win) {
     configs -= [ "//build/config/win:lean_and_mean" ]
@@ -209,8 +209,8 @@ static_library("protobuf_full") {
   # Remove coverage and Sanitizers other than ASan for a performance boost when
   # fuzzing. ASan can't be removed here because of a bug preventing unsanitized
   # code from using libc++, which protobuf_full uses.
-  configs -= not_fuzzed_remove_nonasan_configs
-  configs += [ "//build/config/sanitizers:not_fuzzed" ]
+  configs -= not_fuzzed_remove_configs
+  configs += not_fuzzed_needs_asan_add_configs
 
   if (is_win) {
     configs -= [ "//build/config/win:lean_and_mean" ]
