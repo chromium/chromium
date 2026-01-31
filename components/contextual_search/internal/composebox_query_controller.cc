@@ -408,7 +408,9 @@ void ComposeboxQueryController::CreateSearchUrl(
             cluster_info_->search_session_id(),
             request_id_generator_.GetNextRequestId(
                 lens::RequestIdUpdateMode::kSearchUrl,
-                last_active_file->request_id.media_type()),
+                search_url_request_info->image_crop.has_value()
+                    ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
+                    : last_active_file->request_id.media_type()),
             search_url_request_info->invocation_source, lns_surface,
             base::UTF8ToUTF16(search_url_request_info->query_text),
             std::move(search_url_request_info->additional_params)));
