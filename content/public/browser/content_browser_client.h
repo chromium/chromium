@@ -3384,6 +3384,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext& browser_context,
       const GURL& url,
       const std::string& embedder_histogram_suffix);
+
+  // Returns whether to enable concrete cross-origin isolation, which gives
+  // access to cross-origin isolated APIs. If this return false, logical
+  // cross-origin isolation will be applied instead, which applies web-visible
+  // restrictions but does not give access to cross-origin isolated APIs.
+  virtual bool OriginSupportsConcreteCrossOriginIsolation(
+      const url::Origin& origin);
 };
 
 }  // namespace content

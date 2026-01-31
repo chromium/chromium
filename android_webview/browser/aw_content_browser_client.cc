@@ -1520,4 +1520,9 @@ bool AwContentBrowserClient::ShouldAnimateBackForwardTransitions() {
   return false;
 }
 
+bool AwContentBrowserClient::OriginSupportsConcreteCrossOriginIsolation(
+    const url::Origin& origin) {
+  return false;
+}
+
 }  // namespace android_webview

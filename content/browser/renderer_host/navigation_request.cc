@@ -11165,8 +11165,13 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
   // crossOriginIsolation for the document.
   policy_container_builder_->SetCrossOriginIsolationEnabledByDIP();
 
+  blink::mojom::CrossOriginIsolationMode coi_mode =
+      GetContentClient()->browser()->OriginSupportsConcreteCrossOriginIsolation(
+          origin)
+          ? blink::mojom::CrossOriginIsolationMode::kConcrete
+          : blink::mojom::CrossOriginIsolationMode::kLogical;
   return AgentClusterKey::CrossOriginIsolationKey(
-      origin, blink::mojom::CrossOriginIsolationMode::kConcrete,
+      origin, coi_mode,
       /*cross_origin_isolated_through_dip=*/true);
 }
 

@@ -438,6 +438,139 @@ class DocumentIsolationPolicyWithoutDefaultSiteInstanceGroupBrowserTest
   content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
+std::string kConcreteCOIOrigin = "concretecoi.test";
+std::string kLogicalCOIOrigin = "logicalcoi.test";
+
+class DocumentIsolationPolicyWithLogicalCOIBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<std::string, bool, bool>> {
+ public:
+  DocumentIsolationPolicyWithLogicalCOIBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatures(
+        {network::features::kDocumentIsolationPolicy,
+         features::kDocumentIsolationPolicyWithoutSiteIsolation,
+         features::kDefaultSiteInstanceGroups},
+        {features::kSharedArrayBuffer});
+
+    // Enable RenderDocument:
+    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
+                                       std::get<0>(GetParam()));
+    // Enable BackForwardCache:
+    if (IsBackForwardCacheEnabled()) {
+      feature_list_for_back_forward_cache_.InitWithFeaturesAndParameters(
+          GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+              /*ignore_outstanding_network_request=*/false),
+          GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    } else {
+      feature_list_for_back_forward_cache_.InitWithFeatures(
+          {}, {features::kBackForwardCache});
+    }
+  }
+
+  // Provides meaningful param names instead of /0, /1, ...
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [render_document_level, enable_back_forward_cache, require_corp] =
+        info.param;
+    return base::StringPrintf(
+        "%s_%s_%s",
+        GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
+        enable_back_forward_cache ? "BFCacheEnabled" : "BFCacheDisabled",
+        require_corp ? "RequireCorp" : "Credentialless");
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ protected:
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents())
+        ->GetPrimaryMainFrame();
+  }
+
+  GURL GetDocumentIsolationPolicyURL(const std::string& host) {
+    // Isolate-and-require-corp version of the test.
+    if (std::get<2>(GetParam())) {
+      return https_server()->GetURL(
+          host,
+          "/set-header?document-isolation-policy: isolate-and-require-corp");
+    }
+
+    // Isolate-and-credentialless version of the test.
+    return https_server()->GetURL(
+        host,
+        "/set-header?document-isolation-policy: isolate-and-credentialless");
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    SetupCrossSiteRedirector(https_server());
+    net::test_server::RegisterDefaultHandlers(&https_server_);
+
+    ASSERT_TRUE(https_server()->Start());
+
+    test_client_ = std::make_unique<MockContentBrowserClientWithLogicalCOI>(
+        url::Origin::Create(
+            https_server()->GetURL(kConcreteCOIOrigin, "/empty.html")));
+  }
+
+ private:
+  class MockContentBrowserClientWithLogicalCOI
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    explicit MockContentBrowserClientWithLogicalCOI(
+        const url::Origin& concrete_coi_origin)
+        : concrete_coi_origin_(concrete_coi_origin) {}
+    bool OriginSupportsConcreteCrossOriginIsolation(
+        const url::Origin& origin) override {
+      return origin.IsSameOriginWith(concrete_coi_origin_);
+    }
+
+   private:
+    const url::Origin concrete_coi_origin_;
+  };
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+
+    // Disable SiteIsolation as logical COI is only used on Android WebView
+    // which does not have SiteIsolation.
+    command_line->RemoveSwitch(switches::kSitePerProcess);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  content::ContentMockCertVerifier mock_cert_verifier_;
+
+  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_for_render_document_;
+  base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
+  net::EmbeddedTestServer https_server_;
+
+  std::unique_ptr<MockContentBrowserClientWithLogicalCOI> test_client_;
+};
+
 }  // namespace
 
 // Checks that a Document-Isolation-Policy header is ignored if the
@@ -2413,6 +2546,114 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   EXPECT_FALSE(sub_document->GetSiteInstance()->GetSiteInfo().is_error_page());
 }
 
+// Check that logical cross-origin isolation set by the content embedder works
+// as expected.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyWithLogicalCOIBrowserTest,
+                       LogicalCrossOriginIsolation) {
+  GURL concrete_coi = GetDocumentIsolationPolicyURL(kConcreteCOIOrigin);
+  GURL logical_coi = GetDocumentIsolationPolicyURL(kLogicalCOIOrigin);
+  GURL no_dip(https_server()->GetURL("a.test", "/empty.html"));
+
+  // Navigate to a page with concrete COI. It should be marked as cross-origin
+  // isolated and have access to SABs.
+  EXPECT_TRUE(NavigateToURL(shell(), concrete_coi));
+  EXPECT_TRUE(current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .agent_cluster_key()
+                  .IsCrossOriginIsolated());
+  EXPECT_EQ(blink::mojom::CrossOriginIsolationMode::kConcrete,
+            current_frame_host()
+                ->GetSiteInstance()
+                ->GetSiteInfo()
+                .agent_cluster_key()
+                .GetCrossOriginIsolationKey()
+                ->cross_origin_isolation_mode);
+  EXPECT_EQ(true, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
+  EXPECT_EQ(true,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+
+  // Navigate to a page with logical COI. It should not be marked as
+  // cross-origin isolated and not have access to SABs.
+  EXPECT_TRUE(NavigateToURL(shell(), logical_coi));
+  EXPECT_FALSE(current_frame_host()
+                   ->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .agent_cluster_key()
+                   .IsCrossOriginIsolated());
+  EXPECT_EQ(blink::mojom::CrossOriginIsolationMode::kLogical,
+            current_frame_host()
+                ->GetSiteInstance()
+                ->GetSiteInfo()
+                .agent_cluster_key()
+                .GetCrossOriginIsolationKey()
+                ->cross_origin_isolation_mode);
+  EXPECT_EQ(false, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
+  EXPECT_EQ(false,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+
+  // Navigate to a page without DIP.
+  EXPECT_TRUE(NavigateToURL(shell(), no_dip));
+
+  // Create an iframe with concrete COI. It should be marked as cross-origin
+  // isolated and have access to SABs.
+  TestNavigationManager concrete_coi_iframe_navigation(web_contents(),
+                                                       concrete_coi);
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("const iframe = document.createElement('iframe'); "
+                       "iframe.src = $1; "
+                       "document.body.appendChild(iframe);",
+                       concrete_coi)));
+
+  ASSERT_TRUE(concrete_coi_iframe_navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(concrete_coi_iframe_navigation.was_successful());
+  RenderFrameHostImpl* concrete_coi_iframe_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_TRUE(concrete_coi_iframe_rfh->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .agent_cluster_key()
+                  .IsCrossOriginIsolated());
+  EXPECT_EQ(blink::mojom::CrossOriginIsolationMode::kConcrete,
+            concrete_coi_iframe_rfh->GetSiteInstance()
+                ->GetSiteInfo()
+                .agent_cluster_key()
+                .GetCrossOriginIsolationKey()
+                ->cross_origin_isolation_mode);
+  EXPECT_EQ(true, EvalJs(concrete_coi_iframe_rfh, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(concrete_coi_iframe_rfh,
+                         "'SharedArrayBuffer' in globalThis"));
+
+  // Create an iframe with logical COI. It should be marked as cross-origin
+  // isolated and have access to SABs.
+  TestNavigationManager logical_coi_iframe_navigation(web_contents(),
+                                                      logical_coi);
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("const iframe = document.createElement('iframe'); "
+                       "iframe.src = $1; "
+                       "document.body.appendChild(iframe);",
+                       logical_coi)));
+
+  ASSERT_TRUE(logical_coi_iframe_navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(logical_coi_iframe_navigation.was_successful());
+  RenderFrameHostImpl* logical_coi_iframe_rfh =
+      current_frame_host()->child_at(1)->current_frame_host();
+  EXPECT_FALSE(logical_coi_iframe_rfh->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .agent_cluster_key()
+                   .IsCrossOriginIsolated());
+  EXPECT_EQ(blink::mojom::CrossOriginIsolationMode::kLogical,
+            logical_coi_iframe_rfh->GetSiteInstance()
+                ->GetSiteInfo()
+                .agent_cluster_key()
+                .GetCrossOriginIsolationKey()
+                ->cross_origin_isolation_mode);
+  EXPECT_EQ(false, EvalJs(logical_coi_iframe_rfh, "self.crossOriginIsolated"));
+  EXPECT_EQ(false, EvalJs(logical_coi_iframe_rfh,
+                          "'SharedArrayBuffer' in globalThis"));
+}
+
 static auto kTestParams =
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool(),
@@ -2422,6 +2663,11 @@ INSTANTIATE_TEST_SUITE_P(
     DocumentIsolationPolicyWithoutFeatureBrowserTest,
     kTestParams,
     DocumentIsolationPolicyWithoutFeatureBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DocumentIsolationPolicyWithLogicalCOIBrowserTest,
+    kTestParams,
+    DocumentIsolationPolicyWithLogicalCOIBrowserTest::DescribeParams);
 static auto kTestParamsWithSiteIsolation =
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool(),

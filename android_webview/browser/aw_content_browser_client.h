@@ -323,6 +323,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       bool* out_block_is_site_setting_specific) override;
 
   bool ShouldAnimateBackForwardTransitions() override;
+  bool OriginSupportsConcreteCrossOriginIsolation(
+      const url::Origin& origin) override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;
