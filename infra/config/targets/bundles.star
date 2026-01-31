@@ -6863,6 +6863,21 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "trees_in_viz_enabled_tests_android",
+    targets = [
+        "cc_unittests",
+        "viz_unittests",
+        "content_browsertests",
+        "android_browsertests",
+    ],
+    mixins = [
+        targets.mixin(
+            args = ["--enable-features=TreesInViz"],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "tvos_rel_tests",
     targets = [
         targets.bundle(

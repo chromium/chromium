@@ -2678,7 +2678,7 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = ["trees_in_viz_enabled_tests"],
+        targets = ["trees_in_viz_enabled_tests_android"],
         mixins = [
             "15-x64-emulator",
             "emulator-8-cores",

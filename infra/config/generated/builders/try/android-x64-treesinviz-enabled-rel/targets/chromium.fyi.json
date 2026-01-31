@@ -14,13 +14,13 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "browser_tests"
+            "android_browsertests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//chrome/test:browser_tests",
+        "module_name": "//chrome/test:android_browsertests",
         "module_scheme": "gtest",
-        "name": "browser_tests",
+        "name": "android_browsertests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -43,8 +43,8 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "browser_tests",
-        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+        "test": "android_browsertests",
+        "test_id_prefix": "ninja://chrome/test:android_browsertests/"
       },
       {
         "args": [
@@ -180,55 +180,6 @@
         },
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/"
-      }
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--additional-driver-flag=--enable-features=TreesInViz",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb"
-        ],
-        "description": "Run with android_35_google_apis_x64",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "module_name": "//:blink_web_tests",
-        "module_scheme": "webtest",
-        "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "dimensions": {
-            "cores": "8",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_35_google_apis_x64"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "blink_web_tests",
-        "test_id_prefix": "ninja://:blink_web_tests/"
       }
     ]
   }
