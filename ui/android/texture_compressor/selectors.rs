@@ -6,7 +6,7 @@
 //       was inherited from etcpak.
 
 use std::simd::prelude::*;
-use std::simd::{Mask, Simd};
+use std::simd::{Mask, Select, Simd};
 
 use crate::{Reg, Reg32, UReg, SIMD_WIDTH};
 

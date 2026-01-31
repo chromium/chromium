@@ -1,0 +1,40 @@
+From 98355e3039f4677b19d1358a207f5ae646b935bb Mon Sep 17 00:00:00 2001
+From: Lukasz Anforowicz <lukasza@chromium.org>
+Date: Fri, 30 Jan 2026 23:30:50 +0000
+Subject: [PATCH] Ad-hoc `bytemuck` fix for https://crbug.com/480176523.
+
+TODO: Remove this patch from `chromium_crates_io/patches` after
+rolling `bytemuck` past the actual fix from
+https://github.com/Lokathor/bytemuck/pull/344
+---
+ .../rust/chromium_crates_io/vendor/bytemuck-v1/src/pod.rs        | 1 -
+ .../rust/chromium_crates_io/vendor/bytemuck-v1/src/zeroable.rs   | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/pod.rs b/third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/pod.rs
+index 846f281d975c7..3aaee72a26e85 100644
+--- a/third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/pod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/pod.rs
+@@ -151,7 +151,6 @@ impl_unsafe_marker_for_simd!(
+ unsafe impl<T, const N: usize> Pod for core::simd::Simd<T, N>
+ where
+   T: core::simd::SimdElement + Pod,
+-  core::simd::LaneCount<N>: core::simd::SupportedLaneCount,
+ {
+ }
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/zeroable.rs b/third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/zeroable.rs
+index d88ba0f6636d0..b0f3b8aca0b08 100644
+--- a/third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/zeroable.rs
++++ b/third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/zeroable.rs
+@@ -230,7 +230,6 @@ impl_unsafe_marker_for_simd!(
+ unsafe impl<T, const N: usize> Zeroable for core::simd::Simd<T, N>
+ where
+   T: core::simd::SimdElement + Zeroable,
+-  core::simd::LaneCount<N>: core::simd::SupportedLaneCount,
+ {
+ }
+ 
+-- 
+2.53.0.rc1.225.gd81095ad13-goog
+

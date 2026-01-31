@@ -151,7 +151,6 @@ impl_unsafe_marker_for_simd!(
 unsafe impl<T, const N: usize> Pod for core::simd::Simd<T, N>
 where
   T: core::simd::SimdElement + Pod,
-  core::simd::LaneCount<N>: core::simd::SupportedLaneCount,
 {
 }
 

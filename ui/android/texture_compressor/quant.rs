@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 use std::simd::prelude::*;
-use std::simd::Simd;
+use std::simd::{Select, Simd};
 
 use crate::{Reg, Reg32, UReg};
 
