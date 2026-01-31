@@ -5,8 +5,8 @@
 #include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 
 #include <memory>
-#include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -38,6 +38,7 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 using content::WebContents;
@@ -266,7 +267,7 @@ std::unique_ptr<extensions::UserScriptList> ParseContentScripts(
 
   std::unique_ptr<extensions::UserScriptList> result(
       new extensions::UserScriptList());
-  std::set<std::string> names;
+  absl::flat_hash_set<std::string_view> names;
   for (const ContentScriptDetails& script_value : content_script_list) {
     const std::string& name = script_value.name;
     if (!names.insert(name).second) {
