@@ -37,7 +37,7 @@ ExtensionsMenuDelegateAndroid::CreateActionViewModel(
                                                        nullptr));
 }
 
-void ExtensionsMenuDelegateAndroid::OnActiveWebContentsChanged() {
+void ExtensionsMenuDelegateAndroid::OnPageNavigation() {
   // TODO(crbug.com/473213114)
 }
 

@@ -51,10 +51,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     // Notifies the delegate that the active web contents changed, which may
     // have impacted the model's content (e.g host access requests may have
     // changed).
-    virtual void OnActiveWebContentsChanged() = 0;
+    virtual void OnPageNavigation() = 0;
 
     // Notifies the delegate that a new host access request was added
-    // with `extension_ind` on `index`.
+    // with `extension_id` on `index`.
     virtual void OnHostAccessRequestAdded(
         const extensions::ExtensionId& extension_id,
         int index) = 0;

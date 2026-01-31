@@ -47,7 +47,7 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
       const extensions::ExtensionId& extension_id) override;
 
   // ExtensionsMenuViewModel::Observer:
-  void OnActiveWebContentsChanged() override;
+  void OnPageNavigation() override;
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int index) override;
   void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,

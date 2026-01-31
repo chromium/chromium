@@ -1289,7 +1289,7 @@ void ExtensionsMenuViewModel::OnWebContentsChanged(
   UpdateHostAccessRequests();
 
   for (Observer& observer : observers_) {
-    observer.OnActiveWebContentsChanged();
+    observer.OnPageNavigation();
   }
 }
 

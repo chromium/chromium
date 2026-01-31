@@ -105,7 +105,7 @@ ExtensionsMenuDelegateDesktop::CreateActionViewModel(
           browser_, &extensions_container_.get(), extensions_container_views_));
 }
 
-void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged() {
+void ExtensionsMenuDelegateDesktop::OnPageNavigation() {
   DCHECK(current_page_);
 
   // Update main page if it is open.
