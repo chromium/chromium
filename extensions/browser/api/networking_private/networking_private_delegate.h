@@ -21,7 +21,8 @@ class NetworkingPrivateDelegateObserver;
 
 // Base class for platform dependent networkingPrivate API implementations.
 // All inputs and results for this class use ONC values. See
-// networking_private.idl for descriptions of the expected inputs and results.
+// networking_private.webidl for descriptions of the expected inputs and
+// results.
 class NetworkingPrivateDelegate : public KeyedService {
  public:
   using DictionaryCallback = base::OnceCallback<void(base::DictValue)>;

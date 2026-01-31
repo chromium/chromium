@@ -1,12 +1,12 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Definitions for chrome.networkingPrivate API
- * Generated from: extensions/common/api/networking_private.idl
+ * Generated from: extensions/common/api/networking_private.webidl
  * run `tools/json_schema_compiler/compiler.py
- * extensions/common/api/networking_private.idl -g ts_definitions` to
+ * extensions/common/api/networking_private.webidl -g ts_definitions` to
  * regenerate.
  */
 
@@ -66,6 +66,19 @@ declare global {
         MANUAL = 'Manual',
         PAC = 'PAC',
         WPAD = 'WPAD',
+      }
+
+      export enum ApnType {
+        DEFAULT = 'Default',
+        ATTACH = 'Attach',
+        TETHER = 'Tether',
+      }
+
+      export enum ApnSource {
+        MODEM = 'Modem',
+        MODB = 'Modb',
+        UI = 'Ui',
+        ADMIN = 'Admin',
       }
 
       export interface ManagedBoolean {
@@ -142,6 +155,8 @@ declare global {
         Name?: string;
         Password?: string;
         Username?: string;
+        ApnTypes?: ApnType[];
+        Source?: ApnSource;
       }
 
       export interface ManagedAPNProperties {
