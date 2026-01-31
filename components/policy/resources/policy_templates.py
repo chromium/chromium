@@ -333,11 +333,11 @@ def _GetPoliciesAndGroups():
   result = {}
   policy_definitions_path = os.path.join(TEMPLATES_PATH, POLICY_DEFINITIONS_KEY)
   for group_name in _SafeListDir(policy_definitions_path):
-    result[group_name] = {'policies': {}, 'policy_atomic_groups': {}}
     group_path = os.path.join(policy_definitions_path, group_name)
-    if not os.path.isdir(group_path):
+    if not os.path.isdir(group_path) or not os.path.exists(
+        os.path.join(group_path, ".group.details.yaml")):
       continue
-
+    result[group_name] = {"policies": {}, "policy_atomic_groups": {}}
     for file in _SafeListDir(group_path):
       filename = os.fsdecode(file)
       file_basename, file_extension = os.path.splitext(filename)
