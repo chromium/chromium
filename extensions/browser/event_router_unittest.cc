@@ -17,6 +17,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_listener_map.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/process_map_factory.h"
@@ -178,6 +181,12 @@ base::DictValue CreateHostSuffixFilter(const std::string& suffix) {
   base::DictValue filter;
   filter.Set("url", std::move(filter_list));
   return filter;
+}
+
+std::unique_ptr<KeyedService> BuildEventRouter(
+    content::BrowserContext* profile) {
+  return std::make_unique<extensions::EventRouter>(
+      profile, ExtensionPrefs::Get(profile));
 }
 
 }  // namespace
@@ -677,7 +686,8 @@ class EventRouterDispatchTest : public ExtensionsTest {
     ExtensionsTest::SetUp();
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(browser_context());
-    ASSERT_TRUE(event_router());  // constructs EventRouter
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        browser_context(), base::BindRepeating(&BuildEventRouter));
   }
 
   void TearDown() override {
@@ -756,8 +766,7 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   EXPECT_EQ(0u, observer.dispatched_events().size());
 }
 
-// TODO(crbug.com/40281129): test is flaky across platforms.
-TEST_F(EventRouterDispatchTest, DISABLED_TestDispatchCallback) {
+TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
   std::string ext1 = "ext1";
   std::string ext2 = "ext2";
   std::string ext3 = "ext3";
