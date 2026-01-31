@@ -32,7 +32,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
@@ -1014,11 +1013,8 @@ class LocationBarMediator
         mAutocompleteCoordinator.endInput();
         mFuseboxCoordinator.endInput();
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
-        var state = LocationBarState.from(mLocationBarDataProvider.getTab());
-        if (state != null) {
-            state.autocompleteInput.reset();
-            state.isUrlBarFocused = false;
-        }
+        var state = FuseboxSessionState.from(mLocationBarDataProvider.getTab());
+        if (state != null) state.setSessionActive(false);
         mCurrentInput = null;
     }
 
@@ -1106,8 +1102,8 @@ class LocationBarMediator
      * @return A new {@link AutocompleteInput} instance.
      */
     private AutocompleteInput getAutocompleteInputForCurrentTab() {
-        // Maybe restore persisted state; create a new one otherwise.
-        var state = LocationBarState.from(mLocationBarDataProvider.getTab());
+        // Maybe restore persisted session state; create a new one otherwise.
+        var state = FuseboxSessionState.from(mLocationBarDataProvider.getTab());
         var input = state != null ? state.autocompleteInput : new AutocompleteInput();
         input.setPageClassification(mLocationBarDataProvider.getPageClassification(false));
         input.setRequestType(AutocompleteRequestType.SEARCH);
@@ -1803,47 +1799,14 @@ class LocationBarMediator
         updateButtonTints();
     }
 
-    @VisibleForTesting
-    /* package */ static class LocationBarState implements UserData {
-        // TODO(crbug.com/475620206): consolidate this to AutocompleteInput and remove.
-        // For some bizarre reason the session restoration gets canceled as we're
-        // seeing notification of UrlBar focus lost, which incorrectly suppresses
-        // resumption of editing session, making the LocationBar currently propagate
-        // invalid state information to listening components (url is de-facto focused,
-        // while the LBM tells it is not).
-        // Once that issue is addressed, it should be possible to fully remove this
-        // and replace with AutocompleteInput.
-        public final AutocompleteInput autocompleteInput = new AutocompleteInput();
-        public boolean isUrlBarFocused;
-
-        static @Nullable LocationBarState from(@Nullable Tab tab) {
-            if (tab == null || tab.isDestroyed()) {
-                return null;
-            }
-            LocationBarState state = tab.getUserDataHost().getUserData(LocationBarState.class);
-            if (state == null) {
-                state = new LocationBarState();
-                tab.getUserDataHost().setUserData(LocationBarState.class, state);
-            }
-            return state;
-        }
-    }
-
-    private boolean isLocationBarStateValid(@Nullable LocationBarState state) {
-        return mIsTablet
-                && state != null
-                && state.isUrlBarFocused
-                && state.autocompleteInput != null;
-    }
-
     @Override
     public void onTabChanged(@Nullable Tab previousTab) {
         // Save the previous tab state.
         if (previousTab != null) {
-            LocationBarState previousState = LocationBarState.from(previousTab);
+            FuseboxSessionState previousState = FuseboxSessionState.from(previousTab);
             if (previousState != null) {
                 // No need to apply text, as AutocompleteInput readily tracks that.
-                previousState.isUrlBarFocused = isUrlBarFocused();
+                previousState.setSessionActive(isUrlBarFocused());
 
                 if (mPersistEditingState) {
                     previousState.autocompleteInput.setSelection(
@@ -1854,8 +1817,8 @@ class LocationBarMediator
 
         // Restore the saved tab state.
         Tab currentTab = mLocationBarDataProvider.getTab();
-        LocationBarState currentState = LocationBarState.from(currentTab);
-        if (isLocationBarStateValid(currentState)) {
+        FuseboxSessionState currentState = FuseboxSessionState.from(currentTab);
+        if (currentState != null && currentState.isSessionActive()) {
             beginInput(assumeNonNull(currentState).autocompleteInput);
             setUrlBarFocus(
                     /* shouldBeFocused= */ true,
@@ -1884,10 +1847,10 @@ class LocationBarMediator
     public void onUrlChanged(boolean isTabChanging) {
         if (isTabChanging) {
             Tab currentTab = mLocationBarDataProvider.getTab();
-            LocationBarState currentState = LocationBarState.from(currentTab);
+            FuseboxSessionState currentState = FuseboxSessionState.from(currentTab);
             // No need to update URL if the location bar state was already restored in
             // onTabChanged().
-            if (!isLocationBarStateValid(currentState)) {
+            if (currentState == null || !currentState.isSessionActive()) {
                 updateUrl();
 
                 // Ensure the URL bar loses focus if the tab it was interacting with is changed from
