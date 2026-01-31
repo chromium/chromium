@@ -4,6 +4,7 @@
 
 #include "components/crash/core/common/crash_keys.h"
 
+#include <array>
 #include <deque>
 #include <string_view>
 #include <vector>
@@ -110,21 +111,21 @@ void ResetCommandLineForTesting() {
 }
 
 using PrinterInfoKey = crash_reporter::CrashKeyString<64>;
-static PrinterInfoKey printer_info_keys[] = {
+static std::array<PrinterInfoKey, 4> printer_info_keys = {{
     {"prn-info-1", PrinterInfoKey::Tag::kArray},
     {"prn-info-2", PrinterInfoKey::Tag::kArray},
     {"prn-info-3", PrinterInfoKey::Tag::kArray},
     {"prn-info-4", PrinterInfoKey::Tag::kArray},
-};
+}};
 
 ScopedPrinterInfo::ScopedPrinterInfo(const std::string& printer_name,
                                      std::vector<std::string> data) {
   CHECK_LE(data.size(), std::size(printer_info_keys));
   for (size_t i = 0; i < std::size(printer_info_keys); ++i) {
     if (i < data.size()) {
-      UNSAFE_TODO(printer_info_keys[i]).Set(data[i]);
+      printer_info_keys[i].Set(data[i]);
     } else {
-      UNSAFE_TODO(printer_info_keys[i]).Clear();
+      printer_info_keys[i].Clear();
     }
   }
   if (data.empty()) {
