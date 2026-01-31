@@ -65,7 +65,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -73,10 +72,8 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -1327,96 +1324,6 @@ public class InstanceSwitcherCoordinatorTest {
         onView(withId(R.id.title_input_text))
                 .inRoot(isDialog())
                 .check(matches(withText(defaultName)));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
-    @Restriction({
-        DeviceFormFactor.TABLET_OR_DESKTOP,
-        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
-        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
-    })
-    public void testClearIncognitoWindowName() throws Exception {
-        InstanceInfo[] instances =
-                new InstanceInfo[] {
-                    new InstanceInfo(
-                            /* instanceId= */ 0,
-                            1,
-                            InstanceInfo.Type.CURRENT,
-                            "url0",
-                            "title0",
-                            /* customTitle= */ "Window 1",
-                            /* tabCount= */ 0,
-                            /* incognitoTabCount= */ 1,
-                            /* isIncognitoSelected= */ true,
-                            /* lastAccessedTime= */ 0,
-                            /* markedForDeletion= */ false)
-                };
-        final CallbackHelper renameCallbackHelper = new CallbackHelper();
-        final int renameCallbackCount = renameCallbackHelper.getCallCount();
-        doAnswer(
-                        invocation -> {
-                            renameCallbackHelper.notifyCalled();
-                            return null;
-                        })
-                .when(mDelegate)
-                .renameInstance(anyInt(), anyString());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    InstanceSwitcherCoordinator.showDialog(
-                            mActivityTestRule.getActivity(),
-                            mModalDialogManager,
-                            mIconBridge,
-                            mDelegate,
-                            MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances),
-                            /* isIncognitoWindow= */ true);
-                });
-
-        // Click on the 'more' button for the instance.
-        clickMoreButtonAtPosition(0, "Window 1");
-
-        // Check that "Name" is an option and click it.
-        onView(withText(R.string.instance_switcher_name_window))
-                .inRoot(withDecorView(withClassName(containsString("Popup"))))
-                .check(matches(isDisplayed()))
-                .perform(click());
-
-        // Check that the "Name this window" dialog is shown.
-        onView(withText(R.string.instance_switcher_name_window_confirm_header))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-
-        // Enter an empty name and save.
-        onView(withId(R.id.title_input_text)).inRoot(isDialog()).perform(replaceText(""));
-        onView(withText(R.string.save)).inRoot(isDialog()).perform(click());
-
-        // Check that the instance title is updated to the default title for an incognito window.
-        String defaultTitle = "Incognito window";
-        onView(withId(R.id.active_instance_list))
-                .inRoot(isDialog())
-                .check(matches(atPosition(0, hasDescendant(withText(defaultTitle)))));
-
-        // Check that the rename callback was called.
-        assertEquals(renameCallbackCount + 1, renameCallbackHelper.getCallCount());
-        verify(mDelegate).renameInstance(instances[0].instanceId, "");
-
-        // Reopen the name window dialog.
-        clickMoreButtonAtPosition(0, defaultTitle);
-        onView(withText(R.string.instance_switcher_name_window))
-                .inRoot(withDecorView(withClassName(containsString("Popup"))))
-                .check(matches(isDisplayed()))
-                .perform(click());
-
-        // Check that the input text field is updated.
-        onView(withId(R.id.title_input_text))
-                .inRoot(isDialog())
-                .check(matches(withText(defaultTitle)));
     }
 
     @Test

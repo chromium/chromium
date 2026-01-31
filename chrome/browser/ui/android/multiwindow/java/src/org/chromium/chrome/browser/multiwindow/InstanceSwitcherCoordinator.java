@@ -856,23 +856,8 @@ public class InstanceSwitcherCoordinator {
                 newTitle -> {
                     String customTitle = newTitle;
                     if (TextUtils.isEmpty(customTitle)) {
-                        // Create a clone of the original item with an updated empty custom title to
-                        // subsequently determine the default title when the custom title is
-                        // cleared.
-                        InstanceInfo updatedItem =
-                                new InstanceInfo(
-                                        item.instanceId,
-                                        item.taskId,
-                                        item.type,
-                                        item.url,
-                                        item.title,
-                                        customTitle,
-                                        item.tabCount,
-                                        item.incognitoTabCount,
-                                        item.isIncognitoSelected,
-                                        item.lastAccessedTime,
-                                        item.markedForDeletion);
-                        newTitle = mUiUtils.getItemTitle(updatedItem);
+                        // Default to active tab title if custom title is cleared.
+                        newTitle = item.title;
                     }
 
                     listItem.model.set(InstanceSwitcherItemProperties.TITLE, newTitle);
