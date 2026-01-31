@@ -365,6 +365,16 @@ bool H264Validator::Validate(const DecoderBuffer* buffer,
           return false;
         }
 
+        bool vaapi_video_encoder = false;
+#if BUILDFLAG(USE_VAAPI)
+        vaapi_video_encoder = true;
+#endif
+        if (!vaapi_video_encoder) {
+          // Skip Prefix NALU check: Trogdor's v4l2 video encoder produces an
+          // invalid prefix NALU. (b/477359926)
+          break;
+        }
+
         std::optional<H264PrefixNALU> prefix_nalu = ParseH264Prefix(nalu);
         if (!prefix_nalu) {
           LOG(ERROR) << "Failed parsing prefix NALU";
