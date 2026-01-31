@@ -463,82 +463,62 @@ base::span<const SearchConcept> GetCellularMeteredSearchConcepts() {
 }
 
 base::span<const SearchConcept> GetInstantTetheringSearchConcepts() {
-  auto make_concepts = [](bool revamped) {
-    return std::to_array<SearchConcept>({
-        {IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS,
-         mojom::kMobileDataNetworksSubpagePath,
-         mojom::SearchResultIcon::kInstantTethering,
-         mojom::SearchResultDefaultRank::kMedium,
-         mojom::SearchResultType::kSubpage,
-         {.subpage = mojom::Subpage::kMobileDataNetworks},
-         {revamped ? IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS_ALT1
-                   : SearchConcept::kAltTagEnd,
-          SearchConcept::kAltTagEnd}},
-    });
-  };
-
-  static constexpr auto revamped_tags = make_concepts(true);
-  static constexpr auto original_tags = make_concepts(false);
-  return ash::features::IsInstantHotspotRebrandEnabled() ? revamped_tags
-                                                         : original_tags;
+  static constexpr auto tags = std::to_array<SearchConcept>({
+      {IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS,
+       mojom::kMobileDataNetworksSubpagePath,
+       mojom::SearchResultIcon::kInstantTethering,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kMobileDataNetworks},
+       {SearchConcept::kAltTagEnd, SearchConcept::kAltTagEnd}},
+  });
+  return tags;
 }
 
 base::span<const SearchConcept> GetInstantTetheringOnSearchConcepts() {
-  auto make_concepts = [](bool revamped) {
+  auto make_concepts = []() {
     return std::to_array<SearchConcept>({
-        {revamped ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF
-                  : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_LEGACY,
+        {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_LEGACY,
          mojom::kMobileDataNetworksSubpagePath,
          mojom::SearchResultIcon::kInstantTethering,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kInstantTetheringOnOff},
-         {revamped ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1
-                   : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1_LEGACY,
+         {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1_LEGACY,
           SearchConcept::kAltTagEnd}},
     });
   };
-
-  static constexpr auto revamped_tags = make_concepts(true);
-  static constexpr auto original_tags = make_concepts(false);
-  return ash::features::IsInstantHotspotRebrandEnabled() ? revamped_tags
-                                                         : original_tags;
+  static constexpr auto tags = make_concepts();
+  return tags;
 }
 
 base::span<const SearchConcept> GetInstantTetheringOffSearchConcepts() {
-  auto make_concepts = [](bool revamped) {
+  auto make_concepts = []() {
     return std::to_array<SearchConcept>({
-        {revamped ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON
-                  : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_LEGACY,
+        {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_LEGACY,
          mojom::kMobileDataNetworksSubpagePath,
          mojom::SearchResultIcon::kInstantTethering,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kInstantTetheringOnOff},
-         {revamped ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1
-                   : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1_LEGACY,
+         {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1_LEGACY,
           SearchConcept::kAltTagEnd}},
     });
   };
-
-  static constexpr auto revamped_tags = make_concepts(true);
-  static constexpr auto original_tags = make_concepts(false);
-  return ash::features::IsInstantHotspotRebrandEnabled() ? revamped_tags
-                                                         : original_tags;
+  static constexpr auto tags = make_concepts();
+  return tags;
 }
 
 base::span<const SearchConcept> GetInstantTetheringConnectedSearchConcepts() {
-  auto make_concepts = [](bool revamped) {
+  auto make_concepts = []() {
     return std::to_array<SearchConcept>({
-        {revamped ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT
-                  : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT_LEGACY,
+        {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT_LEGACY,
          mojom::kTetherDetailsSubpagePath,
          mojom::SearchResultIcon::kInstantTethering,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kDisconnectTetherNetwork}},
-        {revamped ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING
-                  : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_LEGACY,
+        {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_LEGACY,
          mojom::kTetherDetailsSubpagePath,
          mojom::SearchResultIcon::kInstantTethering,
          mojom::SearchResultDefaultRank::kMedium,
@@ -546,11 +526,8 @@ base::span<const SearchConcept> GetInstantTetheringConnectedSearchConcepts() {
          {.subpage = mojom::Subpage::kTetherDetails}},
     });
   };
-
-  static constexpr auto revamped_tags = make_concepts(true);
-  static constexpr auto original_tags = make_concepts(false);
-  return ash::features::IsInstantHotspotRebrandEnabled() ? revamped_tags
-                                                         : original_tags;
+  static constexpr auto tags = make_concepts();
+  return tags;
 }
 
 base::span<const SearchConcept> GetVpnConnectedSearchConcepts() {
@@ -821,10 +798,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetTetherNotificationControlDescription",
        IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_DESCRIPTION},
       {"internetNoNetworks", IDS_SETTINGS_INTERNET_NO_NETWORKS},
-      {"internetNoTetherHosts", IDS_SETTINGS_INTERNET_NO_TETHER_HOSTS},
-      {"internetPageTitle", features::IsInstantHotspotRebrandEnabled()
-                                ? IDS_SETTINGS_INTERNET
-                                : IDS_SETTINGS_INTERNET_LEGACY},
+      {"internetPageTitle", IDS_SETTINGS_INTERNET_LEGACY},
       {"internetSummaryButtonA11yLabel",
        IDS_SETTINGS_INTERNET_SUMMARY_BUTTON_ACCESSIBILITY_LABEL},
       {"internetToggleTetherA11yLabel",
@@ -1149,8 +1123,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "trafficCountersForWifiTesting",
       ash::features::IsTrafficCountersForWiFiTestingEnabled());
-  html_source->AddBoolean("isInstantHotspotRebrandEnabled",
-                          ash::features::IsInstantHotspotRebrandEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);
@@ -1236,9 +1208,7 @@ void InternetSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int InternetSection::GetSectionNameMessageId() const {
-  return features::IsInstantHotspotRebrandEnabled()
-             ? IDS_SETTINGS_INTERNET
-             : IDS_SETTINGS_INTERNET_LEGACY;
+  return IDS_SETTINGS_INTERNET_LEGACY;
 }
 
 mojom::Section InternetSection::GetSection() const {
@@ -1364,9 +1334,7 @@ void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Instant Tethering. Although this is a multi-device feature, its UI resides
   // in the network section.
   generator->RegisterNestedSubpage(
-      features::IsInstantHotspotRebrandEnabled()
-          ? IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS
-          : IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS_LEGACY,
+      IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS,
       mojom::Subpage::kTetherDetails, mojom::Subpage::kMobileDataNetworks,
       mojom::SearchResultIcon::kInstantTethering,
       mojom::SearchResultDefaultRank::kMedium,

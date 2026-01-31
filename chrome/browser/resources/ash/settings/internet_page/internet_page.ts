@@ -240,16 +240,6 @@ export class SettingsInternetPageElement extends
         },
       },
 
-      /**
-       * Return true if instant hotspot rebrand feature flag is enabled
-       */
-      isInstantHotspotRebrandEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
-              loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
-        },
-      },
 
 
       /**
@@ -394,7 +384,6 @@ export class SettingsInternetPageElement extends
   private readonly isApnRevampEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
-  private isInstantHotspotRebrandEnabled_: boolean;
   private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   private isBuiltInVpnManagementBlocked_: boolean;
   private knownNetworksType_: NetworkType;
@@ -779,8 +768,7 @@ export class SettingsInternetPageElement extends
     // TODO(khorimoto): Remove once Cellular/Tether are split into their own
     // sections.
     if (this.subpageType_ === NetworkType.kCellular ||
-        (this.subpageType_ === NetworkType.kTether &&
-         !this.isInstantHotspotRebrandEnabled_)) {
+        (this.subpageType_ === NetworkType.kTether)) {
       return this.i18n('OncTypeMobile');
     }
     return this.i18n(
@@ -822,8 +810,7 @@ export class SettingsInternetPageElement extends
     // If both Tether and Cellular are enabled, use the Cellular device state
     // when directly navigating to the Tether page.
     if (subpageType === NetworkType.kTether &&
-        this.deviceStates![NetworkType.kCellular] &&
-        !this.isInstantHotspotRebrandEnabled_) {
+        this.deviceStates![NetworkType.kCellular]) {
       subpageType = NetworkType.kCellular;
     }
     return deviceStates![subpageType];

@@ -520,7 +520,6 @@ BASE_DECLARE_FEATURE(kImprovedManagementDisclosure);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInstantHotspotOnNearby);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kInstantHotspotRebrand);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kInstantTethering);
 // TODO(b/288273641): Clean up the server speech recognition related flags.
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1151,7 +1150,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHeliumArcvmKioskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHeliumArcvmKioskDevModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHybridChargerNotificationsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInstantHotspotRebrandEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsESimEmptyActivationCodeSupportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

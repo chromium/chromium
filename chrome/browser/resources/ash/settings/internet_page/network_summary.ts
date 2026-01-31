@@ -17,7 +17,6 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {CrosNetworkConfigInterface, DeviceStateProperties, GlobalPolicy, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -107,16 +106,6 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
 
       globalPolicy_: Object,
 
-      /**
-       * Return true if instant hotspot rebrand feature flag is enabled
-       */
-      isInstantHotspotRebrandEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
-              loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
-        },
-      },
     };
   }
 
@@ -128,7 +117,6 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
   private crosHotspotConfig_: CrosHotspotConfigInterface;
   private crosHotspotConfigObserverReceiver_: CrosHotspotConfigObserverReceiver;
   private globalPolicy_: GlobalPolicy|undefined;
-  private isInstantHotspotRebrandEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
   private networkStateLists_:
       Partial<Record<NetworkType, OncMojo.NetworkStateProperties[]>>;
@@ -315,8 +303,7 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
       // lists and do not add an active network for 'Tether' so that there is
       // only one 'Mobile data' section / subpage.
       if (type === NetworkType.kTether &&
-          newDeviceStates[NetworkType.kCellular] &&
-          !this.isInstantHotspotRebrandEnabled_) {
+          newDeviceStates[NetworkType.kCellular]) {
         newNetworkStateLists[NetworkType.kCellular] =
             newNetworkStateLists[NetworkType.kCellular].concat(
                 newNetworkStateLists[NetworkType.kTether]);
@@ -354,8 +341,7 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
       activeStatesByType: Map<NetworkType, OncMojo.NetworkStateProperties>,
       type: NetworkType): OncMojo.NetworkStateProperties|undefined {
     let activeState = activeStatesByType.get(type);
-    if (!activeState && type === NetworkType.kCellular &&
-        !this.isInstantHotspotRebrandEnabled_) {
+    if (!activeState && type === NetworkType.kCellular) {
       activeState = activeStatesByType.get(NetworkType.kTether);
     }
     return activeState || OncMojo.getDefaultNetworkState(type);

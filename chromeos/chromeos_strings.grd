@@ -1828,9 +1828,6 @@
         <message name="IDS_NETWORK_TYPE_TETHER" desc="Label for Instant Tethering networks.">
           Instant Tethering
         </message>
-        <message name="IDS_NETWORK_TYPE_HOTSPOT" desc="Label for Instant Hotspot networks.">
-          Instant hotspot
-        </message>
         <message name="IDS_NETWORK_TYPE_MOBILE_DATA" desc="Label for category which includes both Cellular and Tether networks.">
           Mobile data
         </message>

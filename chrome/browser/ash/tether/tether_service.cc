@@ -532,10 +532,7 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
     return NO_AVAILABLE_HOSTS;
   }
 
-  // Don't treat Tether as a subset of Cellular if the Instant Hotspot Rebrand
-  // feature flag is enabled.
-  if (!features::IsInstantHotspotRebrandEnabled() &&
-      IsCellularAvailableButNotEnabled()) {
+  if (IsCellularAvailableButNotEnabled()) {
     return CELLULAR_DISABLED;
   }
 

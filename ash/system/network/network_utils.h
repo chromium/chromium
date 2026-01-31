@@ -31,8 +31,7 @@ enum class DetailedViewSection {
   kMobileSection = 1,
   kEthernetSection = 2,
   kDetailedSection = 3,
-  kTetherHostsSection = 4,
-  kMaxValue = kTetherHostsSection
+  kMaxValue = kDetailedSection
 };
 
 enum NetworkDetailedViewListType { LIST_TYPE_NETWORK, LIST_TYPE_VPN };

@@ -309,22 +309,7 @@ TEST_F(TetherNotificationPresenterTest,
 }
 
 TEST_F(TetherNotificationPresenterTest,
-       TestInstantHotspotNotification_NeverDismiss) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(ash::features::kInstantHotspotRebrand);
-  EXPECT_FALSE(
-      display_service_->GetNotification(GetPotentialHotspotNotificationId()));
-  notification_presenter_->NotifyPotentialHotspotNearby(
-      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
-
-  std::optional<message_center::Notification> notification =
-      display_service_->GetNotification(GetPotentialHotspotNotificationId());
-
-  EXPECT_TRUE(notification->never_timeout());
-}
-
-TEST_F(TetherNotificationPresenterTest,
-       TestInstantHotspotNotification_NeverDismissNoFF) {
+       TestInstantHotspotNotification_WillTimeout) {
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyPotentialHotspotNearby(

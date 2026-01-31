@@ -7,12 +7,10 @@
 #include <algorithm>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -233,11 +231,8 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
 
   ShowNotification(CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id,
-      features::IsInstantHotspotRebrandEnabled()
-          ? l10n_util::GetStringUTF16(
-                IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE)
-          : l10n_util::GetStringUTF16(
-                IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE_LEGACY),
+      l10n_util::GetStringUTF16(
+          IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE),
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE),
       std::u16string() /* display_source */, GURL() /* origin_url */,
@@ -337,9 +332,6 @@ TetherNotificationPresenter::CreateNotification(
               &TetherNotificationPresenter::OnNotificationClosed,
               weak_ptr_factory_.GetWeakPtr(), id)));
   notification->SetSmallImage(gfx::Image(small_image));
-  if (base::FeatureList::IsEnabled(ash::features::kInstantHotspotRebrand)) {
-    notification->set_never_timeout(true);
-  }
   return notification;
 }
 

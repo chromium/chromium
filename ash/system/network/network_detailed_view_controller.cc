@@ -205,10 +205,6 @@ void NetworkDetailedViewController::OnMobileToggleClicked(bool new_state) {
     return;
   }
 
-  if (features::IsInstantHotspotRebrandEnabled()) {
-    return;
-  }
-
   const DeviceStateType tether_state =
       model_->GetDeviceState(NetworkType::kTether);
 

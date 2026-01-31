@@ -25,7 +25,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
@@ -41,20 +40,8 @@ class View;
 
 namespace ash {
 
-class NetworkDetailedViewTest : public AshTestBase,
-                                public testing::WithParamInterface<bool> {
+class NetworkDetailedViewTest : public AshTestBase {
  public:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    if (IsInstantHotspotRebrandEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kInstantHotspotRebrand);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kInstantHotspotRebrand);
-    }
-  }
-
-  bool IsInstantHotspotRebrandEnabled() { return GetParam(); }
-
   void OpenNetworkDetailedView() {
     GetPrimaryUnifiedSystemTray()->ShowBubble();
 
@@ -121,14 +108,11 @@ class NetworkDetailedViewTest : public AshTestBase,
         network_detailed_view_->GetViewByID(static_cast<int>(id)));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<NetworkDetailedView, DanglingUntriaged> network_detailed_view_;
   base::UserActionTester user_action_tester_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, NetworkDetailedViewTest, testing::Bool());
-
-TEST_P(NetworkDetailedViewTest, PressingSettingsButtonOpensSettings) {
+TEST_F(NetworkDetailedViewTest, PressingSettingsButtonOpensSettings) {
   CheckHistogramBuckets(/*count=*/0);
 
   GetSessionControllerClient()->SetSessionState(
@@ -165,7 +149,7 @@ TEST_P(NetworkDetailedViewTest, PressingSettingsButtonOpensSettings) {
   CheckHistogramBuckets(/*count=*/1);
 }
 
-TEST_P(NetworkDetailedViewTest, PressingInfoButtonOpensInfoBubble) {
+TEST_F(NetworkDetailedViewTest, PressingInfoButtonOpensInfoBubble) {
   OpenNetworkDetailedView();
 
   views::Button* info_button = FindInfoButton();
@@ -184,7 +168,7 @@ TEST_P(NetworkDetailedViewTest, PressingInfoButtonOpensInfoBubble) {
   EXPECT_FALSE(GetInfoBubble());
 }
 
-TEST_P(NetworkDetailedViewTest, InfoBubbleClosedWhenDetailedViewClosed) {
+TEST_F(NetworkDetailedViewTest, InfoBubbleClosedWhenDetailedViewClosed) {
   OpenNetworkDetailedView();
 
   views::Button* info_button = FindInfoButton();
@@ -200,14 +184,10 @@ TEST_P(NetworkDetailedViewTest, InfoBubbleClosedWhenDetailedViewClosed) {
   EXPECT_FALSE(bubble_tracker_.view());
 }
 
-TEST_P(NetworkDetailedViewTest, TitleRowString) {
+TEST_F(NetworkDetailedViewTest, TitleRowString) {
   OpenNetworkDetailedView();
 
-  if (IsInstantHotspotRebrandEnabled()) {
-    EXPECT_EQ(GetTitleRowStringId(), IDS_ASH_STATUS_TRAY_INTERNET);
-  } else {
-    EXPECT_EQ(GetTitleRowStringId(), IDS_ASH_STATUS_TRAY_NETWORK);
-  }
+  EXPECT_EQ(GetTitleRowStringId(), IDS_ASH_STATUS_TRAY_NETWORK);
 }
 
 }  // namespace ash

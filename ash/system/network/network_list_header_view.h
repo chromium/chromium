@@ -46,7 +46,6 @@ class ASH_EXPORT NetworkListHeaderView : public views::View,
   friend class NetworkListNetworkHeaderViewTest;
   friend class NetworkListMobileHeaderViewTest;
   friend class NetworkListWifiHeaderViewTest;
-  friend class NetworkListTetherHostsHeaderViewTest;
 
   // Owned by the views hierarchy.
   raw_ptr<HoverHighlightView> entry_row_ = nullptr;

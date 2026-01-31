@@ -236,10 +236,6 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       return false;
     }
 
-    if (this.isInstantHotspotRebrandEnabled_() &&
-        deviceState.type === NetworkType.kTether) {
-      return true;
-    }
     if (deviceState.type === NetworkType.kVPN) {
       return true;
     }
@@ -278,7 +274,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       case NetworkType.kVPN:
         return false;
       case NetworkType.kTether:
-        return !this.isInstantHotspotRebrandEnabled_();
+        return true;
       case NetworkType.kWiFi:
       case NetworkType.kCellular:
         return deviceState.deviceState !== DeviceStateType.kUninitialized;
@@ -327,13 +323,6 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     return '';
   }
 
-  /**
-   * @return True if instant hotspot rebrand feature flag is enabled.
-   */
-  private isInstantHotspotRebrandEnabled_(): boolean {
-    return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
-        loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
-  }
 
   /**
    * @return True if VPNs are disabled by policy and the current device is VPN.
@@ -605,9 +594,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     // The shared Cellular/Tether subpage is referred to as "Mobile".
     // TODO(khorimoto): Remove once Cellular/Tether are split into their own
     // sections.
-    if (type === NetworkType.kCellular ||
-        (type === NetworkType.kTether &&
-         !this.isInstantHotspotRebrandEnabled_())) {
+    if (type === NetworkType.kCellular || (type === NetworkType.kTether)) {
       type = NetworkType.kMobile;
     }
     return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));

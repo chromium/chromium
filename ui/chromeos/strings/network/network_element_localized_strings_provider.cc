@@ -154,20 +154,11 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kElementLocalizedStrings);
-
-  html_source->AddLocalizedString(
-      "OncTypeTether", ash::features::IsInstantHotspotRebrandEnabled()
-                           ? IDS_NETWORK_TYPE_HOTSPOT
-                           : IDS_NETWORK_TYPE_TETHER);
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
   for (const auto& entry : kElementLocalizedStrings)
     builder->Add(entry.name, entry.id);
-
-  builder->Add("OncTypeTether", ash::features::IsInstantHotspotRebrandEnabled()
-                                    ? IDS_NETWORK_TYPE_HOTSPOT
-                                    : IDS_NETWORK_TYPE_TETHER);
 }
 
 void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {

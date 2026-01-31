@@ -69,10 +69,6 @@ enum ViewID {
 
   VIEW_ID_MEDIA_TRAY_VIEW,
 
-  // The entry to open cross-device settings in the quick settings network
-  // subpage.
-  VIEW_ID_OPEN_CROSS_DEVICE_SETTINGS,
-
   // Ongoing Process view:
   VIEW_ID_ONGOING_PROCESS_ICON,
   VIEW_ID_ONGOING_PROCESS_PILL_BUTTON,

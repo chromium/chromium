@@ -47,7 +47,6 @@ NetworkListHeaderView
   └─NetworkListNetworkHeaderView
     ├─FakeNetworkListNetworkHeaderView
     ├─NetworkListMobileHeaderView
-    ├─NetworkListTetherHostsHeaderView
     └─NetworkListWifiHeaderView
 ```
 
@@ -125,8 +124,7 @@ toggles, including whether it is on, enabled, and visible.
 ### NetworkList\*HeaderView
 
 The
-[`NetworkListMobileHeaderView`](https://source.chromium.org/chromium/chromium/src/+/main:ash/system/network/network_list_mobile_header_view.h;l=15;drc=869ec54af88f43b5f9236f849ceac5a79066b3c1),
-[`NetworkListTetherHostsHeaderView`](https://source.chromium.org/chromium/chromium/src/+/main:ash/system/network/network_list_tether_hosts_header_view.h;l=16;drc=912e8ff344310668fae98ee2e41486045e675e3a),
+[`NetworkListMobileHeaderView`](https://source.chromium.org/chromium/chromium/src/+/main:ash/system/network/network_list_mobile_header_view.h;l=15;drc=869ec54af88f43b5f9236f849ceac5a79066b3c1)
 and [`NetworkListWifiHeaderView`](https://source.chromium.org/chromium/chromium/src/+/main:ash/system/network/network_list_wifi_header_view.h;l=15;drc=869ec54af88f43b5f9236f849ceac5a79066b3c1)
 classes all extend the `NetworkListNetworkHeaderView` class and implement additional
 functionality that is specific to their section e.g., Cellular, Tether Hosts, or

@@ -10,7 +10,6 @@
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
-#include "ash/system/network/network_list_tether_hosts_header_view.h"
 #include "ash/system/network/network_list_wifi_header_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -47,9 +46,6 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   HoverHighlightView* AddConfigureNetworkEntry(NetworkType type) override;
   NetworkListMobileHeaderView* AddMobileSectionHeader() override;
   NetworkListWifiHeaderView* AddWifiSectionHeader() override;
-  NetworkListTetherHostsHeaderView* AddTetherHostsSectionHeader(
-      NetworkListTetherHostsHeaderView::OnExpandedStateToggle callback)
-      override;
   void UpdateScanningBarVisibility(bool visible) override;
   views::View* GetNetworkList(NetworkType type) override;
   void ReorderFirstListView(size_t index) override;
@@ -57,11 +53,9 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   void ReorderNetworkListView(size_t index) override;
   void ReorderMobileTopContainer(size_t index) override;
   void ReorderMobileListView(size_t index) override;
-  void ReorderTetherHostsListView(size_t index) override;
   void MaybeRemoveFirstListView() override;
   void UpdateWifiStatus(bool enabled) override;
   void UpdateMobileStatus(bool enabled) override;
-  void UpdateTetherHostsStatus(bool enabled) override;
   void ScrollToPosition(int position) override;
   int GetScrollPosition() override;
 
@@ -77,7 +71,6 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   raw_ptr<RoundedContainer> mobile_network_list_view_ = nullptr;
   raw_ptr<RoundedContainer> wifi_top_container_ = nullptr;
   raw_ptr<RoundedContainer> wifi_network_list_view_ = nullptr;
-  raw_ptr<RoundedContainer> tether_hosts_network_list_view_ = nullptr;
 };
 
 }  // namespace ash

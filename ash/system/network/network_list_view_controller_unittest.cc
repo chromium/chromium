@@ -26,7 +26,6 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/test_shell_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -38,8 +37,6 @@
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
-#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
@@ -87,7 +84,6 @@ const std::string kCellularName2 = "cellular_2";
 const char kCellularTestIccid[] = "1234567890";
 
 const char kTetherName[] = "tether";
-const char kTetherName2[] = "tether_2";
 
 const std::string kEthernetName = "ethernet";
 const std::string kEthernetName2 = "ethernet_2";
@@ -178,8 +174,7 @@ class FakeNetworkDetailedNetworkViewDelegate
 
 }  // namespace
 
-class NetworkListViewControllerTest : public AshTestBase,
-                                      public testing::WithParamInterface<bool> {
+class NetworkListViewControllerTest : public AshTestBase {
  public:
   NetworkListViewControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -189,22 +184,6 @@ class NetworkListViewControllerTest : public AshTestBase,
   ~NetworkListViewControllerTest() override = default;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (IsInstantHotspotRebrandEnabled()) {
-      enabled_features.push_back(features::kInstantHotspotRebrand);
-    } else {
-      disabled_features.push_back(features::kInstantHotspotRebrand);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-
-    fake_multidevice_setup_ =
-        std::make_unique<multidevice_setup::FakeMultiDeviceSetup>();
-    auto delegate = std::make_unique<TestShellDelegate>();
-    delegate->SetMultiDeviceSetupBinder(base::BindRepeating(
-        &multidevice_setup::MultiDeviceSetupBase::BindReceiver,
-        base::Unretained(fake_multidevice_setup_.get())));
-    set_shell_delegate(std::move(delegate));
     AshTestBase::SetUp();
 
     cros_network_ = std::make_unique<FakeCrosNetworkConfig>();
@@ -232,15 +211,12 @@ class NetworkListViewControllerTest : public AshTestBase,
             network_detailed_network_view_);
   }
 
-  bool IsInstantHotspotRebrandEnabled() { return GetParam(); }
-
   void TearDown() override {
     network_list_view_controller_impl_.reset();
     network_detailed_network_view_ = nullptr;
     widget_.reset();
     detailed_view_delegate_.reset();
     cros_network_.reset();
-    fake_multidevice_setup_.reset();
 
     AshTestBase::TearDown();
   }
@@ -263,11 +239,6 @@ class NetworkListViewControllerTest : public AshTestBase,
     EXPECT_EQ(GetMobileToggleButton()->GetIsOn(), toggled_on);
   }
 
-  HoverHighlightView* GetSetUpYourDeviceEntry() {
-    return FindViewById<HoverHighlightView*>(
-        VIEW_ID_OPEN_CROSS_DEVICE_SETTINGS);
-  }
-
   HoverHighlightView* GetAddWifiEntry() {
     return FindViewById<HoverHighlightView*>(VIEW_ID_JOIN_WIFI_NETWORK_ENTRY);
   }
@@ -284,20 +255,12 @@ class NetworkListViewControllerTest : public AshTestBase,
     return network_list_view_controller_impl_->wifi_header_view_;
   }
 
-  NetworkListTetherHostsHeaderView* GetTetherHostsSubHeader() {
-    return network_list_view_controller_impl_->tether_hosts_header_view_;
-  }
-
   TrayInfoLabel* GetMobileStatusMessage() {
     return network_list_view_controller_impl_->mobile_status_message_;
   }
 
   TrayInfoLabel* GetWifiStatusMessage() {
     return network_list_view_controller_impl_->wifi_status_message_;
-  }
-
-  TrayInfoLabel* GetTetherHostsStatusMessage() {
-    return network_list_view_controller_impl_->tether_hosts_status_message_;
   }
 
   TriView* GetConnectionWarning() {
@@ -357,26 +320,12 @@ class NetworkListViewControllerTest : public AshTestBase,
     index = 0;
     // Expect that the view at `index` is a network item, and that it is a
     // cellular network.
-    const NetworkType type = IsInstantHotspotRebrandEnabled()
-                                 ? NetworkType::kCellular
-                                 : NetworkType::kMobile;
+    const NetworkType type = NetworkType::kMobile;
     // const size_t count = cellular_network_count + tether_network_count;
-    const size_t count =
-        cellular_network_count +
-        (IsInstantHotspotRebrandEnabled() ? 0 : tether_network_count);
+    const size_t count = cellular_network_count + tether_network_count;
     for (unsigned long i = 0; i < count; i++) {
       CheckNetworkListItem(type, index++,
                            /*guid=*/std::nullopt);
-    }
-
-    if (IsInstantHotspotRebrandEnabled()) {
-      index = 0;
-      // Expect that the view at `index` is a network item, and that it is a
-      // tether network.
-      for (int i = 0; i < tether_network_count; i++) {
-        CheckNetworkListItem(NetworkType::kMobile, index++,
-                             /*guid=*/std::nullopt);
-      }
     }
   }
 
@@ -469,9 +418,6 @@ class NetworkListViewControllerTest : public AshTestBase,
 
   FakeCrosNetworkConfig* cros_network() { return cros_network_.get(); }
 
-  std::unique_ptr<multidevice_setup::FakeMultiDeviceSetup>
-      fake_multidevice_setup_;
-
   base::HistogramTester histogram_tester;
 
  private:
@@ -485,7 +431,6 @@ class NetworkListViewControllerTest : public AshTestBase,
     return ash_test_helper()->bluetooth_config_test_helper();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeCrosNetworkConfig> cros_network_;
   FakeNetworkDetailedNetworkViewDelegate fake_network_detailed_network_delagte_;
   std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
@@ -499,82 +444,7 @@ class NetworkListViewControllerTest : public AshTestBase,
       network_list_view_controller_impl_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, NetworkListViewControllerTest, testing::Bool());
-
-TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
-  EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
-
-  auto properties =
-      chromeos::network_config::mojom::DeviceStateProperties::New();
-  properties->type = NetworkType::kTether;
-  properties->device_state = DeviceStateType::kEnabled;
-  cros_network()->SetDeviceProperties(properties.Clone());
-
-  // Add tether network
-  cros_network()->AddNetworkAndDevice(
-      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
-          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
-
-  if (IsInstantHotspotRebrandEnabled()) {
-    ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
-  } else {
-    ASSERT_THAT(GetTetherHostsSubHeader(), IsNull());
-    return;
-  }
-
-  // Add cellular network
-  cros_network()->AddNetworkAndDevice(
-      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
-          kCellularName, NetworkType::kCellular,
-          ConnectionStateType::kConnected));
-
-  ASSERT_THAT(GetMobileSubHeader(), NotNull());
-  ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
-
-  // Tether device is prohibited.
-  properties->type = NetworkType::kTether;
-  properties->device_state = DeviceStateType::kProhibited;
-  cros_network()->SetDeviceProperties(properties.Clone());
-  EXPECT_THAT(GetMobileSubHeader(), NotNull());
-  EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
-  // Tether device is uninitialized but is primary user.
-  properties->device_state = DeviceStateType::kUninitialized;
-  cros_network()->SetDeviceProperties(properties.Clone());
-  ASSERT_THAT(GetMobileSubHeader(), NotNull());
-  EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
-  EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
-  EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
-
-  // Tap the Tether Header - hide the Network List
-  LeftClickOn(GetTetherHostsSubHeader());
-  EXPECT_FALSE(network_list(NetworkType::kTether)->GetVisible());
-
-  // Tap it again - show the list
-  LeftClickOn(GetTetherHostsSubHeader());
-  EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
-
-  // Simulate login as secondary user.
-  LoginAsSecondaryUser();
-  cros_network()->ClearNetworksAndDevices();
-
-  EXPECT_THAT(GetMobileSubHeader(), IsNull());
-
-  // Add tether networks
-  cros_network()->AddNetworkAndDevice(
-      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
-          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
-
-  ASSERT_THAT(GetMobileSubHeader(), IsNull());
-  ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
-
-  // Disable tether and ensure that the section is not shown.
-  properties->device_state = DeviceStateType::kDisabled;
-  cros_network()->SetDeviceProperties(properties.Clone());
-
-  ASSERT_THAT(GetTetherHostsSubHeader(), IsNull());
-}
-
-TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
+TEST_F(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
 
   auto properties =
@@ -591,10 +461,6 @@ TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
 
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
 
-  if (IsInstantHotspotRebrandEnabled()) {
-    return;
-  }
-
   // Add tether networks
   cros_network()->AddNetworkAndDevice(
       CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
@@ -627,7 +493,7 @@ TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
 }
 
-TEST_P(NetworkListViewControllerTest, WifiSectionHeader) {
+TEST_F(NetworkListViewControllerTest, WifiSectionHeader) {
   EXPECT_THAT(GetWifiSubHeader(), IsNull());
 
   // Add an enabled wifi device.
@@ -649,7 +515,7 @@ TEST_P(NetworkListViewControllerTest, WifiSectionHeader) {
   CheckWifiToggleButtonStatus(/*toggled_on=*/false);
 }
 
-TEST_P(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
+TEST_F(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
 
@@ -702,7 +568,7 @@ TEST_P(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
   EXPECT_THAT(GetAddESimEntry(), IsNull());
 }
 
-TEST_P(NetworkListViewControllerTest,
+TEST_F(NetworkListViewControllerTest,
        MobileSectionListAddEsimEntryNotAddedWhenLocked) {
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
@@ -724,7 +590,7 @@ TEST_P(NetworkListViewControllerTest,
   EXPECT_THAT(GetAddESimEntry(), IsNull());
 }
 
-TEST_P(NetworkListViewControllerTest, AddESimEntryUMAMetrics) {
+TEST_F(NetworkListViewControllerTest, AddESimEntryUMAMetrics) {
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
 
@@ -745,7 +611,7 @@ TEST_P(NetworkListViewControllerTest, AddESimEntryUMAMetrics) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("QS_Subpage_Network_AddESim"));
 }
 
-TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
+TEST_F(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
   EXPECT_EQ(0u, network_list(NetworkType::kMobile)->children().size());
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
@@ -814,21 +680,16 @@ TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
       CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
           kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
 
-  if (IsInstantHotspotRebrandEnabled()) {
-    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*wifi_network_count=*/0);
-  } else {
-    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*wifi_network_count=*/0,
-                             /*cellular_network_count=*/0,
-                             /*tether_network_count=*/1);
-  }
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/0,
+                           /*tether_network_count=*/1);
 
   CheckNetworkListItem(NetworkType::kTether, /*index=*/0u,
                        /*guid=*/kTetherName);
 }
 
-TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
+TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
   std::vector<NetworkStatePropertiesPtr> networks;
 
   cros_network()->AddNetworkAndDevice(
@@ -870,141 +731,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
                        /*guid=*/kCellularName);
 }
 
-TEST_P(NetworkListViewControllerTest,
-       WillShowTetherHostsNetworkListWhenHostIsAvailable) {
-  for (const auto& host_status :
-       {multidevice_setup::mojom::HostStatus::kNoEligibleHosts,
-        multidevice_setup::mojom::HostStatus::kHostVerified,
-        multidevice_setup::mojom::HostStatus::
-            kHostSetLocallyButWaitingForBackendConfirmation,
-        multidevice_setup::mojom::HostStatus::kHostSetButNotYetVerified}) {
-    fake_multidevice_setup_->NotifyHostStatusChanged(host_status, std::nullopt);
-    fake_multidevice_setup_->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
-
-    // Since we didn't send a notification that the host is ready and not set,
-    // the Tether section shouldn't be shown regardless of the value of the
-    // feature flag.
-    EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
-  }
-
-  fake_multidevice_setup_->NotifyHostStatusChanged(
-      multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      std::nullopt);
-  fake_multidevice_setup_->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  // If the rebrand is enabled, the tether section should be shown. If not, it
-  // shouldn't be
-  if (IsInstantHotspotRebrandEnabled()) {
-    EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
-    EXPECT_THAT(GetSetUpYourDeviceEntry(), NotNull());
-    LeftClickOn(GetSetUpYourDeviceEntry());
-    EXPECT_EQ(1, GetSystemTrayClient()->show_multi_device_setup_count());
-  } else {
-    EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
-    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
-  }
-
-  // Add tether host.
-  fake_multidevice_setup_->NotifyHostStatusChanged(
-      multidevice_setup::mojom::HostStatus::kHostVerified, std::nullopt);
-  fake_multidevice_setup_->FlushForTesting();
-  auto properties =
-      chromeos::network_config::mojom::DeviceStateProperties::New();
-  properties->type = NetworkType::kTether;
-  properties->device_state = DeviceStateType::kEnabled;
-  cros_network()->SetDeviceProperties(properties.Clone());
-
-  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*wifi_network_count=*/0,
-                           /*cellular_network_count=*/0,
-                           /*tether_network_count=*/0);
-
-  cros_network()->AddNetworkAndDevice(
-      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
-          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
-  base::RunLoop().RunUntilIdle();
-
-  if (IsInstantHotspotRebrandEnabled()) {
-    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
-    EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
-  } else {
-    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
-    EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
-  }
-}
-
-TEST_P(NetworkListViewControllerTest, HasCorrectTetherHostsNetworkList) {
-  EXPECT_EQ(0u, network_list(NetworkType::kTether)->children().size());
-  EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
-
-  auto properties =
-      chromeos::network_config::mojom::DeviceStateProperties::New();
-  properties->type = NetworkType::kTether;
-  properties->device_state = DeviceStateType::kEnabled;
-  cros_network()->SetDeviceProperties(properties.Clone());
-
-  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*wifi_network_count=*/0,
-                           /*cellular_network_count=*/0,
-                           /*tether_network_count=*/0);
-
-  // Add tether host.
-  cros_network()->AddNetworkAndDevice(
-      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
-          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
-
-  if (IsInstantHotspotRebrandEnabled()) {
-    EXPECT_THAT(GetMobileSubHeader(), IsNull());
-    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*wifi_network_count=*/0,
-                             /*cellular_network_count=*/0,
-                             /*tether_network_count=*/1);
-  } else {
-    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*wifi_network_count=*/0,
-                             /*cellular_network_count=*/0,
-                             /*tether_network_count=*/0);
-  }
-
-  // Add mobile network.
-  cros_network()->AddNetworkAndDevice(
-      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
-          kCellularName, NetworkType::kCellular,
-          ConnectionStateType::kConnected));
-
-  if (features::IsInstantHotspotRebrandEnabled()) {
-    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*wifi_network_count=*/0,
-                             /*cellular_network_count=*/1,
-                             /*tether_network_count=*/1);
-  } else {
-    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*wifi_network_count=*/0,
-                             /*cellular_network_count=*/0,
-                             /*tether_network_count=*/0);
-  }
-
-  // Add another tether host.
-  cros_network()->AddNetworkAndDevice(
-      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
-          kTetherName2, NetworkType::kTether, ConnectionStateType::kConnected));
-
-  if (features::IsInstantHotspotRebrandEnabled()) {
-    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*wifi_network_count=*/0,
-                             /*cellular_network_count=*/1,
-                             /*tether_network_count=*/2);
-  } else {
-    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*wifi_network_count=*/0,
-                             /*cellular_network_count=*/0,
-                             /*tether_network_count=*/0);
-  }
-}
-
-TEST_P(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
+TEST_F(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
   // Add an enabled wifi device.
   cros_network()->AddNetworkAndDevice(
       CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
@@ -1070,7 +797,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
       1, user_action_tester.GetActionCount("QS_Subpage_Network_JoinNetwork"));
 }
 
-TEST_P(NetworkListViewControllerTest,
+TEST_F(NetworkListViewControllerTest,
        StaysInTheSamePositionAfterUpdatingNetworks) {
   // Sets a screen with a limited height to make sure it can be scrollable.
   UpdateDisplay("500x200");
@@ -1140,7 +867,7 @@ TEST_P(NetworkListViewControllerTest,
   EXPECT_EQ(37, network_detailed_network_view()->GetScrollPosition());
 }
 
-TEST_P(NetworkListViewControllerTest,
+TEST_F(NetworkListViewControllerTest,
        CellularStatusMessageAndToggleButtonState) {
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
 
@@ -1252,12 +979,7 @@ TEST_P(NetworkListViewControllerTest,
   properties->device_state = DeviceStateType::kDisabled;
   cros_network()->SetDeviceProperties(properties.Clone());
 
-  if (IsInstantHotspotRebrandEnabled()) {
-    // No mobile network list is shown when device is disabled.
-    EXPECT_FALSE(network_list(NetworkType::kCellular)->GetVisible());
-  } else {
-    EXPECT_FALSE(network_list(NetworkType::kMobile)->GetVisible());
-  }
+  EXPECT_FALSE(network_list(NetworkType::kMobile)->GetVisible());
 
   CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/false);
 
@@ -1273,13 +995,9 @@ TEST_P(NetworkListViewControllerTest,
   EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
 }
 
-TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
+TEST_F(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
   // Mobile section is not shown if Tether network is unavailable.
-  if (!IsInstantHotspotRebrandEnabled()) {
-    EXPECT_THAT(GetMobileStatusMessage(), IsNull());
-  } else {
-    EXPECT_THAT(GetTetherHostsStatusMessage(), IsNull());
-  }
+  EXPECT_THAT(GetMobileStatusMessage(), IsNull());
 
   // Tether is enabled but no devices are added.
   auto properties =
@@ -1288,76 +1006,43 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
   properties->device_state = DeviceStateType::kEnabled;
   cros_network()->SetDeviceProperties(properties.Clone());
 
-  if (!IsInstantHotspotRebrandEnabled()) {
-    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-    ASSERT_THAT(GetMobileSubHeader(), NotNull());
-    CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
-    EXPECT_EQ(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND),
-        GetMobileStatusMessage()->label()->GetText());
-    EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
-  } else {
-    ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
-    ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_NETWORK_NO_TETHER_DEVICES_FOUND),
-              GetTetherHostsStatusMessage()->label()->GetText());
-    EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
-  }
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+  ASSERT_THAT(GetMobileSubHeader(), NotNull());
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND),
+      GetMobileStatusMessage()->label()->GetText());
+  EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
 
   // Tether network is uninitialized and Bluetooth state enabling.
   properties->device_state = DeviceStateType::kUninitialized;
   cros_network()->SetDeviceProperties(properties.Clone());
   SetBluetoothAdapterState(BluetoothSystemState::kEnabling);
-  if (!IsInstantHotspotRebrandEnabled()) {
-    CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/true);
-    EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
-    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-    EXPECT_EQ(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR),
-        GetMobileStatusMessage()->label()->GetText());
-  } else {
-    EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
-    ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_NETWORK_NO_TETHER_DEVICES_FOUND),
-              GetTetherHostsStatusMessage()->label()->GetText());
-  }
+  CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/true);
+  EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR),
+      GetMobileStatusMessage()->label()->GetText());
 
   // Set Bluetooth device to disabling.
   SetBluetoothAdapterState(BluetoothSystemState::kDisabling);
-  if (!IsInstantHotspotRebrandEnabled()) {
-    CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/false);
-    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-    EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH),
-              GetMobileStatusMessage()->label()->GetText());
-  } else {
-    ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
-    EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_NETWORK_TETHER_NO_BLUETOOTH),
-              GetTetherHostsStatusMessage()->label()->GetText());
-  }
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/false);
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+  EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH),
+            GetMobileStatusMessage()->label()->GetText());
 
   // Simulate login as secondary user and disable Bluetooth device.
   LoginAsSecondaryUser();
   SetBluetoothAdapterState(BluetoothSystemState::kDisabled);
-  if (!IsInstantHotspotRebrandEnabled()) {
-    CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/false);
-    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-    EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH),
-              GetMobileStatusMessage()->label()->GetText());
-  } else {
-    ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
-    EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_NETWORK_TETHER_NO_BLUETOOTH),
-              GetTetherHostsStatusMessage()->label()->GetText());
-  }
+  CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/false);
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+  EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH),
+            GetMobileStatusMessage()->label()->GetText());
 
   // No message shown when Tether devices are added, AND Bluetooth is enabled.
   cros_network()->AddNetworkAndDevice(
@@ -1365,17 +1050,14 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
           kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
   SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
-  EXPECT_THAT(GetTetherHostsStatusMessage(), IsNull());
 
   properties->device_state = DeviceStateType::kDisabled;
   cros_network()->SetDeviceProperties(properties.Clone());
   // No mobile network list is shown when device is disabled.
-  if (!IsInstantHotspotRebrandEnabled()) {
-    EXPECT_FALSE(network_list(NetworkType::kMobile)->GetVisible());
-  }
+  EXPECT_FALSE(network_list(NetworkType::kMobile)->GetVisible());
 }
 
-TEST_P(NetworkListViewControllerTest, HasCorrectWifiStatusMessage) {
+TEST_F(NetworkListViewControllerTest, HasCorrectWifiStatusMessage) {
   EXPECT_THAT(GetWifiStatusMessage(), IsNull());
 
   // Add an enabled wifi device.
@@ -1405,7 +1087,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiStatusMessage) {
                            /*tether_network_count=*/-1);
 }
 
-TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconVpn) {
+TEST_F(NetworkListViewControllerTest, ConnectionWarningSystemIconVpn) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
   cros_network()->AddManagedProperties(
       kVpnName, CreateManagedPropertiesWithVPN(/*is_managed=*/false));
@@ -1429,7 +1111,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconVpn) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
 }
 
-TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconVpn) {
+TEST_F(NetworkListViewControllerTest, ConnectionWarningManagedIconVpn) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
 
   cros_network()->AddManagedProperties(
@@ -1454,7 +1136,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconVpn) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
 }
 
-TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconProxy) {
+TEST_F(NetworkListViewControllerTest, ConnectionWarningSystemIconProxy) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
 
   cros_network()->AddManagedProperties(
@@ -1479,7 +1161,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconProxy) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
 }
 
-TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconProxy) {
+TEST_F(NetworkListViewControllerTest, ConnectionWarningManagedIconProxy) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
 
   cros_network()->AddManagedProperties(
@@ -1506,7 +1188,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconProxy) {
 
 // Disconnect and re-connect a network that shows a warning.
 // Regression test for b/263803248.
-TEST_P(NetworkListViewControllerTest, ConnectionWarningDisconnectReconnect) {
+TEST_F(NetworkListViewControllerTest, ConnectionWarningDisconnectReconnect) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
 
   cros_network()->AddManagedProperties(
@@ -1544,7 +1226,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningDisconnectReconnect) {
   }
 }
 
-TEST_P(NetworkListViewControllerTest,
+TEST_F(NetworkListViewControllerTest,
        ConnectionWarningDnsTemplateUriWithIdentifier) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
   auto network = CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
@@ -1564,7 +1246,7 @@ TEST_P(NetworkListViewControllerTest,
       GetConnectionLabelView()->GetText());
 }
 
-TEST_P(NetworkListViewControllerTest, ConnectionWarningDeviceReportXDREvents) {
+TEST_F(NetworkListViewControllerTest, ConnectionWarningDeviceReportXDREvents) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
   auto network = CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
       kWifiName, NetworkType::kWiFi, ConnectionStateType::kConnected);
@@ -1600,7 +1282,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningDeviceReportXDREvents) {
       GetConnectionLabelView()->GetText());
 }
 
-TEST_P(NetworkListViewControllerTest, NetworkScanning) {
+TEST_F(NetworkListViewControllerTest, NetworkScanning) {
   cros_network()->ClearNetworksAndDevices();
   int initial_wifi_count = 0;
   int initial_tether_count = 0;
@@ -1682,7 +1364,7 @@ TEST_P(NetworkListViewControllerTest, NetworkScanning) {
             cros_network()->GetScanCount(NetworkType::kTether));
 }
 
-TEST_P(NetworkListViewControllerTest, NetworkItemIsEnabled) {
+TEST_F(NetworkListViewControllerTest, NetworkItemIsEnabled) {
   auto properties =
       chromeos::network_config::mojom::DeviceStateProperties::New();
   properties->type = NetworkType::kCellular;
@@ -1713,7 +1395,7 @@ TEST_P(NetworkListViewControllerTest, NetworkItemIsEnabled) {
   EXPECT_TRUE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 0u));
 }
 
-TEST_P(NetworkListViewControllerTest, NetworkItemDuringFlashing) {
+TEST_F(NetworkListViewControllerTest, NetworkItemDuringFlashing) {
   auto properties =
       chromeos::network_config::mojom::DeviceStateProperties::New();
   properties->type = NetworkType::kCellular;
@@ -1746,7 +1428,7 @@ TEST_P(NetworkListViewControllerTest, NetworkItemDuringFlashing) {
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
 }
 
-TEST_P(NetworkListViewControllerTest, NetworkItemWhileSimLocked) {
+TEST_F(NetworkListViewControllerTest, NetworkItemWhileSimLocked) {
   ClearLogin();
 
   auto device_properties =

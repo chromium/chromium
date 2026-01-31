@@ -3165,9 +3165,6 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_QUICK_SETTINGS_JOIN_WIFI_NETWORK" desc="The label used in the network detailed page for the Join Wi-Fi network entry">
         Join Wi-Fi network
       </message>
-      <message name="IDS_ASH_QUICK_SETTINGS_SET_UP_YOUR_DEVICE" desc="The label used in the network detailed page for the Set Up Your Device network entry">
-        Set up your device
-      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_ADD_ESIM" desc="The label used in the network detailed page for the Add eSIM network entry">
         Add eSIM
       </message>
