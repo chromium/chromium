@@ -209,7 +209,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_query, actionBar, true);
         View searchBox = mActivity.findViewById(R.id.search_box);
         setSearchBoxVerticalMargin(searchBox, mUseMultiColumn);
-        searchBox.setOnClickListener(v -> enterSearchState(/* clearFragment= */ true));
+        searchBox.setOnClickListener(v -> enterSearchState(/* showZeroState= */ true));
 
         View query = mActivity.findViewById(R.id.search_query_container);
         if (mMultiColumnSettings != null) {
@@ -234,8 +234,8 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         if (savedState != null) {
             int state = savedState.getInt(KEY_FRAGMENT_STATE);
             if (state == FS_SEARCH || state == FS_RESULTS) {
-                enterSearchState(/* clearFragment= */ false);
-                if (state == FS_RESULTS) enterSearchResultState();
+                enterSearchState(/* showZeroState= */ false);
+                if (state == FS_RESULTS) enterResultState();
                 String queryText = savedState.getString(KEY_QUERY);
                 if (!TextUtils.isEmpty(queryText)) {
                     queryEdit.setText(queryText);
@@ -277,9 +277,19 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         if (queryEdit.getText().toString().isEmpty()) return;
 
+        if (mMultiColumnSettings != null && mUseMultiColumn && mFragmentState == FS_RESULTS) {
+            // If clicked while displaying search results, get out of FS_RESULTS state.
+            mFragmentState = FS_SEARCH;
+            mActivity.findViewById(R.id.search_query_container).setVisibility(View.VISIBLE);
+            showBackArrowInSingleColumnMode(false);
+            getSettingsFragmentManager()
+                    .popBackStackImmediate(
+                            RESULT_BACKSTACK, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
         queryEdit.setText("");
         updateClearTextButton(queryEdit.getText());
         clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
+        queryEdit.requestFocus();
         KeyboardUtils.showKeyboard(queryEdit);
     }
 
@@ -381,7 +391,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         } else if (mFragmentState == FS_SEARCH) {
             exitSearchState(/* clearFragment= */ true);
         } else if (mFragmentState == FS_RESULTS) {
-            exitResultState();
+            stepBackInResultState();
         } else {
             assert false : "Unreachable state.";
         }
@@ -469,7 +479,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         return providerMap;
     }
 
-    private void enterSearchState(boolean clearFragment) {
+    private void enterSearchState(boolean showZeroState) {
         initIndex();
 
         if (mMultiColumnSettings != null && !mMultiColumnSettingsBackActionHandlerSet) {
@@ -484,14 +494,16 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         queryContainer.setVisibility(View.VISIBLE);
         showBackArrowInSingleColumnMode(false);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
-        queryEdit.requestFocus();
         queryEdit.setText("");
-        KeyboardUtils.showKeyboard(queryEdit);
         mQueryEntered = false;
-        if (clearFragment) {
+        if (showZeroState) {
+            // Focus is required only if we display a zero-state illustration, not when we simply
+            // mean to clear fragment.
+            queryEdit.requestFocus();
             clearFragment(
                     R.drawable.settings_zero_state, /* addToBackStack= */ true, emptyRunnable());
         }
+        KeyboardUtils.showKeyboard(queryEdit);
         mFragmentState = FS_SEARCH;
         mBackActionCallback.setEnabled(true);
         if (mMultiColumnSettings != null && isShowingMainSettings()) {
@@ -542,7 +554,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         mShowingEmptyFragment = false;
     }
 
-    private void exitResultState() {
+    private void stepBackInResultState() {
         FragmentManager fragmentManager = getSettingsFragmentManager();
         int stackCount = fragmentManager.getBackStackEntryCount();
         if (stackCount > 0) {
@@ -703,7 +715,15 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
     /** Show/hide search bar UI. */
     public void showSearchBar(boolean show) {
-        if (!mUseMultiColumn) return;
+        // This is called to restore search box UI when it was hidden for local search.
+        // Should not do thi when we're displaying search results fragment (or query edit
+        // is visible), since search box should remain hidden.
+        if (!mUseMultiColumn
+                || mFragmentState == FS_RESULTS
+                || mActivity.findViewById(R.id.search_query_container).getVisibility()
+                        == View.VISIBLE) {
+            return;
+        }
 
         View searchBox = mActivity.findViewById(R.id.search_box);
         searchBox.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -937,7 +957,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         if (preferenceFragment == null) {
             if (MainSettings.openSearchResult(
                     mActivity, mProfile, key, extras, mModalDialogManagerSupplier.asNonNull())) {
-                enterSearchResultState();
+                enterResultState();
             }
             return;
         }
@@ -980,10 +1000,10 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
             return;
         }
 
-        enterSearchResultState();
+        enterResultState();
     }
 
-    private void enterSearchResultState() {
+    private void enterResultState() {
         mFragmentState = FS_RESULTS;
         if (mUseMultiColumn) {
             mActivity.findViewById(R.id.search_query).clearFocus();
