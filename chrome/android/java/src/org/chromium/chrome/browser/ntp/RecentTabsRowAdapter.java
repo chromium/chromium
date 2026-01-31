@@ -31,7 +31,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
@@ -474,29 +473,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    /** A group containing the personalized sync promo. */
-    class PersonalizedSigninPromoGroup extends PromoGroup {
-        @Override
-        @ChildType
-        int getChildType() {
-            return ChildType.SIGNIN_PROMO;
-        }
-
-        @Override
-        View getChildView(
-                int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-                convertView =
-                        layoutInflater.inflate(R.layout.sync_promo_view_recent_tabs, parent, false);
-            }
-            mRecentTabsManager.setUpSyncPromoView(
-                    convertView.findViewById(R.id.signin_promo_view_container));
-            return convertView;
-        }
-    }
-
-    /** A group containing the personalized sync promo. */
+    /** A group containing the signin promo. */
     class SigninPromoGroup extends PromoGroup {
         @Override
         public @ChildType int getChildType() {
@@ -1122,11 +1099,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
 
         if (mRecentTabsManager.shouldShowPromo()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-                addGroup(new SigninPromoGroup());
-            } else {
-                addGroup(new PersonalizedSigninPromoGroup());
-            }
+            addGroup(new SigninPromoGroup());
         } else {
             boolean recentlyClosedGroupIsOnlyHeader =
                     mRecentlyClosedTabsGroup.getChildrenCount() == 1;

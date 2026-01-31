@@ -14,10 +14,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
@@ -33,15 +31,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.ui.signin.SyncPromoController;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.signin_promo.RecentTabsSigninPromoDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -69,7 +63,7 @@ public class RecentTabsManager
     private final Profile mProfile;
     private final Tab mActiveTab;
     private final Runnable mShowHistoryManager;
-    private final @Nullable SigninPromoCoordinator mSigninPromoCoordinator;
+    private final SigninPromoCoordinator mSigninPromoCoordinator;
     private FaviconHelper mFaviconHelper;
     private ForeignSessionHelper mForeignSessionHelper;
     private List<ForeignSession> mForeignSessions;
@@ -81,7 +75,6 @@ public class RecentTabsManager
     private boolean mIsDestroyed;
 
     private final ProfileDataCache mProfileDataCache;
-    private final SyncPromoController mSyncPromoController;
     private final SyncService mSyncService;
     private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
 
@@ -132,37 +125,22 @@ public class RecentTabsManager
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                         activity, mSignInManager.getIdentityManager());
-        AccountPickerBottomSheetStrings bottomSheetStrings =
-                new AccountPickerBottomSheetStrings.Builder(
-                                activity.getString(
-                                        R.string.signin_account_picker_bottom_sheet_title))
-                        .build();
-        mSyncPromoController =
-                new SyncPromoController(
-                        mProfile,
-                        bottomSheetStrings,
-                        SigninAccessPoint.RECENT_TABS,
-                        SigninAndHistorySyncActivityLauncherImpl.get());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            mSigninPromoCoordinator =
-                    new SigninPromoCoordinator(
-                            windowAndroid,
-                            activity,
-                            profile,
-                            activityResultTracker,
-                            SigninAndHistorySyncActivityLauncherImpl.get(),
-                            bottomSheetController,
-                            modalDialogManagerSupplier,
-                            snackbarManager,
-                            DeviceLockActivityLauncherImpl.get(),
-                            new RecentTabsSigninPromoDelegate(
-                                    activity,
-                                    profile,
-                                    SigninAndHistorySyncActivityLauncherImpl.get(),
-                                    this::updatePromoState));
-        } else {
-            mSigninPromoCoordinator = null;
-        }
+        mSigninPromoCoordinator =
+                new SigninPromoCoordinator(
+                        windowAndroid,
+                        activity,
+                        profile,
+                        activityResultTracker,
+                        SigninAndHistorySyncActivityLauncherImpl.get(),
+                        bottomSheetController,
+                        modalDialogManagerSupplier,
+                        snackbarManager,
+                        DeviceLockActivityLauncherImpl.get(),
+                        new RecentTabsSigninPromoDelegate(
+                                activity,
+                                profile,
+                                SigninAndHistorySyncActivityLauncherImpl.get(),
+                                this::updatePromoState));
         mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(mProfile));
 
         mRecentlyClosedEntriesManager.setEntriesUpdatedCallback(
@@ -177,11 +155,7 @@ public class RecentTabsManager
         mSignInManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
         AccountManagerFacadeProvider.getInstance().addObserver(this);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            updatePromoState();
-        } else {
-            updatePromoStateLegacy();
-        }
+        updatePromoState();
 
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageOpened();
     }
@@ -475,37 +449,8 @@ public class RecentTabsManager
         return mShouldShowPromo;
     }
 
-    private boolean calculateShouldShowPromo() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            assumeNonNull(mSigninPromoCoordinator);
-            return mSigninPromoCoordinator.canShowPromo();
-        } else {
-            return mSyncPromoController.canShowSyncPromo();
-        }
-    }
-
-    private void updatePromoStateLegacy() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            return;
-        }
-        final boolean shouldShowPromo = calculateShouldShowPromo();
-        if (shouldShowPromo == mShouldShowPromo) return;
-
-        final boolean hasPromoVisibilityChangedtoShown = !mShouldShowPromo && shouldShowPromo;
-        if (hasPromoVisibilityChangedtoShown) {
-            mSyncPromoController.increasePromoShowCount();
-        }
-        mShouldShowPromo = shouldShowPromo;
-    }
-
-    /** Sets up the sync promo view. */
-    void setUpSyncPromoView(PersonalizedSigninPromoView view) {
-        mSyncPromoController.setUpSyncPromoView(mProfileDataCache, view, null);
-    }
-
     View getSigninPromoView(ViewGroup parent) {
         if (mSigninPromoView == null) {
-            assumeNonNull(mSigninPromoCoordinator);
             mSigninPromoView = mSigninPromoCoordinator.buildPromoView(parent);
             mSigninPromoCoordinator.setView(mSigninPromoView);
         }
@@ -548,14 +493,13 @@ public class RecentTabsManager
     }
 
     private void update() {
-        updatePromoStateLegacy();
         if (mIsDestroyed) return;
         updateForeignSessions();
         onUpdateDone();
     }
 
     private void updatePromoState() {
-        final boolean shouldShowPromo = calculateShouldShowPromo();
+        final boolean shouldShowPromo = mSigninPromoCoordinator.canShowPromo();
         if (shouldShowPromo == mShouldShowPromo) return;
         mShouldShowPromo = shouldShowPromo;
 
