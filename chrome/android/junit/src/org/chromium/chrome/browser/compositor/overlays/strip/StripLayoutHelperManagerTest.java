@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -117,7 +118,10 @@ import java.util.List;
 /** Tests for {@link StripLayoutHelperManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
-@DisableFeatures({ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION, ChromeFeatureList.DATA_SHARING})
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+    ChromeFeatureList.DATA_SHARING
+})
 public class StripLayoutHelperManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabStripSceneLayer.Natives mTabStripSceneMock;
@@ -862,7 +866,6 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
     public void testGetFadeTransitionThresholdDp_MsbShown() {
         when(mStandardTabModel.getCount()).thenReturn(1);
         int expectedThresholdDp = 284;
@@ -870,15 +873,15 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testGetFadeTransitionThresholdDp_MsbHide_IncognitoMigrationEnabled() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mStandardTabModel.getCount()).thenReturn(1);
         int expectedThresholdDp = 236;
         assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
     public void testGetFadeTransitionThresholdDp_MsbHide_NoIncognitoTabs() {
         when(mStandardTabModel.getCount()).thenReturn(0);
         int expectedThresholdDp = 236;
@@ -1359,8 +1362,9 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testIncognitoSwitcherDisabled() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         initializeTest();
         assertNull(
                 "Incognto switcher button should not be created.",

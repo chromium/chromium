@@ -75,6 +75,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -341,9 +342,10 @@ public final class ToolbarTabletUnitTest {
                 mToolbarTabletLayout.getChildAt(3));
     }
 
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     @Test
     public void testButtonPositionIncognito() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         doAnswer(mAddIncognitoObserverInIncognitoMode)
                 .when(mIncognitoStateProvider)
                 .addIncognitoStateObserverAndTrigger(any());
@@ -445,8 +447,9 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void onMeasureIncognito_flipIncognitoVisibility() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         doAnswer(mAddIncognitoObserverInIncognitoMode)
                 .when(mIncognitoStateProvider)
                 .addIncognitoStateObserverAndTrigger(any());

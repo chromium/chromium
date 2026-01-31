@@ -28,7 +28,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -358,7 +358,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
         IphCommandBuilder builder = null;
-        if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()
                 && mTabModelSelectorSupplier.get() != null) {
             TabModelSelector selector = mTabModelSelectorSupplier.get();
             // When in Incognito, show IPH to switch out.

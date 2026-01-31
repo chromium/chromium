@@ -209,8 +209,8 @@ public class TabSwitcherActionMenuCoordinator {
         boolean isCurrentModelIncognito =
                 selector != null && selector.isIncognitoBrandedModelSelected();
         boolean hasIncognitoTabs = selector != null && selector.getModel(true).getCount() > 0;
-        boolean incognitoMigrationFFEnabled =
-                ChromeFeatureList.sTabStripIncognitoMigration.isEnabled();
+        // TODO(crbug.com/479622391): Clean up incognitoMigrationFFEnabled.
+        boolean incognitoMigrationFFEnabled = IncognitoUtils.shouldOpenIncognitoAsWindow();
         boolean supportedMixedWindows = !IncognitoUtils.shouldOpenIncognitoAsWindow();
         ModelList itemList = new ModelList();
         itemList.add(buildListItemByMenuItemType(MenuItemType.CLOSE_TAB));

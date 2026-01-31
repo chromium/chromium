@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDra
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -521,7 +522,7 @@ public class StripLayoutHelperManager
                 };
         mStripVisibilityStateSupplier.addObserver(mStripVisibilityStateObserver);
 
-        if (!ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             StripLayoutViewOnClickHandler selectorClickHandler =
                     (time, view, motionEventButtonState, modifiers) ->
                             handleModelSelectorButtonClick();
@@ -1127,8 +1128,7 @@ public class StripLayoutHelperManager
         if (mTabModelSelector == null) return 0;
         TabModel incognitoTabModel = mTabModelSelector.getModel(/* incognito= */ true);
         boolean hasIncognitoTabs = incognitoTabModel != null && incognitoTabModel.getCount() > 0;
-        boolean shouldShowMsb =
-                !ChromeFeatureList.sTabStripIncognitoMigration.isEnabled() && hasIncognitoTabs;
+        boolean shouldShowMsb = !IncognitoUtils.shouldOpenIncognitoAsWindow() && hasIncognitoTabs;
 
         // Tablet: 284 = 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) +
         // [optional] modelSelectorButton(48).

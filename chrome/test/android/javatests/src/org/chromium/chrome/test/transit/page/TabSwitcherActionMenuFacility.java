@@ -20,7 +20,6 @@ import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
@@ -73,7 +72,7 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
                                     withText(R.string.menu_new_incognito_tab)));
         }
 
-        if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             if (mHostStation.isIncognito()
                     && getTabCountOnUiThread(mHostStation.getTabModelSelector().getModel(false))
                             > 0) {

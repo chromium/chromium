@@ -38,6 +38,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
@@ -333,8 +334,9 @@ public class ToggleTabStackButtonCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testSwitchToIncognitoIphIsShown() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(
                         /* toggleTabStackButton= */ mToggleTabStackButton);

@@ -17,9 +17,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -148,9 +148,8 @@ public class TabSwitcherActionMenuPTTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     @LargeTest
+    @DisabledTest(message = "Invalid test case based on the current incognito window launch plan")
     public void testSwitchIntoAndOutOfIncognito() {
         // Open 1 regular and 1 incognito tab.
         CtaPageStation blankPage = mCtaTestRule.startOnBlankPage();
