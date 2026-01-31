@@ -1138,6 +1138,13 @@ inline constexpr char kCCTResetTimeoutEnabledDescription[] =
     "Enables the reset timeout for CCTs. This flag allows embedder to "
     "close CCT after a specified time in mins.";
 
+inline constexpr char kCCTResetTimeoutAllowedName[] =
+    "CCT Reset Timeout Allowed";
+inline constexpr char kCCTResetTimeoutAllowedDescription[] =
+    "Allows the reset timeout for CCTs to be set by the embedder. This flag "
+    "allows embedder to close CCT after a specified time in mins. This flag is "
+    "always enabled.";
+
 inline constexpr char kSearchInCCTName[] = "Search in Chrome Custom Tabs";
 inline constexpr char kSearchInCCTDescription[] =
     "Permits apps to create searchable and "

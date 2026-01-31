@@ -8935,6 +8935,7 @@ from previous Chrome versions.
   <int value="-1871034583" label="EnablePixPayments:disabled"/>
   <int value="-1870961970" label="enable-filemanager-mtp"/>
   <int value="-1869845022" label="force-show-update-menu-item"/>
+  <int value="-1869767210" label="CCTResetTimeoutAllowed:disabled"/>
   <int value="-1869700024" label="DisableDnsProxy:enabled"/>
   <int value="-1869432243" label="GoogleBrandedContextMenu:disabled"/>
   <int value="-1868978829" label="spurious-power-button-accel-count"/>
@@ -15067,6 +15068,7 @@ from previous Chrome versions.
   <int value="251266195" label="CapturedSurfaceControl:disabled"/>
   <int value="251367892" label="PersistentQuotaIsTemporaryQuota:disabled"/>
   <int value="251764234" label="AccessibilityPerformanceFiltering:disabled"/>
+  <int value="254486701" label="CCTResetTimeoutAllowed:enabled"/>
   <int value="254497185" label="VideoPlayerJsModules:enabled"/>
   <int value="255027960" label="AdaptiveButtonInTopToolbarTranslate:disabled"/>
   <int value="255274700" label="Canvas2dStaysGPUOnReadback:enabled"/>

@@ -1481,9 +1481,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "cct-reset-timeout-allowed",
+    "owners": ["kostyukovp@google.com", "tivi@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cct-reset-timeout-enabled",
-    "owners": ["kostyukovp@google.com", "edmundw@google.com"],
-    "expiry_milestone": 150
+    "owners": ["kostyukovp@google.com", "tivi@google.com"],
+    "expiry_milestone": 160
   },
   {
     "name": "cct-resizable-for-third-parties",

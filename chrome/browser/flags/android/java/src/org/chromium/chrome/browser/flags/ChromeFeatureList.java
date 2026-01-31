@@ -346,6 +346,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
     public static final String CCT_REPORT_PRERENDER_EVENTS = "CCTReportPrerenderEvents";
+    public static final String CCT_RESET_TIMEOUT_ALLOWED = "CCTResetTimeoutAllowed";
     public static final String CCT_RESET_TIMEOUT_ENABLED = "CCTResetTimeoutEnabled";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_SHOW_TAB_FIX = "CCTShowTabFix";
@@ -840,6 +841,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_OPEN_IN_BROWSER_BUTTON_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sCctRealtimeEngagementEventsInBackground =
             newCachedFlag(CCT_REALTIME_ENGAGEMENT_EVENTS_IN_BACKGROUND, true);
+    public static final CachedFlag sCctResetTimeoutAllowed =
+            newCachedFlag(CCT_RESET_TIMEOUT_ALLOWED, true);
     public static final CachedFlag sCctResetTimeoutEnabled =
             newCachedFlag(CCT_RESET_TIMEOUT_ENABLED, false);
     public static final CachedFlag sCctResizableForThirdParties =
@@ -1158,6 +1161,7 @@ public abstract class ChromeFeatureList {
                     sCctOpenInBrowserButtonIfAllowedByEmbedder,
                     sCctOpenInBrowserButtonIfEnabledByEmbedder,
                     sCctRealtimeEngagementEventsInBackground,
+                    sCctResetTimeoutAllowed,
                     sCctResetTimeoutEnabled,
                     sCctResizableForThirdParties,
                     sCctTabModalDialog,
@@ -1502,7 +1506,11 @@ public abstract class ChromeFeatureList {
                             false);
 
     public static final IntCachedFeatureParam sCctResetMinimumTimeoutMinutes =
-            newIntCachedFeatureParam(CCT_RESET_TIMEOUT_ENABLED, "minimum_reset_timeout_mins", 1);
+            newIntCachedFeatureParam(CCT_RESET_TIMEOUT_ENABLED, "minimum_reset_timeout_mins", 30);
+
+    public static final IntCachedFeatureParam sCctResetMinimumTimeoutMinutesAllowed =
+            newIntCachedFeatureParam(
+                    CCT_RESET_TIMEOUT_ALLOWED, "minimum_reset_timeout_mins_allowed", 30);
 
     public static final StringCachedFeatureParam sCctResizableForThirdPartiesAllowlistEntries =
             newStringCachedFeatureParam(CCT_RESIZABLE_FOR_THIRD_PARTIES, "allowlist_entries", "");
@@ -1744,6 +1752,7 @@ public abstract class ChromeFeatureList {
                     sCctGoogleBottomBarVariantLayoutsVariantLayout,
                     sCctMinimizedEnabledByDefaultManufacturerExcludeList,
                     sCctResetMinimumTimeoutMinutes,
+                    sCctResetMinimumTimeoutMinutesAllowed,
                     sCctResizableForThirdPartiesAllowlistEntries,
                     sCctResizableForThirdPartiesDefaultPolicy,
                     sCctResizableForThirdPartiesDenylistEntries,
