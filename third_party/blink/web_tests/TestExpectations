@@ -9962,3 +9962,4 @@ crbug.com/464400408 wpt_internal/code-cache/code-cache-after-304.window.html [ F
 
 # Gardener 2025-12-23
 crbug.com/448800278 [ Mac ] external/wpt/notifications/registration-association.https.window.html [ Pass Failure ]
+crbug.com/40250618 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Pass Failure ]
