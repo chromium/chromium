@@ -93,11 +93,11 @@ wtf_size_t JXLImageDecoder::DecodeFrameCount() {
   // Avoid doing that once jxl-rs supports seeking and/or frame
   // skipping.
   while (decoder_state_ != DecoderState::kDone) {
-    size_t offset = input_offset_;
+    size_t offset_pre = input_offset_;
     size_t decoded_frames_pre = num_decoded_frames_;
     Decode(num_decoded_frames_, /*only_size=*/false);
     // Exit the loop if the image is corrupted or we didn't make any progress.
-    if (Failed() || (offset == input_offset_ &&
+    if (Failed() || (offset_pre == input_offset_ &&
                      num_decoded_frames_ == decoded_frames_pre)) {
       break;
     }
@@ -331,17 +331,21 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
 
         ImageFrame& frame = frame_buffer_cache_[frame_index];
         if (frame.GetStatus() == ImageFrame::kFrameEmpty) {
-          if (!InitFrameBuffer(frame_index)) {
-            SetFailed();
-            return;
-          }
           // We call InitializeNewFrame manually here because JXLImageDecoder,
           // unlike other image decoder classes, handles the frame buffer cache
           // in the decode loop. This happens because decoding the frame count
           // also fully renders the frames - when we switch to lightweight
           // decoding for frame count + decoding individual frames via seeking,
           // we will likely be able to remove this call.
+          //
+          // IMPORTANT: InitializeNewFrame() must run before InitFrameBuffer(),
+          // so the base class allocates the correct backing store (e.g.
+          // RGBA_F16 for high bit depth + half float).
           InitializeNewFrame(frame_index);
+          if (!InitFrameBuffer(frame_index)) {
+            SetFailed();
+            return;
+          }
         }
 
         frame.SetHasAlpha(basic_info_.has_alpha);
