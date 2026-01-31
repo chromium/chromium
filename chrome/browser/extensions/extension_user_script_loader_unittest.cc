@@ -26,8 +26,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::URLPatternSet;
 
@@ -332,6 +335,10 @@ TEST_F(ExtensionUserScriptLoaderTest, LeaveBOMNotAtTheBeginning) {
       "Extensions.ContentScripts.DynamicContentScriptsLengthPerLoad", 0);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/469417243): Port to desktop Android. By default, Android
+// doesn't come with any component extensions, including the PDF one expected
+// by this test.
 TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
   base::FilePath resources_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_RESOURCES, &resources_dir));
@@ -365,6 +372,7 @@ TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
   histogram_tester.ExpectTotalCount(
       "Extensions.ContentScripts.DynamicContentScriptsLengthPerLoad", 1);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(ExtensionUserScriptLoaderTest, RecordScriptLengthUmas) {
   base::FilePath a_script_path = temp_dir_.GetPath().AppendASCII("a.script.js");
