@@ -335,51 +335,6 @@ void ActorPolicyChecker::OnAiSubscriptionTierUpdated(
   OnPrefOrAccountChanged();
 }
 
-void ActorPolicyChecker::MayActOnTab(const tabs::TabInterface& tab,
-                                     AggregatedJournal& journal,
-                                     TaskId task_id,
-                                     const OriginChecker& origin_checker,
-                                     DecisionCallbackWithReason callback) {
-  if (!CanActOnWeb()) {
-    journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
-                "MayActOnTab",
-                JournalDetailsBuilder()
-                    .AddError("Actuation capability disabled")
-                    .Build());
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  MayActOnUrlBlockReason::kActuactionDisabled));
-    return;
-  }
-  ::actor::MayActOnTab(
-      tab, journal, task_id, origin_checker,
-      [this](const GURL& url) { return EvaluateEnterprisePolicyForUrl(url); },
-      std::move(callback));
-}
-
-void ActorPolicyChecker::MayActOnUrl(const GURL& url,
-                                     bool allow_insecure_http,
-                                     Profile* profile,
-                                     AggregatedJournal& journal,
-                                     TaskId task_id,
-                                     DecisionCallbackWithReason callback) {
-  // TODO(http://crbug.com/455645486): This may be turned into a CHECK.
-  if (!CanActOnWeb()) {
-    journal.Log(url, task_id, "MayActOnUrl",
-                JournalDetailsBuilder()
-                    .AddError("Actuation capability disabled")
-                    .Build());
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  MayActOnUrlBlockReason::kActuactionDisabled));
-    return;
-  }
-  ::actor::MayActOnUrl(
-      url, allow_insecure_http, profile, journal, task_id,
-      [this](const GURL& url) { return EvaluateEnterprisePolicyForUrl(url); },
-      std::move(callback));
-}
-
 bool ActorPolicyChecker::CanActOnWeb() const {
   return can_act_on_web_ != CanActOutcome::kNo;
 }
@@ -494,7 +449,7 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
 #endif  // !BUILDFLAG(ENABLE_GLIC)
 }
 
-EnterprisePolicyBlockReason ActorPolicyChecker::EvaluateEnterprisePolicyForUrl(
+EnterprisePolicyBlockReason ActorPolicyChecker::Evaluate(
     const GURL& url) const {
 #if !BUILDFLAG(ENABLE_GLIC)
   return EnterprisePolicyBlockReason::kNotBlocked;

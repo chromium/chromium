@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/browser_process.h"
@@ -422,9 +423,9 @@ class ActorPolicyCheckerBrowserTestManagedBrowser
     EXPECT_EQ(expected_result.can_act_on_web, policy_checker.CanActOnWeb());
 
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-    policy_checker.MayActOnUrl(url_to_check, /*allow_insecure_http=*/true,
-                               GetProfile(), actor_service->GetJournal(),
-                               TaskId(123), allowed.GetCallback());
+    MayActOnUrl(url_to_check, /*allow_insecure_http=*/true,
+                GetProfile(), actor_service->GetJournal(), TaskId(123),
+                policy_checker, allowed.GetCallback());
     EXPECT_EQ(expected_result.may_act_on_url_block_reason, allowed.Get());
   }
 

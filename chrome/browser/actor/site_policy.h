@@ -56,6 +56,15 @@ enum class EnterprisePolicyBlockReason {
   kExplicitlyBlocked,
 };
 
+// TODO(bokan): This should probably move out to its own class that's a part of
+// the actor/ public interface as ActorPolicyChecker is moved out into a glic/
+// impl.
+class EnterprisePolicyChecker {
+ public:
+  virtual bool CanActOnWeb() const = 0;
+  virtual EnterprisePolicyBlockReason Evaluate(const GURL& url) const = 0;
+};
+
 using EnterprisePolicyCallback =
     base::FunctionRef<EnterprisePolicyBlockReason(const GURL&)>;
 
@@ -68,27 +77,25 @@ using EnterprisePolicyCallback =
 // task starts. However, any future URLs the actor navigates to should undergo
 // blocklist checks in `MayActOnUrl` or
 // `ShouldBlockNavigationUrlForOriginGating`.
-// `enterprise_policy_eval_url` is invoked to evaluate the URL based on
-// enterprise policy allow/blocklists.
-// Please use ActorPolicyChecker instead of calling this directly.
+// `policy_checker` is used to evaluate the URL based on enterprise policy
+// allow/blocklists.
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  const OriginChecker& origin_checker,
-                 EnterprisePolicyCallback enterprise_policy_eval_url,
+                 const EnterprisePolicyChecker& policy_checker,
                  DecisionCallbackWithReason callback);
 
 // Like MayActOnTab, but considers a URL on its own.
 // This can optionally allow insecure HTTP URLs as in practice sites may have
 // HTTP links that will get upgraded. Rejecting HTTP URLs before this can happen
 // would be too serious of an impediment.
-// Please use ActorPolicyChecker instead of calling this directly.
 void MayActOnUrl(const GURL& url,
                  bool allow_insecure_http,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 EnterprisePolicyCallback enterprise_policy_eval_url,
+                 const EnterprisePolicyChecker& policy_checker,
                  DecisionCallbackWithReason callback);
 
 // Checks if navigation to `url` should be blocked using

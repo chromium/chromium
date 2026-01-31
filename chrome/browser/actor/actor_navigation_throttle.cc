@@ -220,13 +220,11 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                                        : "Check navigation safety")
           .Build());
 
-  ActorKeyedService::Get(GetProfile())
-      ->GetPolicyChecker()
-      .MayActOnUrl(
-          navigation_url, /*allow_insecure_http=*/true, GetProfile(), journal,
-          task_id_,
-          base::BindOnce(&ActorNavigationThrottle::OnMayActOnUrlResult,
-                         weak_factory_.GetWeakPtr(), std::move(journal_entry)));
+  ::actor::MayActOnUrl(
+      navigation_url, /*allow_insecure_http=*/true, GetProfile(), journal,
+      task_id_, ActorKeyedService::Get(GetProfile())->GetPolicyChecker(),
+      base::BindOnce(&ActorNavigationThrottle::OnMayActOnUrlResult,
+                     weak_factory_.GetWeakPtr(), std::move(journal_entry)));
 
   return content::NavigationThrottle::DEFER;
 }

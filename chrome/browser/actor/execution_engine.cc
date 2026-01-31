@@ -327,7 +327,7 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
   const EnterprisePolicyBlockReason enterprise_reason =
       ActorKeyedService::Get(task_->profile())
           ->GetPolicyChecker()
-          .EvaluateEnterprisePolicyForUrl(destination_url);
+          .Evaluate(destination_url);
   if (enterprise_reason == EnterprisePolicyBlockReason::kExplicitlyAllowed) {
     return GatingDecision::kAllowByStaticList;
   }
@@ -719,14 +719,12 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   // invoked `origin_checker_.ConfirmSensitiveOrigin()` with the precursor to
   // ensure the optimization guide sensitive origin check would be skipped as
   // expected.
-  ActorKeyedService::Get(task_->profile())
-      ->GetPolicyChecker()
-      .MayActOnTab(
-          *tab, *journal_, task_->id(), origin_checker_,
-          base::BindOnce(&ExecutionEngine::OnMayActOnTabDecision, GetWeakPtr(),
-                         tab->GetContents()
-                             ->GetPrimaryMainFrame()
-                             ->GetLastCommittedOrigin()));
+  MayActOnTab(
+      *tab, *journal_, task_->id(), origin_checker_,
+      ActorKeyedService::Get(task_->profile())->GetPolicyChecker(),
+      base::BindOnce(
+          &ExecutionEngine::OnMayActOnTabDecision, GetWeakPtr(),
+          tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
 }
 
 void ExecutionEngine::OnMayActOnTabDecision(
@@ -985,10 +983,10 @@ favicon::FaviconService* ExecutionEngine::GetFaviconService() {
 void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {
-  ActorKeyedService::Get(task_->profile())
-      ->GetPolicyChecker()
-      .MayActOnUrl(url, /*allow_insecure_http=*/true, task_->profile(),
-                   *journal_, task_->id(), std::move(callback));
+  MayActOnUrl(url, /*allow_insecure_http=*/true, task_->profile(), *journal_,
+              task_->id(),
+              ActorKeyedService::Get(task_->profile())->GetPolicyChecker(),
+              std::move(callback));
 }
 
 Profile& ExecutionEngine::GetProfile() {

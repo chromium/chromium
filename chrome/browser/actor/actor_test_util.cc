@@ -690,4 +690,15 @@ ScopedExecutionEngineFactory::~ScopedExecutionEngineFactory() {
   ExecutionEngine::GetFactoryFunctionForTesting().Reset();
 }
 
+MockPolicyChecker::MockPolicyChecker(EnterprisePolicyBlockReason reason)
+    : reason_(reason) {}
+MockPolicyChecker::~MockPolicyChecker() = default;
+
+bool MockPolicyChecker::CanActOnWeb() const {
+  return true;
+}
+EnterprisePolicyBlockReason MockPolicyChecker::Evaluate(const GURL& url) const {
+  return reason_;
+}
+
 }  // namespace actor

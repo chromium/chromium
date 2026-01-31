@@ -274,6 +274,18 @@ class ScopedExecutionEngineFactory {
   ~ScopedExecutionEngineFactory();
 };
 
+class MockPolicyChecker : public EnterprisePolicyChecker {
+ public:
+  explicit MockPolicyChecker(EnterprisePolicyBlockReason reason);
+  ~MockPolicyChecker();
+
+  bool CanActOnWeb() const override;
+  EnterprisePolicyBlockReason Evaluate(const GURL& url) const override;
+
+ private:
+  EnterprisePolicyBlockReason reason_;
+};
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_

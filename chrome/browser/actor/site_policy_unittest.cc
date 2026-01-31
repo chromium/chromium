@@ -11,12 +11,14 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,7 +93,7 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
 
   void CheckUrl(const GURL& url,
                 bool expected_allowed,
-                EnterprisePolicyCallback enterprise_policy_eval_url) {
+                const EnterprisePolicyChecker& policy_checker) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
 
@@ -101,7 +103,7 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
     auto* actor_service = ActorKeyedService::Get(profile());
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     MayActOnTab(tab, actor_service->GetJournal(), TaskId(), OriginChecker(),
-                enterprise_policy_eval_url, allowed.GetCallback());
+                policy_checker, allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed,
@@ -109,9 +111,9 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CheckUrl(const GURL& url, bool expected_allowed) {
-    return CheckUrl(url, expected_allowed, [](const GURL&) {
-      return EnterprisePolicyBlockReason::kNotBlocked;
-    });
+    return CheckUrl(
+        url, expected_allowed,
+        MockPolicyChecker(EnterprisePolicyBlockReason::kNotBlocked));
   }
 
   raw_ptr<MockOptimizationGuideKeyedService>
@@ -167,12 +169,10 @@ TEST_F(ActorSitePolicyTest, BlockInsecureHTTP) {
 
 TEST_F(ActorSitePolicyTest, InsecureHTTPAllowedWhenSpecified) {
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-  auto enterprise_policy_eval_url = [](const GURL&) {
-    return EnterprisePolicyBlockReason::kNotBlocked;
-  };
   MayActOnUrl(GURL("http://a.test/"), /*allow_insecure_http=*/true, profile(),
               ActorKeyedService::Get(profile())->GetJournal(), TaskId(),
-              enterprise_policy_eval_url, allowed.GetCallback());
+              MockPolicyChecker(EnterprisePolicyBlockReason::kNotBlocked),
+              allowed.GetCallback());
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
 }
 
@@ -258,10 +258,8 @@ TEST_F(ActorSitePolicyTest, EnterprisePolicyBlock) {
           url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
           testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(0);
-  auto enterprise_policy_block_everything = [](const GURL&) {
-    return EnterprisePolicyBlockReason::kExplicitlyBlocked;
-  };
-  CheckUrl(url, false, enterprise_policy_block_everything);
+  CheckUrl(url, false,
+           MockPolicyChecker(EnterprisePolicyBlockReason::kExplicitlyBlocked));
 }
 
 TEST_F(ActorSitePolicyTest, EnterprisePolicyOrder) {
@@ -272,14 +270,13 @@ TEST_F(ActorSitePolicyTest, EnterprisePolicyOrder) {
           https_blocked_url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
           testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(0);
-  auto enterprise_policy_allow_everything = [](const GURL&) {
-    return EnterprisePolicyBlockReason::kExplicitlyAllowed;
-  };
+  MockPolicyChecker allowed_checker(
+      EnterprisePolicyBlockReason::kExplicitlyAllowed);
   // Enterprise policy overrules the opt guide blocklist for a particular site.
-  CheckUrl(https_blocked_url, true, enterprise_policy_allow_everything);
+  CheckUrl(https_blocked_url, true, allowed_checker);
   // Enterprise policy can't be used to bypass invariants like supported
   // schemes.
-  CheckUrl(GURL("file:///my_file"), false, enterprise_policy_allow_everything);
+  CheckUrl(GURL("file:///my_file"), false, allowed_checker);
 }
 
 TEST_F(ActorSitePolicyAllowlistOnlyTest, BlockIfNotInAllowlist) {
