@@ -7,9 +7,7 @@
 
 #include <iosfwd>
 
-namespace base {
-class DictValue;
-}
+#include "base/values.h"
 
 namespace web_app {
 
@@ -39,8 +37,6 @@ std::ostream& operator<<(std::ostream& os, PendingUpdateComparison value);
 class WebAppComparison {
  public:
   WebAppComparison();
-  WebAppComparison(const WebAppComparison&);
-  WebAppComparison& operator=(const WebAppComparison&);
   WebAppComparison(WebAppComparison&&);
   WebAppComparison& operator=(WebAppComparison&&);
   ~WebAppComparison();
@@ -112,6 +108,9 @@ class WebAppComparison {
 
   bool shortcut_menu_item_infos_equality_ = false;
   bool other_fields_equality_ = false;
+
+  base::ListValue existing_icon_metadata_;
+  base::ListValue new_icon_metadata_;
 };
 
 }  // namespace web_app

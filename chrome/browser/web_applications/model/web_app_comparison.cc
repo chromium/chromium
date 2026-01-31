@@ -27,9 +27,6 @@ std::ostream& operator<<(std::ostream& os, PendingUpdateComparison value) {
 }
 
 WebAppComparison::WebAppComparison() = default;
-WebAppComparison::WebAppComparison(const WebAppComparison&) = default;
-WebAppComparison& WebAppComparison::operator=(const WebAppComparison&) =
-    default;
 WebAppComparison::WebAppComparison(WebAppComparison&&) = default;
 WebAppComparison& WebAppComparison::operator=(WebAppComparison&&) = default;
 WebAppComparison::~WebAppComparison() = default;
@@ -72,15 +69,21 @@ bool WebAppComparison::IsSecuritySensitiveChangesOnly() const {
 }
 
 base::DictValue WebAppComparison::ToDict() const {
-  return base::DictValue()
-      .Set("name_equality", name_equality_)
-      .Set("pending_name_equality", base::ToString(pending_name_equality_))
-      .Set("primary_icons_equality", primary_icons_equality_)
-      .Set("pending_primary_icons_equality",
-           base::ToString(pending_primary_icons_equality_))
-      .Set("shortcut_menu_item_infos_equality",
-           shortcut_menu_item_infos_equality_)
-      .Set("other_fields_equality", other_fields_equality_);
+  auto comparison_dict =
+      base::DictValue()
+          .Set("name_equality", name_equality_)
+          .Set("pending_name_equality", base::ToString(pending_name_equality_))
+          .Set("primary_icons_equality", primary_icons_equality_)
+          .Set("pending_primary_icons_equality",
+               base::ToString(pending_primary_icons_equality_))
+          .Set("shortcut_menu_item_infos_equality",
+               shortcut_menu_item_infos_equality_)
+          .Set("other_fields_equality", other_fields_equality_);
+  if (!primary_icons_equality_) {
+    comparison_dict.Set("existing_icons", existing_icon_metadata_.Clone());
+    comparison_dict.Set("incoming_icons", new_icon_metadata_.Clone());
+  }
+  return comparison_dict;
 }
 
 // static
@@ -111,6 +114,16 @@ WebAppComparison WebAppComparison::CompareWebApps(
   }();
   diff.primary_icons_equality_ =
       existing_web_app.trusted_icons() == new_install_info.trusted_icons;
+  if (!diff.primary_icons_equality_) {
+    for (const auto& info : existing_web_app.trusted_icons()) {
+      diff.existing_icon_metadata_.Append(info.AsDebugValue());
+    }
+
+    for (const auto& info : new_install_info.trusted_icons) {
+      diff.new_icon_metadata_.Append(info.AsDebugValue());
+    }
+  }
+
   diff.pending_primary_icons_equality_ = [&]() {
     if (!existing_web_app.pending_update_info().has_value() ||
         existing_web_app.pending_update_info()->trusted_icons().empty()) {
