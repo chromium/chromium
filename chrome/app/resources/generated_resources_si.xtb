@@ -4544,6 +4544,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4036778507053569103">සේවාදායකයෙන් බාගත් ප්‍රතිපත්තිය අවලංගුයි.</translation>
 <translation id="4037084878352560732">අශ්වයා</translation>
 <translation id="403725336528835653">පළමුව එය උත්සාහ කරන්න</translation>
+<translation id="4039835815168788100">"<ph name="EXTENSION_NAME" />" දිගුව ඔබේ සෙවුම් යන්ත්‍රය <ph name="SEARCH_PROVIDER" /> වෙත වෙනස් කිරීමට උත්සාහ කළා. ඔබේ මනාපය පහතින් තහවුරු කරන්න</translation>
 <translation id="4039966970282098406">මයික්‍රොෆෝනය, කැමරාව සහ තවත් දේ වෙත ප්‍රවේශය පාලනය කිරීමෙන් ඔබේ පෞද්ගලිකත්වය කළමනා කරන්න</translation>
 <translation id="4040041015953651705">පරිවර්තනය කිරීමට භාෂාව</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{පිටවීමේ පිටුව}one{පිටවීමේ පිටු}other{පිටවීමේ පිටු}}</translation>
@@ -6865,6 +6866,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5659593005791499971">ඊතැපෑල</translation>
 <translation id="5659964844710667266">මෙම <ph name="DEVICE_TYPE" /> සඳහා මුරපදය තනන්න</translation>
 <translation id="5662513737565158057">ලිනක්ස් යෙදුම් ක්‍රියා කරන ආකාරය වෙනස් කරන්න.</translation>
+<translation id="5663317829633858516"><ph name="EXTENSION_NAME" /> විසින් මෑතක දී වෙනස් කරන ලදි</translation>
 <translation id="5663459693447872156">අඩ පළල වෙත ස්වයංක්‍රියව මාරු වන්න</translation>
 <translation id="5663653125349867535">&amp;කියවීමේ ලැයිස්තුව</translation>
 <translation id="5663918299073387939">වෙබ් අඩවි සාමාන්‍යයෙන් සංගීතය නිර්මාණ කිරීමට, සංගීතය සංස්කරණ කිරීමට, හෝ උපාංගවල නිත්‍ය මෘදුකාංග යාවත්කාලීන කිරීමට MIDI උපාංග පාලන කිරීමට සහ නැවත ක්‍රමලේඛන කිරීමට ඉල්ලා සිටී</translation>
@@ -8897,6 +8899,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> සමූහයක් - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA සංකේතනය සමඟ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL සහතික සහ සැකසීම් කළමනාකරණය කරන්න</translation>
+<translation id="707772989579681711">ඔබේ පෙර තේරීම</translation>
 <translation id="7077751457066325012">යතුරු පුවරු කෙටිමං බලන්න සහ අභිරුචිකරණය කරන්න</translation>
 <translation id="7077829361966535409">වත්මන් ප්‍රොක්සි සැකසුම් භාවිත කර පිවිසුම් පිටුව පිරීම අසාර්ථකයි. කරුණාකර <ph name="GAIA_RELOAD_LINK_START" />නැවත පිවිසීමට උත්සහ කරන්න<ph name="GAIA_RELOAD_LINK_END" />, හෝ වෙනත් <ph name="PROXY_SETTINGS_LINK_START" />ප්‍රොක්සි සැකසුම්<ph name="PROXY_SETTINGS_LINK_END" /> භාවිත කරන්න.</translation>
 <translation id="7078120482318506217">සියලු ජාල</translation>
@@ -10545,6 +10548,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> අබල කරන්න</translation>
 <translation id="8195920051450756553">එකම යතුර නැවත සක්‍රිය කිරීමට පෙර ප්‍රමාද කරන්න</translation>
 <translation id="8197673340773315084">වැඩ හෝ පුද්ගලික වැනි, නමක් හෝ ලේබලයක් එක් කරන්න</translation>
+<translation id="8198043456018523011">ඔබේ පෙරනිමි සෙවීම් යන්ත්‍රය තහවුරු කරන්න</translation>
 <translation id="8198181050118789419">තේමාව: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">විකාශ ටැබය</translation>
 <translation id="8199300056570174101">ජාල (සේවාව) සහ උපාංග ගුණාංග</translation>

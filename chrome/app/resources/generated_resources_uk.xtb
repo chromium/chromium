@@ -4559,6 +4559,7 @@
 <translation id="4036778507053569103">Завантажене із сервера правило недійсне.</translation>
 <translation id="4037084878352560732">Кінь</translation>
 <translation id="403725336528835653">Спершу спробувати</translation>
+<translation id="4039835815168788100">Розширення <ph name="EXTENSION_NAME" /> намагалося змінити вашу пошукову систему на <ph name="SEARCH_PROVIDER" />. Підтвердьте свій вибір нижче.</translation>
 <translation id="4039966970282098406">Налаштуйте доступ до мікрофона, камери тощо, щоб керувати конфіденційністю</translation>
 <translation id="4040041015953651705">Вихідна мова</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Закрити сторінку}one{Закрити сторінки}few{Закрити сторінки}many{Закрити сторінки}other{Закрити сторінки}}</translation>
@@ -6876,6 +6877,7 @@
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5659964844710667266">Створити пароль для цього пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="5662513737565158057">Налаштуйте роботу додатків Linux.</translation>
+<translation id="5663317829633858516">Нещодавно змінено розширенням <ph name="EXTENSION_NAME" /></translation>
 <translation id="5663459693447872156">Автоматично переключитися на половинну ширину</translation>
 <translation id="5663653125349867535">Список читання</translation>
 <translation id="5663918299073387939">Сайти зазвичай просять надати дозвіл керувати пристроями MIDI й перепрограмовувати їх, щоб створювати й редагувати музику або оновлювати мікропрограму пристрою</translation>
@@ -8914,6 +8916,7 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> група "<ph name="GROUP_NAME" />" – <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 із шифруванням RSA</translation>
 <translation id="7075625805486468288">Керування сертифікатами та налаштуваннями HTTPS або SSL</translation>
+<translation id="707772989579681711">Ваш попередній вибір</translation>
 <translation id="7077751457066325012">Переглянути й налаштувати комбінації клавіш</translation>
 <translation id="7077829361966535409">Не вдалося завантажити сторінку входу за допомогою поточних налаштувань проксі-сервера. <ph name="GAIA_RELOAD_LINK_START" />Спробуйте ввійти знову<ph name="GAIA_RELOAD_LINK_END" /> або скористайтеся іншими <ph name="PROXY_SETTINGS_LINK_START" />налаштуваннями проксі-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Усі мережі</translation>
@@ -10562,6 +10565,7 @@
 <translation id="8195854162863398249">Вимкнути функцію <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Затримка перед повторною активацією клавіші</translation>
 <translation id="8197673340773315084">Додайте назву або мітку, як-от "Робочий" або "Особистий"</translation>
+<translation id="8198043456018523011">Підтвердьте вибір пошукової системи за умовчанням</translation>
 <translation id="8198181050118789419">Тема: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
 <translation id="8199300056570174101">Параметри мережі (служби) і пристрою</translation>

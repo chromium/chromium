@@ -1719,6 +1719,7 @@
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">શેર માઉન્ટ કરવામાં ભૂલ આવી. નેટવર્ક પર ઉલ્લેખિત શેર મળ્યું નથી.</translation>
 <translation id="2148248734299717598">ડાબો વ્યૂ બંધ કરો</translation>
+<translation id="2148401732477136168">ઇન્સ્ટૉલ કરેલી ઍપ્લિકેશનો વિશે ક્વેરી કરવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="2148756636027685713">ફોર્મેટ કરવું સમાપ્ત</translation>
 <translation id="2148892889047469596">ટેબ કાસ્ટ કરો</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
@@ -8098,6 +8099,7 @@ USB ડિવાઇસ</translation>
 <translation id="6532663472409656417">એન્ટરપ્રાઇઝ દ્વારા નોંધણી કરાયેલું</translation>
 <translation id="6533315466883598769">Google Translateનો ઉપયોગ કરો</translation>
 <translation id="65334502113648172">ડિસ્પ્લેના વિસ્તારને નાનો કે મોટો કરવા માટે, ઍરો કી દબાવો. ડિસ્પ્લેના વિસ્તારને આસપાસ ખસેડવા માટે shift અને + દબાવો, પછી ઍરો કીનો ઉપયોગ કરો.</translation>
+<translation id="6534018044332449019">કોઈ ઍપ્લિકેશન ઇન્સ્ટૉલ કરેલી નથી.</translation>
 <translation id="6535331821390304775">આ પ્રકારની લિંકને હંમેશાં સંકળાયેલી ઍપમાં ખોલવા <ph name="ORIGIN" />ને મંજૂરી આપો</translation>
 <translation id="653659894138286600">દસ્તાવેજો અને છબીઓ સ્કૅન કરો</translation>
 <translation id="6538036594527795020"><ph name="APP" />ની ભાષા બદલો. હાલની ભાષા <ph name="LANGUAGE" /> છે.</translation>
@@ -10159,6 +10161,7 @@ USB ડિવાઇસ</translation>
 <translation id="7941179291434537290">ઇન્ટરનેટ શેર કરવાની સુવિધાની ઉપલબ્ધતા:</translation>
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7942846369224063421">પહેલેથી લોડ કરેલા UI રેન્ડરર</translation>
+<translation id="7943271960579497371">ઇન્સ્ટૉલ કરેલી ઍપ્લિકેશનો</translation>
 <translation id="7943368935008348579">PDFs ડાઉનલોડ કરો</translation>
 <translation id="7943837619101191061">સ્થાન ઉમેરો...</translation>
 <translation id="7944173382284143968">વેબસાઇટ પર નવો પાસવર્ડ સાચવતા પહેલાં OTP કન્ફર્મેશન જરૂરી છે. ફેરફાર પૂર્ણ કરવા માટે કૃપા કરીને મેન્યુઅલી પ્રક્રિયા હાથ ધરો.</translation>

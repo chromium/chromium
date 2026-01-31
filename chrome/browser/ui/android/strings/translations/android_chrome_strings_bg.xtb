@@ -157,6 +157,7 @@
 <translation id="164269334534774161">Преглеждате офлайн копие на тази страница, създадено на <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1645262572857218659">Влизане чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1650979352027263879">Предпочитанията ви за облика са премахнати</translation>
 <translation id="1671236975893690980">Предстои изтегляне…</translation>
 <translation id="1672586136351118594">Да не се показва отново</translation>
 <translation id="1680919990519905526">Пазар. с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -425,6 +426,7 @@
 <translation id="2854916915045135148">Докоснете и задръжте, за да превключите към режим „инкогнито“</translation>
 <translation id="2860954141821109167">Трябва да има активирано приложение за телефон на устройството</translation>
 <translation id="2861923151411510142">Някои функции на Chrome вече няма да са налице</translation>
+<translation id="286473047976978798">Да се приложат ли предпочитанията ви за облика?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и още 1 раздел}other{<ph name="URL" /> и още <ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="2869430948265924908">За да защитите деликатното си съдържание в автомобила, трябва да зададете опция за заключване на потребителския профил в него.  Можете да използвате ПИН, код или парола.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -1372,6 +1374,7 @@
 <translation id="6811034713472274749">Страницата е готова за преглед</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Изображения, 1 изображение в списъка}other{Изображения, # изображения в списъка}}</translation>
 <translation id="6813446258015311409">Вход в Chrome – отворено.</translation>
+<translation id="6815692190508268848">Предпочитанията ви за облика са приложени</translation>
 <translation id="6817747507826986771">Бързо споделяне на страницата. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="6820686453637990663">Код за сигурност</translation>
 <translation id="6820942662346226299">Предупреждението за актуализиране на Google Мениджър на пароли е затворено</translation>

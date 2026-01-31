@@ -1731,6 +1731,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Lỗi khi kết nối với thư mục chia sẻ. Không tìm thấy thư mục chia sẻ đã chỉ định trên mạng.</translation>
 <translation id="2148248734299717598">Đóng dạng xem bên trái</translation>
+<translation id="2148401732477136168">Không truy vấn được các ứng dụng đã cài đặt.</translation>
 <translation id="2148756636027685713">Định dạng hoàn tất</translation>
 <translation id="2148892889047469596">Thẻ Truyền</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
@@ -4556,6 +4557,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4036778507053569103">Chính sách được tải xuống từ máy chủ là không hợp lệ.</translation>
 <translation id="4037084878352560732">Ngựa</translation>
 <translation id="403725336528835653">Dùng thử trước</translation>
+<translation id="4039835815168788100">Tiện ích "<ph name="EXTENSION_NAME" />" đã cố gắng thay đổi công cụ tìm kiếm của bạn thành <ph name="SEARCH_PROVIDER" />. Xác nhận lựa chọn ưu tiên của bạn ở bên dưới</translation>
 <translation id="4039966970282098406">Quản lý quyền riêng tư bằng cách kiểm soát quyền truy cập vào micrô, máy ảnh và nhiều ứng dụng khác</translation>
 <translation id="4040041015953651705">Ngôn ngữ gốc</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Thoát khỏi trang}other{Thoát khỏi trang}}</translation>
@@ -6877,6 +6879,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659964844710667266">Tạo mật khẩu cho <ph name="DEVICE_TYPE" /> này</translation>
 <translation id="5662513737565158057">Thay đổi cách hoạt động của ứng dụng Linux.</translation>
+<translation id="5663317829633858516"><ph name="EXTENSION_NAME" /> đã thay đổi gần đây</translation>
 <translation id="5663459693447872156">Tự động chuyển sang nửa độ rộng</translation>
 <translation id="5663653125349867535">&amp;Danh sách đọc</translation>
 <translation id="5663918299073387939">Các trang web thường yêu cầu cấp quyền điều khiển và lập trình lại thiết bị MIDI để sáng tác nhạc, chỉnh sửa nhạc hoặc cập nhật chương trình cơ sở của thiết bị</translation>
@@ -8108,6 +8111,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6532663472409656417">Do doanh nghiệp đăng ký</translation>
 <translation id="6533315466883598769">Sử dụng Google Dịch</translation>
 <translation id="65334502113648172">Nhấn các phím mũi tên để thu nhỏ hoặc mở rộng vùng hiển thị. Để di chuyển vùng hiển thị, hãy nhấn shift và +, sau đó nhấn các phím mũi tên.</translation>
+<translation id="6534018044332449019">Chưa cài đặt ứng dụng nào.</translation>
 <translation id="6535331821390304775">Luôn cho phép <ph name="ORIGIN" /> mở loại đường liên kết này trong ứng dụng liên kết</translation>
 <translation id="653659894138286600">Quét tài liệu và hình ảnh</translation>
 <translation id="6538036594527795020">Thay đổi ngôn ngữ của <ph name="APP" /> Ngôn ngữ hiện tại là <ph name="LANGUAGE" />.</translation>
@@ -8912,6 +8916,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7074703793383805632">Nhóm <ph name="GROUP_NAME" /> – <ph name="SHARED_STATE" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 Với Mã hóa RSA</translation>
 <translation id="7075625805486468288">Quản lý cài đặt và chứng chỉ HTTPS/SSL</translation>
+<translation id="707772989579681711">Lựa chọn trước đây của bạn</translation>
 <translation id="7077751457066325012">Xem và tuỳ chỉnh các phím tắt</translation>
 <translation id="7077829361966535409">Không thể tải trang đăng nhập bằng cài đặt proxy hiện tại. Vui lòng <ph name="GAIA_RELOAD_LINK_START" />thử đăng nhập lại<ph name="GAIA_RELOAD_LINK_END" /> hoặc sử dụng <ph name="PROXY_SETTINGS_LINK_START" />cài đặt proxy<ph name="PROXY_SETTINGS_LINK_END" /> khác.</translation>
 <translation id="7078120482318506217">Tất cả các mạng</translation>
@@ -10168,6 +10173,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7941179291434537290">Trạng thái sẵn sàng của tính năng chia sẻ Internet:</translation>
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7942846369224063421">Trình kết xuất giao diện người dùng tải trước</translation>
+<translation id="7943271960579497371">Ứng dụng đã cài đặt</translation>
 <translation id="7943368935008348579">Tải tệp PDF xuống</translation>
 <translation id="7943837619101191061">Thêm vị trí...</translation>
 <translation id="7944173382284143968">Trang web yêu cầu xác nhận bằng OTP trước khi lưu mật khẩu mới. Vui lòng thực hiện quy trình theo cách thủ công để hoàn tất thay đổi.</translation>
@@ -10561,6 +10567,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8195854162863398249">Vô hiệu hoá <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Độ trễ trước khi kích hoạt lại cùng một phím</translation>
 <translation id="8197673340773315084">Thêm tên hoặc nhãn như "Công việc" hoặc "Cá nhân"</translation>
+<translation id="8198043456018523011">Xác nhận công cụ tìm kiếm mặc định</translation>
 <translation id="8198181050118789419">Giao diện: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Đang truyền thẻ</translation>
 <translation id="8199300056570174101">Thuộc tính của thiết bị và mạng (dịch vụ)</translation>

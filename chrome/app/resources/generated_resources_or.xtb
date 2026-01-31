@@ -1718,6 +1718,7 @@
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">ସେୟାର୍ ଖଞ୍ଜିବାରେ ତ୍ରୁଟି। ନେଟ୍‌ୱର୍କରେ ଧାର୍ଯ୍ୟ କରାଯାଇଥିବା ସେୟାର୍ ମିଳିଲା ନାହିଁ।</translation>
 <translation id="2148248734299717598">ବାମପଟ ଭ୍ୟୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="2148401732477136168">ଇନଷ୍ଟଲ କରାଯାଇଥିବା ଆପ୍ଲିକେସନଗୁଡ଼ିକର କ୍ୱେରୀ କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2148756636027685713">ଫର୍ମାଟିଂ ଶେଷ ହୋଇଛି</translation>
 <translation id="2148892889047469596">ଟାବ୍ କାଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="2149973817440762519">ବୁକମାର୍କ୍ ସମ୍ପାଦନ କରନ୍ତୁ</translation>
@@ -5921,7 +5922,7 @@
 <translation id="5005498671520578047">ପାସ୍‍ୱର୍ଡ କପି କରନ୍ତୁ</translation>
 <translation id="5006218871145547804">Crostini Android ଆପ୍ ADB</translation>
 <translation id="5006778209728626987">ବିଜୁଳି ମାରିବା</translation>
-<translation id="5007392906805964215">ସମୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="5007392906805964215">ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="50080882645628821">ପ୍ରୋଫାଇଲକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="5008936837313706385">କାର୍ଯକଳାପର ନାମ</translation>
 <translation id="5009463889040999939">ପ୍ରୋଫାଇଲର ନାମ ବଦଳାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
@@ -8091,6 +8092,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6532663472409656417">ଏଣ୍ଟରପ୍ରାଇଜ୍ ପଞ୍ଜିକରଣ କରାଯାଇଛି</translation>
 <translation id="6533315466883598769">Google Translate ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="65334502113648172">ଡିସପ୍ଲେ ଏରିଆକୁ ସଙ୍କୁଚିତ କିମ୍ବା ବିସ୍ତାର କରିବା ପାଇଁ ତୀର କୀଗୁଡ଼ିକୁ ଦବାନ୍ତୁ। ଡିସପ୍ଲେ ଏରିଆକୁ ଚାରିପାଖକୁ ମୁଭ କରିବା ପାଇଁ, Shift ଏବଂ + କୀକୁ ଦବାନ୍ତୁ, ତା'ପରେ ତୀର କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="6534018044332449019">କୌଣସି ଆପ୍ଲିକେସନକୁ ଇନଷ୍ଟଲ କରାଯାଇନାହିଁ।</translation>
 <translation id="6535331821390304775">ସମ୍ବନ୍ଧିତ ଆପରେ ଏହି ପ୍ରକାର ଲିଙ୍କଗୁଡ଼ିକ ଖୋଲିବାକୁ <ph name="ORIGIN" />କୁ ସର୍ବଦା ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="653659894138286600">ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଛବିଗୁଡ଼ିକୁ ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="6538036594527795020"><ph name="APP" /> ଭାଷା ପରିବର୍ତ୍ତନ କରନ୍ତୁ। ବର୍ତ୍ତମାନର ଭାଷା ହେଉଛି <ph name="LANGUAGE" />।</translation>
@@ -10150,6 +10152,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7941179291434537290">ଟିଥରିଂର ରେଡିନେସ:</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
 <translation id="7942846369224063421">ପ୍ରିଲୋଡ କରାଯାଇଥିବା UI ରେଣ୍ଡରର</translation>
+<translation id="7943271960579497371">ଇନଷ୍ଟଲ କରାଯାଇଥିବା ଆପ୍ଲିକେସନ</translation>
 <translation id="7943368935008348579">PDFଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="7943837619101191061">ଲୋକେସନ୍ ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="7944173382284143968">ନୂଆ ପାସୱାର୍ଡ ସେଭ କରିବା ପୂର୍ବରୁ ୱେବସାଇଟ ପାଇଁ OTP ସୁନିଶ୍ଚିତକରଣ ଆବଶ୍ୟକ। ପରିବର୍ତ୍ତନ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଦୟାକରି ପ୍ରକ୍ରିୟାକୁ ମାନୁଆଲୀ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ।</translation>

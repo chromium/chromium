@@ -1342,7 +1342,7 @@
 <translation id="1887210448491286312">Διακοπή μετάδοσης καρτέλας στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Σφάλμα σύνδεσης</translation>
 <translation id="1890026367080681123">Μετάβαση στις ρυθμίσεις ενσωματωμένου περιεχομένου</translation>
-<translation id="189035593835762169">Όροι και Προϋποθέσεις</translation>
+<translation id="189035593835762169">Όροι και προϋποθέσεις</translation>
 <translation id="1891362123137972260">Ο χώρος στον δίσκο εξαντλείται. Αποδεσμεύστε χώρο στον δίσκο.</translation>
 <translation id="189210018541388520">Άνοιγμα πλήρους οθόνης</translation>
 <translation id="1892341345406963517">Γεια σας, <ph name="PARENT_NAME" /></translation>
@@ -4556,6 +4556,7 @@
 <translation id="4036778507053569103">Η πολιτική της οποίας έγινε λήψη από τον διακομιστή δεν είναι έγκυρη.</translation>
 <translation id="4037084878352560732">Άλογο</translation>
 <translation id="403725336528835653">Δοκιμή πριν από την εγκατάσταση</translation>
+<translation id="4039835815168788100">Η επέκταση "<ph name="EXTENSION_NAME" />" προσπάθησε να αλλάξει τη μηχανή αναζήτησής σας σε <ph name="SEARCH_PROVIDER" />. Επιβεβαιώστε την προτίμησή σας παρακάτω</translation>
 <translation id="4039966970282098406">Διαχειριστείτε το απόρρητό σας ελέγχοντας την πρόσβαση στο μικρόφωνο, την κάμερα και άλλα</translation>
 <translation id="4040041015953651705">Γλώσσα από την οποία θα γίνει η μετάφραση</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Έξοδος από τη σελίδα}other{Έξοδος από τις σελίδες}}</translation>
@@ -6878,6 +6879,7 @@
 <translation id="5659593005791499971">Ηλεκτρονικό ταχυδρομείο</translation>
 <translation id="5659964844710667266">Δημιουργία κωδικού πρόσβασης για τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="5662513737565158057">Αλλαγή του τρόπου λειτουργίας των εφαρμογών Linux.</translation>
+<translation id="5663317829633858516">Έγινε πρόσφατα αλλαγή από <ph name="EXTENSION_NAME" /></translation>
 <translation id="5663459693447872156">Αυτόματη εναλλαγή σε μισό πλάτος</translation>
 <translation id="5663653125349867535">&amp;Λίστα ανάγνωσης</translation>
 <translation id="5663918299073387939">Οι ιστότοποι συνήθως ζητούν να ελέγχουν και να επαναπρογραμματίζουν τις συσκευές MIDI για τη δημιουργία μουσικής, την επεξεργασία μουσικής ή την ενημέρωση του υλικολογισμικού των συσκευών</translation>
@@ -8911,6 +8913,7 @@
 <translation id="7074703793383805632">Όνομα <ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 με κρυπτογράφηση RSA</translation>
 <translation id="7075625805486468288">Διαχειριστείτε τα πιστοποιητικά HTTPS/SSL και τις ρυθμίσεις</translation>
+<translation id="707772989579681711">Η προηγούμενη επιλογή σας</translation>
 <translation id="7077751457066325012">Προβολή και προσαρμογή συντομεύσεων πληκτρολογίου</translation>
 <translation id="7077829361966535409">Αποτυχία φόρτωσης σελίδας σύνδεσης με χρήση των τρεχουσών ρυθμίσεων διακομιστή μεσολάβησης. <ph name="GAIA_RELOAD_LINK_START" />Δοκιμάστε να συνδεθείτε ξανά<ph name="GAIA_RELOAD_LINK_END" />, ή χρησιμοποιήστε διαφορετικές <ph name="PROXY_SETTINGS_LINK_START" />ρυθμίσεις διακομιστή μεσολάβησης<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Όλα τα δίκτυα</translation>
@@ -10560,6 +10563,7 @@
 <translation id="8195854162863398249">Απενεργοποίηση της λειτουργίας <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Καθυστέρηση πριν από την εκ νέου ενεργοποίηση του ίδιου πλήκτρου</translation>
 <translation id="8197673340773315084">Προσθέστε ένα όνομα ή μια ετικέτα, όπως Εργασία ή Προσωπικό</translation>
+<translation id="8198043456018523011">Επιβεβαίωση προεπιλεγμένης μηχανής αναζήτησης</translation>
 <translation id="8198181050118789419">Θέμα: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Καρτέλα μετάδοσης</translation>
 <translation id="8199300056570174101">Ιδιότητες δικτύου (Υπηρεσία) και συσκευής</translation>

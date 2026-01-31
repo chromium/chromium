@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Mostrar os detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Pechar pestana</translation>
 <translation id="2311077293164383652">Pechar pestana fixada</translation>
+<translation id="2313392466694008052">Editar imaxe con Gemini</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
 <translation id="2321086116217818302">Preparando contrasinais…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Pechar pestana</translation>
 <translation id="2888631381369839306">Activáronse as notificacións de seguimento de prezos</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
+<translation id="2893791155497534382">Os contrasinais e outra actividade poden eliminarse na configuración de xestión correspondente</translation>
 <translation id="2894757982205307093">Nova pestana no grupo</translation>
 <translation id="2902312830803030883">Máis accións</translation>
 <translation id="2904788871580817212">Baixada de prezo na pestana aberta, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -580,6 +582,7 @@
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3144126448740580210">LISTO</translation>
 <translation id="3148052723910099040">Grade de pestanas normal</translation>
+<translation id="3148237711805373460">Acceder</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="315778507796115851">Historial</translation>
 <translation id="31652791196570636">Pechar</translation>
@@ -1297,6 +1300,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5768870767339201169">Continúa onde o deixaches</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tes {count} contrasinal vulnerado que podería poñer en perigo a túa seguranza. Cámbiao xa para non correr riscos.}other{Tes {count} contrasinais vulnerados que poderían poñer en perigo a túa seguranza. Cámbiaos xa para non correr riscos.}}</translation>
 <translation id="5791632441210678828">Botón Ordenar do feed Seguindo.</translation>
+<translation id="5799263916847593256">Acceder para ver o historial de prezos</translation>
 <translation id="5803566855766646066">Seguro que queres descartar esta tarxeta nova?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="58081802114142635">A túa actividade mellora coa IA de Google</translation>
@@ -1640,6 +1644,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" /> Escolle unha conta.</translation>
 <translation id="6964760285928603117">Quitar do grupo</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6967355534157677591">Crear imaxe Pro</translation>
 <translation id="6973630695168034713">Cartafoles</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Desde sempre</translation>
@@ -1977,6 +1982,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">O administrador aplica esta configuración.</translation>
 <translation id="8209050860603202033">Abrir imaxe</translation>
+<translation id="8209237163365258530">Modelos <ph name="VERSION_NUMBER" /> de Gemini</translation>
 <translation id="8211030355252954494">Recibiches contrasinais para <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">A conexión é segura</translation>
 <translation id="8214293972734702249">Ficheiros fixados, <ph name="TAB_TITLE" /></translation>

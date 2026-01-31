@@ -157,6 +157,7 @@
 <translation id="164269334534774161">ဤစာမျက်နှာ၏ အော့ဖ်လိုင်းမိတ္တူကို <ph name="CREATION_TIME" /> မှသင်ကြည့်ရှုနေခြင်းဖြစ်သည်</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="1650979352027263879">သင်၏ အသွင်အပြင် သတ်မှတ်ချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="1671236975893690980">ဒေါင်းလုဒ်လုပ်ရန် စောင့်နေပါသည်...</translation>
 <translation id="1672586136351118594">နောက်ထပ်မပြပါနှင့်</translation>
 <translation id="1680919990519905526">Google Lens ဖြင့်ဝယ်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
@@ -425,6 +426,7 @@
 <translation id="2854916915045135148">‘ရုပ်ဖျက်’ သို့ ပြောင်းရန် ထိပြီး ဖိထားပါ</translation>
 <translation id="2860954141821109167">ဤကိရိယာတွင် ဖုန်းအက်ပ်ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>
 <translation id="2861923151411510142">အချို့ Chrome ဝန်ဆောင်မှုများကို ရနိုင်တော့မည်မဟုတ်ပါ</translation>
+<translation id="286473047976978798">သင်၏ အသွင်အပြင် သတ်မှတ်ချက်များကို သုံးမလား။</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> နှင့် အခြားတဘ် ၁ ခု}other{<ph name="URL" /> နှင့် အခြားတဘ် <ph name="TAB_COUNT_MANY" /> ခု}}</translation>
 <translation id="2869430948265924908">ကားတွင် သင်၏သတိထားရမည့် အကြောင်းအရာကိုကာကွယ်ရန် ကားပရိုဖိုင်လော့ခ်ကို ပြုလုပ်ရမည်။  ပင်နံပါတ်၊ ကုဒ် (သို့) စကားဝှက်ဖြင့် ပြုလုပ်နိုင်သည်။</translation>
 <translation id="2870560284913253234">ဆိုက်</translation>
@@ -1371,6 +1373,7 @@
 <translation id="6811034713472274749">စာမျက်နှာကိုကြည့်ရန် အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{ဓာတ်ပုံများ၊ စာရင်းရှိ ပုံ ၁ ပုံ}other{ဓာတ်ပုံများ၊ စာရင်းရှိ ပုံ # ပုံ}}</translation>
 <translation id="6813446258015311409">Chrome သို့ လက်မှတ်ထိုးဝင်ရန်၊ ဖွင့်ထားသည်။</translation>
+<translation id="6815692190508268848">သင်၏ အသွင်အပြင် သတ်မှတ်ချက်များကို သုံးလိုက်သည်</translation>
 <translation id="6817747507826986771">ဤစာမျက်နှာကို အမြန်မျှဝေပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် ထိထားပါ။</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Google Password Manager အပ်ဒိတ်လုပ်ခြင်း ပိတ်ထားသည်</translation>

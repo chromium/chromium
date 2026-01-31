@@ -580,6 +580,7 @@
 <translation id="3143515551205905069">取消同步處理</translation>
 <translation id="3144126448740580210">完成</translation>
 <translation id="3148052723910099040">一般分頁方格</translation>
+<translation id="3148237711805373460">立即前往</translation>
 <translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="315778507796115851">記錄</translation>
 <translation id="31652791196570636">關閉</translation>
@@ -1977,6 +1978,7 @@
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
 <translation id="8209050860603202033">開啟圖片</translation>
+<translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> 模型</translation>
 <translation id="8211030355252954494">你收到「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="8211406090763984747">已建立安全連線</translation>
 <translation id="8214293972734702249">「<ph name="TAB_TITLE" />」已固定</translation>

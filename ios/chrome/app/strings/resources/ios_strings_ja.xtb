@@ -580,6 +580,7 @@
 <translation id="3143515551205905069">同期をキャンセル</translation>
 <translation id="3144126448740580210">完了</translation>
 <translation id="3148052723910099040">通常のタブのグリッド</translation>
+<translation id="3148237711805373460">移動する</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="315778507796115851">履歴</translation>
 <translation id="31652791196570636">閉じる</translation>
@@ -1977,6 +1978,7 @@
 <translation id="8205564605687841303">キャンセル</translation>
 <translation id="8206354486702514201">この設定は管理者によって制御されています。</translation>
 <translation id="8209050860603202033">画像を開く</translation>
+<translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> モデル</translation>
 <translation id="8211030355252954494"><ph name="WEBSITE" /> のパスワードを受信しました</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
 <translation id="8214293972734702249">固定しました、<ph name="TAB_TITLE" /></translation>

@@ -421,6 +421,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1652862280638399816">Aby używać Menedżera haseł z pękiem kluczy macOS, uruchom ponownie Chromium i zezwól na dostęp do pęku kluczy. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="1652887625750064647">Najlepsze dopasowanie AI</translation>
 <translation id="1653465303147789530">Płać przez <ph name="PAYMENT_METHOD" /> bez przełączania aplikacji</translation>
+<translation id="1655159794885649984">Przeciąganie treści w tej witrynie jest niedozwolone</translation>
 <translation id="1656024727720460136">Strona została uproszczona przez Chrome, by było ją łatwiej przeczytać. Przeglądarka Chrome pobrała oryginalną stronę przez zabezpieczone połączenie.</translation>
 <translation id="1656489000284462475">Odbiór</translation>
 <translation id="1658111267661135323">TV i wideo</translation>
@@ -1678,6 +1679,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="365641980390710834">Odzież codzienna</translation>
 <translation id="3658742229777143148">Wersja</translation>
 <translation id="3659521826520353662">Które witryny zdefiniowane przez administratora są odwiedzane i kiedy: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">Ten numer IBAN jest zapisany w Portfelu Google i możesz go używać w różnych usługach Google.</translation>
 <translation id="3664479564786885722">Wyszukaj więcej opcji zakupu w innych sklepach, które sprzedają ten produkt.</translation>
 <translation id="3664782872746246217">Słowa kluczowe:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Więcej informacji<ph name="LINK_END1" /></translation>
@@ -3198,6 +3200,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6085149458302186532">Etykiety (kolorowe)</translation>
 <translation id="6087312102907839798">Podobne wyszukiwania</translation>
 <translation id="6089505343295765444">Karty usunięte z historii w Chrome nadal będą widoczne w tabelach porównawczych</translation>
+<translation id="6091115085465716987">Logo Portfela Google</translation>
 <translation id="6091691259076781835">Aby płacić szybciej, zapisz ten kod CVC na swoim urządzeniu</translation>
 <translation id="6093599771645355227">Żółty 1</translation>
 <translation id="6093795393556121384">Karta została zweryfikowana</translation>
@@ -3814,6 +3817,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7057567173736333354">Opisz obraz</translation>
 <translation id="7058163556978339998">W <ph name="BROWSER" /> sprawdzono, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Usługa parsera haseł w formacie CSV</translation>
+<translation id="7062344833049251424">Aby następnym razem zapłacić szybciej, zapisz kartę i adres rozliczeniowy w Portfelu Google</translation>
 <translation id="706295145388601875">Dodaj adresy i zarządzaj nimi w ustawieniach Chrome</translation>
 <translation id="7063157783216323487">Zielony 2</translation>
 <translation id="7064443976734085921">Samochody kompaktowe</translation>
@@ -4284,6 +4288,7 @@ Dodatkowe informacje:
 <translation id="7754587126786572336">Po rozpoczęciu aktualizacji Twoje karty i aplikacje w Chrome zostaną zamknięte</translation>
 <translation id="7755287808199759310">Może ją dla Ciebie odblokować Twój rodzic</translation>
 <translation id="7755624218968747854">Rolka główna</translation>
+<translation id="7756441544371887150">Gdy zapiszesz tę kartę w Portfelu Google, jej dane będą automatycznie uzupełniane podczas zakupów w Chrome</translation>
 <translation id="7758069387465995638">Połączenie mogło zostać zablokowane przez zaporę sieciową lub program antywirusowy.</translation>
 <translation id="7759147511335618829">Urządzenia MIDI: sterowanie/przeprogramowywanie</translation>
 <translation id="7759809451544302770">Opcjonalne</translation>
@@ -5206,6 +5211,7 @@ Dodatkowe informacje:
 <translation id="975560348586398090">{COUNT,plural, =0{Brak}=1{1 element}few{# elementy}many{# elementów}other{# elementu}}</translation>
 <translation id="976522784004777030">5 x 8 cali</translation>
 <translation id="977502174772294970">Wesela</translation>
+<translation id="978750072783101994">Gdy zapiszesz tę kartę w Portfelu Google, jej dane będą automatycznie uzupełniane podczas zakupów w Chromium</translation>
 <translation id="979107176848483472">Twoją przeglądarką i profilem zarządza <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Wystawy i konferencje</translation>
 <translation id="979503328401807348">Trafniejsze reklamy</translation>

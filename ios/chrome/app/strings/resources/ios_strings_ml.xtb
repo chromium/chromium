@@ -370,6 +370,7 @@
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="2309265394777270359">ടാബ് അടയ്ക്കുക</translation>
 <translation id="2311077293164383652">പിൻ ചെയ്‌ത ടാബ് അടയ്ക്കുക</translation>
+<translation id="2313392466694008052">Gemini ഉപയോഗിച്ച് ചിത്രം എഡിറ്റ് ചെയ്യൂ</translation>
 <translation id="2316129865977710310">വേണ്ട, നന്ദി</translation>
 <translation id="2320166752086256636">കീബോർഡ് മറയ്‌ക്കുക</translation>
 <translation id="2321086116217818302">പാസ്‍വേഡുകൾ തയ്യാറാക്കുന്നു…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">ടാബ് അവസാനിപ്പിക്കുക</translation>
 <translation id="2888631381369839306">നിരക്ക് ട്രാക്കിംഗ് അറിയിപ്പുകൾ ഓണാക്കി</translation>
 <translation id="2893168226686371498">ഡിഫോൾട്ട് ബ്രൗസര്‍</translation>
+<translation id="2893791155497534382">പാസ്‌വേഡുകളും മറ്റ് ആക്റ്റിവിറ്റിയും അവയുടെ മാനേജ്‌മെന്റ് ക്രമീകരണത്തിൽ ഇല്ലാതാക്കാം</translation>
 <translation id="2894757982205307093">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
 <translation id="2902312830803030883">കൂടുതൽ‍ പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="2904788871580817212">നിങ്ങളുടെ തുറന്നിരിക്കുന്ന ടാബിൽ വിലക്കുറവ്, <ph name="PREVIOUS_PRICE" />-ൽ നിന്ന് <ph name="PRICE" />-ലേക്ക്, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -580,6 +582,7 @@
 <translation id="3143515551205905069">സമന്വയം റദ്ദാക്കുക</translation>
 <translation id="3144126448740580210">പൂർത്തിയായി</translation>
 <translation id="3148052723910099040">റെഗുലർ ടാബ് ഗ്രിഡ്</translation>
+<translation id="3148237711805373460">എന്നെ അവിടേക്ക് കൊണ്ടുപോകുക</translation>
 <translation id="3157387275655328056">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="315778507796115851">ചരിത്രം</translation>
 <translation id="31652791196570636">ഡിസ്‌മിസ് ചെയ്യുക</translation>
@@ -1297,6 +1300,7 @@
 <translation id="5768870767339201169">നിങ്ങൾ നിർത്തിയിടത്ത് നിന്ന് തുടരുക</translation>
 <translation id="5779117921996157216">{count,plural, =1{നിങ്ങളുടെ സുരക്ഷിതത്വം അപകടത്തിലാക്കിയേക്കാവുന്ന തരത്തിൽ, നിങ്ങൾക്ക് അപഹരിക്കപ്പെട്ട {count} പാസ്‌വേഡ് ഉണ്ട്. സുരക്ഷിതരായി നിലനിൽക്കാൻ ഇപ്പോൾ അത് പരിഹരിക്കുക.}other{നിങ്ങളുടെ സുരക്ഷിതത്വം അപകടത്തിലാക്കിയേക്കാവുന്ന തരത്തിൽ, നിങ്ങൾക്ക് അപഹരിക്കപ്പെട്ട {count} പാസ്‌വേഡുകളുണ്ട്. സുരക്ഷിതരായി നിലനിൽക്കാൻ ഇപ്പോൾ അവ പരിഹരിക്കുക.}}</translation>
 <translation id="5791632441210678828">ഇനിപ്പറയുന്ന ഫീഡിനുള്ള അടുക്കുക ബട്ടൺ.</translation>
+<translation id="5799263916847593256">നിരക്ക് ചരിത്രം കാണാൻ തുറക്കുക</translation>
 <translation id="5803566855766646066">ഈ പുതിയ കാർഡ് റദ്ദാക്കണമെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="5804241973901381774">അനുമതികൾ</translation>
 <translation id="58081802114142635">നിങ്ങളുടെ ആക്റ്റിവിറ്റി, Google AI മെച്ചപ്പെടുത്തുന്നു</translation>
@@ -1640,6 +1644,7 @@
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> നിലവിൽ തിരഞ്ഞെടുത്തിരിക്കുന്നു. അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6964760285928603117">ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
+<translation id="6967355534157677591">Pro മുഖേന ചിത്രം സൃഷ്ടിക്കൂ</translation>
 <translation id="6973630695168034713">ഫോൾഡറുകൾ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">എല്ലാ സമയത്തും</translation>

@@ -580,6 +580,7 @@
 <translation id="3143515551205905069">Zrušit synchronizaci</translation>
 <translation id="3144126448740580210">HOTOVO</translation>
 <translation id="3148052723910099040">Běžná mřížka karet</translation>
+<translation id="3148237711805373460">Přejít</translation>
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
 <translation id="315778507796115851">Historie</translation>
 <translation id="31652791196570636">Zavřít</translation>
@@ -1977,6 +1978,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8205564605687841303">Zrušit</translation>
 <translation id="8206354486702514201">Toto nastavení je vyžadováno administrátorem.</translation>
 <translation id="8209050860603202033">Otevřít obrázek</translation>
+<translation id="8209237163365258530">Modely Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Obdrželi jste hesla pro web <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Připojení je zabezpečené</translation>
 <translation id="8214293972734702249">Připnuto, <ph name="TAB_TITLE" /></translation>

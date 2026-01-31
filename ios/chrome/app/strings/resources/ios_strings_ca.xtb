@@ -580,6 +580,7 @@
 <translation id="3143515551205905069">Cancel·la la sincronització</translation>
 <translation id="3144126448740580210">FET</translation>
 <translation id="3148052723910099040">Quadrícula de pestanyes normals</translation>
+<translation id="3148237711805373460">Porta-m'hi</translation>
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="315778507796115851">Historial</translation>
 <translation id="31652791196570636">Ignora</translation>
@@ -1977,6 +1978,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8205564605687841303">Cancel·la</translation>
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
 <translation id="8209050860603202033">Obre la imatge</translation>
+<translation id="8209237163365258530">Models de Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Has rebut contrasenyes per a <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
 <translation id="8214293972734702249">Fixada, <ph name="TAB_TITLE" /></translation>

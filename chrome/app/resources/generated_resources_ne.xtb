@@ -1722,6 +1722,7 @@
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। तोकिएको आदान प्रदान नेटवर्कमा फेला परेन।</translation>
 <translation id="2148248734299717598">बायाँ भ्यू बन्द गर्नुहोस्</translation>
+<translation id="2148401732477136168">इन्स्टल गरिएका एपहरूका बारेमा जानकारी प्राप्त गर्न सकिएन।</translation>
 <translation id="2148756636027685713">फर्म्याट समाप्त भयो</translation>
 <translation id="2148892889047469596">Cast ट्याब</translation>
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
@@ -8095,6 +8096,7 @@
 <translation id="6532663472409656417">इन्टरप्राइजमा दर्ता गरिएको</translation>
 <translation id="6533315466883598769">Google Translate प्रयोग गर्नुहोस्</translation>
 <translation id="65334502113648172">डिस्प्लेको क्षेत्र सानो वा ठुलो बनाउन एरो कीहरू थिच्नुहोस्। डिस्प्लेको क्षेत्र यताउता सार्न सिफ्ट र + थिच्नुहोस् अनि एरो कीहरू प्रयोग गर्नुहोस्।</translation>
+<translation id="6534018044332449019">कुनै पनि एप इन्स्टल गरिएको छैन।</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> लाई यस किसिमका लिंकहरू सधैँ सम्बद्ध एपमा खोल्न दिइयोस्</translation>
 <translation id="653659894138286600">डकुमेन्ट तथा फोटोहरू स्क्यान गर्नुहोस्</translation>
 <translation id="6538036594527795020"><ph name="APP" /> को भाषा परिवर्तन गर्नुहोस्। हालको भाषा: <ph name="LANGUAGE" />।</translation>
@@ -10153,6 +10155,7 @@
 <translation id="7941179291434537290">टेदरिङको उपलब्धता:</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7942846369224063421">प्रिलोडेड UI रेन्डरर</translation>
+<translation id="7943271960579497371">इन्स्टल गरिएका एपहरू</translation>
 <translation id="7943368935008348579">PDF फाइलहरू डाउनलोड गर्नुहोस्</translation>
 <translation id="7943837619101191061">स्थान थप्नुहोस्...</translation>
 <translation id="7944173382284143968">यो वेबसाइटको नयाँ पासवर्ड सेभ गर्न OTP हालेर पहिचान पुष्टि गर्नु पर्ने हुन्छ। यो परिवर्तन सेभ गर्न कृपया यो प्रक्रिया म्यानुअल तरिकाले पूरा गर्नुहोस्।</translation>

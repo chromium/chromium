@@ -370,6 +370,7 @@
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> का विवरणहरू देखाउनुहोस्</translation>
 <translation id="2309265394777270359">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="2311077293164383652">पिन गरिएको ट्याब बन्द गर्नुहोस्</translation>
+<translation id="2313392466694008052">Gemini प्रयोग गरी फोटो सम्पादन गर्नुहोस्</translation>
 <translation id="2316129865977710310">पर्दैन, धन्यवाद</translation>
 <translation id="2320166752086256636">किबोर्ड लुकाउनुहोस्</translation>
 <translation id="2321086116217818302">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="2888631381369839306">मूल्यको ट्र्याकिङसम्बन्धी नोटिफिकेसन प्राप्त गर्ने सुविधा अन गरिएको छ</translation>
 <translation id="2893168226686371498">डिफल्ट ब्राउजर</translation>
+<translation id="2893791155497534382">पासवर्ड र अन्य गतिविधिको व्यवस्थापनसम्बन्धी सेटिङमा गई तिनलाई मेटाउन सकिन्छ</translation>
 <translation id="2894757982205307093">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="2902312830803030883">थप कारबाहीहरू</translation>
 <translation id="2904788871580817212">तपाईंको खुला ट्याबमा भएको उत्पादनको मूल्य घटेको छ। <ph name="DOMAIN" /> मा <ph name="PRODUCT_NAME" /> को मूल्य <ph name="PREVIOUS_PRICE" /> बाट घटेर <ph name="PRICE" /> पुगेको छ</translation>
@@ -580,6 +582,7 @@
 <translation id="3143515551205905069">सिंक रद्द गर्नुहोस्</translation>
 <translation id="3144126448740580210">सम्पन्न  भयो</translation>
 <translation id="3148052723910099040">नियमित ट्याब ग्रिड</translation>
+<translation id="3148237711805373460">मलाई त्यहाँ लैजानुहोस्</translation>
 <translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="315778507796115851">हिस्ट्री</translation>
 <translation id="31652791196570636">खारेज गर्नुहोस्</translation>
@@ -1297,6 +1300,7 @@
 <translation id="5768870767339201169">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस्</translation>
 <translation id="5779117921996157216">{count,plural, =1{तपाईंको {count} पासवर्ड अरूले देखेका छन्। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यो समस्या समाधान गर्नुहोस्।}other{तपाईंका {count} वटा पासवर्ड अरूले देखेका छन्। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यी समस्या समाधान गर्नुहोस्।}}</translation>
 <translation id="5791632441210678828">"फलो गरिराखिएका" फिड क्रमबद्ध गर्नुहोस् नामक बटन।</translation>
+<translation id="5799263916847593256">मूल्यको हिस्ट्री हेर्न खोल्नुहोस्</translation>
 <translation id="5803566855766646066">तपाईंले यो नयाँ कार्ड हटाउन खोज्नुभएकै हो?</translation>
 <translation id="5804241973901381774">अनुमतिहरू</translation>
 <translation id="58081802114142635">तपाईंको क्रियाकलापले Google AI को गुणस्तर सुधार्न सघाउँछ</translation>
@@ -1640,6 +1644,7 @@
 <translation id="6964300328304469089">अहिले <ph name="NAME" />, <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="6964760285928603117">समूहबाट हटाउनुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
+<translation id="6967355534157677591">Pro प्रयोग गरी फोटो बनाउनुहोस्</translation>
 <translation id="6973630695168034713">फोल्डरहरू</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6979737339423435258">सुरूबाट नै</translation>

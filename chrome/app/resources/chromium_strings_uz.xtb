@@ -29,11 +29,13 @@
 <translation id="1315551408014407711">Yangi Chromium profilini sozlang</translation>
 <translation id="1324107359134968521">Qurilmalarni topish uchun Chromium Bluetooth aloqadan foydalanishiga ruxsat bering. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Tilni aniqlash</translation>
+<translation id="1330742950061766891">Chromium tavsiya etgan brauzer sozlamalaridan foydalanish</translation>
 <translation id="1342274909142618978">Chromium maʼlumotlari ham oʻchirilsin (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Mahkamlandi! Endi Rasmlar orqali qidiruvni asboblar panelidagi yangi tugma orqali ochish mumkin</translation>
 <translation id="1356661055722410047">Yangi! Ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1397530502368084401">Chromium profillarini boshqarish</translation>
+<translation id="1404026649028693342">AI rejimi doim chiqarilsin</translation>
 <translation id="141901961143729572">Fikr-mulohaza qoldiring</translation>
 <translation id="1465192221147974788">Oynani ulashish uchun tizim sozlamalarida Chromium brauzeriga ekranni yozib olish uchun ruxsat bering.</translation>
 <translation id="1478370723027452770">Chrome for Testing yuzasidan yordam olish</translation>
@@ -90,6 +92,7 @@
 <translation id="2039417478970545937">Sozlamalar.</translation>
 <translation id="2049376729098081731">Kerak boʻlsa, Chromium tarixi yanada moslashtirilgan Google xizmatlarida ishlatilishini tanlang</translation>
 <translation id="2064856577282482477">Chromiumga yangi qiyofa berish uchun yangi varaq sahifasidagi Chromiumni moslash tugmasini bosing</translation>
+<translation id="2066690553719545730">AI rejimi doim chiqarilsin</translation>
 <translation id="2086476982681781442">Chromium bu yuklamani blokladi, chunki fayl aldamchi va qurilmangizga kutilmagan oʻzgarishlar kiritishi mumkin</translation>
 <translation id="208726765006323911">Keyingi safar Chromium iOS ilovasini ochganingizda <ph name="FEATURE_NAME" /> sinash taklifi chiqadi.</translation>
 <translation id="2099452623287920103">Parollar va boshqa Chromium maʼlumotlaringiz Google hisobiga saqlandi, ammo bu qurilmadan oʻchiriladi. Ularni Chromiumda yana ishlatish uchun hisobingizga kiring.</translation>
@@ -192,6 +195,7 @@
 <translation id="3095811995836568724">Chromium tarixi</translation>
 <translation id="3103660991484857065">O‘rnatish dasturi arxivni ajrata olmadi. Chromium’ni qayta yuklab oling.</translation>
 <translation id="310459126943037700">Vazifalar yakunlanmadi.</translation>
+<translation id="3126784891977756556">Parollar, bukmarklar va tarixni qurilmalararo mukammal sinxronlashda davom eting. Birlamchi brauzerni Chromiumga yangilab, tanish va sevimli funksiyalardan oson foydalaning.</translation>
 <translation id="3130323860337406239">Chromium mikrofondan foydalanmoqda.</translation>
 <translation id="3130333203120345554">Yangi qidiruv</translation>
 <translation id="3137969841538672700">Qidirish uchun obyektni torting</translation>
@@ -302,6 +306,7 @@
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="4334241893986177674">Bu skrinshotni qidirish</translation>
 <translation id="4334294535648607276">Yuklab olindi.</translation>
+<translation id="4384993550046411228">Chromiumni birlamchi brauzer etib belgilab, tanish, siz yoqtirgan va ishonchli funksiyalardan oson foydalaning. Tezkor kirish uchun Chromium vazifalar paneliga qadaladi.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromiumOS shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
 <translation id="4407044323746248786">Chromium baribir yopilsinmi?</translation>
 <translation id="4413205837991854510">Rasm orqali qidiruv tezkor tugmasi doim chiqsin</translation>

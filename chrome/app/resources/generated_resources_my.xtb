@@ -4554,6 +4554,7 @@
 <translation id="4036778507053569103">ဆာဗာမှနေ၍ ဒေါင်းလုဒ်လုပ်ထားသည့် မူဝါဒသည် မမှန်ကန်ပါ။</translation>
 <translation id="4037084878352560732">မြင်း</translation>
 <translation id="403725336528835653">ဦးစွာ စမ်းကြည့်ရန်</translation>
+<translation id="4039835815168788100">“<ph name="EXTENSION_NAME" />” နောက်ဆက်တွဲသည် သင့်ရှာဖွေရေး အင်ဂျင်ကို <ph name="SEARCH_PROVIDER" /> သို့ ပြောင်းရန် ကြိုးစားထားသည်။ အောက်တွင် သင့်သတ်မှတ်ချက်ကို အတည်ပြုပါ</translation>
 <translation id="4039966970282098406">မိုက်ခရိုဖုန်း၊ ကင်မရာ စသည်တို့အားသုံးခွင့်ကို ထိန်းချုပ်ခြင်းဖြင့် သင့်ကိုယ်ရေးအချက်အလက်လုံခြုံမှုကို စီမံပါ</translation>
 <translation id="4040041015953651705">ဖော်ပြပါဘာသာစကားမှ ဘာသာပြန်ဆိုရန်</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{စာမျက်နှာကို ပိတ်ရန်}other{စာမျက်နှာများကို ပိတ်ရန်}}</translation>
@@ -6876,6 +6877,7 @@
 <translation id="5659593005791499971">အီးမေးလ်</translation>
 <translation id="5659964844710667266">ဤ <ph name="DEVICE_TYPE" /> အတွက် စကားဝှက်ပြုလုပ်ရန်</translation>
 <translation id="5662513737565158057">Linux အက်ပ်များ အလုပ်လုပ်ပုံကို ပြောင်းရန်။</translation>
+<translation id="5663317829633858516"><ph name="EXTENSION_NAME" /> က လတ်တလော ပြောင်းထားသည်</translation>
 <translation id="5663459693447872156">အလိုအလျောက် အကျယ်တစ်ဝက်သို့ ပြောင်းရန်</translation>
 <translation id="5663653125349867535">&amp;ဖတ်ရန် စာရင်း</translation>
 <translation id="5663918299073387939">တေးဂီတ ဖန်တီးရန်၊ တည်းဖြတ်ရန် (သို့) စက်ဖာမ်းဝဲ အပ်ဒိတ်လုပ်ရန်အတွက် ဝဘ်ဆိုက်များက MIDI စက်များကို စီမံရန်နှင့် ပရိုဂရမ်ပြန်လုပ်ရန် တောင်းဆိုလေ့ရှိသည်</translation>
@@ -8905,6 +8907,7 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> အုပ်စု - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 RSA အန်ခရစ်ပြုလုပ်ခြင်းဖြင့်</translation>
 <translation id="7075625805486468288">HTTPS/SSL အသိအမှတ်ပြုလက်မှတ်များနှင့် ဆက်တင်များကို စီမံပါ</translation>
+<translation id="707772989579681711">သင်၏ ယခင်ရွေးချယ်မှု</translation>
 <translation id="7077751457066325012">လက်ကွက်ဖြတ်လမ်းများ ကြည့်ရန်နှင့် စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="7077829361966535409">လက်ရှိ ပရောက်စီ ဆက်တင်များကို သုံးပြီး လက်မှတ်ထိုး-ဝင်ရေး စာမျက်နှာ တင် မရခဲ့ပါ။ ကျေးဇူးပြုပြီး <ph name="GAIA_RELOAD_LINK_START" />ထပ်ပြီး လက်မှတ်ထိုး ဝင်ရန် ကြိုးစားပါ<ph name="GAIA_RELOAD_LINK_END" />၊ သို့မဟုတ် အခြား <ph name="PROXY_SETTINGS_LINK_START" />ပရောက်စီ ဆက်တင်များ<ph name="PROXY_SETTINGS_LINK_END" />ကို သုံးပါ။</translation>
 <translation id="7078120482318506217">ကွန်ရက်အားလုံး</translation>
@@ -10553,6 +10556,7 @@
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> ကိုပိတ်ပါ</translation>
 <translation id="8195920051450756553">ကီးတစ်ခုတည်းကို ထပ်မံသုံးနိုင်ရန် စောင့်ဆိုင်းချိန်</translation>
 <translation id="8197673340773315084">‘အလုပ်’ သို့မဟုတ် ‘ကိုယ်ရေးကိုယ်တာ’ ကဲ့သို့ အမည် (သို့) အညွှန်း ထည့်ရန်</translation>
+<translation id="8198043456018523011">သင့်မူရင်းရှာဖွေရေး အင်ဂျင်ကို အတည်ပြုပါ</translation>
 <translation id="8198181050118789419">အပြင်အဆင်- <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="8199300056570174101">ကွန်ရက် (ဝန်ဆောင်မှု) နှင့် စက်ပစ္စည်း သတ်မှတ်ချက်များ</translation>

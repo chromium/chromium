@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Możesz poprosić o wyświetlenie witryn w wersji na komputer</translation>
 <translation id="1085696779717592361">Domyślne korzystanie z Chrome</translation>
 <translation id="113098737392899175">Gdy klawiatura jest podłączona, poruszaj się po stronach przy użyciu kursora tekstowego</translation>
+<translation id="1149644372535087155">Zapisuj hasła w Chrome</translation>
 <translation id="1178015372320901893">Plansza dolna Moje skróty</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -49,6 +50,7 @@
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
 <translation id="1569054338208717605">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chrome, ale będzie ona trochę mniej odporna na ataki</translation>
 <translation id="1593426485665524382">Nowe działania są dostępne u góry ekranu</translation>
+<translation id="1594521731409209842">Aby zmienić rozmiar zdjęcia, ściągnij ekran palcami</translation>
 <translation id="1601560923496285236">Zastosuj</translation>
 <translation id="1615755956145364867">Strony mogą prosić o zgodę na odtwarzanie treści chronionych</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -172,6 +174,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2682367912565197520">Usuń zapisany poziom powiększenia</translation>
 <translation id="2683434792633810741">Usunąć i zresetować?</translation>
 <translation id="2685514716378236873">Niedozwolone</translation>
+<translation id="2710883118091822664">Zaloguj się, aby móc łatwo kontynuować zadania na wszystkich swoich urządzeniach</translation>
 <translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2717722538473713889">Adresy e-mail</translation>
 <translation id="2726059656860238749">Uruchamiaj Chrome z zaznaczonym paskiem adresu, aby skrócić czas uruchamiania na mało wydajnych urządzeniach.</translation>
@@ -199,6 +202,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3004438526346162184">Strony mogą używać tej funkcji do zarządzania oknami na wszystkich wyświetlaczach</translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
+<translation id="3026311960038210">Kolekcje motywów</translation>
 <translation id="3064871050034234884">Strony mogą odtwarzać dźwięk</translation>
 <translation id="3065787901655140044">Ochrona zaawansowana jest włączona</translation>
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
@@ -341,6 +345,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4478158430052450698">Łatwiejsze dostosowywanie powiększenia w różnych witrynach</translation>
 <translation id="4479647676395637221">Pytaj, zanim zezwolisz stronom na korzystanie z aparatu (zalecane)</translation>
 <translation id="4505788138578415521">URL pokazany w całości</translation>
+<translation id="4523472416386354622">Zaloguj się, aby rozpocząć</translation>
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
@@ -397,6 +402,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="512938610812707830">Plansza dolna kolekcji motywów wyglądu strony Nowa karta, otwarta na całą wysokość</translation>
 <translation id="5137460097045297858">Plansza dolna kart Discover otwarta do połowy wysokości</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Obniżka ceny na otwartych kartach}few{Obniżki cen na otwartych kartach}many{Obniżki cen na otwartych kartach}other{Obniżki cen na otwartych kartach}}</translation>
+<translation id="5150048675001754041">Szybko i łatwo loguj się w witrynach oraz aplikacjach</translation>
 <translation id="5186036860380548585">Opcja dostępna u góry ekranu</translation>
 <translation id="5197729504361054390">Wybrane kontakty zostaną udostępnione witrynie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Plansza dolna Dostosuj stronę nowej karty zamknięta</translation>
@@ -566,6 +572,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="6980861169612950611">Usunąć dane witryny? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="6991142177939282156">Dozwolona • Używana jest przybliżona lokalizacja</translation>
+<translation id="6992014788289743568">Zwiększ bezpieczeństwo i ochronę danych przez sprawdzanie haseł</translation>
 <translation id="6992289844737586249">Pytaj, zanim zezwolisz stronom na korzystanie z mikrofonu (zalecane)</translation>
 <translation id="7000754031042624318">Wyłączone w ustawieniach Androida</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>

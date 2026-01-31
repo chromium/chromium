@@ -370,6 +370,7 @@
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> వివరాలను చూడండి</translation>
 <translation id="2309265394777270359">ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="2311077293164383652">పిన్ చేసిన ట్యాబ్‌ను మూసివేయండి</translation>
+<translation id="2313392466694008052">Gemini సాయంతో ఇమేజ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="2316129865977710310">వద్దు, ధన్యవాదాలు</translation>
 <translation id="2320166752086256636">కీబోర్డ్‌ను దాచు</translation>
 <translation id="2321086116217818302">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">ట్యాబ్‌ని మూసివేయండి</translation>
 <translation id="2888631381369839306">ధర ట్రాకింగ్ నోటిఫికేషన్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="2893168226686371498">ఆటోమేటిక్ బ్రౌజర్</translation>
+<translation id="2893791155497534382">పాస్‌వర్డ్‌లను, ఇతర యాక్టివిటీని వాటి మేనేజ్‌మెంట్ సెట్టింగ్‌లలో తొలగించవచ్చు</translation>
 <translation id="2894757982205307093">గ్రూప్‌లో కొత్త ట్యాబ్</translation>
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
 <translation id="2904788871580817212"><ph name="DOMAIN" />‌కు చెందిన <ph name="PRODUCT_NAME" /> ధర <ph name="PREVIOUS_PRICE" /> నుండి <ph name="PRICE" />‌కు తగ్గింది, ఆ ధర తెరిచిన మీ ట్యాబ్‌లో చూపబడింది</translation>
@@ -580,6 +582,7 @@
 <translation id="3143515551205905069">సింక్‌ను రద్దు చేయండి</translation>
 <translation id="3144126448740580210">పూర్తయింది</translation>
 <translation id="3148052723910099040">సాధారణ ట్యాబ్ గ్రిడ్</translation>
+<translation id="3148237711805373460">నన్ను అక్కడికి తీసుకెళ్లండి</translation>
 <translation id="3157387275655328056">పఠన లిస్ట్‌కు జోడించండి</translation>
 <translation id="315778507796115851">హిస్టరీ</translation>
 <translation id="31652791196570636">విస్మరించండి</translation>
@@ -1297,6 +1300,7 @@
 <translation id="5768870767339201169">మీరు ఎక్కడ ఆపుతారో అక్కడి నుండే కొనసాగించవచ్చు</translation>
 <translation id="5779117921996157216">{count,plural, =1{మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే {count} చోరీకి గురైన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి. సురక్షితంగా ఉండటానికి ఇప్పుడే దాన్ని పరిష్కరించండి.}other{మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే {count} చోరీకి గురైన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి. సురక్షితంగా ఉండటానికి ఇప్పుడే వాటిని పరిష్కరించండి.}}</translation>
 <translation id="5791632441210678828">ఫాలోయింగ్ ఫీడ్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి.</translation>
+<translation id="5799263916847593256">ధర హిస్టరీని చూడటానికి తెరవండి</translation>
 <translation id="5803566855766646066">మీరు ఈ కొత్త కార్డ్‌ను ఖచ్చితంగా విస్మరించాలనుకుంటున్నారా?</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
 <translation id="58081802114142635">మీ యాక్టివిటీ, Googleకు చెందిన AI టెక్నాలజీలను మెరుగుపరుస్తుంది</translation>
@@ -1640,6 +1644,7 @@
 <translation id="6964300328304469089"><ph name="NAME" /> <ph name="EMAIL" /> ప్రస్తుతం ఎంచుకోబడింది. ఒక ఖాతాను ఎంచుకోండి.</translation>
 <translation id="6964760285928603117">గుంపు నుండి తీసివేయండి</translation>
 <translation id="6965382102122355670">సరే</translation>
+<translation id="6967355534157677591">Pro సాయంతో ఇమేజ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6973630695168034713">ఫోల్డర్‌లు</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">మొత్తం సమయం</translation>

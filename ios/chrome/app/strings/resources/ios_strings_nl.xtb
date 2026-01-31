@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Details voor <ph name="SEARCH_ENGINE_NAME" /> tonen</translation>
 <translation id="2309265394777270359">Tabblad sluiten</translation>
 <translation id="2311077293164383652">Vastgezet tabblad sluiten</translation>
+<translation id="2313392466694008052">Afbeelding bewerken met Gemini</translation>
 <translation id="2316129865977710310">Nee, bedankt</translation>
 <translation id="2320166752086256636">Toetsenbord verbergen</translation>
 <translation id="2321086116217818302">Wachtwoorden voorbereiden…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Tabblad sluiten</translation>
 <translation id="2888631381369839306">Meldingen voor prijzen volgen aangezet</translation>
 <translation id="2893168226686371498">Standaardbrowser</translation>
+<translation id="2893791155497534382">Wachtwoorden en andere activiteit kunnen worden verwijderd in de beheerinstellingen</translation>
 <translation id="2894757982205307093">Nieuw tabblad in groep</translation>
 <translation id="2902312830803030883">Meer acties</translation>
 <translation id="2904788871580817212">Prijsdaling op je geopende tabblad, van <ph name="PREVIOUS_PRICE" /> naar <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -580,6 +582,7 @@
 <translation id="3143515551205905069">Synchronisatie annuleren</translation>
 <translation id="3144126448740580210">KLAAR</translation>
 <translation id="3148052723910099040">Raster met normale tabbladen</translation>
+<translation id="3148237711805373460">Ernaartoe gaan</translation>
 <translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
 <translation id="315778507796115851">Geschiedenis</translation>
 <translation id="31652791196570636">Sluiten</translation>
@@ -1297,6 +1300,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5768870767339201169">Ga verder waar je gebleven was</translation>
 <translation id="5779117921996157216">{count,plural, =1{Je hebt {count} gehackt wachtwoord dat een beveiligingsrisico kan vormen. Pas dit nu aan om beveiligd te blijven.}other{Je hebt {count} gehackte wachtwoorden die een beveiligingsrisico kunnen vormen. Pas ze nu aan om beveiligd te blijven.}}</translation>
 <translation id="5791632441210678828">Knop Sorteren voor de feed Je volgt.</translation>
+<translation id="5799263916847593256">Openen om de prijsgeschiedenis te bekijken</translation>
 <translation id="5803566855766646066">Weet je zeker dat je deze nieuwe kaart wilt sluiten?</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="58081802114142635">Je activiteit verbetert AI van Google</translation>
@@ -1640,6 +1644,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> is op dit moment geselecteerd. Kies een account.</translation>
 <translation id="6964760285928603117">Uit groep verwijderen</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Afbeelding maken Pro</translation>
 <translation id="6973630695168034713">Mappen</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Alles</translation>

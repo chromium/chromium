@@ -4542,6 +4542,7 @@
 <translation id="4036778507053569103">Смернице преузете са сервера су неважеће.</translation>
 <translation id="4037084878352560732">Коњ</translation>
 <translation id="403725336528835653">Прво испробајте</translation>
+<translation id="4039835815168788100">Додатак <ph name="EXTENSION_NAME" /> је покушао да промени претраживач у <ph name="SEARCH_PROVIDER" />. Потврдите подешавање у наставку</translation>
 <translation id="4039966970282098406">Управљајте приватношћу тако што ћете контролисати приступ микрофону, камери и другом</translation>
 <translation id="4040041015953651705">Језик са ког желите да преводите</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Затвори страницу}one{Затвори странице}few{Затвори странице}other{Затвори странице}}</translation>
@@ -6862,6 +6863,7 @@
 <translation id="5659593005791499971">Имејл</translation>
 <translation id="5659964844710667266">Направите лозинку за овај <ph name="DEVICE_TYPE" /></translation>
 <translation id="5662513737565158057">Промените начин на који Linux апликације раде.</translation>
+<translation id="5663317829633858516">Недавно је променио додатак <ph name="EXTENSION_NAME" /></translation>
 <translation id="5663459693447872156">Аутоматски пређи на пола ширине</translation>
 <translation id="5663653125349867535">Листа за читање</translation>
 <translation id="5663918299073387939">Сајтови обично траже да контролишу и репрограмирају MIDI уређаје да би правили музику, мењали музику или ажурирали фирмвер уређаја</translation>
@@ -8900,6 +8902,7 @@
 <translation id="7074703793383805632">Група <ph name="GROUP_NAME" /> <ph name="SHARED_STATE" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 са RSA шифровањем</translation>
 <translation id="7075625805486468288">Управљање HTTPS/SSL сертификатима и подешавањима</translation>
+<translation id="707772989579681711">Ваш претходни избор</translation>
 <translation id="7077751457066325012">Прегледајте и прилагодите тастерске пречице</translation>
 <translation id="7077829361966535409">Учитавање странице за пријављивање помоћу актуелних подешавања проксија није успело. <ph name="GAIA_RELOAD_LINK_START" />Пробајте поново да се пријавите<ph name="GAIA_RELOAD_LINK_END" /> или користите нека друга <ph name="PROXY_SETTINGS_LINK_START" />подешавања проксија<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Све мреже</translation>
@@ -10550,6 +10553,7 @@
 <translation id="8195854162863398249">Онемогући <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Одлагање поновне активације истог тастера</translation>
 <translation id="8197673340773315084">Додајте назив или ознаку као што су Пословни или Лични</translation>
+<translation id="8198043456018523011">Потврдите подразумевани претраживач</translation>
 <translation id="8198181050118789419">Тема: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8199300056570174101">Својства мреже (услуга) и уређаја</translation>

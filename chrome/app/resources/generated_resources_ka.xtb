@@ -1721,6 +1721,7 @@
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">გაზიარების მიერთებისას მოხდა შეცდომა. მითითებული გაზიარება ქველში ვერ მოიძებნა.</translation>
 <translation id="2148248734299717598">მარცხენა ხედის დახურვა</translation>
+<translation id="2148401732477136168">დაინსტალირებული აპების მოთხოვნა ვერ მოხერხდა.</translation>
 <translation id="2148756636027685713">ფორმატირება დასრულდა</translation>
 <translation id="2148892889047469596">ჩანართის ტრანსლირება</translation>
 <translation id="2149973817440762519">სანიშნის რედაქტირება</translation>
@@ -4543,6 +4544,7 @@
 <translation id="4036778507053569103">სერვერიდან ჩამოტვირთული წესები არასწორია.</translation>
 <translation id="4037084878352560732">ცხენი</translation>
 <translation id="403725336528835653">ჯერ ცდა</translation>
+<translation id="4039835815168788100">გაფართოებამ „<ph name="EXTENSION_NAME" />“ სცადა თქვენი საძიებო სისტემის <ph name="SEARCH_PROVIDER" />-ით შეცვლა. დაადასტურეთ თქვენი პრიორიტეტული პარამეტრები ქვემოთ</translation>
 <translation id="4039966970282098406">მართეთ თქვენი კონფიდენციალურობა — აკონტროლეთ მიკროფონზე, კამერაზე და სხვა ტიპის წვდომა</translation>
 <translation id="4040041015953651705">ენა, რომლიდანაც უნდა ითარგმნოს</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{გვერდიდან გასვლა}other{გვერდებიდან გასვლა}}</translation>
@@ -6864,6 +6866,7 @@
 <translation id="5659593005791499971">ელფოსტა</translation>
 <translation id="5659964844710667266">პაროლის შექმნა ამ <ph name="DEVICE_TYPE" />-ისთვის</translation>
 <translation id="5662513737565158057">შეცვალეთ Linux აპების მუშაობის პრინციპი.</translation>
+<translation id="5663317829633858516">ბოლო ცვლილების ავტორია <ph name="EXTENSION_NAME" /></translation>
 <translation id="5663459693447872156">ავტომატურად გადართეთ ნახევარ სიგანეზე</translation>
 <translation id="5663653125349867535">&amp;საკითხავი სია</translation>
 <translation id="5663918299073387939">საიტებს, როგორც წესი, სჭირდება MIDI-მოწყობილობების მართვისა და გადაპროგრამების ნებართვა მუსიკის შესაქმნელად, მუსიკის დასამონტაჟებლად ან მოწყობილობის ჩაშენებული პროგრამული უზრუნველყოფის განსაახლებლად</translation>
@@ -8095,6 +8098,7 @@
 <translation id="6532663472409656417">ორგანიზაციაში რეგისტრირებული</translation>
 <translation id="6533315466883598769">Google Translate-ის გამოყენება</translation>
 <translation id="65334502113648172">დააჭირეთ ისრიან კლავიშებს, საჩვენებელი არე რომ შეამციროთ ან განავრცოთ. საჩვენებელი არის გადასატანად, ჯერ დააჭირეთ shift-სა და +-ს, შემდეგ კი ისრიან კლავიშებს.</translation>
+<translation id="6534018044332449019">დაინსტალირებული აპები არ არის.</translation>
 <translation id="6535331821390304775">ამ ტიპის ბმულების ყოველთვის დაკავშირებულ აპში გახსნის დაშვება <ph name="ORIGIN" />-ისთვის</translation>
 <translation id="653659894138286600">დოკუმენტებისა და სურათების სკანირება</translation>
 <translation id="6538036594527795020">შეცვალეთ <ph name="APP" />-ის ენა. ამჟამად ენად არჩეულია <ph name="LANGUAGE" />.</translation>
@@ -8896,6 +8900,7 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> ჯგუფი „<ph name="GROUP_NAME" />“ — <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 RSA დაშიფვრით</translation>
 <translation id="7075625805486468288">HTTPS/SSL სერტიფიკატებისა და პარამეტრების მართვა</translation>
+<translation id="707772989579681711">თქვენი წინა არჩევანი</translation>
 <translation id="7077751457066325012">ნახეთ და მოირგეთ კლავიატურის მალსახმობი</translation>
 <translation id="7077829361966535409">ვერ მოხერხდა სისტემაში შესვლის გვერდის ჩამოტვირთვა არსებული პროქსი პარამეტრების გამოყენებით. გთხოვთ <ph name="GAIA_RELOAD_LINK_START" />სდაცეთ შესვლა კიდევ ერთხელ<ph name="GAIA_RELOAD_LINK_END" />, ან გამოიყენეთ სხვა <ph name="PROXY_SETTINGS_LINK_START" />პროქსის პარამეტრები<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">ყველა ქსელი</translation>
@@ -10151,6 +10156,7 @@
 <translation id="7941179291434537290">ტეტერინგის მზადყოფნა:</translation>
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7942846369224063421">სამომხმარებლო ინტერფეისის წინასწარ ჩატვირთული ვიზუალიზატორი</translation>
+<translation id="7943271960579497371">დაინსტალირებული აპები</translation>
 <translation id="7943368935008348579">PDF-ების ჩამოტვირთვა</translation>
 <translation id="7943837619101191061">მდებარეობის დამატება…</translation>
 <translation id="7944173382284143968">ვებსაიტი, ახალი პაროლის შესანახად, ითხოვს ერთჯერადი პაროლით დადასტურებას. ცვლილების დასასრულებლად შეგიძლიათ პროცედურა ხელით შეასრულოთ.</translation>
@@ -10543,6 +10549,7 @@
 <translation id="8195854162863398249">გაითიშოს „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8195920051450756553">დაყოვნება იმავე კლავიშის აქტივაციამდე</translation>
 <translation id="8197673340773315084">დაამატეთ სახელი ან ლეიბლი, მაგალითად, „სამსახურის“ ან „პირადი“</translation>
+<translation id="8198043456018523011">დაადასტურეთ თქვენი ნაგულისხმევი საძიებო სისტემა</translation>
 <translation id="8198181050118789419">თემა: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">მიმდინარეობს ჩანართის ტრანსლირება</translation>
 <translation id="8199300056570174101">ქსელის (სერვისი) და მოწყობილობის მახასიათებლები</translation>

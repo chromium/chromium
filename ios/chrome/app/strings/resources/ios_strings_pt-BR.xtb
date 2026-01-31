@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Mostrar detalhes de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Fechar guia</translation>
 <translation id="2311077293164383652">Fechar guia fixada</translation>
+<translation id="2313392466694008052">Editar imagem com o Gemini</translation>
 <translation id="2316129865977710310">Não.</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
 <translation id="2321086116217818302">Preparando senhas…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Fechar guia</translation>
 <translation id="2888631381369839306">Notificações de monitoramento de preços ativadas</translation>
 <translation id="2893168226686371498">Navegador padrão</translation>
+<translation id="2893791155497534382">Senhas e outras atividades podem ser excluídas nas configurações de gerenciamento correspondentes</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
 <translation id="2902312830803030883">Mais ações</translation>
 <translation id="2904788871580817212">Redução no preço na sua guia aberta: <ph name="PRODUCT_NAME" /> de <ph name="PREVIOUS_PRICE" /> por <ph name="PRICE" /> em <ph name="DOMAIN" /></translation>
@@ -580,6 +582,7 @@
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="3144126448740580210">CONCLUÍDO</translation>
 <translation id="3148052723910099040">Grade de guias comuns</translation>
+<translation id="3148237711805373460">Acessar</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="315778507796115851">Histórico</translation>
 <translation id="31652791196570636">Dispensar</translation>
@@ -1297,6 +1300,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5768870767339201169">Volte de onde parou</translation>
 <translation id="5779117921996157216">{count,plural, =1{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas comprometidas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
 <translation id="5791632441210678828">Botão para ordenar o feed "Seguindo".</translation>
+<translation id="5799263916847593256">Abra para mostrar o histórico de preços</translation>
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="58081802114142635">Sua atividade ajuda a aprimorar a IA do Google</translation>
@@ -1640,6 +1644,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" /> Escolha uma conta.</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Criar imagem Pro</translation>
 <translation id="6973630695168034713">Pastas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Todo o período</translation>
@@ -1977,6 +1982,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">Esta configuração é aplicada por seu administrador.</translation>
 <translation id="8209050860603202033">Abrir imagem</translation>
+<translation id="8209237163365258530">Modelos do Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Você recebeu senhas de <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">A conexão é segura</translation>
 <translation id="8214293972734702249">Guia fixada. <ph name="TAB_TITLE" /></translation>
