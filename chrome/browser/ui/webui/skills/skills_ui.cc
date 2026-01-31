@@ -21,6 +21,7 @@ namespace skills {
 void AddDialogStringResources(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
+      {"edit", IDS_EDIT2},
       {"save", IDS_SAVE},
   };
 

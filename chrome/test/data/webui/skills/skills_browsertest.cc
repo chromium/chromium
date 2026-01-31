@@ -34,4 +34,8 @@ IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, DiscoverSkillsPage) {
   RunTest("skills/discover_skills_page_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, SkillCard) {
+  RunTest("skills/card_test.js", "mocha.run();");
+}
+
 }  // namespace

@@ -1,0 +1,70 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 230px;
+  width: 270px;
+}
+
+.card {
+  align-items: flex-start;
+  background-color: var(--color-sys-surface1);
+  border-radius: var(--cr-card-border-radius);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 198px;
+  margin: 0 auto;
+  padding: 16px;
+  width: 238px;
+}
+
+#cardHeader {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#infoContainer {
+  color: var(--color-sys-on-surface);
+  display: flex;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+#icon {
+  margin-inline-end: 8px;
+}
+
+#cardBody {
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  /* Using -webkit-box to support multi-line text truncation. */
+  display: -webkit-box;
+  font-size: 13px;
+  font-weight: 400;
+  height: 110px;
+  line-height: 20px;
+  overflow: hidden;
+}
+
+#cardFooter {
+  flex: 1;
+}
+
+#editButton {
+  --cr-button-border-color: transparent;
+}
